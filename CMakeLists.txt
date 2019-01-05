@@ -87,7 +87,7 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set(SDL2_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/include/SDL")
     
     if (${CMAKE_SIZEOF_VOID_P} MATCHES "8")
-        set(GLFW_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR/ext/glfw/lib/glfw3dll-x64.lib")
+        set(GLFW_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/lib/glfw3dll-x64.lib")
         set(SDL2_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/lib/SDL2-x64.lib")
 	set(SDL2MIXER_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/lib/SDL2_mixer-x64.lib")
 
