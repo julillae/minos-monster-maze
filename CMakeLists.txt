@@ -8,6 +8,17 @@ if (POLICY CMP0025)
 endif ()
 set (CMAKE_CXX_STANDARD 11)
 
+#Find OS
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(IS_OS_MAC 1)
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  set(IS_OS_LINUX 1)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  set(IS_OS_WINDOWS 1)
+else()
+  message(FATAL_ERROR "OS ${CMAKE_SYSTEM_NAME} was not recognized")
+endif()
+
 # Create executable target
 
 # Generate the shader folder location to the header
@@ -62,7 +73,7 @@ endif()
 
 # glfw, sdl could be precompiled (on windows) or installed by a package manager (on OSX and Linux)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+if (IS_OS_LINUX OR IS_OS_MAC)
     # Try to find packages rather than to use the precompiled ones
     # Since we're on OSX or Linux, we can just use pkgconfig.
     find_package(PkgConfig REQUIRED)
@@ -73,12 +84,12 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR ${CMAKE_SYSTEM_NAME} MATCHES "Linux
     pkg_search_module(SDL2MIXER REQURIED SDL2_mixer)
     
     # Link Frameworks on OSX
-    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    if (IS_OS_MAC)
        find_library(COCOA_LIBRARY Cocoa)
        find_library(CF_LIBRARY CoreFoundation)
        target_link_libraries(${PROJECT_NAME} PUBLIC ${COCOA_LIBRARY} ${CF_LIBRARY})
     endif()
-elseif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+elseif (IS_OS_WINDOWS)
 # https://stackoverflow.com/questions/17126860/cmake-link-precompiled-library-depending-on-os-and-architecture
     set(GLFW_FOUND TRUE)
     set(SDL2_FOUND TRUE)
@@ -132,3 +143,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${GLFW_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${SDL2_INCLUDE_DIRS})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES})
+
+# Needed to add this
+if(IS_OS_LINUX)
+  target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
+endif()
