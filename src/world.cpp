@@ -105,7 +105,10 @@ bool World::init(vec2 screen)
 
 	if (m_background_music == nullptr || m_salmon_dead_sound == nullptr || m_salmon_eat_sound == nullptr)
 	{
-		fprintf(stderr, "Failed to load sounds, make sure the data directory is present");
+		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
+			audio_path("music.wav"),
+			audio_path("salmon_dead.wav"),
+			audio_path("salmon_eat.wav"));
 		return false;
 	}
 
