@@ -374,23 +374,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// action can be GLFW_PRESS GLFW_RELEASE GLFW_REPEAT
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	if (action == GLFW_PRESS && key == GLFW_KEY_DOWN) {
-		m_salmon.set_v_direction(Direction::down);
-	} else if (action == GLFW_PRESS && key == GLFW_KEY_UP) {
-		m_salmon.set_v_direction(Direction::up);
-	} else if (action == GLFW_RELEASE && (key == GLFW_KEY_DOWN) || (key == GLFW_KEY_UP)) {
-		m_salmon.set_v_direction(Direction::none);
-	}
-
-	if (action == GLFW_PRESS && key == GLFW_KEY_LEFT) {
-		m_salmon.set_h_direction(Direction::left);
-	}
-	else if (action == GLFW_PRESS && key == GLFW_KEY_RIGHT) {
-		m_salmon.set_h_direction(Direction::right);
-	}
-	else if (action == GLFW_RELEASE && (key == GLFW_KEY_LEFT) || (key == GLFW_KEY_RIGHT)) {
-		m_salmon.set_h_direction(Direction::none);
-	}
+	m_salmon.set_direction(key, action);
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)

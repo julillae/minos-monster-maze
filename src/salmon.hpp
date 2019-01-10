@@ -31,11 +31,8 @@ public:
 	// Moves the salmon's position by the specified offset
 	void move(vec2 off);
 
-	// Set salmon horizontal movement direction
-	void set_h_direction(Direction direction);
-
-	// Set salmon vertical movement direction
-	void set_v_direction(Direction direction);
+	// Change salmon movement direction
+	void set_direction(int key, int action);
 
 	// Set salmon rotation in radians
 	void set_rotation(float radians);

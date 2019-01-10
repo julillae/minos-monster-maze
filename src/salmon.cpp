@@ -77,6 +77,8 @@ bool Salmon::init()
 	m_scale.y = 35.f;
 	m_is_alive = true;
 	m_num_indices = indices.size();
+	h_direction = Direction::none;
+	v_direction = Direction::none;
 	m_position = { 50.f, 100.f };
 	m_rotation = 0.f;
 	m_light_up_countdown_ms = -1.f;
@@ -239,14 +241,32 @@ void Salmon::move(vec2 off)
 	m_position.x += off.x; m_position.y += off.y;
 }
 
-void Salmon::set_h_direction(Direction direction)
+void Salmon::set_direction(int key, int action)
 {
-	h_direction = direction;
-}
-
-void Salmon::set_v_direction(Direction direction)
-{
-	v_direction = direction;
+	if (action == GLFW_PRESS) {
+		switch (key) {
+			case GLFW_KEY_DOWN: v_direction = Direction::down; break;
+			case GLFW_KEY_UP: v_direction = Direction::up; break;
+			case GLFW_KEY_LEFT: h_direction = Direction::left; break;
+			case GLFW_KEY_RIGHT: h_direction = Direction::right; break;
+		}
+	}
+	else if (action == GLFW_RELEASE) {
+		switch (key) {
+			case GLFW_KEY_DOWN:
+				if (v_direction == Direction::down)
+					v_direction = Direction::none; break;
+			case GLFW_KEY_UP: 
+				if (v_direction == Direction::up)
+					v_direction = Direction::none; break;
+			case GLFW_KEY_LEFT: 
+				if (h_direction == Direction::left)
+					h_direction = Direction::none; break;
+			case GLFW_KEY_RIGHT: 
+				if (h_direction == Direction::right)
+					h_direction = Direction::none; break;
+		}
+	}
 }
 
 void Salmon::set_rotation(float radians)
