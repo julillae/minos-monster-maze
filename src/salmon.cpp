@@ -103,25 +103,26 @@ void Salmon::update(float ms)
 {
 	const float SALMON_SPEED = 200.f;
 	float step = SALMON_SPEED * (ms / 1000);
+	float vstep;
+	float hstep;
+
 	if (m_is_alive)
 	{
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// UPDATE SALMON POSITION HERE BASED ON KEY PRESSED (World::on_key())
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-		if (v_direction == Direction::up) {
-			move({ 0.f, -step });
+		switch (v_direction) {
+			case Direction::up: vstep = -step; break;
+			case Direction::down: vstep = step; break;
+			default: vstep = 0.f; break;
 		}
-		if (v_direction == Direction::down) {
-			move({ 0.f, step });
+		switch (h_direction) {
+			case Direction::left: hstep = -step; break;
+			case Direction::right: hstep = step; break;
+			default: hstep = 0.f; break;
 		}
-		if (h_direction == Direction::right) {
-			move({ step, 0.f });
-		}
-		if (h_direction == Direction::left) {
-			move({ -step, 0.f });
-		}
-		
+		move({hstep, vstep});
 	}
 	else
 	{
