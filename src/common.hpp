@@ -111,3 +111,6 @@ struct Renderable
 	void transform_translate(vec2 pos);
 	void transform_end();
 };
+
+// Enum for salmon directions
+enum Direction {up, down, left, right, none};

@@ -31,6 +31,12 @@ public:
 	// Moves the salmon's position by the specified offset
 	void move(vec2 off);
 
+	// Set salmon horizontal movement direction
+	void set_h_direction(Direction direction);
+
+	// Set salmon vertical movement direction
+	void set_v_direction(Direction direction);
+
 	// Set salmon rotation in radians
 	void set_rotation(float radians);
 
@@ -46,6 +52,8 @@ public:
 private:
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
 	bool m_is_alive; // True if the salmon is alive
+	Direction h_direction; // direction of horizontal movement
+	Direction v_direction; // direction of vertical movement
 	vec2 m_position; // Window coordinates
 	vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
 	float m_rotation; // in radians

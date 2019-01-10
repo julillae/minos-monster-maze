@@ -107,7 +107,18 @@ void Salmon::update(float ms)
 		// UPDATE SALMON POSITION HERE BASED ON KEY PRESSED (World::on_key())
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
+		if (v_direction == Direction::up) {
+			move({ 0.f, -step });
+		}
+		if (v_direction == Direction::down) {
+			move({ 0.f, step });
+		}
+		if (h_direction == Direction::right) {
+			move({ step, 0.f });
+		}
+		if (h_direction == Direction::left) {
+			move({ -step, 0.f });
+		}
 		
 	}
 	else
@@ -136,10 +147,11 @@ void Salmon::draw(const mat3& projection)
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// REMOVE THE FOLLOWING LINES BEFORE ADDING ANY TRANSFORMATION CODE
-	transform_translate({ 100.f, 100.f });
-	transform_scale(m_scale);
+	//transform_translate({ 100.f, 100.f });
+	//transform_scale(m_scale);
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+	transform_translate(m_position);
+	transform_scale(m_scale);
 
 	transform_end();
 
@@ -225,6 +237,16 @@ vec2 Salmon::get_position()const
 void Salmon::move(vec2 off)
 {
 	m_position.x += off.x; m_position.y += off.y;
+}
+
+void Salmon::set_h_direction(Direction direction)
+{
+	h_direction = direction;
+}
+
+void Salmon::set_v_direction(Direction direction)
+{
+	v_direction = direction;
 }
 
 void Salmon::set_rotation(float radians)
