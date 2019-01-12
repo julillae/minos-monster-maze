@@ -34,6 +34,9 @@ public:
 	// Change salmon movement direction
 	void set_direction(int key, int action);
 
+	// Rotate salmon to look at mouse
+	void look_at_mouse(double mX, double mY);
+
 	// Set salmon rotation in radians
 	void set_rotation(float radians);
 

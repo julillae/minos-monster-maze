@@ -155,6 +155,7 @@ void Salmon::draw(const mat3& projection)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	transform_translate(m_position);
 	transform_scale(m_scale);
+	transform_rotate(m_rotation);
 
 	transform_end();
 
@@ -268,6 +269,13 @@ void Salmon::set_direction(int key, int action)
 					h_direction = Direction::none; break;
 		}
 	}
+}
+
+void Salmon::look_at_mouse(double mX, double mY)
+{
+	double dy = m_position.y - mY;
+	double dx = mX - m_position.x;
+	set_rotation(atan2(dy, dx));
 }
 
 void Salmon::set_rotation(float radians)
