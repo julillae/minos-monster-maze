@@ -190,6 +190,10 @@ void Salmon::draw(const mat3& projection)
 
 	// !!! Salmon Color
 	float color[] = { 1.f, 1.f, 1.f };
+	if (!m_is_alive) {
+		color[1] = 0.f;
+		color[2] = 0.f;
+	}
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
@@ -197,6 +201,7 @@ void Salmon::draw(const mat3& projection)
 	// HERE TO SET THE CORRECTLY LIGHT UP THE SALMON IF HE HAS EATEN RECENTLY
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	int light_up = 0;
+	if (m_light_up_countdown_ms > 0) light_up = 1;
 	glUniform1iv(light_up_uloc, 1, &light_up);
 
 
