@@ -73,15 +73,24 @@ bool Salmon::init()
 		return false;
 	
 	// Setting initial values
+	max_left_limit = 120.f;
+	max_right_limit = 1200.f - 100.f;
+	max_top_limit = 70.f;
+	max_bottom_limit = 800.f - 60.f;
 	m_scale.x = -35.f;
 	m_scale.y = 35.f;
 	m_is_alive = true;
 	m_num_indices = indices.size();
 	h_direction = Direction::none;
 	v_direction = Direction::none;
-	m_position = { 50.f, 100.f };
+	//m_position = { 50.f, 100.f };
+	m_position = { max_left_limit, max_top_limit };
 	m_rotation = 0.f;
 	m_light_up_countdown_ms = -1.f;
+	bounce_down_countdown_ms = -1.f;
+	bounce_up_countdown_ms = -1.f;
+	bounce_left_countdown_ms = -1.f;
+	bounce_right_countdown_ms = -1.f;
 
 	return true;
 }
@@ -111,7 +120,6 @@ void Salmon::update(float ms)
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// UPDATE SALMON POSITION HERE BASED ON KEY PRESSED (World::on_key())
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 		switch (v_direction) {
 			case Direction::up: vstep = -step; break;
 			case Direction::down: vstep = step; break;
@@ -122,7 +130,40 @@ void Salmon::update(float ms)
 			case Direction::right: hstep = step; break;
 			default: hstep = 0.f; break;
 		}
+
+		float bounce_factor = 0.2f;
+		float bounce_countdown = 70.f;
+		if (advanced_mode) {
+			if (m_position.x <= max_left_limit)
+				bounce_right_countdown_ms = bounce_countdown;
+			if (m_position.x >= max_right_limit)
+				bounce_left_countdown_ms = bounce_countdown;
+			if (m_position.y <= max_top_limit)
+				bounce_down_countdown_ms = bounce_countdown;
+			if (m_position.y >= max_bottom_limit)
+				bounce_up_countdown_ms = bounce_countdown;
+
+
+			if (bounce_down_countdown_ms > 0.f)
+				vstep += bounce_down_countdown_ms * bounce_factor;
+			if (bounce_up_countdown_ms > 0.f)
+				vstep -= bounce_up_countdown_ms * bounce_factor;
+			if (bounce_left_countdown_ms > 0.f)
+				hstep -= bounce_left_countdown_ms * bounce_factor;
+			if (bounce_right_countdown_ms > 0.f)
+				hstep += bounce_right_countdown_ms * bounce_factor;
+		}
+
 		move({hstep, vstep});
+
+		if (bounce_down_countdown_ms > 0.f)
+			bounce_down_countdown_ms -= ms;
+		if (bounce_up_countdown_ms > 0.f)
+			bounce_up_countdown_ms -= ms;
+		if (bounce_left_countdown_ms > 0.f)
+			bounce_left_countdown_ms -= ms;
+		if (bounce_right_countdown_ms > 0.f)
+			bounce_right_countdown_ms -= ms;
 	}
 	else
 	{
@@ -303,4 +344,9 @@ void Salmon::kill()
 void Salmon::light_up()
 {
 	m_light_up_countdown_ms = 1500.f;
+}
+
+void Salmon::set_advanced_mode(bool toggle)
+{
+	advanced_mode = toggle;
 }

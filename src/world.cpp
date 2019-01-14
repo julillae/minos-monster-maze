@@ -376,6 +376,12 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	m_salmon.set_direction(key, action);
 
+	// Toggle between advanced mode and basic mode
+	if (action == GLFW_RELEASE && key == GLFW_KEY_A)
+		m_salmon.set_advanced_mode(true);
+	if (action == GLFW_RELEASE && key == GLFW_KEY_B)
+		m_salmon.set_advanced_mode(false);
+
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
 	{

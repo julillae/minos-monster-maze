@@ -49,7 +49,19 @@ public:
 	// Called when the salmon collides with a fish, starts lighting up the salmon
 	void light_up();
 
+	// Called when the user switches advanced_mode on and off
+	void set_advanced_mode(bool toggle);
+
 private:
+	bool advanced_mode; // toggle for "advanced" salmon behaviour (creative part of assignment)
+	float max_left_limit; // used for determining salmon swimming boundaries
+	float max_right_limit; // used for determining salmon swimming boundaries
+	float max_top_limit; // used for determining salmon swimming boundaries
+	float max_bottom_limit; // used for determining salmon swimming boundaries
+	float bounce_down_countdown_ms; // used for boundary bounce mechanic
+	float bounce_up_countdown_ms; // used for boundary bounce mechanic
+	float bounce_left_countdown_ms; // used for boundary bounce mechanic
+	float bounce_right_countdown_ms; // used for boundary bounce mechanic
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
 	bool m_is_alive; // True if the salmon is alive
 	Direction h_direction; // direction of horizontal movement
