@@ -40,6 +40,13 @@ set(SOURCE_FILES
 	src/world.cpp
     src/character.cpp
     src/enemy.cpp
+    src/smart.cpp
+    src/simple.cpp
+    src/mazeComponent.cpp
+    src/fixedComponent.cpp
+    src/freeComponent.cpp
+    src/gameAI.cpp
+    src/physics.cpp
 
     src/project_path.hpp
 	src/common.hpp
@@ -50,6 +57,13 @@ set(SOURCE_FILES
 	src/world.hpp
     src/character.hpp
     src/enemy.hpp
+    src/smart.hpp
+    src/simple.hpp
+    src/mazeComponent.hpp
+    src/fixedComponent.hpp
+    src/freeComponent.hpp
+    src/gameAI.hpp
+    src/physics.hpp
 	)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
