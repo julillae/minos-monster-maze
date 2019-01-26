@@ -1,11 +1,12 @@
 #pragma once
 
 #include "common.hpp"
+#include "character.hpp"
 
 class Turtle;
 class Fish;
 
-class Salmon : public Renderable
+class Salmon : public Character
 {
 public:
 	// Creates all the associated render resources and default transform
@@ -63,11 +64,11 @@ private:
 	float bounce_left_countdown_ms; // used for boundary bounce mechanic
 	float bounce_right_countdown_ms; // used for boundary bounce mechanic
 	float m_light_up_countdown_ms; // Used to keep track for how long the salmon should be lit up
-	bool m_is_alive; // True if the salmon is alive
-	Direction h_direction; // direction of horizontal movement
-	Direction v_direction; // direction of vertical movement
-	vec2 m_position; // Window coordinates
-	vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
-	float m_rotation; // in radians
-	size_t m_num_indices; // passed to glDrawElements
+	//bool m_is_alive; // True if the salmon is alive
+	//Direction h_direction; // direction of horizontal movement
+	//Direction v_direction; // direction of vertical movement
+	//vec2 m_position; // Window coordinates
+	//vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
+	//float m_rotation; // in radians
+	//size_t m_num_indices; // passed to glDrawElements
 };

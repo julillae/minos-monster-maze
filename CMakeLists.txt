@@ -46,6 +46,7 @@ set(SOURCE_FILES
 	src/turtle.hpp
 	src/water.hpp
 	src/world.hpp
+    src/character.hpp
 	)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
