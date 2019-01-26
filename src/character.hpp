@@ -7,14 +7,14 @@ class Character : public Renderable
 {
 public:
 	// Creates all the associated render resources and default transform
-	bool init();
+	virtual bool init() = 0;
 
 	// Releases all associated resources
 	void destroy();
 
 	// Update character position
 	// ms represents the number of milliseconds elapsed from the previous update() call
-	void update(float ms);
+	virtual void update(float ms) = 0;
 
 	// Renders the character
 	void draw(const mat3& projection) = 0;

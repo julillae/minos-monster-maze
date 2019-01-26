@@ -123,11 +123,6 @@ void Fish::draw(const mat3& projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void Fish::set_position(vec2 position)
-{
-	m_position = position;
-}
-
 // Returns the local bounding coordinates scaled by the current size of the fish 
 vec2 Fish::get_bounding_box()const
 {

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "common.hpp"
-#include "character.hpp"
+#include "enemy.hpp"
 
 // Salmon food
-class Fish : public Character
+class Fish : public Enemy
 {
 	// Shared between all fish, no need to load one for each instance
 	static Texture fish_texture;
@@ -20,9 +20,6 @@ public:
 	// Renders the fish
 	// projection is the 2D orthographic projection matrix
 	void draw(const mat3& projection)override;
-	
-	// Sets the new fish position
-	void set_position(vec2 position);
 
 	// Returns the fish' bounding box for collision detection, called by collides_with()
 	vec2 get_bounding_box()const;
