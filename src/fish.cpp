@@ -65,19 +65,6 @@ bool Fish::init()
 	return true;
 }
 
-// Call if init() was successful
-// Releases all graphics resources
-void Fish::destroy()
-{
-	glDeleteBuffers(1, &mesh.vbo);
-	glDeleteBuffers(1, &mesh.ibo);
-	glDeleteBuffers(1, &mesh.vao);
-
-	glDeleteShader(effect.vertex);
-	glDeleteShader(effect.fragment);
-	glDeleteShader(effect.program);
-}
-
 void Fish::update(float ms)
 {
 	// Move fish along -X based on how much time has passed, this is to (partially) avoid
@@ -134,11 +121,6 @@ void Fish::draw(const mat3& projection)
 
 	// Drawing!
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
-
-vec2 Fish::get_position()const
-{
-	return m_position;
 }
 
 void Fish::set_position(vec2 position)

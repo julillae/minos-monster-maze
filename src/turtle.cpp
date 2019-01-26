@@ -65,19 +65,6 @@ bool Turtle::init()
 	return true;
 }
 
-// Call if init() was successful
-// Releases all graphics resources
-void Turtle::destroy()
-{
-	glDeleteBuffers(1, &mesh.vbo);
-	glDeleteBuffers(1, &mesh.ibo);
-	glDeleteBuffers(1, &mesh.vao);
-
-	glDeleteShader(effect.vertex);
-	glDeleteShader(effect.fragment);
-	glDeleteShader(effect.program);
-}
-
 void Turtle::update(float ms)
 {
 	// Move fish along -X based on how much time has passed, this is to (partially) avoid
@@ -134,11 +121,6 @@ void Turtle::draw(const mat3& projection)
 
 	// Drawing!
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-}
-
-vec2 Turtle::get_position()const
-{
-	return m_position;
 }
 
 void Turtle::set_position(vec2 position)

@@ -96,18 +96,6 @@ bool Salmon::init()
 	return true;
 }
 
-// Releases all graphics resources
-void Salmon::destroy()
-{
-	glDeleteBuffers(1, &mesh.vbo);
-	glDeleteBuffers(1, &mesh.ibo);
-	glDeleteBuffers(1, &mesh.vao);
-
-	glDeleteShader(effect.vertex);
-	glDeleteShader(effect.fragment);
-	glDeleteShader(effect.program);
-}
-
 // Called on each frame by World::update()
 void Salmon::update(float ms)
 {
@@ -278,11 +266,6 @@ bool Salmon::collides_with(const Fish& fish)
 	if (d_sq < r * r)
 		return true;
 	return false;
-}
-
-vec2 Salmon::get_position()const
-{
-	return m_position;
 }
 
 void Salmon::move(vec2 off)

@@ -38,6 +38,7 @@ set(SOURCE_FILES
 	src/turtle.cpp
 	src/water.cpp
 	src/world.cpp
+    src/character.cpp
 
     src/project_path.hpp
 	src/common.hpp
