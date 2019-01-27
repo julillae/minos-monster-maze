@@ -1,16 +1,16 @@
 // Header
-#include "headerFiles/characters/fish.hpp"
+#include "../include/characters/turtle.hpp"
 
 #include <cmath>
 
-Texture Fish::fish_texture;
+Texture Turtle::turtle_texture;
 
-bool Fish::init()
+bool Turtle::init()
 {
 	// Load shared texture
-	if (!fish_texture.is_valid())
+	if (!turtle_texture.is_valid())
 	{
-		if (!fish_texture.load_from_file(textures_path("fish.png")))
+		if (!turtle_texture.load_from_file(textures_path("turtle.png")))
 		{
 			fprintf(stderr, "Failed to load turtle texture!");
 			return false;
@@ -18,17 +18,17 @@ bool Fish::init()
 	}
 
 	// The position corresponds to the center of the texture
-	float wr = fish_texture.width * 0.5f;
-	float hr = fish_texture.height * 0.5f;
+	float wr = turtle_texture.width * 0.5f;
+	float hr = turtle_texture.height * 0.5f;
 
 	TexturedVertex vertices[4];
-	vertices[0].position = { -wr, +hr, -0.01f };
+	vertices[0].position = { -wr, +hr, -0.02f };
 	vertices[0].texcoord = { 0.f, 1.f };
-	vertices[1].position = { +wr, +hr, -0.01f };
-	vertices[1].texcoord = { 1.f, 1.f,  };
-	vertices[2].position = { +wr, -hr, -0.01f };
+	vertices[1].position = { +wr, +hr, -0.02f };
+	vertices[1].texcoord = { 1.f, 1.f };
+	vertices[2].position = { +wr, -hr, -0.02f };
 	vertices[2].texcoord = { 1.f, 0.f };
-	vertices[3].position = { -wr, -hr, -0.01f };
+	vertices[3].position = { -wr, -hr, -0.02f };
 	vertices[3].texcoord = { 0.f, 0.f };
 
 	// counterclockwise as it's the default opengl front winding direction
@@ -36,7 +36,7 @@ bool Fish::init()
 
 	// Clearing errors
 	gl_flush_errors();
-
+	
 	// Vertex Buffer creation
 	glGenBuffers(1, &mesh.vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
@@ -65,16 +65,16 @@ bool Fish::init()
 	return true;
 }
 
-void Fish::update(float ms)
+void Turtle::update(float ms)
 {
 	// Move fish along -X based on how much time has passed, this is to (partially) avoid
 	// having entities move at different speed based on the machine.
-	const float FISH_SPEED = 380.f;
-	float step = -FISH_SPEED * (ms / 1000);
+	const float TURTLE_SPEED = 200.f;
+	float step = -TURTLE_SPEED * (ms / 1000);
 	m_position.x += step;
 }
 
-void Fish::draw(const mat3& projection)
+void Turtle::draw(const mat3& projection)
 {
 	// Transformation code, see Rendering and Transformation in the template specification for more info
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
@@ -111,7 +111,7 @@ void Fish::draw(const mat3& projection)
 
 	// Enabling and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, fish_texture.id);
+	glBindTexture(GL_TEXTURE_2D, turtle_texture.id);
 
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
@@ -123,9 +123,9 @@ void Fish::draw(const mat3& projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-// Returns the local bounding coordinates scaled by the current size of the fish 
-vec2 Fish::get_bounding_box()const
+// Returns the local bounding coordinates scaled by the current size of the turtle 
+vec2 Turtle::get_bounding_box()const
 {
 	// fabs is to avoid negative scale due to the facing direction
-	return { std::fabs(m_scale.x) * fish_texture.width, std::fabs(m_scale.y) * fish_texture.height };
+	return { std::fabs(m_scale.x) * turtle_texture.width, std::fabs(m_scale.y) * turtle_texture.height };
 }

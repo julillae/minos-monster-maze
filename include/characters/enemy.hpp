@@ -1,6 +1,5 @@
 #pragma once
 
-#include "headerFiles/common.hpp"
 #include "character.hpp"
 
 // Generic Enemy Class

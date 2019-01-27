@@ -1,4 +1,4 @@
-#include "headerFiles/common.hpp"
+#include "../include/common.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../ext/stb_image/stb_image.h"

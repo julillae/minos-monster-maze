@@ -1,4 +1,4 @@
-#include "headerFiles/characters/enemy.hpp"
+#include "../include/characters/enemy.hpp"
 
 // Put implementations specific to Enemies (not applicable to Player)
 // but common across both simple and complex enemies here

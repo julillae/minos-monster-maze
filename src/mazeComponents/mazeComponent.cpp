@@ -1,3 +1,3 @@
-#include "headerFiles/mazeComponents/mazeComponent.hpp"
+#include "../include/mazeComponents/mazeComponent.hpp"
 
 // Put implementation common to all mazeComponents here

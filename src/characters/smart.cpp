@@ -1,3 +1,3 @@
-#include "headerFiles/characters/smart.hpp"
+#include "../include/characters/smart.hpp"
 
 // Put shared implementation for smart enemies here

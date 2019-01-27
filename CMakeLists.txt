@@ -25,45 +25,45 @@ endif()
 # Create executable target
 
 # Generate the shader folder location to the header
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/project_path.hpp.in" "${CMAKE_CURRENT_SOURCE_DIR}/include/project_path.hpp")
 
 # You can switch to use the file GLOB for simplicity but at your own risk
 # file(GLOB SOURCE_FILES src/*.cpp src/*.hpp)
 
 set(SOURCE_FILES
-	src/sourceFiles/a1.cpp
-	src/sourceFiles/common.cpp
-	src/sourceFiles/characters/fish.cpp
-	src/sourceFiles/characters/salmon.cpp
-	src/sourceFiles/characters/turtle.cpp
-	src/sourceFiles/water.cpp
-	src/sourceFiles/world.cpp
-    src/sourceFiles/characters/character.cpp
-    src/sourceFiles/characters/enemy.cpp
-    src/sourceFiles/characters/smart.cpp
-    src/sourceFiles/characters/simple.cpp
-    src/sourceFiles/mazeComponents/mazeComponent.cpp
-    src/sourceFiles/mazeComponents/fixedComponent.cpp
-    src/sourceFiles/mazeComponents/freeComponent.cpp
-    src/sourceFiles/gameAI.cpp
-    src/sourceFiles/physics.cpp
+	src/a1.cpp
+	src/common.cpp
+	src/characters/fish.cpp
+	src/characters/salmon.cpp
+	src/characters/turtle.cpp
+	src/water.cpp
+	src/world.cpp
+    src/characters/character.cpp
+    src/characters/enemy.cpp
+    src/characters/smart.cpp
+    src/characters/simple.cpp
+    src/mazeComponents/mazeComponent.cpp
+    src/mazeComponents/fixedComponent.cpp
+    src/mazeComponents/freeComponent.cpp
+    src/gameAI.cpp
+    src/physics.cpp
 
-    src/project_path.hpp
-	src/headerFiles/common.hpp
-	src/headerFiles/characters/fish.hpp
-	src/headerFiles/characters/salmon.hpp
-	src/headerFiles/characters/turtle.hpp
-	src/headerFiles/water.hpp
-	src/headerFiles/world.hpp
-    src/headerFiles/characters/character.hpp
-    src/headerFiles/characters/enemy.hpp
-    src/headerFiles/characters/smart.hpp
-    src/headerFiles/characters/simple.hpp
-    src/headerFiles/mazeComponents/mazeComponent.hpp
-    src/headerFiles/mazeComponents/fixedComponent.hpp
-    src/headerFiles/mazeComponents/freeComponent.hpp
-    src/headerFiles/gameAI.hpp
-    src/headerFiles/physics.hpp
+    include/project_path.hpp
+	include/common.hpp
+	include/characters/fish.hpp
+	include/characters/salmon.hpp
+	include/characters/turtle.hpp
+	include/water.hpp
+	include/world.hpp
+    include/characters/character.hpp
+    include/characters/enemy.hpp
+    include/characters/smart.hpp
+    include/characters/simple.hpp
+    include/mazeComponents/mazeComponent.hpp
+    include/mazeComponents/fixedComponent.hpp
+    include/mazeComponents/freeComponent.hpp
+    include/gameAI.hpp
+    include/physics.hpp
 	)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

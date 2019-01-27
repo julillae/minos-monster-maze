@@ -1,9 +1,9 @@
 // Header
-#include "headerFiles/characters/salmon.hpp"
+#include "../include/characters/salmon.hpp"
 
 // internal
-#include "headerFiles/characters/turtle.hpp"
-#include "headerFiles/characters/fish.hpp"
+#include "../include/characters/turtle.hpp"
+#include "../include/characters/fish.hpp"
 
 // stlib
 #include <vector>

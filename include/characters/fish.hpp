@@ -1,6 +1,5 @@
 #pragma once
 
-#include "headerFiles/common.hpp"
 #include "enemy.hpp"
 
 // Salmon food

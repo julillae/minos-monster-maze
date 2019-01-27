@@ -1,5 +1,5 @@
 // Header
-#include "headerFiles/characters/character.hpp"
+#include "../include/characters/character.hpp"
 
 // Call if init() was successful
 // Releases all graphics resources

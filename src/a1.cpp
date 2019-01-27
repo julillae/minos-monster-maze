@@ -1,6 +1,6 @@
 // internal
-#include "headerFiles/common.hpp"
-#include "headerFiles/world.hpp"
+#include "../include/common.hpp"
+#include "../include/world.hpp"
 
 #define GL3W_IMPLEMENTATION
 #include <gl3w.h>
