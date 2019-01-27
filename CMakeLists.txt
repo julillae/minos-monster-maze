@@ -31,39 +31,39 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/project_path.hpp.in" "${CMAKE_CU
 # file(GLOB SOURCE_FILES src/*.cpp src/*.hpp)
 
 set(SOURCE_FILES
-	src/a1.cpp
-	src/common.cpp
-	src/fish.cpp
-	src/salmon.cpp
-	src/turtle.cpp
-	src/water.cpp
-	src/world.cpp
-    src/character.cpp
-    src/enemy.cpp
-    src/smart.cpp
-    src/simple.cpp
-    src/mazeComponent.cpp
-    src/fixedComponent.cpp
-    src/freeComponent.cpp
-    src/gameAI.cpp
-    src/physics.cpp
+	src/sourceFiles/a1.cpp
+	src/sourceFiles/common.cpp
+	src/sourceFiles/characters/fish.cpp
+	src/sourceFiles/characters/salmon.cpp
+	src/sourceFiles/characters/turtle.cpp
+	src/sourceFiles/water.cpp
+	src/sourceFiles/world.cpp
+    src/sourceFiles/characters/character.cpp
+    src/sourceFiles/characters/enemy.cpp
+    src/sourceFiles/characters/smart.cpp
+    src/sourceFiles/characters/simple.cpp
+    src/sourceFiles/mazeComponents/mazeComponent.cpp
+    src/sourceFiles/mazeComponents/fixedComponent.cpp
+    src/sourceFiles/mazeComponents/freeComponent.cpp
+    src/sourceFiles/gameAI.cpp
+    src/sourceFiles/physics.cpp
 
     src/project_path.hpp
-	src/common.hpp
-	src/fish.hpp
-	src/salmon.hpp
-	src/turtle.hpp
-	src/water.hpp
-	src/world.hpp
-    src/character.hpp
-    src/enemy.hpp
-    src/smart.hpp
-    src/simple.hpp
-    src/mazeComponent.hpp
-    src/fixedComponent.hpp
-    src/freeComponent.hpp
-    src/gameAI.hpp
-    src/physics.hpp
+	src/headerFiles/common.hpp
+	src/headerFiles/characters/fish.hpp
+	src/headerFiles/characters/salmon.hpp
+	src/headerFiles/characters/turtle.hpp
+	src/headerFiles/water.hpp
+	src/headerFiles/world.hpp
+    src/headerFiles/characters/character.hpp
+    src/headerFiles/characters/enemy.hpp
+    src/headerFiles/characters/smart.hpp
+    src/headerFiles/characters/simple.hpp
+    src/headerFiles/mazeComponents/mazeComponent.hpp
+    src/headerFiles/mazeComponents/fixedComponent.hpp
+    src/headerFiles/mazeComponents/freeComponent.hpp
+    src/headerFiles/gameAI.hpp
+    src/headerFiles/physics.hpp
 	)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

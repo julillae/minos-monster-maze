@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.hpp"
+#include "headerFiles/common.hpp"
 #include "mazeComponent.hpp"
 
 // subclass of mazeComponent for all objects affected by gravity

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.hpp"
+#include "headerFiles/common.hpp"
 
 class MazeComponent : public Renderable
 {
