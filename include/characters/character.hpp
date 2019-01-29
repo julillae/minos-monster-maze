@@ -24,7 +24,13 @@ public:
 
 	// Returns the current character position
 	vec2 get_position()const;
-	
+
+	// Returns the bounding box of the character
+	vec2 get_bounding_box()const;
+
+	// Moves the character's position by the specified offset
+	void move(vec2 off);
+
 	// Change character movement direction
 	void set_direction(int key, int action);
 	
@@ -37,12 +43,14 @@ public:
 	// Kills the character, changing its alive state and triggering on death events
 	void kill();
 
+    vec2 m_position;
+// Window coordinates
+vec2 m_scale;
 protected:
 	bool m_is_alive; // True if the character is alive
 	Direction h_direction; // direction of horizontal movement
 	Direction v_direction; // direction of vertical movement
-	vec2 m_position; // Window coordinates
-	vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
+    // 1.f in each dimension. 1.f is as big as the associated texture
 	float m_rotation; // in radians
 	size_t m_num_indices; // passed to glDrawElements
 };
