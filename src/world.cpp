@@ -1,5 +1,6 @@
 // Header
 #include "../include/world.hpp"
+#include "../include/physics.hpp"
 
 // stlib
 #include <string.h>
@@ -153,10 +154,12 @@ bool World::update(float elapsed_ms)
         glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = { (float)w, (float)h };
 
+	Physics *physicsHandler = new Physics();
+
 	// Checking Salmon - Turtle collisions
 	for (const auto& turtle : m_turtles)
 	{
-		if (m_salmon.collides_with(turtle))
+		if (physicsHandler->collisionWithTurtle(&m_salmon, &turtle))
 		{
 			if (m_salmon.is_alive()) {
 				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
@@ -171,7 +174,7 @@ bool World::update(float elapsed_ms)
 	auto fish_it = m_fish.begin();
 	while (fish_it != m_fish.end())
 	{
-		if (m_salmon.is_alive() && m_salmon.collides_with(*fish_it))
+		if (m_salmon.is_alive() && physicsHandler->collisionWithFish(&m_salmon, &(*fish_it)))
 		{
 			fish_it = m_fish.erase(fish_it);
 			m_salmon.light_up();
