@@ -286,5 +286,5 @@ __pycache__/
 # Cake - Uncomment if you are using it
 # tools/
 
-# Ignore project path 
+# Ignore project path
 **/project_path.hpp

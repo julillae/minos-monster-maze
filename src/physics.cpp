@@ -20,10 +20,17 @@ bool Physics::collisionWithEnemy (Player *c, const Turtle *t) {
     return false;
 }
 
-bool Physics::collisionWithWalls (Player *c, MazeComponent *m) {
-    // TODO
-
-    return true;
+bool Physics::collisionWithFixedWalls(Player *p, FixedComponent *m) {
+    float dx = p->get_position().x - m->get_position().x;
+    float dy = p->get_position().y - m->get_position().y;
+    float d_sq = dx * dx + dy * dy;
+    float other_r = std::max(m->get_bounding_box().x, m->get_bounding_box().y);
+    float my_r = std::max(p->get_scale().x, p->get_scale().y);
+    float r = std::max(other_r, my_r);
+    r *= 0.6f;
+    if (d_sq < r * r)
+        return true;
+    return false;
 }
 
 

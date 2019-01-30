@@ -2,7 +2,8 @@
 
 #include "../include/characters/enemy.hpp"
 #include "../include/characters/player.hpp"
-#include "../include/mazeComponents/mazeComponent.hpp"
+#include "../include/mazeComponents/fixedComponent.hpp"
+#include "../include/mazeComponents/freeComponent.hpp"
 #include "../include/characters/salmon.hpp"
 #include "../include/characters/fish.hpp"
 #include "../include/characters/turtle.hpp"
@@ -14,7 +15,9 @@ public:
 
     ~Physics();
 
-    bool collisionWithWalls(Player *p, MazeComponent *m);
+    bool collisionWithFixedWalls(Player *p, FixedComponent *m);
+
+    bool collisionwithMovingWalls(Player *p, FreeComponent *m);
 
     bool collisionWithEnemy(Player *p, const Turtle *t);
 

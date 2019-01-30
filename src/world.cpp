@@ -199,6 +199,8 @@ bool World::update(float elapsed_ms)
 			break;
 		}
 	}
+
+	// TODO: Check for Player-Platform Collisions
 	
 	// Updating all entities, making the turtle and fish
 	// faster based on current
