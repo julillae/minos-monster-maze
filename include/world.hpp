@@ -6,6 +6,10 @@
 #include "characters/salmon.hpp"
 #include "characters/turtle.hpp"
 #include "characters/fish.hpp"
+#include "mazeComponents/mazeComponent.hpp"
+#include "mazeComponents/fixedComponent.hpp"
+#include "mazeComponents/floor.hpp"
+#include "mazeComponents/ice.hpp"
 #include "water.hpp"
 
 // stlib
@@ -46,6 +50,11 @@ private:
 	// Generates a new fish
 	bool spawn_fish();
 
+	// Generates a new floor
+	bool spawn_floor();
+
+	bool spawn_ice();
+
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
@@ -70,10 +79,14 @@ private:
 	Player m_player;
 	std::vector<Turtle> m_turtles;
 	std::vector<Fish> m_fish;
+	std::vector<MazeComponent> m_floor;
+	std::vector<MazeComponent> m_ice;
 
 	float m_current_speed;
 	float m_next_turtle_spawn;
 	float m_next_fish_spawn;
+	float m_next_floor_spawn;
+	float m_next_ice_spawn;
 	
 	Mix_Music* m_background_music;
 	Mix_Chunk* m_salmon_dead_sound;

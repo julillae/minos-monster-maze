@@ -5,18 +5,23 @@
 class MazeComponent : public Renderable
 {
 public:
+	// Shared between all maze components, no need to load one for each instance
+	Texture texture;
+
 	// Creates all the associated render resources and default transform
-	virtual bool init() = 0;
+	bool init();
 
 	// Releases all associated resources
 	void destroy();
 
-	// Update component position
-	// ms represents the number of milliseconds elapsed from the previous update() call
-	virtual void update(float ms) = 0;
-
 	// Renders the component
-	void draw(const mat3& projection) = 0;
+	void draw(const mat3& projection)override;
+
+	// Returns the bounding box for collision detection, called by collides_with()
+	vec2 get_bounding_box()const;
+
+	// Sets the new position
+	void set_position(vec2 position);
 
 	// Set component rotation in radians
 	void set_rotation(float radians);

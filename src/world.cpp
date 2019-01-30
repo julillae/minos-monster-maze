@@ -26,7 +26,9 @@ namespace
 World::World() : 
 	m_points(0),
 	m_next_turtle_spawn(0.f),
-	m_next_fish_spawn(0.f)
+	m_next_fish_spawn(0.f),
+	m_next_floor_spawn(0.f),
+	m_next_ice_spawn(0.f)
 {
 	// Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -237,16 +239,47 @@ bool World::update(float elapsed_ms)
 	}
 
 	// Spawning new fish
-	m_next_fish_spawn -= elapsed_ms * m_current_speed;
-	if (m_fish.size() <= MAX_FISH && m_next_fish_spawn < 0.f)
+	// m_next_fish_spawn -= elapsed_ms * m_current_speed;
+	// if (m_fish.size() <= MAX_FISH && m_next_fish_spawn < 0.f)
+	// {
+	// 	if (!spawn_fish())
+	// 		return false;
+	// 	Fish& new_fish = m_fish.back();
+
+	// 	new_fish.set_position({ screen.x + 150, 50 + m_dist(m_rng) *  (screen.y - 100) });
+
+	// 	m_next_fish_spawn = (FISH_DELAY_MS / 2) + m_dist(m_rng) * (FISH_DELAY_MS / 2);
+	// }
+
+	m_next_floor_spawn -= elapsed_ms * m_current_speed;
+	if (m_floor.size() <= MAX_TURTLES && m_next_floor_spawn < 0.f)
 	{
-		if (!spawn_fish())
+		if (!spawn_floor())
 			return false;
-		Fish& new_fish = m_fish.back();
 
-		new_fish.set_position({ screen.x + 150, 50 + m_dist(m_rng) *  (screen.y - 100) });
+		MazeComponent& new_floor = m_floor.back();	
 
-		m_next_fish_spawn = (FISH_DELAY_MS / 2) + m_dist(m_rng) * (FISH_DELAY_MS / 2);
+		// Setting random initial position
+		new_floor.set_position({ screen.x - 150, 50 + m_dist(m_rng) * (screen.y - 100) });
+
+		// Next spawn
+		m_next_floor_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS/2);
+	}
+
+
+	m_next_ice_spawn -= elapsed_ms * m_current_speed;
+	if (m_ice.size() <= MAX_TURTLES && m_next_ice_spawn < 0.f)
+	{
+		if (!spawn_ice())
+			return false;
+
+		MazeComponent& new_ice = m_ice.back();	
+
+		// Setting random initial position
+		new_ice.set_position({ screen.x - 200, 50 + m_dist(m_rng) * (screen.y - 100) });
+
+		// Next spawn
+		m_next_ice_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS/2);
 	}
 
 	// If salmon is dead, restart the game after the fading animation
@@ -311,6 +344,10 @@ void World::draw()
 		turtle.draw(projection_2D);
 	for (auto& fish : m_fish)
 		fish.draw(projection_2D);
+	for (auto& floor : m_floor)
+		floor.draw(projection_2D);	
+	for (auto& ice : m_ice)
+		ice.draw(projection_2D);
 	m_salmon.draw(projection_2D);
 	m_player.draw(projection_2D);
 
@@ -365,6 +402,30 @@ bool World::spawn_fish()
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn fish");
+	return false;
+}
+
+bool World::spawn_floor()
+{
+	Floor floor;
+	if (floor.init())
+	{
+		m_floor.emplace_back(floor);
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn floor");
+	return false;
+}
+
+bool World::spawn_ice()
+{
+	Ice ice;
+	if (ice.init())
+	{
+		m_ice.emplace_back(ice);
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn ice");
 	return false;
 }
 
