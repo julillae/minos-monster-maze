@@ -2,6 +2,7 @@
 
 // internal
 #include "common.hpp"
+#include "characters/player.hpp"
 #include "characters/salmon.hpp"
 #include "characters/turtle.hpp"
 #include "characters/fish.hpp"
@@ -66,6 +67,7 @@ private:
 
 	// Game entities
 	Salmon m_salmon;
+	Player m_player;
 	std::vector<Turtle> m_turtles;
 	std::vector<Fish> m_fish;
 
