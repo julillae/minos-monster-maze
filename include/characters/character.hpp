@@ -25,8 +25,8 @@ public:
 	// Returns the current character position
 	vec2 get_position()const;
 
-	// Returns the bounding box of the character
-	vec2 get_bounding_box()const;
+	// Returns the current scale of the character
+	vec2 get_scale()const;
 
 	// Moves the character's position by the specified offset
 	void move(vec2 off);
@@ -43,10 +43,9 @@ public:
 	// Kills the character, changing its alive state and triggering on death events
 	void kill();
 
-    vec2 m_position;
-// Window coordinates
-vec2 m_scale;
 protected:
+	vec2 m_position;
+	vec2 m_scale;
 	bool m_is_alive; // True if the character is alive
 	Direction h_direction; // direction of horizontal movement
 	Direction v_direction; // direction of vertical movement
