@@ -121,7 +121,7 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 	
-	return m_salmon.init(initialPosition) && m_water.init() && m_player.init(initialPosition);
+	return m_salmon.init(initialPosition) && m_water.init() && m_player.init(initialPosition) && m_enemy.init();
 }
 
 // Releases all the associated resources
@@ -140,6 +140,7 @@ void World::destroy()
 
 	m_salmon.destroy();
 	m_player.destroy();
+	m_enemy.destroy();
 	for (auto& turtle : m_turtles)
 		turtle.destroy();
 	for (auto& fish : m_fish)
@@ -215,6 +216,7 @@ bool World::update(float elapsed_ms)
 	// faster based on current
 	m_salmon.update(elapsed_ms);
 	m_player.update(elapsed_ms);
+	m_enemy.update(elapsed_ms);
 	for (auto& turtle : m_turtles)
 		turtle.update(elapsed_ms * m_current_speed);
 	for (auto& fish : m_fish)
@@ -373,6 +375,7 @@ void World::draw()
 		floor.draw(projection_2D);	
 	m_salmon.draw(projection_2D);
 	m_player.draw(projection_2D);
+	m_enemy.draw(projection_2D);
 
 	/////////////////////
 	// Truely render to the screen
@@ -466,7 +469,13 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		m_salmon.destroy(); 
 		m_salmon.init(initialPosition);
 		m_player.destroy();
+<<<<<<< HEAD
 		m_player.init(initialPosition);
+=======
+		m_player.init();
+		m_enemy.destroy();
+		m_enemy.init();
+>>>>>>> fish-like enemy no movement
 		m_turtles.clear();
 		m_fish.clear();
 		m_water.reset_salmon_dead_time();
