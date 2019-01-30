@@ -39,6 +39,7 @@ set(SOURCE_FILES
 	src/water.cpp
 	src/world.cpp
     src/characters/character.cpp
+    src/characters/player.cpp
     src/characters/enemy.cpp
     src/characters/smart.cpp
     src/characters/simple.cpp
@@ -47,6 +48,7 @@ set(SOURCE_FILES
     src/mazeComponents/freeComponent.cpp
     src/gameAI.cpp
     src/physics.cpp
+    
 
     include/project_path.hpp
 	include/common.hpp
@@ -56,6 +58,7 @@ set(SOURCE_FILES
 	include/water.hpp
 	include/world.hpp
     include/characters/character.hpp
+    include/characters/player.hpp
     include/characters/enemy.hpp
     include/characters/smart.hpp
     include/characters/simple.hpp
@@ -64,6 +67,7 @@ set(SOURCE_FILES
     include/mazeComponents/freeComponent.hpp
     include/gameAI.hpp
     include/physics.hpp
+    
 	)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
