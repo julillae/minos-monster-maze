@@ -24,10 +24,7 @@ public:
 
 	// Returns the current character position
 	vec2 get_position()const;
-
-	// Moves the character's position by the specified offset
-	void move(vec2 off);
-
+	
 	// Change character movement direction
 	void set_direction(int key, int action);
 	

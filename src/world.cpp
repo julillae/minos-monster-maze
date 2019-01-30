@@ -119,7 +119,7 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 
-	return m_salmon.init() && m_water.init();
+	return m_salmon.init() && m_water.init() && m_player.init();
 }
 
 // Releases all the associated resources
@@ -137,6 +137,7 @@ void World::destroy()
 	Mix_CloseAudio();
 
 	m_salmon.destroy();
+	m_player.destroy();
 	for (auto& turtle : m_turtles)
 		turtle.destroy();
 	for (auto& fish : m_fish)
@@ -154,18 +155,18 @@ bool World::update(float elapsed_ms)
 	vec2 screen = { (float)w, (float)h };
 
 	// Checking Salmon - Turtle collisions
-	for (const auto& turtle : m_turtles)
-	{
-		if (m_salmon.collides_with(turtle))
-		{
-			if (m_salmon.is_alive()) {
-				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
-				m_water.set_salmon_dead();
-			}
-			m_salmon.kill();
-			break;
-		}
-	}
+	//for (const auto& turtle : m_turtles)
+	//{
+	//	if (m_salmon.collides_with(turtle))
+	//	{
+	//		if (m_salmon.is_alive()) {
+	//			Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+	//			m_water.set_salmon_dead();
+	//		}
+	//		m_salmon.kill();
+	//		break;
+	//	}
+	//}
 
 	// Checking Salmon - Fish collisions
 	auto fish_it = m_fish.begin();
@@ -185,6 +186,7 @@ bool World::update(float elapsed_ms)
 	// Updating all entities, making the turtle and fish
 	// faster based on current
 	m_salmon.update(elapsed_ms);
+	m_player.update(elapsed_ms);
 	for (auto& turtle : m_turtles)
 		turtle.update(elapsed_ms * m_current_speed);
 	for (auto& fish : m_fish)
@@ -310,6 +312,7 @@ void World::draw()
 	for (auto& fish : m_fish)
 		fish.draw(projection_2D);
 	m_salmon.draw(projection_2D);
+	m_player.draw(projection_2D);
 
 	/////////////////////
 	// Truely render to the screen
@@ -375,6 +378,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	m_salmon.set_direction(key, action);
+	m_player.set_direction(key, action);
 
 	// Toggle between advanced mode and basic mode
 	if (action == GLFW_RELEASE && key == GLFW_KEY_A)
@@ -389,6 +393,8 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		glfwGetWindowSize(m_window, &w, &h);
 		m_salmon.destroy(); 
 		m_salmon.init();
+		m_player.destroy();
+		m_player.init();
 		m_turtles.clear();
 		m_fish.clear();
 		m_water.reset_salmon_dead_time();
