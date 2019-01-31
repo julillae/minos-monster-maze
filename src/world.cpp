@@ -203,6 +203,14 @@ bool World::update(float elapsed_ms)
 
 	// TODO: Check for Player-Platform Collisions
 
+	for (const auto& floor: m_floor)
+	{
+		if (physicsHandler->collisionWithFixedWalls(&m_player, &floor).isCollided)
+		{
+			// do something
+		}
+	}
+
 	// Updating all entities, making the turtle and fish
 	// faster based on current
 	m_salmon.update(elapsed_ms);

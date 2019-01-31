@@ -2,8 +2,7 @@
 
 #include "../include/characters/enemy.hpp"
 #include "../include/characters/player.hpp"
-#include "../include/mazeComponents/fixedComponent.hpp"
-#include "../include/mazeComponents/freeComponent.hpp"
+#include "../include/mazeComponents/floor.hpp"
 #include "../include/characters/turtle.hpp"
 
 class Physics
@@ -20,7 +19,7 @@ public:
         float angleOfCollision;
     };
 
-    CollisionNode collisionWithFixedWalls(Player *p, const FixedComponent *m);
+    CollisionNode collisionWithFixedWalls(Player *p, const Floor *m);
 
     CollisionNode collideWithEnemy(Player *p, const Turtle *t);
 

@@ -37,7 +37,7 @@ Physics::CollisionNode Physics::collideWithEnemy (Player *c, const Turtle *t) {
     return collisionNode;
 }
 
-Physics::CollisionNode Physics::collisionWithFixedWalls(Player *p, const FixedComponent *f) {
+Physics::CollisionNode Physics::collisionWithFixedWalls(Player *p, const Floor *f) {
     float d_sq = lineIntersection(p->get_position().x, f->get_position().x, p->get_position().y, f->get_position().y);
     float r = boundingBox(f->get_bounding_box().x, f->get_bounding_box().y, p->get_scale().x, p->get_scale().y);
 
