@@ -11,7 +11,7 @@ class Player : public Character
 {
 public:
 	// Creates all the associated render resources and default transform
-	bool init();
+	bool init(vec2 initialPosition);
 	
 	// Update player position based on velocity vector
 	// ms represents the number of milliseconds elapsed from the previous update() call

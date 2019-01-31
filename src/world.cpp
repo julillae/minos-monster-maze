@@ -118,8 +118,8 @@ bool World::init(vec2 screen)
 	fprintf(stderr, "Loaded music\n");
 
 	m_current_speed = 1.f;
-
-	return m_salmon.init() && m_water.init() && m_player.init();
+	
+	return m_salmon.init(initialPosition) && m_water.init() && m_player.init(initialPosition);
 }
 
 // Releases all the associated resources
@@ -255,7 +255,7 @@ bool World::update(float elapsed_ms)
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
 		m_salmon.destroy();
-		m_salmon.init();
+		//m_salmon.init();
 		m_turtles.clear();
 		m_fish.clear();
 		m_water.reset_salmon_dead_time();
@@ -346,7 +346,7 @@ bool World::is_over()const
 bool World::spawn_turtle()
 {
 	Turtle turtle;
-	if (turtle.init())
+	if (turtle.init({ 0, 0 }))
 	{
 		m_turtles.emplace_back(turtle);
 		return true;
@@ -359,7 +359,7 @@ bool World::spawn_turtle()
 bool World::spawn_fish()
 {
 	Fish fish;
-	if (fish.init())
+	if (fish.init({ 0,0 }))
 	{
 		m_fish.emplace_back(fish);
 		return true;
@@ -392,9 +392,9 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
 		m_salmon.destroy(); 
-		m_salmon.init();
+		m_salmon.init(initialPosition);
 		m_player.destroy();
-		m_player.init();
+		m_player.init(initialPosition);
 		m_turtles.clear();
 		m_fish.clear();
 		m_water.reset_salmon_dead_time();
