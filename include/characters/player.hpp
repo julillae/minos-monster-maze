@@ -28,7 +28,7 @@ public:
 	void set_acceleration(vec2 acc);
 
 	// Update player's velocity based on acceleration
-	void update_velocity(double jumpVel);
+	void update_velocity();
 
 	// Moves the player's position by the specified offset
 	void move();
@@ -49,13 +49,12 @@ public:
 private:
 	double tolerance = 0.000001;
 	double maxVelocity = 12;
-	double accStep = 0.6f;
-	double maxAcceleration = 4;
-	double drag = 0.95;
+	double accStep = 2.f;
+	double drag = 0.9;
 	vec2 currentVelocity;
 	vec2 currentAcceleration;
 	bool onPlatform;
 	double fakeFloorPos = 500.f;
 	double gravityAcc = 9.81 * 0.2;
-	double jumpVel = -40.f;
+	double jumpVel = -30.f;
 };

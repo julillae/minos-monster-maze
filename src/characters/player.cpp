@@ -78,7 +78,6 @@ bool Player::init(vec2 initialPosition)
 	m_num_indices = indices.size();
 	h_direction = Direction::none;
 	v_direction = Direction::none;
-	//m_position = { 150.f, 200.f };
 	m_position = initialPosition;
 	m_rotation = 0.f;
 	currentVelocity = {0.0, 0.0};
@@ -99,30 +98,16 @@ void Player::update(float ms)
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// UPDATE PLAYER POSITION HERE BASED ON KEY PRESSED (World::on_key())
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		onPlatform = (m_position.y >= fakeFloorPos - tolerance);
-		double jVel = 0.f;
-		if (v_direction == Direction::up && onPlatform) jVel = jumpVel;
-		//switch (v_direction) {
-			//case Direction::up: 
-				//if (onPlatform) jVel = jumpVel;
-				//vAcc = -accStep; break;
-			//case Direction::down: vAcc = accStep; break;
-			//default: vAcc = 0.f; break;
-		//}
+
 		switch (h_direction) {
 			case Direction::left: hAcc = -accStep; break;
 			case Direction::right: hAcc = accStep; break;
 			default: hAcc = 0.f; break;
 		}
-		//if (vAcc > maxAcceleration) vAcc = maxAcceleration;
-		//if (vAcc < -maxAcceleration) vAcc = -maxAcceleration;
 		vAcc = gravityAcc;
-		if (hAcc > maxAcceleration) hAcc = maxAcceleration;
-		if (hAcc < -maxAcceleration) hAcc = -maxAcceleration;
 
 		set_acceleration({ hAcc, vAcc });
-
-		update_velocity(jVel);
+		update_velocity();
 		move();
 
 	}
@@ -174,7 +159,7 @@ void Player::draw(const mat3& projection)
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
 
-	// !!! Salmon Color
+	// !!! Player Color
 	float color[] = { 1.f, 0.f, 0.0f };
 	if (!m_is_alive) {
 		color[1] = 0.f;
@@ -195,10 +180,10 @@ void Player::set_acceleration(vec2 acc)
 	currentAcceleration.x = acc.x; currentAcceleration.y = acc.y;
 }
 
-void Player::update_velocity(double jumpVel)
+void Player::update_velocity()
 {
 	currentVelocity.x += currentAcceleration.x;
-	currentVelocity.y += currentAcceleration.y + jumpVel;
+	currentVelocity.y += currentAcceleration.y;
 
 	//if (currentVelocity.y > maxVelocity) currentVelocity.y = maxVelocity;
 	//if (currentVelocity.y < -maxVelocity) currentVelocity.y = -maxVelocity;
@@ -216,6 +201,7 @@ void Player::move()
 	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
 	if (m_position.y >= fakeFloorPos - tolerance) {
 		m_position.y = fakeFloorPos;
+		currentVelocity.y = 0.f;
 		onPlatform = TRUE;
 	}
 	else {
@@ -228,17 +214,17 @@ void Player::set_direction(int key, int action)
 {
 	if (action == GLFW_PRESS) {
 		switch (key) {
-			case GLFW_KEY_DOWN: v_direction = Direction::down; break;
-			case GLFW_KEY_UP: v_direction = Direction::up; break;
+			//case GLFW_KEY_DOWN: v_direction = Direction::down; break;
+			case GLFW_KEY_UP: if (onPlatform) currentVelocity.y += jumpVel; break;
 			case GLFW_KEY_LEFT: h_direction = Direction::left; break;
 			case GLFW_KEY_RIGHT: h_direction = Direction::right; break;
 		}
 	}
 	else if (action == GLFW_RELEASE) {
 		switch (key) {
-			case GLFW_KEY_DOWN:
-				if (v_direction == Direction::down)
-					v_direction = Direction::none; break;
+			//case GLFW_KEY_DOWN:
+			//	if (v_direction == Direction::down)
+			//		v_direction = Direction::none; break;
 			case GLFW_KEY_UP: 
 				if (v_direction == Direction::up)
 					v_direction = Direction::none; break;
