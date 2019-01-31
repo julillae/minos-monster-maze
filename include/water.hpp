@@ -17,6 +17,7 @@ public:
 
 	// Set dead time
 	void set_salmon_dead();
+	void set_player_dead();
 	void reset_salmon_dead_time();
 	float get_salmon_dead_time() const;
 

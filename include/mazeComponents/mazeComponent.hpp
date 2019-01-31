@@ -19,6 +19,12 @@ public:
 	// Set component rotation in radians
 	void set_rotation(float radians);
 
+	vec2 get_position()const;
+
+	vec2 get_scale()const;
+
+	float get_rotation()const;
+
 protected:
 	vec2 m_position; // Window coordinates
 	vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture

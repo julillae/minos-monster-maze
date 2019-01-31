@@ -18,3 +18,9 @@ vec2 Character::get_position()const
 {
 	return m_position;
 }
+
+vec2 Character::get_scale()const
+{
+	return m_scale;
+}
+

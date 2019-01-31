@@ -1,5 +1,6 @@
 // Header
 #include "../include/world.hpp"
+#include "../include/physics.hpp"
 
 // stlib
 #include <string.h>
@@ -155,6 +156,8 @@ bool World::update(float elapsed_ms)
         glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = { (float)w, (float)h };
 
+	Physics *physicsHandler = new Physics();
+
 	// Checking Salmon - Turtle collisions
 	//for (const auto& turtle : m_turtles)
 	//{
@@ -171,19 +174,43 @@ bool World::update(float elapsed_ms)
 
 	// Checking Salmon - Fish collisions
 	auto fish_it = m_fish.begin();
-	while (fish_it != m_fish.end())
+//	while (fish_it != m_fish.end())
+//	{
+//		if (m_salmon.is_alive() && physicsHandler->collisionWithFish(&m_salmon, &(*fish_it)))
+//		{
+//			fish_it = m_fish.erase(fish_it);
+//			m_salmon.light_up();
+//			Mix_PlayChannel(-1, m_salmon_eat_sound, 0);
+//			++m_points;
+//		}
+//		else
+//			++fish_it;
+//	}
+
+	// Checking Player - Turtle Collisions
+	for (const auto& turtle : m_turtles)
 	{
-		if (m_salmon.is_alive() && m_salmon.collides_with(*fish_it))
+		if (physicsHandler->collideWithEnemy(&m_player, &turtle).isCollided)
 		{
-			fish_it = m_fish.erase(fish_it);
-			m_salmon.light_up();
-			Mix_PlayChannel(-1, m_salmon_eat_sound, 0);
-			++m_points;
+			if (m_player.is_alive()) {
+				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+				m_water.set_player_dead();
+			}
+			m_player.kill();
+			break;
 		}
-		else
-			++fish_it;
 	}
-	
+
+	// TODO: Check for Player-Platform Collisions
+
+	for (const auto& floor: m_floor)
+	{
+		if (physicsHandler->collisionWithFixedWalls(&m_player, &floor).isCollided)
+		{
+			// do something
+		}
+	}
+
 	// Updating all entities, making the turtle and fish
 	// faster based on current
 	m_salmon.update(elapsed_ms);
@@ -265,13 +292,13 @@ bool World::update(float elapsed_ms)
 		m_next_floor_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS/2);
 	}
 
-	// If salmon is dead, restart the game after the fading animation
-	if (!m_salmon.is_alive() &&
+	// If player is dead, restart the game after the fading animation
+	if (!m_player.is_alive() &&
 		m_water.get_salmon_dead_time() > 5) {
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
-		m_salmon.destroy();
-		m_salmon.init();
+		m_player.destroy();
+		m_player.init();
 		m_turtles.clear();
 		m_fish.clear();
 		m_water.reset_salmon_dead_time();
@@ -279,6 +306,21 @@ bool World::update(float elapsed_ms)
 	}
 
 	return true;
+
+	// If salmon is dead, restart the game after the fading animation
+//	if (!m_salmon.is_alive() &&
+//		m_water.get_salmon_dead_time() > 5) {
+//		int w, h;
+//		glfwGetWindowSize(m_window, &w, &h);
+//		m_salmon.destroy();
+//		m_salmon.init();
+//		m_turtles.clear();
+//		m_fish.clear();
+//		m_water.reset_salmon_dead_time();
+//		m_current_speed = 1.f;
+//	}
+//
+//	return true;
 }
 
 // Render our game world
