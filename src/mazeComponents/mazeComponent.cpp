@@ -1,4 +1,5 @@
 #include "../include/mazeComponents/mazeComponent.hpp"
+#include <cmath>
 
 // Put implementation common to all mazeComponents here
 
@@ -24,4 +25,14 @@ vec2 MazeComponent::get_scale()const {
  */
 float MazeComponent::get_rotation()const {
     return m_rotation;
+}
+
+void MazeComponent::set_position(vec2 position)
+{
+	m_position = position;
+}
+
+void MazeComponent::set_rotation(float radians)
+{
+	m_rotation = radians;
 }

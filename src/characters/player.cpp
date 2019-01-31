@@ -249,11 +249,6 @@ bool Player::is_alive()const
 	return m_is_alive;
 }
 
-void Player::collide()
-{
-    m_is_collided = true;
-}
-
 // Called when the salmon collides with a turtle
 void Player::kill()
 {
