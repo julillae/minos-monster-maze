@@ -6,7 +6,7 @@ class Character : public Renderable
 {
 public:
 	// Creates all the associated render resources and default transform
-	virtual bool init() = 0;
+	virtual bool init(vec2 initialPosition) = 0;
 
 	// Releases all associated resources
 	void destroy();

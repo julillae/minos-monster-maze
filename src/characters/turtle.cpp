@@ -5,7 +5,7 @@
 
 Texture Turtle::turtle_texture;
 
-bool Turtle::init()
+bool Turtle::init(vec2 initialPosition)
 {
 	// Load shared texture
 	if (!turtle_texture.is_valid())
