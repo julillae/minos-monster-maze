@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <math.h>
 
-bool Player::init()
+bool Player::init(vec2 initialPosition)
 {
 	std::vector<Vertex> vertices;
 	std::vector<uint16_t> indices;
@@ -78,7 +78,8 @@ bool Player::init()
 	m_num_indices = indices.size();
 	h_direction = Direction::none;
 	v_direction = Direction::none;
-	m_position = { 150.f, 200.f };
+	//m_position = { 150.f, 200.f };
+	m_position = initialPosition;
 	m_rotation = 0.f;
 	currentVelocity = {0.0, 0.0};
 

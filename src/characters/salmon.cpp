@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <math.h>
 
-bool Salmon::init()
+bool Salmon::init(vec2 initialPosition)
 {
 	std::vector<Vertex> vertices;
 	std::vector<uint16_t> indices;
