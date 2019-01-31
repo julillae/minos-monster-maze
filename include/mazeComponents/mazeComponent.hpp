@@ -5,18 +5,16 @@
 class MazeComponent : public Renderable
 {
 public:
-	// Creates all the associated render resources and default transform
-	virtual bool init() = 0;
 
 	// Releases all associated resources
 	void destroy();
 
-	// Update component position
-	// ms represents the number of milliseconds elapsed from the previous update() call
-	virtual void update(float ms) = 0;
-
-	// Renders the component
 	void draw(const mat3& projection) = 0;
+
+	void set_size(vec2 size);
+
+	// Sets the new position
+	void set_position(vec2 position);
 
 	// Set component rotation in radians
 	void set_rotation(float radians);
