@@ -84,5 +84,5 @@ private:
 	std::uniform_real_distribution<float> m_dist; // default 0..1
 
 	// initial position of player
-	vec2 initialPosition = { 200.f, 200.f };
+	vec2 initialPosition = { 200.f, 500.f };
 };
