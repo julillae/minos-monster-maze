@@ -79,14 +79,12 @@ private:
 	Player m_player;
 	std::vector<Turtle> m_turtles;
 	std::vector<Fish> m_fish;
-	std::vector<MazeComponent> m_floor;
-	std::vector<MazeComponent> m_ice;
+	std::vector<Floor> m_floor;
 
 	float m_current_speed;
 	float m_next_turtle_spawn;
 	float m_next_fish_spawn;
 	float m_next_floor_spawn;
-	float m_next_ice_spawn;
 	
 	Mix_Music* m_background_music;
 	Mix_Chunk* m_salmon_dead_sound;
