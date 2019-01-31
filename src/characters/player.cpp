@@ -99,24 +99,30 @@ void Player::update(float ms)
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// UPDATE PLAYER POSITION HERE BASED ON KEY PRESSED (World::on_key())
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		switch (v_direction) {
-			case Direction::up: vAcc = -accStep; break;
-			case Direction::down: vAcc = accStep; break;
-			default: vAcc = 0.f; break;
-		}
+		onPlatform = (m_position.y >= fakeFloorPos - tolerance);
+		double jVel = 0.f;
+		if (v_direction == Direction::up && onPlatform) jVel = jumpVel;
+		//switch (v_direction) {
+			//case Direction::up: 
+				//if (onPlatform) jVel = jumpVel;
+				//vAcc = -accStep; break;
+			//case Direction::down: vAcc = accStep; break;
+			//default: vAcc = 0.f; break;
+		//}
 		switch (h_direction) {
 			case Direction::left: hAcc = -accStep; break;
 			case Direction::right: hAcc = accStep; break;
 			default: hAcc = 0.f; break;
 		}
-		if (vAcc > maxAcceleration) vAcc = maxAcceleration;
-		if (vAcc < -maxAcceleration) vAcc = -maxAcceleration;
+		//if (vAcc > maxAcceleration) vAcc = maxAcceleration;
+		//if (vAcc < -maxAcceleration) vAcc = -maxAcceleration;
+		vAcc = gravityAcc;
 		if (hAcc > maxAcceleration) hAcc = maxAcceleration;
 		if (hAcc < -maxAcceleration) hAcc = -maxAcceleration;
 
 		set_acceleration({ hAcc, vAcc });
 
-		update_velocity();
+		update_velocity(jVel);
 		move();
 
 	}
@@ -189,25 +195,33 @@ void Player::set_acceleration(vec2 acc)
 	currentAcceleration.x = acc.x; currentAcceleration.y = acc.y;
 }
 
-void Player::update_velocity()
+void Player::update_velocity(double jumpVel)
 {
 	currentVelocity.x += currentAcceleration.x;
-	currentVelocity.y += currentAcceleration.y;
+	currentVelocity.y += currentAcceleration.y + jumpVel;
 
-	if (currentVelocity.y > maxVelocity) currentVelocity.y = maxVelocity;
-	if (currentVelocity.y < -maxVelocity) currentVelocity.y = -maxVelocity;
+	//if (currentVelocity.y > maxVelocity) currentVelocity.y = maxVelocity;
+	//if (currentVelocity.y < -maxVelocity) currentVelocity.y = -maxVelocity;
 	if (currentVelocity.x > maxVelocity) currentVelocity.x = maxVelocity;
 	if (currentVelocity.x < -maxVelocity) currentVelocity.x = -maxVelocity;
 
 	if (currentAcceleration.x < tolerance && currentAcceleration.x > -tolerance)
 		currentVelocity.x *= drag;
-	if (currentAcceleration.y < tolerance && currentAcceleration.y > -tolerance)
-		currentVelocity.y *= drag;
+	//if (currentAcceleration.y < tolerance && currentAcceleration.y > -tolerance)
+	//	currentVelocity.y *= drag;
 }
 
 void Player::move()
 {
 	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
+	if (m_position.y >= fakeFloorPos - tolerance) {
+		m_position.y = fakeFloorPos;
+		onPlatform = TRUE;
+	}
+	else {
+		onPlatform = FALSE;
+	}
+
 }
 
 void Player::set_direction(int key, int action)
