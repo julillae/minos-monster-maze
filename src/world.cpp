@@ -173,23 +173,23 @@ bool World::update(float elapsed_ms)
 
 	// Checking Salmon - Fish collisions
 	auto fish_it = m_fish.begin();
-	while (fish_it != m_fish.end())
-	{
-		if (m_salmon.is_alive() && physicsHandler->collisionWithFish(&m_salmon, &(*fish_it)))
-		{
-			fish_it = m_fish.erase(fish_it);
-			m_salmon.light_up();
-			Mix_PlayChannel(-1, m_salmon_eat_sound, 0);
-			++m_points;
-		}
-		else
-			++fish_it;
-	}
+//	while (fish_it != m_fish.end())
+//	{
+//		if (m_salmon.is_alive() && physicsHandler->collisionWithFish(&m_salmon, &(*fish_it)))
+//		{
+//			fish_it = m_fish.erase(fish_it);
+//			m_salmon.light_up();
+//			Mix_PlayChannel(-1, m_salmon_eat_sound, 0);
+//			++m_points;
+//		}
+//		else
+//			++fish_it;
+//	}
 
 	// Checking Player - Turtle Collisions
 	for (const auto& turtle : m_turtles)
 	{
-		if (physicsHandler->collisionWithEnemy(&m_player, &turtle))
+		if (physicsHandler->collideWithEnemy(&m_player, &turtle))
 		{
 			if (m_player.is_alive()) {
 				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);

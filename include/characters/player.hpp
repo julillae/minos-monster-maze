@@ -45,6 +45,8 @@ public:
 	// Kills the player, changing its alive state and triggering on death events
 	void kill();
 
+	void collide();
+
 
 private:
 	double tolerance = 0.000001;

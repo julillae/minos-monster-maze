@@ -10,18 +10,25 @@
 
 class Physics
 {
+    struct CollisionNode {
+        bool isCollided;
+        float angleOfCollision;
+    };
+
 public:
     Physics();
 
     ~Physics();
 
-    bool collisionWithFixedWalls(Player *p, FixedComponent *m);
+    CollisionNode collisionWithFixedWalls(Player *p, FixedComponent *m);
 
-    bool collisionwithMovingWalls(Player *p, FreeComponent *m);
-
-    bool collisionWithEnemy(Player *p, const Turtle *t);
+    CollisionNode collideWithEnemy(Player *p, const Turtle *t);
 
     bool collisionWithFish(Salmon *s, Fish *f);
 
-    bool collisionWithTurtle(Salmon *s, const Turtle *t);
+    float lineIntersection(float x_pos1, float x_pos2, float y_pos1, float y_pos2);
+
+    float boundingBox(float bb_x, float bb_y, float scale_x, float scale_y);
+
+
 };

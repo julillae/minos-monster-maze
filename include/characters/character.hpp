@@ -43,10 +43,15 @@ public:
 	// Kills the character, changing its alive state and triggering on death events
 	void kill();
 
+	// character has collided
+	void collide();
+
+
 protected:
 	vec2 m_position;
 	vec2 m_scale;
 	bool m_is_alive; // True if the character is alive
+	bool m_is_collided; // True if character collided with object
 	Direction h_direction; // direction of horizontal movement
 	Direction v_direction; // direction of vertical movement
     // 1.f in each dimension. 1.f is as big as the associated texture
