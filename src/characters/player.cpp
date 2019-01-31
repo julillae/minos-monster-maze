@@ -75,7 +75,6 @@ bool Player::init()
 	m_scale.x = -35.f;
 	m_scale.y = 35.f;
 	m_is_alive = true;
-	m_is_collided = false;
 	m_num_indices = indices.size();
 	h_direction = Direction::none;
 	v_direction = Direction::none;
