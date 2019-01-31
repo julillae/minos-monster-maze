@@ -189,7 +189,7 @@ bool World::update(float elapsed_ms)
 	// Checking Player - Turtle Collisions
 	for (const auto& turtle : m_turtles)
 	{
-		if (physicsHandler->collideWithEnemy(&m_player, &turtle))
+		if (physicsHandler->collideWithEnemy(&m_player, &turtle).isCollided)
 		{
 			if (m_player.is_alive()) {
 				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
@@ -201,7 +201,7 @@ bool World::update(float elapsed_ms)
 	}
 
 	// TODO: Check for Player-Platform Collisions
-	
+
 	// Updating all entities, making the turtle and fish
 	// faster based on current
 	m_salmon.update(elapsed_ms);
