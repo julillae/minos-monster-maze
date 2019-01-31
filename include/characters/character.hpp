@@ -43,9 +43,6 @@ public:
 	// Kills the character, changing its alive state and triggering on death events
 	void kill();
 
-	// character has collided
-	void collide();
-
 
 protected:
 	vec2 m_position;

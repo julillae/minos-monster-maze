@@ -36,3 +36,4 @@ void MazeComponent::set_rotation(float radians)
 {
 	m_rotation = radians;
 }
+
