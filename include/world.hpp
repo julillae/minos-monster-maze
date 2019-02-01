@@ -9,7 +9,7 @@
 #include "mazeComponents/mazeComponent.hpp"
 #include "mazeComponents/fixedComponent.hpp"
 #include "mazeComponents/floor.hpp"
-#include "mazeComponents/ice.hpp"
+#include "mazeComponents/exit.hpp" 
 #include "water.hpp"
 #include "physics.hpp"
 
@@ -76,6 +76,7 @@ private:
 	Salmon m_salmon;
 	Player m_player;
 	Enemy m_enemy;
+	Exit m_exit;
 	std::vector<Turtle> m_turtles;
 	std::vector<Floor> m_floor;
 
