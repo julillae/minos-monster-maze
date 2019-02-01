@@ -121,7 +121,7 @@ bool World::init(vec2 screen)
 
 	m_current_speed = 1.f;
 	
-	return m_salmon.init(initialPosition) && m_water.init() && m_player.init(initialPosition) && m_enemy.init();
+	return m_salmon.init(initialPosition) && m_water.init() && m_player.init(initialPosition) && m_enemy.init(initialPosition);
 }
 
 // Releases all the associated resources
@@ -469,13 +469,9 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		m_salmon.destroy(); 
 		m_salmon.init(initialPosition);
 		m_player.destroy();
-<<<<<<< HEAD
 		m_player.init(initialPosition);
-=======
-		m_player.init();
 		m_enemy.destroy();
-		m_enemy.init();
->>>>>>> fish-like enemy no movement
+		m_enemy.init(initialPosition);
 		m_turtles.clear();
 		m_fish.clear();
 		m_water.reset_salmon_dead_time();

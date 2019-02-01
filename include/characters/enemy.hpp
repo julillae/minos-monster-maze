@@ -14,7 +14,7 @@ public:
 	void set_position(vec2 position);
 
 	// Creates all the associated render resources and default transform
-	bool init();
+	bool init(vec2 initialPosition);
 	
 	// Update enemy position based on velocity vector
 	// ms represents the number of milliseconds elapsed from the previous update() call
