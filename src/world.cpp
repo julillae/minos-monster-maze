@@ -27,7 +27,6 @@ namespace
 World::World() : 
 	m_points(0),
 	m_next_turtle_spawn(0.f),
-	m_next_fish_spawn(0.f),
 	m_next_floor_spawn(0.f)
 {
 	// Seeding rng with random device
@@ -150,13 +149,10 @@ void World::destroy()
 	m_enemy.destroy();
 	for (auto& turtle : m_turtles)
 		turtle.destroy();
-	//for (auto& fish : m_fish)
-	//	fish.destroy();
 	for (auto& floor : m_floor)
 		floor.destroy();
 	m_floor.clear();
 	m_turtles.clear();
-	//m_fish.clear();
 	glfwDestroyWindow(m_window);
 }
 
@@ -168,35 +164,6 @@ bool World::update(float elapsed_ms)
 	vec2 screen = { (float)w, (float)h };
 
 	Physics *physicsHandler = new Physics();
-
-	// Checking Salmon - Turtle collisions
-	//for (const auto& turtle : m_turtles)
-	//{
-	//	if (m_salmon.collides_with(turtle))
-	//	{
-	//		if (m_salmon.is_alive()) {
-	//			Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
-	//			m_water.set_salmon_dead();
-	//		}
-	//		m_salmon.kill();
-	//		break;
-	//	}
-	//}
-
-	// Checking Salmon - Fish collisions
-	auto fish_it = m_fish.begin();
-//	while (fish_it != m_fish.end())
-//	{
-//		if (m_salmon.is_alive() && physicsHandler->collisionWithFish(&m_salmon, &(*fish_it)))
-//		{
-//			fish_it = m_fish.erase(fish_it);
-//			m_salmon.light_up();
-//			Mix_PlayChannel(-1, m_salmon_eat_sound, 0);
-//			++m_points;
-//		}
-//		else
-//			++fish_it;
-//	}
 
 	// Checking Player - Turtle Collisions
 	for (const auto& turtle : m_turtles)
@@ -230,8 +197,6 @@ bool World::update(float elapsed_ms)
 	m_enemy.update(elapsed_ms);
 	for (auto& turtle : m_turtles)
 		turtle.update(elapsed_ms * m_current_speed);
-	for (auto& fish : m_fish)
-		fish.update(elapsed_ms * m_current_speed);
 
 	// Removing out of screen turtles
 	auto turtle_it = m_turtles.begin();
@@ -246,20 +211,6 @@ bool World::update(float elapsed_ms)
 
 		++turtle_it;
 	}
-
-	// Removing out of screen fish
-	//fish_it = m_fish.begin();
-	//while (fish_it != m_fish.end())
-	//{
-	//	float w = fish_it->get_bounding_box().x / 2;
-	//	if (fish_it->get_position().x + w < 0.f)
-	//	{
-	//		fish_it = m_fish.erase(fish_it);
-	//		continue;
-	//	}
-
-	//	++fish_it;
-	//}
 
 	// Spawning new turtles
 	m_next_turtle_spawn -= elapsed_ms * m_current_speed;
@@ -277,24 +228,6 @@ bool World::update(float elapsed_ms)
 		m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS/2);
 	}
 
-	// Spawning new fish
-	// m_next_fish_spawn -= elapsed_ms * m_current_speed;
-	// if (m_fish.size() <= MAX_FISH && m_next_fish_spawn < 0.f)
-	// {
-	// 	if (!spawn_fish())
-	// 		return false;
-	// 	Fish& new_fish = m_fish.back();
-
-	// 	new_fish.set_position({ screen.x + 150, 50 + m_dist(m_rng) *  (screen.y - 100) });
-
-	// 	m_next_fish_spawn = (FISH_DELAY_MS / 2) + m_dist(m_rng) * (FISH_DELAY_MS / 2);
-	// }
-
-	//m_next_floor_spawn -= elapsed_ms * m_current_speed;
-	//if (m_floor.size() <= MAX_TURTLES && m_next_floor_spawn < 0.f)
-	//{
-	//	if (!spawn_floor())
-	//		return false;
 
 	// If player is dead, restart the game after the fading animation
 	if (!m_player.is_alive() &&
@@ -307,7 +240,6 @@ bool World::update(float elapsed_ms)
 		m_salmon.init(initialPosition);
 
 		m_turtles.clear();
-		//m_fish.clear();
 		m_water.reset_salmon_dead_time();
 		m_current_speed = 1.f;
 	}
@@ -359,8 +291,6 @@ void World::draw()
 	// Drawing entities
 	for (auto& turtle : m_turtles)
 		turtle.draw(projection_2D);
-	//for (auto& fish : m_fish)
-	//	fish.draw(projection_2D);
 	for (auto& floor : m_floor)
 		floor.draw(projection_2D);	
 	m_salmon.draw(projection_2D);
@@ -408,19 +338,6 @@ bool World::spawn_turtle()
 	return false;
 }
 
-// Creates a new fish and if successfull adds it to the list of fish
-bool World::spawn_fish()
-{
-	Fish fish;
-	if (fish.init({ 0,0 }))
-	{
-		m_fish.emplace_back(fish);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn fish");
-	return false;
-}
-
 bool World::spawn_floor()
 {
 	Floor floor;
@@ -463,7 +380,6 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		m_enemy.destroy();
 		m_enemy.init(initialPosition);
 		m_turtles.clear();
-		//m_fish.clear();
 		m_water.reset_salmon_dead_time();
 		m_current_speed = 1.f;
 	}
