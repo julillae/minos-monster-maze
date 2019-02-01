@@ -11,6 +11,25 @@
 namespace
 {
 	// Constants go here
+	const size_t MAZE_WIDTH = 15;
+	const size_t MAZE_HEIGHT = 15;
+
+	const int MAZE[MAZE_HEIGHT][MAZE_WIDTH] = { 
+		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
+		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+	};
 
 	namespace
 	{
@@ -31,6 +50,31 @@ Level0::Level0() :
 Level0::~Level0()
 {
 
+}
+
+void Level0::generate_maze()
+{
+	for (int i = 0; i < MAZE_HEIGHT; ++i) {
+		for (int j = 0; j < MAZE_WIDTH; ++j) {
+			// Set position of floor according to i and j
+			// e.g. (i * tile_width, j * tile_height)
+
+			// m_next_floor_spawn -= elapsed_ms * m_current_speed;
+			// if (m_floor.size() <= MAX_TURTLES && m_next_floor_spawn < 0.f)
+			// {
+			// 	if (!spawn_floor())
+			// 		return false;
+
+			// 	MazeComponent& new_floor = m_floor.back();	
+
+			// 	// Setting random initial position
+			// 	new_floor.set_position({ screen.x - 150, 50 + m_dist(m_rng) * (screen.y - 100) });
+
+			// 	// Next spawn
+			// 	m_next_floor_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS/2);
+			// }
+		}
+	}
 }
 
 // Level0 initialization
@@ -112,6 +156,8 @@ bool Level0::init(vec2 screen)
 	fprintf(stderr, "Loaded music\n");
 
 	m_current_speed = 1.f;
+
+	generate_maze();
 	
 	return m_water.init() && m_player.init(initialPosition);
 }
@@ -153,21 +199,6 @@ bool Level0::update(float elapsed_ms)
 	// Updating all entities
 
 	m_player.update(elapsed_ms);
-
-	m_next_floor_spawn -= elapsed_ms * m_current_speed;
-	// if (m_floor.size() <= MAX_TURTLES && m_next_floor_spawn < 0.f)
-	// {
-	// 	if (!spawn_floor())
-	// 		return false;
-
-	// 	MazeComponent& new_floor = m_floor.back();	
-
-	// 	// Setting random initial position
-	// 	new_floor.set_position({ screen.x - 150, 50 + m_dist(m_rng) * (screen.y - 100) });
-
-	// 	// Next spawn
-	// 	m_next_floor_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS/2);
-	// }
 
 	// If player is dead, restart the game after the fading animation
 	if (!m_player.is_alive()) {
@@ -221,7 +252,7 @@ void Level0::draw()
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	for (auto& floor : m_floor)
-		floor.draw(projection_2D);	
+		floor.draw(projection_2D);
 	m_player.draw(projection_2D);
 
 	/////////////////////
