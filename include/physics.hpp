@@ -21,7 +21,7 @@ public:
 
     CollisionNode collisionWithFixedWalls(Player *p, const Floor *m);
 
-    CollisionNode collideWithEnemy(Player *p, const Turtle *t);
+    CollisionNode collideWithEnemy(Player *p, const Enemy *t);
 
     float lineIntersection(float x_pos1, float x_pos2, float y_pos1, float y_pos2);
 

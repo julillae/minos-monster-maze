@@ -44,6 +44,9 @@ public:
 	// Kills the enemy, changing its alive state and triggering on death events
 	void kill();
 
+	// gets bounding box of enemy
+	vec2 get_bounding_box()const;
+
 
 private:
 	double tolerance = 0.000001;
