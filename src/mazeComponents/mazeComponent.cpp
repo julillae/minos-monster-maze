@@ -50,3 +50,13 @@ void MazeComponent::set_rotation(float radians)
 	m_rotation = radians;
 }
 
+float MazeComponent::get_width()
+{
+	return m_width;
+}
+	
+float MazeComponent::get_height()
+{
+	return m_height;
+}
+

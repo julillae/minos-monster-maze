@@ -49,7 +49,7 @@ private:
 	bool spawn_turtle();
 
 	// Generates a new floor
-	bool spawn_floor();
+	bool spawn_floor(vec2 position);
 
 	bool spawn_ice();
 
