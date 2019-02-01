@@ -48,6 +48,7 @@ set(SOURCE_FILES
     src/mazeComponents/freeComponent.cpp
     src/mazeComponents/floor.cpp
     src/mazeComponents/ice.cpp
+    src/mazeComponents/exit.cpp
     src/gameAI.cpp
     src/physics.cpp
     
@@ -69,6 +70,7 @@ set(SOURCE_FILES
     include/mazeComponents/freeComponent.hpp
     include/mazeComponents/floor.hpp
     include/mazeComponents/ice.hpp
+    include/mazeComponents/exit.hpp
     include/gameAI.hpp
     include/physics.hpp
     
