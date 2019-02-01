@@ -7,6 +7,7 @@
 #include <string>
 #include <algorithm>
 #include <math.h>
+#include <typeinfo>
 
 // Put implementations specific to Enemies (not applicable to Player)
 // but common across both simple and complex enemies here
@@ -15,58 +16,13 @@ Texture Enemy::enemy_texture;
 
 bool Enemy::init()
 {
-	// Load shared texture
-	if (!enemy_texture.is_valid())
-	{
-		if (!enemy_texture.load_from_file(textures_path("minotaur_right.png")))
-		{
-			fprintf(stderr, "Failed to load enemy texture!");
-			return false;
-		}
-	}
-
-	// The position corresponds to the center of the texture
-	float wr = enemy_texture.width;
-	float hr = enemy_texture.height;
-
-	TexturedVertex vertices[4];
-	vertices[0].position = { -wr, +hr, -0.01f };
-	vertices[0].texcoord = { 0.f, 1.f };
-	vertices[1].position = { +wr, +hr, -0.01f };
-	vertices[1].texcoord = { 1.f, 1.f,  };
-	vertices[2].position = { +wr, -hr, -0.01f };
-	vertices[2].texcoord = { 1.f, 0.f };
-	vertices[3].position = { -wr, -hr, -0.01f };
-	vertices[3].texcoord = { 0.f, 0.f };
-
-	// counterclockwise as it's the default opengl front winding direction
-	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
-
-	// Clearing errors
-	gl_flush_errors();
-
-	// Vertex Buffer creation
-	glGenBuffers(1, &mesh.vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
-
-	// Index Buffer creation
-	glGenBuffers(1, &mesh.ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
-
-	// Vertex Array (Container for Vertex + Index buffer)
-	glGenVertexArrays(1, &mesh.vao);
-	if (gl_has_errors())
-		return false;
-
-	// Loading shaders
-	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
-		return false;
+	const char* textureFile = textures_path("minotaur_right.png");
+	// printf("The type is %s\n", typeid(textures_path("minotaur_right.png")).name());
+	set_texture(textureFile);
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture
-	m_scale.x = -0.4f;
+	m_scale.x = 0.4f;
 	m_scale.y = 0.4f;
 	m_rotation = 0.f;
 	direction = right;
@@ -92,13 +48,15 @@ void Enemy::update(float ms)
 		if (direction == right) {
 			if ((m_position.x + step) >= (platformX + platformWidth)) {
 				direction = left;
+				m_scale.x = -1 * m_scale.x;
 			} else {
 				m_position.x += step;
 			}
-		} 
-		else if (direction == left) {
+		} else if (direction == left) {
 			if ((m_position.x - step) <= (platformX - platformWidth)) {
 				direction = right;
+				m_scale.x = -1 * m_scale.x;
+				// set_texture(textures_path("minotaur_right.png"));
 			} else {
 				m_position.x -= step;
 			}
@@ -162,6 +120,60 @@ void Enemy::draw(const mat3& projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
+bool Enemy::set_texture(const char* texturePath)
+{
+	//const char* file = texturePath;
+	// Load shared texture
+	if (!enemy_texture.is_valid())
+	{
+		if (!enemy_texture.load_from_file(texturePath))
+		{
+			fprintf(stderr, "Failed to load enemy texture!");
+			return false;
+		}
+	}
+
+	// The position corresponds to the center of the texture
+	float wr = enemy_texture.width;
+	float hr = enemy_texture.height;
+
+	TexturedVertex vertices[4];
+	vertices[0].position = { -wr, +hr, -0.01f };
+	vertices[0].texcoord = { 0.f, 1.f };
+	vertices[1].position = { +wr, +hr, -0.01f };
+	vertices[1].texcoord = { 1.f, 1.f,  };
+	vertices[2].position = { +wr, -hr, -0.01f };
+	vertices[2].texcoord = { 1.f, 0.f };
+	vertices[3].position = { -wr, -hr, -0.01f };
+	vertices[3].texcoord = { 0.f, 0.f };
+
+	// counterclockwise as it's the default opengl front winding direction
+	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
+
+	// Clearing errors
+	gl_flush_errors();
+
+	// Vertex Buffer creation
+	glGenBuffers(1, &mesh.vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
+
+	// Index Buffer creation
+	glGenBuffers(1, &mesh.ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
+
+	// Vertex Array (Container for Vertex + Index buffer)
+	glGenVertexArrays(1, &mesh.vao);
+	if (gl_has_errors())
+		return false;
+
+	// Loading shaders
+	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+		return false;
+
+	return true;
+}
 
 void Enemy::move()
 {

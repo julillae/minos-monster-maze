@@ -27,6 +27,8 @@ public:
 	//bool collides_with(const Turtle& turtle);
 	//bool collides_with(const Fish& fish);
 
+	bool set_texture(const char* texturePath);
+
 	// Moves the enemy's position by the specified offset
 	void move();
 
