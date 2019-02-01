@@ -202,10 +202,10 @@ void Player::move()
 	if (m_position.y >= fakeFloorPos - tolerance) {
 		m_position.y = fakeFloorPos;
 		currentVelocity.y = 0.f;
-		onPlatform = TRUE;
+		onPlatform = true;
 	}
 	else {
-		onPlatform = FALSE;
+		onPlatform = false;
 	}
 
 }
