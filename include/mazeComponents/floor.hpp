@@ -8,7 +8,7 @@ class Floor : public FixedComponent
 
 public:
 
-    bool init();
+    bool init(vec2 position);
 
     // Renders the component
 	void draw(const mat3& projection)override;
@@ -20,6 +20,5 @@ public:
 	// Returns the bounding box for collision detection, called by collides_with()
 	vec2 get_bounding_box()const;
 
-protected:
-    void setSize(vec2 size);
+    void set_size();
 };
