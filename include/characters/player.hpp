@@ -33,6 +33,9 @@ public:
 	// Moves the player's position by the specified offset
 	void move();
 
+	// Let character know it's currently on a platform (and its position)
+	void set_on_platform(double yPos);
+
 	// Change player's movement direction
 	void set_direction(int key, int action);
 
@@ -53,8 +56,9 @@ private:
 	double drag = 0.9;
 	vec2 currentVelocity;
 	vec2 currentAcceleration;
-	bool onPlatform;
-	double fakeFloorPos = 500.f;
+	bool isOnPlatform;
+	double fakeFloorPos = 750.f;
+	double currentFloorPos = fakeFloorPos;
 	double gravityAcc = 9.81 * 0.2;
 	double jumpVel = -30.f;
 };

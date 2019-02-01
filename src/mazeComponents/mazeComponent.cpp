@@ -3,6 +3,19 @@
 
 // Put implementation common to all mazeComponents here
 
+// Call if init() was successful
+// Releases all graphics resources
+void MazeComponent::destroy()
+{
+	glDeleteBuffers(1, &mesh.vbo);
+	glDeleteBuffers(1, &mesh.ibo);
+	glDeleteBuffers(1, &mesh.vao);
+
+	glDeleteShader(effect.vertex);
+	glDeleteShader(effect.fragment);
+	glDeleteShader(effect.program);
+}
+
 /**
  * Retrieve window coordinates of maze component
  * @return coordinates of maze component
