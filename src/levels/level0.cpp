@@ -1,6 +1,5 @@
 // Header
 #include "../include/levels/level0.hpp"
-
 #include "../include/physics.hpp"
 
 // stlib
@@ -80,7 +79,7 @@ bool Level0::spawn_floor()
 	return false;
 }
 
-
+// Generates maze
 void Level0::generate_maze()
 {
 	const float tile_width = 20.0;
@@ -98,7 +97,6 @@ void Level0::generate_maze()
 				float x_pos = (i * tile_width) + initial_x;
 				float y_pos = (j * tile_height) + initial_y;
 
-				// Setting random initial position
 				new_floor.set_position({ x_pos, y_pos});
 			}
 		}
@@ -106,8 +104,10 @@ void Level0::generate_maze()
 }
 
 // Level0 initialization
-bool Level0::init(vec2 screen)
+bool Level0::init(vec2 screen, Physics* physicsHandler)
 {
+	this->physicsHandler = physicsHandler;
+
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -171,10 +171,8 @@ bool Level0::init(vec2 screen)
 
 	if (m_background_music == nullptr)
 	{
-		fprintf(stderr, "Failed to load sounds\n %s\n %s\n %s\n make sure the data directory is present",
-			audio_path("music.wav"),
-			audio_path("salmon_dead.wav"),
-			audio_path("salmon_eat.wav"));
+		fprintf(stderr, "Failed to load sound\n %s\n make sure the data directory is present",
+			audio_path("music.wav"));
 		return false;
 	}
 
@@ -187,7 +185,7 @@ bool Level0::init(vec2 screen)
 
 	generate_maze();
 	
-	return m_water.init() && m_player.init(initialPosition);
+	return m_water.init() && m_player.init(initialPosition) && m_enemy.init(initialPosition);
 }
 
 // Releases all the associated resources
@@ -201,6 +199,10 @@ void Level0::destroy()
 	Mix_CloseAudio();
 
 	m_player.destroy();
+	m_enemy.destroy();
+	for (auto& floor : m_floor)
+		floor.destroy();
+	m_floor.clear();
 
 	glfwDestroyWindow(m_window);
 }
@@ -212,26 +214,40 @@ bool Level0::update(float elapsed_ms)
         glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = { (float)w, (float)h };
 
-	Physics *physicsHandler = new Physics();
+	// Checking Player - Enemy Collision
+	//	if (physicsHandler->collideWithEnemy(&m_player, &m_enemy).isCollided)
+	//	{
+	//		if (m_player.is_alive()) {
+	//			Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+	//			m_water.set_player_dead();
+	//		}
+	//		m_player.kill();
+	//	}
 
 	// TODO: Check for Player-Platform Collisions
-
+	bool isOnAtLeastOnePlatform = false;
 	for (const auto& floor: m_floor)
 	{
 		if (physicsHandler->collisionWithFixedWalls(&m_player, &floor).isCollided)
 		{
 			// do something
+			m_player.set_on_platform(m_player.get_position().y);
+			isOnAtLeastOnePlatform = true;
 		}
 	}
-
-	// Updating all entities
+	if (!isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
 	m_player.update(elapsed_ms);
+	m_enemy.update(elapsed_ms);
 
 	// If player is dead, restart the game after the fading animation
 	if (!m_player.is_alive()) {
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
+
+		m_player.destroy();
+		m_player.init(initialPosition);
+
 		m_current_speed = 1.f;
 	}
 
@@ -282,6 +298,7 @@ void Level0::draw()
 	for (auto& floor : m_floor)
 		floor.draw(projection_2D);
 	m_player.draw(projection_2D);
+	m_enemy.draw(projection_2D);
 
 	/////////////////////
 	// Truely render to the screen
@@ -328,6 +345,8 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
 		glfwGetWindowSize(m_window, &w, &h);
 		m_player.destroy();
 		m_player.init(initialPosition);
+		m_enemy.destroy();
+		m_enemy.init(initialPosition);
 		m_current_speed = 1.f;
 	}
 
