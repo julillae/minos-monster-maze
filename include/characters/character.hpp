@@ -31,6 +31,9 @@ public:
 	// Moves the character's position by the specified offset
 	void move(vec2 off);
 
+	// Let character know it's currently on a platform (and its position)
+	void set_on_platform(double yPos);
+
 	// Change character movement direction
 	void set_direction(int key, int action);
 	

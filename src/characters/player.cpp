@@ -199,15 +199,22 @@ void Player::update_velocity()
 void Player::move()
 {
 	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
-	if (m_position.y >= fakeFloorPos - tolerance) {
-		m_position.y = fakeFloorPos;
+	currentFloorPos = std::min(fakeFloorPos, currentFloorPos);
+	if (m_position.y >= currentFloorPos - tolerance) {
+		m_position.y = currentFloorPos;
 		currentVelocity.y = 0.f;
-		onPlatform = TRUE;
+		isOnPlatform = true;
 	}
 	else {
-		onPlatform = FALSE;
+		isOnPlatform = false;
+		currentFloorPos = fakeFloorPos;
 	}
 
+}
+
+void Player::set_on_platform(double yPos) {
+	isOnPlatform = true;
+	currentFloorPos = yPos;
 }
 
 void Player::set_direction(int key, int action)
@@ -215,7 +222,7 @@ void Player::set_direction(int key, int action)
 	if (action == GLFW_PRESS) {
 		switch (key) {
 			//case GLFW_KEY_DOWN: v_direction = Direction::down; break;
-			case GLFW_KEY_UP: if (onPlatform) currentVelocity.y += jumpVel; break;
+			case GLFW_KEY_UP: if (isOnPlatform) currentVelocity.y += jumpVel; break;
 			case GLFW_KEY_LEFT: h_direction = Direction::left; break;
 			case GLFW_KEY_RIGHT: h_direction = Direction::right; break;
 		}
