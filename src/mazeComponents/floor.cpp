@@ -4,9 +4,11 @@
 
  Texture Floor::texture;
 
-bool Floor::init()
+bool Floor::init(vec2 position)
 {
     if (!set_texture()) return false;
+
+	set_position(position);
 
     // The position corresponds to the center of the texture
 	float wr = texture.width * 0.5f;
@@ -52,6 +54,8 @@ bool Floor::init()
     m_scale.x = 20.0f;
 	m_scale.y = 20.0f;
 	m_rotation = 0.f;
+
+	set_size();
 
 	return true;
 }
@@ -130,4 +134,10 @@ vec2 Floor::get_bounding_box()const
 {
 	// fabs is to avoid negative scale due to the facing direction
 	return { std::fabs(m_scale.x) * texture.width, std::fabs(m_scale.y) * texture.height };
+}
+
+void Floor::set_size()
+{
+	m_width = std::fabs(m_scale.x) * texture.width;
+	m_height = std::fabs(m_scale.y) * texture.height;
 }
