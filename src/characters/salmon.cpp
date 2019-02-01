@@ -240,33 +240,33 @@ void Salmon::draw(const mat3& projection)
 }
 
 // Simple bounding box collision check, 
-bool Salmon::collides_with(const Turtle& turtle)
-{
-	float dx = m_position.x - turtle.get_position().x;
-	float dy = m_position.y - turtle.get_position().y;
-	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
-	float my_r = std::max(m_scale.x, m_scale.y);
-	float r = std::max(other_r, my_r);
-	r *= 0.6f;
-	if (d_sq < r * r)
-		return true;
-	return false;
-}
+//bool Salmon::collides_with(const Turtle& turtle)
+//{
+//	float dx = m_position.x - turtle.get_position().x;
+//	float dy = m_position.y - turtle.get_position().y;
+//	float d_sq = dx * dx + dy * dy;
+//	float other_r = std::max(turtle.get_bounding_box().x, turtle.get_bounding_box().y);
+//	float my_r = std::max(m_scale.x, m_scale.y);
+//	float r = std::max(other_r, my_r);
+//	r *= 0.6f;
+//	if (d_sq < r * r)
+//		return true;
+//	return false;
+//}
 
-bool Salmon::collides_with(const Fish& fish)
-{
-	float dx = m_position.x - fish.get_position().x;
-	float dy = m_position.y - fish.get_position().y;
-	float d_sq = dx * dx + dy * dy;
-	float other_r = std::max(fish.get_bounding_box().x, fish.get_bounding_box().y);
-	float my_r = std::max(m_scale.x, m_scale.y);
-	float r = std::max(other_r, my_r);
-	r *= 0.6f;
-	if (d_sq < r * r)
-		return true;
-	return false;
-}
+//bool Salmon::collides_with(const Fish& fish)
+//{
+//	float dx = m_position.x - fish.get_position().x;
+//	float dy = m_position.y - fish.get_position().y;
+//	float d_sq = dx * dx + dy * dy;
+//	float other_r = std::max(fish.get_bounding_box().x, fish.get_bounding_box().y);
+//	float my_r = std::max(m_scale.x, m_scale.y);
+//	float r = std::max(other_r, my_r);
+//	r *= 0.6f;
+//	if (d_sq < r * r)
+//		return true;
+//	return false;
+//}
 
 void Salmon::move(vec2 off)
 {

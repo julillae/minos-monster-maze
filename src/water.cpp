@@ -47,6 +47,10 @@ void Water::set_salmon_dead() {
 	m_dead_time = glfwGetTime();
 }
 
+void Water::set_player_dead() {
+	m_dead_time = glfwGetTime();
+}
+
 void Water::reset_salmon_dead_time() {
 	m_dead_time = -1;
 }
