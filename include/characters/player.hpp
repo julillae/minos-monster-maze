@@ -11,7 +11,7 @@ class Player : public Character
 {
 public:
 	// Creates all the associated render resources and default transform
-	bool init();
+	bool init(vec2 initialPosition);
 	
 	// Update player position based on velocity vector
 	// ms represents the number of milliseconds elapsed from the previous update() call
@@ -49,9 +49,12 @@ public:
 private:
 	double tolerance = 0.000001;
 	double maxVelocity = 12;
-	double accStep = 0.6f;
-	double maxAcceleration = 4;
-	double drag = 0.95;
+	double accStep = 2.f;
+	double drag = 0.9;
 	vec2 currentVelocity;
 	vec2 currentAcceleration;
+	bool onPlatform;
+	double fakeFloorPos = 500.f;
+	double gravityAcc = 9.81 * 0.2;
+	double jumpVel = -30.f;
 };
