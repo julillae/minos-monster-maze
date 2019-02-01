@@ -119,6 +119,11 @@ void Floor::draw(const mat3& projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
+vec2 Floor::get_position()const
+{
+	return m_position;
+}
+
 
 // Returns the local bounding coordinates scaled by the current size of the component
 vec2 Floor::get_bounding_box()const

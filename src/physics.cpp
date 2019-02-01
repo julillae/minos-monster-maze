@@ -22,7 +22,8 @@ float Physics::boundingBox(float bb_x, float bb_y, float scale_x, float scale_y)
     return r;
 }
 
-Physics::CollisionNode Physics::collideWithEnemy (Player *c, const Turtle *t) {
+
+Physics::CollisionNode Physics::collideWithEnemy (Player *c, const Enemy *t) {
     float d_sq = lineIntersection(c->get_position().x, t->get_position().x, c->get_position().y, t->get_position().y);
     float r = boundingBox(t->get_bounding_box().x, t->get_bounding_box().y, c->get_scale().x, c->get_scale().y);
 
