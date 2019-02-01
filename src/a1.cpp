@@ -1,6 +1,7 @@
 // internal
 #include "../include/common.hpp"
 #include "../include/world.hpp"
+#include "../include/physics.hpp"
 
 #define GL3W_IMPLEMENTATION
 #include <gl3w.h>
@@ -21,7 +22,8 @@ const char* title = "Your Title Here";
 int main(int argc, char* argv[])
 {
 	// Initializing world (after renderer.init().. sorry)
-	if (!world.init({ (float)width, (float)height }))
+	Physics *physicsHandler = new Physics();
+	if (!world.init({ (float)width, (float)height }, physicsHandler))
 	{
 		// Time to read the error message
 		std::cout << "Press any key to exit" << std::endl;

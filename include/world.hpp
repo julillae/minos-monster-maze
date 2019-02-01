@@ -11,6 +11,7 @@
 #include "mazeComponents/floor.hpp"
 #include "mazeComponents/ice.hpp"
 #include "water.hpp"
+#include "physics.hpp"
 
 // stlib
 #include <vector>
@@ -29,7 +30,7 @@ public:
 	~World();
 
 	// Creates a window, sets up events and begins the game
-	bool init(vec2 screen);
+	bool init(vec2 screen, Physics* physicsHandler);
 
 	// Releases all associated resources
 	void destroy();
@@ -92,4 +93,6 @@ private:
 
 	// initial position of player
 	vec2 initialPosition = { 200.f, 500.f };
+
+	Physics* physicsHandler;
 };
