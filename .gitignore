@@ -285,3 +285,4 @@ __pycache__/
 
 # Cake - Uncomment if you are using it
 # tools/
+include/project_path.hpp
