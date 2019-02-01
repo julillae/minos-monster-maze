@@ -6,7 +6,6 @@
 #include "characters/enemy.hpp"
 #include "characters/salmon.hpp"
 #include "characters/turtle.hpp"
-#include "characters/fish.hpp"
 #include "mazeComponents/mazeComponent.hpp"
 #include "mazeComponents/fixedComponent.hpp"
 #include "mazeComponents/floor.hpp"
@@ -48,9 +47,6 @@ private:
 	// Generates a new turtle
 	bool spawn_turtle();
 
-	// Generates a new fish
-	bool spawn_fish();
-
 	// Generates a new floor
 	bool spawn_floor();
 
@@ -80,12 +76,10 @@ private:
 	Player m_player;
 	Enemy m_enemy;
 	std::vector<Turtle> m_turtles;
-	std::vector<Fish> m_fish;
 	std::vector<Floor> m_floor;
 
 	float m_current_speed;
 	float m_next_turtle_spawn;
-	float m_next_fish_spawn;
 	float m_next_floor_spawn;
 	
 	Mix_Music* m_background_music;
