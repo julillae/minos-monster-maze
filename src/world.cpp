@@ -39,8 +39,9 @@ World::~World()
 }
 
 // World initialization
-bool World::init(vec2 screen)
+bool World::init(vec2 screen, Physics* physicsHandler)
 {
+	this->physicsHandler = physicsHandler;
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -126,7 +127,6 @@ bool World::init(vec2 screen)
 		MazeComponent& new_floor = m_floor.back();
 		new_floor.set_position({ screen.x - 450 - 20 * i, screen.y - 100 });
 	}
-
 	return m_salmon.init(initialPosition) && m_water.init() && m_player.init(initialPosition) && m_enemy.init(initialPosition);
 }
 
@@ -163,7 +163,7 @@ bool World::update(float elapsed_ms)
         glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = { (float)w, (float)h };
 
-	Physics *physicsHandler = new Physics();
+	//Physics *physicsHandler = new Physics();
 
 	// Checking Player - Turtle Collisions
 	for (const auto& turtle : m_turtles)
