@@ -206,8 +206,7 @@ void Player::move()
 		isOnPlatform = true;
 	}
 	else {
-		isOnPlatform = false;
-		currentFloorPos = fakeFloorPos;
+		set_in_free_fall();
 	}
 
 }
@@ -215,6 +214,11 @@ void Player::move()
 void Player::set_on_platform(double yPos) {
 	isOnPlatform = true;
 	currentFloorPos = yPos;
+}
+
+void Player::set_in_free_fall() {
+	isOnPlatform = false;
+	currentFloorPos = fakeFloorPos;
 }
 
 void Player::set_direction(int key, int action)

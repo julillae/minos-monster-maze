@@ -163,8 +163,6 @@ bool World::update(float elapsed_ms)
         glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = { (float)w, (float)h };
 
-	//Physics *physicsHandler = new Physics();
-
 	// Checking Player - Turtle Collisions
 	for (const auto& turtle : m_turtles)
 	{
@@ -180,15 +178,17 @@ bool World::update(float elapsed_ms)
 	}
 
 	// TODO: Check for Player-Platform Collisions
-
+	bool isOnAtLeastOnePlatform = false;
 	for (const auto& floor: m_floor)
 	{
 		if (physicsHandler->collisionWithFixedWalls(&m_player, &floor).isCollided)
 		{
 			// do something
 			m_player.set_on_platform(m_player.get_position().y);
+			isOnAtLeastOnePlatform = true;
 		}
 	}
+	if (!isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
 	// Updating all entities, making the turtle and fish
 	// faster based on current

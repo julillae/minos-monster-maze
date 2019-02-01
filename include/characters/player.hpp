@@ -36,6 +36,9 @@ public:
 	// Let character know it's currently on a platform (and its position)
 	void set_on_platform(double yPos);
 
+	// Let character know it's currently in freefall
+	void set_in_free_fall();
+
 	// Change player's movement direction
 	void set_direction(int key, int action);
 
