@@ -123,9 +123,8 @@ bool World::init(vec2 screen, Physics* physicsHandler)
 	
 	// initialize floors
 	for (int i = 0; i < 30; i++) {
-		spawn_floor();
+		spawn_floor({ screen.x - 450 - 20 * i, screen.y - 100 });
 		MazeComponent& new_floor = m_floor.back();
-		new_floor.set_position({ screen.x - 450 - 20 * i, screen.y - 100 });
 	}
 	return m_salmon.init(initialPosition) && m_water.init() && m_player.init(initialPosition) && m_enemy.init(initialPosition);
 }
@@ -334,10 +333,10 @@ bool World::spawn_turtle()
 	return false;
 }
 
-bool World::spawn_floor()
+bool World::spawn_floor(vec2 position)
 {
 	Floor floor;
-	if (floor.init())
+	if (floor.init(position))
 	{
 		m_floor.emplace_back(floor);
 		return true;
