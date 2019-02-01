@@ -163,19 +163,15 @@ bool World::update(float elapsed_ms)
         glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = { (float)w, (float)h };
 
-	// Checking Player - Turtle Collisions
-	for (const auto& turtle : m_turtles)
-	{
-		if (physicsHandler->collideWithEnemy(&m_player, &turtle).isCollided)
-		{
-			if (m_player.is_alive()) {
-				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
-				m_water.set_player_dead();
-			}
-			m_player.kill();
-			break;
-		}
-	}
+	// Checking Player - Enemy Collision
+//	if (physicsHandler->collideWithEnemy(&m_player, &m_enemy).isCollided)
+//	{
+//		if (m_player.is_alive()) {
+//			Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+//			m_water.set_player_dead();
+//		}
+//		m_player.kill();
+//	}
 
 	// TODO: Check for Player-Platform Collisions
 	bool isOnAtLeastOnePlatform = false;

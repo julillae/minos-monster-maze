@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <math.h>
 #include <typeinfo>
+#include <cmath>
 
 // Put implementations specific to Enemies (not applicable to Player)
 // but common across both simple and complex enemies here
@@ -204,4 +205,9 @@ void Enemy::kill()
 void Enemy::set_position(vec2 position)
 {
 	m_position = position;
+}
+
+vec2 Enemy::get_bounding_box()const
+{
+    return { std::fabs(m_scale.x) * enemy_texture.width, std::fabs(m_scale.y) * enemy_texture.height };
 }
