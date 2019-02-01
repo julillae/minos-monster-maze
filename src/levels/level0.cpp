@@ -67,10 +67,10 @@ Level0::~Level0()
 
 }
 
-bool Level0::spawn_floor()
+bool Level0::spawn_floor(vec2 position)
 {
 	Floor floor;
-	if (floor.init())
+	if (floor.init(position))
 	{
 		m_floor.emplace_back(floor);
 		return true;
@@ -82,22 +82,23 @@ bool Level0::spawn_floor()
 // Generates maze
 void Level0::generate_maze()
 {
-	const float tile_width = 20.0;
-	const float tile_height = 20.0;
+	// Initial tile
+	spawn_floor({0, 0});
 	const float initial_x = 40.0;
 	const float initial_y = 30.0;
 
 	for (int i = 0; i < MAZE_HEIGHT; ++i) {
 		for (int j = 0; j < MAZE_WIDTH; ++j) {
 			if (MAZE[i][j] == 1) {
-				spawn_floor();
-
 				MazeComponent& new_floor = m_floor.back();	
+
+				float tile_width = new_floor.get_width();
+				float tile_height = new_floor.get_height();
 
 				float x_pos = (i * tile_width) + initial_x;
 				float y_pos = (j * tile_height) + initial_y;
 
-				new_floor.set_position({ x_pos, y_pos});
+				spawn_floor({x_pos, y_pos});
 			}
 		}
 	}

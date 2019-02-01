@@ -48,7 +48,7 @@ private:
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
 	// Generates a new floor
-	bool spawn_floor();
+	bool spawn_floor(vec2 position);
 
 	// Generates hard-coded maze in each level
 	void generate_maze();
