@@ -1,4 +1,5 @@
 #include "../include/physics.hpp"
+#include <algorithm>
 
 // logic for gravity and potentially friction calculations go here
 

@@ -5,7 +5,7 @@
 
 Texture Fish::fish_texture;
 
-bool Fish::init()
+bool Fish::init(vec2 initialPosition)
 {
 	// Load shared texture
 	if (!fish_texture.is_valid())

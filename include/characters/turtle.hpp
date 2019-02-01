@@ -10,7 +10,7 @@ class Turtle : public Enemy
 
 public:
 	// Creates all the associated render resources and default transform
-	bool init();
+	bool init(vec2 initialPosition);
 
 	// Update turtle due to current
 	// ms represents the number of milliseconds elapsed from the previous update() call

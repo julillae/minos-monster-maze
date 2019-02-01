@@ -9,7 +9,7 @@ class Salmon : public Character
 {
 public:
 	// Creates all the associated render resources and default transform
-	bool init();
+	bool init(vec2 initialPosition);
 	
 	// Update salmon position based on direction
 	// ms represents the number of milliseconds elapsed from the previous update() call
