@@ -7,7 +7,7 @@
 // but common across both simple and complex enemies here
 class Enemy : public Character
 {
-	static Texture fish_texture;
+	static Texture enemy_texture;
 
 public:
 	// Sets the new enemy position
@@ -31,7 +31,7 @@ public:
 	void move();
 
 	// Change enemy's movement direction
-	void set_direction(int key, int action);
+	void set_direction(Direction direction);
 
 	// Set enemy's rotation in radians
 	void set_rotation(float radians);
@@ -45,6 +45,9 @@ public:
 
 private:
 	double tolerance = 0.000001;
-	double maxVelocity = 12;
+	float maxVelocity = 2.0f;
 	vec2 currentVelocity;
+	Direction direction;
+	float platformWidth;
+	float platformX;
 };

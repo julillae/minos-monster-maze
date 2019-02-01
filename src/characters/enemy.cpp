@@ -11,23 +11,23 @@
 // Put implementations specific to Enemies (not applicable to Player)
 // but common across both simple and complex enemies here
 
-Texture Enemy::fish_texture;
+Texture Enemy::enemy_texture;
 
 bool Enemy::init()
 {
 	// Load shared texture
-	if (!fish_texture.is_valid())
+	if (!enemy_texture.is_valid())
 	{
-		if (!fish_texture.load_from_file(textures_path("fish.png")))
+		if (!enemy_texture.load_from_file(textures_path("minotaur_right.png")))
 		{
-			fprintf(stderr, "Failed to load turtle texture!");
+			fprintf(stderr, "Failed to load enemy texture!");
 			return false;
 		}
 	}
 
 	// The position corresponds to the center of the texture
-	float wr = fish_texture.width * 0.5f;
-	float hr = fish_texture.height * 0.5f;
+	float wr = enemy_texture.width;
+	float hr = enemy_texture.height;
 
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.01f };
@@ -69,8 +69,13 @@ bool Enemy::init()
 	m_scale.x = -0.4f;
 	m_scale.y = 0.4f;
 	m_rotation = 0.f;
+	direction = right;
+	m_is_alive = true;
+	// initial_position = get_initial_position();
 	m_position = { 300.f, 300.f };
-	currentVelocity = {0.0, 0.0};
+	currentVelocity = {maxVelocity, 0.0f};
+	platformWidth = 100.0f;
+	platformX = 300.f;
 
 	return true;
 }
@@ -79,19 +84,31 @@ bool Enemy::init()
 void Enemy::update(float ms)
 {
 
-
 	if (m_is_alive)
 	{
+		// const float ENEMY_SPEED = 380.f;
 		// Update enemy position based on fixed path here
-		float step = -currentVelocity.x* (ms / 1000);
-		m_position.x += step;
+		float step = currentVelocity.x;
+		if (direction == right) {
+			if ((m_position.x + step) >= (platformX + platformWidth)) {
+				direction = left;
+			} else {
+				m_position.x += step;
+			}
+		} 
+		else if (direction == left) {
+			if ((m_position.x - step) <= (platformX - platformWidth)) {
+				direction = right;
+			} else {
+				m_position.x -= step;
+			}
+		}
 
 	}
 	else
 	{
 		// If dead reset back to original position (for now)
-		set_rotation(3.1415f);
-		//move({ 0.f, step });
+		// set_position();
 	}
 
 }
@@ -133,7 +150,7 @@ void Enemy::draw(const mat3& projection)
 
 	// Enabling and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, fish_texture.id);
+	glBindTexture(GL_TEXTURE_2D, enemy_texture.id);
 
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
@@ -151,9 +168,9 @@ void Enemy::move()
 	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
 }
 
-void Enemy::set_direction(int key, int action)
+void Enemy::set_direction(Direction d)
 {
-	
+	direction = d;
 }
 
 
