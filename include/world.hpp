@@ -100,6 +100,5 @@ private:
 	vec2 initialPosition = { 200.f, 500.f };
 
 	Physics* physicsHandler;
-
 	bool is_player_at_goal;
 };
