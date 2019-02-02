@@ -4,6 +4,7 @@
 
 bool Water::init() {
 	m_dead_time = -1;
+	m_win_time = -1;
 
 	// Since we are not going to apply transformation to this screen geometry
 	// The coordinates are set to fill the standard openGL window [-1, -1 .. 1, 1]
@@ -51,12 +52,24 @@ void Water::set_player_dead() {
 	m_dead_time = glfwGetTime();
 }
 
+void Water::set_player_win() {
+	m_win_time = glfwGetTime();
+}
+
 void Water::reset_salmon_dead_time() {
 	m_dead_time = -1;
 }
 
+void Water::reset_player_win_time() {
+	m_win_time = -1;
+}
+
 float Water::get_salmon_dead_time() const {
 	return glfwGetTime() - m_dead_time;
+}
+
+float Water::get_player_win_time() const {
+	return glfwGetTime() - m_win_time;
 }
 
 void Water::draw(const mat3& projection) {
@@ -72,9 +85,11 @@ void Water::draw(const mat3& projection) {
 	GLuint screen_text_uloc = glGetUniformLocation(effect.program, "screen_texture");
 	GLuint time_uloc = glGetUniformLocation(effect.program, "time");
 	GLuint dead_timer_uloc = glGetUniformLocation(effect.program, "dead_timer");
+	GLuint win_timer_uloc = glGetUniformLocation(effect.program, "win_timer");
 	glUniform1i(screen_text_uloc, 0);
 	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
 	glUniform1f(dead_timer_uloc, (m_dead_time > 0) ? (float)((glfwGetTime() - m_dead_time) * 10.0f) : -1);
+	glUniform1f(win_timer_uloc, (m_win_time > 0) ? (float)((glfwGetTime() - m_win_time) * 10.0f) : -1);
 
 	// Draw the screen texture on the quad geometry
 	// Setting vertices
