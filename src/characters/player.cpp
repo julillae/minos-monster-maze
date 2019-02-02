@@ -198,7 +198,7 @@ void Player::draw(const mat3& projection)
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
 	// Drawing!
-	glDrawElements(GL_TRIANGLES,(GLsizei)m_num_indices, GL_UNSIGNED_SHORT, nullptr);
+	glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_SHORT, nullptr);
 }
 
 // Returns the local bounding coordinates scaled by the current size of the fish 
