@@ -4,13 +4,13 @@
 CMakeFiles/436d.dir/src/a1.cpp.o
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/character.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/enemy.hpp
- /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/fish.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/player.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/salmon.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/turtle.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/common.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/fixedComponent.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/mazeComponent.hpp
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/physics.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/project_path.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/water.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/world.hpp
@@ -182,13 +182,13 @@ CMakeFiles/436d.dir/src/water.cpp.o
 CMakeFiles/436d.dir/src/world.cpp.o
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/character.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/enemy.hpp
- /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/fish.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/player.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/salmon.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/turtle.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/common.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/fixedComponent.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/mazeComponent.hpp
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/physics.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/project_path.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/water.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/world.hpp

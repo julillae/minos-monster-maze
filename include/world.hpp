@@ -3,10 +3,15 @@
 // internal
 #include "common.hpp"
 #include "characters/player.hpp"
+#include "characters/enemy.hpp"
 #include "characters/salmon.hpp"
 #include "characters/turtle.hpp"
-#include "characters/fish.hpp"
+#include "mazeComponents/mazeComponent.hpp"
+#include "mazeComponents/fixedComponent.hpp"
+#include "mazeComponents/floor.hpp"
+#include "mazeComponents/exit.hpp" 
 #include "water.hpp"
+#include "physics.hpp"
 
 // stlib
 #include <vector>
@@ -25,7 +30,7 @@ public:
 	~World();
 
 	// Creates a window, sets up events and begins the game
-	bool init(vec2 screen);
+	bool init(vec2 screen, Physics* physicsHandler);
 
 	// Releases all associated resources
 	void destroy();
@@ -43,8 +48,10 @@ private:
 	// Generates a new turtle
 	bool spawn_turtle();
 
-	// Generates a new fish
-	bool spawn_fish();
+	// Generates a new floor
+	bool spawn_floor(vec2 position);
+
+	bool spawn_ice();
 
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
@@ -68,12 +75,14 @@ private:
 	// Game entities
 	Salmon m_salmon;
 	Player m_player;
+	Enemy m_enemy;
+	Exit m_exit;
 	std::vector<Turtle> m_turtles;
-	std::vector<Fish> m_fish;
+	std::vector<Floor> m_floor;
 
 	float m_current_speed;
 	float m_next_turtle_spawn;
-	float m_next_fish_spawn;
+	float m_next_floor_spawn;
 	
 	Mix_Music* m_background_music;
 	Mix_Chunk* m_salmon_dead_sound;
@@ -82,4 +91,9 @@ private:
 	// C++ rng
 	std::default_random_engine m_rng;
 	std::uniform_real_distribution<float> m_dist; // default 0..1
+
+	// initial position of player
+	vec2 initialPosition = { 200.f, 500.f };
+
+	Physics* physicsHandler;
 };

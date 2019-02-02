@@ -14,10 +14,6 @@
 character.hpp
 /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/character.hpp
 
-/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/fish.hpp
-enemy.hpp
-/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/enemy.hpp
-
 /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/player.hpp
 character.hpp
 /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/character.hpp
@@ -52,6 +48,8 @@ mazeComponent.hpp
 ../common.hpp
 /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/common.hpp
 
+/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/physics.hpp
+
 /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/project_path.hpp
 
 /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/water.hpp
@@ -63,14 +61,24 @@ common.hpp
 /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/common.hpp
 characters/player.hpp
 /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/player.hpp
+characters/enemy.hpp
+/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/enemy.hpp
 characters/salmon.hpp
 /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/salmon.hpp
 characters/turtle.hpp
 /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/turtle.hpp
-characters/fish.hpp
-/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/fish.hpp
+mazeComponents/mazeComponent.hpp
+/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/mazeComponent.hpp
+mazeComponents/fixedComponent.hpp
+/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/fixedComponent.hpp
+mazeComponents/floor.hpp
+/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/floor.hpp
+mazeComponents/exit.hpp
+/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/exit.hpp
 water.hpp
 /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/water.hpp
+physics.hpp
+/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/physics.hpp
 vector
 -
 random
@@ -90,22 +98,6 @@ gl3w.h
 chrono
 -
 iostream
--
-
-/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/characters/salmon.cpp
-../include/characters/salmon.hpp
-/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/include/characters/salmon.hpp
-../include/characters/turtle.hpp
-/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/include/characters/turtle.hpp
-../include/characters/fish.hpp
-/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/include/characters/fish.hpp
-vector
--
-string
--
-algorithm
--
-math.h
 -
 
 /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/world.cpp
@@ -799,36 +791,4 @@ stdint.h
 -
 inttypes.h
 -
-
-include/characters/character.hpp
-../common.hpp
-include/common.hpp
-
-include/characters/enemy.hpp
-character.hpp
-include/characters/character.hpp
-
-include/characters/fish.hpp
-enemy.hpp
-include/characters/enemy.hpp
-
-include/characters/salmon.hpp
-character.hpp
-include/characters/character.hpp
-
-include/characters/turtle.hpp
-enemy.hpp
-include/characters/enemy.hpp
-
-include/common.hpp
-fstream
--
-gl3w.h
--
-GLFW/glfw3.h
--
-project_path.hpp
-include/project_path.hpp
-
-include/project_path.hpp
 
