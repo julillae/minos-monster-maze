@@ -63,5 +63,5 @@ private:
 	double fakeFloorPos = 750.f;
 	double currentFloorPos = fakeFloorPos;
 	double gravityAcc = 9.81 * 0.2;
-	double jumpVel = -30.f;
+	double jumpVel = -25.f;
 };

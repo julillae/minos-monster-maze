@@ -2,6 +2,7 @@
 #include "../include/common.hpp"
 #include "../include/world.hpp"
 #include "../include/physics.hpp"
+#include "../include/levels/level0.hpp"
 
 #define GL3W_IMPLEMENTATION
 #include <gl3w.h>
@@ -13,7 +14,7 @@
 using Clock = std::chrono::high_resolution_clock;
 
 // Global 
-World world;
+Level0 world;
 const int width = 1200;
 const int height = 800;
 const char* title = "Your Title Here";
