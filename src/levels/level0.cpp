@@ -204,10 +204,12 @@ bool Level0::init(vec2 screen, Physics* physicsHandler)
 	}
 
 	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
+	m_salmon_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
 
 	if (m_background_music == nullptr)
 	{
 		fprintf(stderr, "Failed to load sound\n %s\n make sure the data directory is present",
+			audio_path("salmon_dead.wav"),
 			audio_path("music.wav"));
 		return false;
 	}
@@ -218,6 +220,7 @@ bool Level0::init(vec2 screen, Physics* physicsHandler)
 	fprintf(stderr, "Loaded music\n");
 
 	m_current_speed = 1.f;
+	is_player_at_goal = false;
 
 	generate_maze();
 	
@@ -233,6 +236,8 @@ void Level0::destroy()
 
 	if (m_background_music != nullptr)
 		Mix_FreeMusic(m_background_music);
+	if (m_salmon_dead_sound != nullptr)
+		Mix_FreeChunk(m_salmon_dead_sound);
 
 	Mix_CloseAudio();
 
@@ -255,14 +260,25 @@ bool Level0::update(float elapsed_ms)
 	vec2 screen = { (float)w, (float)h };
 
 	// Checking Player - Enemy Collision
-	//	if (physicsHandler->collideWithEnemy(&m_player, &m_enemy).isCollided)
-	//	{
-	//		if (m_player.is_alive()) {
-	//			Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
-	//			m_water.set_player_dead();
-	//		}
-	//		m_player.kill();
-	//	}
+	for (Enemy& enemy : m_enemies) {
+		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
+		{
+			if (m_player.is_alive()) {
+				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+				m_water.set_player_dead();
+			}
+			m_player.kill();
+		}
+	}
+
+	// Checking Player - Exit Collision
+	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided)
+	{
+		if (m_player.is_alive()) {
+			m_water.set_player_win();
+		}
+		is_player_at_goal = true;
+	}
 
 	// TODO: Check for Player-Platform Collisions
 	bool isOnAtLeastOnePlatform = false;
@@ -303,15 +319,15 @@ bool Level0::update(float elapsed_ms)
 	for (auto& enemy : m_enemies)
 		enemy.update(elapsed_ms);
 
-	// If player is dead, restart the game after the fading animation
-	if (!m_player.is_alive()) {
-		int w, h;
-		glfwGetWindowSize(m_window, &w, &h);
+		// If player is dead or beat the game, restart the game after the fading animation
+	if (!m_player.is_alive() && m_water.get_salmon_dead_time() > 5) {
+		reset_game();
+	}
 
-		m_player.destroy();
-		m_player.init(initialPosition);
-
-		m_current_speed = 1.f;
+	if (m_player.is_alive() && is_player_at_goal && m_water.get_player_win_time() > 5)
+	{
+		m_water.set_player_win();
+		reset_game();
 	}
 
 	return true;
@@ -332,6 +348,13 @@ void Level0::draw()
 	std::stringstream title_ss;
 	title_ss << "Minos' Monster Maze";
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
+
+	if (is_player_at_goal)
+	{
+		title_ss.str("");
+		title_ss << "You Win!";
+		glfwSetWindowTitle(m_window, title_ss.str().c_str());
+	}
 
 	/////////////////////////////////////
 	// First render to the custom framebuffer
@@ -426,4 +449,16 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
 void Level0::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
 
+}
+
+void Level0::reset_game()
+{
+	int w, h;
+	glfwGetWindowSize(m_window, &w, &h);
+	m_player.destroy();
+	m_player.init(initialPosition);
+
+	m_water.reset_player_win_time();
+	m_current_speed = 1.f;
+	is_player_at_goal = false;
 }
