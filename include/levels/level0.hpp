@@ -7,6 +7,7 @@
 #include "../mazeComponents/mazeComponent.hpp"
 #include "../mazeComponents/fixedComponent.hpp"
 #include "../mazeComponents/floor.hpp"
+#include "../mazeComponents/exit.hpp"
 #include "../mazeComponents/ice.hpp"
 #include "../water.hpp"
 #include "../physics.hpp"
@@ -66,6 +67,7 @@ private:
 
     Player m_player;
 	Enemy m_enemy;
+	Exit m_exit;
     std::vector<Floor> m_floor;
 
     float m_current_speed;
