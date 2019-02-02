@@ -52,7 +52,7 @@ bool Player::init(vec2 initialPosition)
 
 	if (!fish_texture.is_valid())
 	{
-		if (!fish_texture.load_from_file(textures_path("fish.png")))
+		if (!fish_texture.load_from_file(textures_path("ice.png")))
 		{
 			fprintf(stderr, "Failed to load turtle texture!");
 			return false;
@@ -99,8 +99,8 @@ bool Player::init(vec2 initialPosition)
 		return false;
 	
 	// Setting initial values
-	m_scale.x = -0.4f;
-	m_scale.y = 0.4f;
+	m_scale.x = -50.f;
+	m_scale.y = 50.f;
 	m_is_alive = true;
 	v_direction = Direction::none;
 	m_position = initialPosition;
