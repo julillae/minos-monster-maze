@@ -301,7 +301,7 @@ void World::draw()
 	float bottom = (float)h;// *0.5;
 
 	float sx = 2.f / (right - left);
-	float sy = 2.f / (top - bottom);
+	float sy = 2.f / (top - bottom);  //this is where you play around with the camera
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };

@@ -1,0 +1,3 @@
+/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/CMakeFiles/rebuild_cache.dir
+/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/CMakeFiles/edit_cache.dir
+/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/CMakeFiles/436d.dir
