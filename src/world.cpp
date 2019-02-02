@@ -177,13 +177,13 @@ bool World::update(float elapsed_ms)
 //	}
 
 	// Checking Player - Exit Collision
-	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided)
-	{
-		if (m_player.is_alive()) {
-			m_water.set_player_win();
-		}
-		is_player_at_goal = true;
-	}
+	//if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided)
+	//{
+	//	if (m_player.is_alive()) {
+	//		m_water.set_player_win();
+	//	}
+	//	is_player_at_goal = true;
+	//}
 
 	// TODO: Check for Player-Platform Collisions
 	bool isOnAtLeastOnePlatform = false;
@@ -301,7 +301,7 @@ void World::draw()
 	float bottom = (float)h;// *0.5;
 
 	float sx = 2.f / (right - left);
-	float sy = 2.f / (top - bottom);
+	float sy = 2.f / (top - bottom);  //this is where you play around with the camera
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
@@ -315,7 +315,7 @@ void World::draw()
 		enemy.draw(projection_2D);	
 	m_salmon.draw(projection_2D);
 	m_player.draw(projection_2D);
-	m_enemy.draw(projection_2D);
+	//m_enemy.draw(projection_2D);
 	//m_exit.draw(projection_2D);
 
 	/////////////////////

@@ -9,6 +9,7 @@ class FixedComponent;
 
 class Player : public Character
 {
+	static Texture fish_texture;
 public:
 	// Creates all the associated render resources and default transform
 	bool init(vec2 initialPosition);
@@ -23,6 +24,9 @@ public:
 	// Collision routines for enemies and fixed maze components
 	//bool collides_with(const Turtle& turtle);
 	//bool collides_with(const Fish& fish);
+
+	// Returns the local bounding coordinates scaled by the current size of the fish 
+	vec2 get_bounding_box()const;
 
 	// Set the player's acceleration vector
 	void set_acceleration(vec2 acc);
