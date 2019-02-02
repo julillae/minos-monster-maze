@@ -2,6 +2,7 @@
 uniform sampler2D screen_texture;
 uniform float time;
 uniform float dead_timer;
+uniform float win_timer;
 
 in vec2 uv;
 
@@ -31,6 +32,9 @@ vec4 fade_color(vec4 in_color) {
 	vec4 color = in_color;
 	if (dead_timer > 0)
 		color -= 0.1 * dead_timer * vec4(0.1, 0.1, 0.1, 0);
+
+	if (win_timer > 0)
+		color -= 0.1 * win_timer * vec4(0.1, 0.1, 0.1, 0);
 
 	return color;
 }
