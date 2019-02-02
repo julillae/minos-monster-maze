@@ -121,6 +121,7 @@ bool World::init(vec2 screen, Physics* physicsHandler)
 	fprintf(stderr, "Loaded music\n");
 
 	m_current_speed = 1.f;
+	is_player_at_goal = false;
 	
 	// initialize floors
 	for (int i = 0; i < 30; i++) {
@@ -174,6 +175,15 @@ bool World::update(float elapsed_ms)
 //		}
 //		m_player.kill();
 //	}
+
+	// Checking Player - Exit Collision
+	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided)
+	{
+		if (m_player.is_alive()) {
+			m_water.set_player_win();
+		}
+		is_player_at_goal = true;
+	}
 
 	// TODO: Check for Player-Platform Collisions
 	bool isOnAtLeastOnePlatform = false;
@@ -234,19 +244,15 @@ bool World::update(float elapsed_ms)
 	}
 
 
-	// If player is dead, restart the game after the fading animation
-	if (!m_player.is_alive() &&
-		m_water.get_salmon_dead_time() > 5) {
-		int w, h;
-		glfwGetWindowSize(m_window, &w, &h);
-		m_salmon.destroy();
-		m_player.destroy();
-		m_player.init(initialPosition);
-		m_salmon.init(initialPosition);
+	// If player is dead or beat the game, restart the game after the fading animation
+	if (!m_player.is_alive() && m_water.get_salmon_dead_time() > 5) {
+		reset_game();
+	}
 
-		m_turtles.clear();
-		m_water.reset_salmon_dead_time();
-		m_current_speed = 1.f;
+	if (m_player.is_alive() && is_player_at_goal && m_water.get_player_win_time() > 5)
+	{
+		m_water.set_player_win();
+		reset_game();
 	}
 
 	return true;
@@ -267,6 +273,13 @@ void World::draw()
 	std::stringstream title_ss;
 	title_ss << "Points: " << m_points;
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
+
+	if (is_player_at_goal)
+	{
+		title_ss.str("");
+		title_ss << "You Win!";
+		glfwSetWindowTitle(m_window, title_ss.str().c_str());
+	}
 
 	/////////////////////////////////////
 	// First render to the custom framebuffer
@@ -302,6 +315,8 @@ void World::draw()
 		enemy.draw(projection_2D);	
 	m_salmon.draw(projection_2D);
 	m_player.draw(projection_2D);
+	m_enemy.draw(projection_2D);
+	//m_exit.draw(projection_2D);
 
 	/////////////////////
 	// Truely render to the screen
@@ -419,4 +434,20 @@ void World::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	m_salmon.look_at_mouse(xpos, ypos);
 
+}
+
+void World::reset_game()
+{
+	int w, h;
+	glfwGetWindowSize(m_window, &w, &h);
+	m_salmon.destroy();
+	m_player.destroy();
+	m_player.init(initialPosition);
+	m_salmon.init(initialPosition);
+
+	m_turtles.clear();
+	m_water.reset_salmon_dead_time();
+	m_water.reset_player_win_time();
+	m_current_speed = 1.f;
+	is_player_at_goal = false;
 }
