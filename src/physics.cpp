@@ -60,3 +60,19 @@ Physics::CollisionNode Physics::collisionWithFixedWalls(Player *p, const Floor *
     return collisionNode;
 }
 
+Physics::CollisionNode Physics::collideWithExit (Player *p, const Exit *e) {
+    float d_sq = lineIntersection(p->get_position().x, e->get_position().x, p->get_position().y, e->get_position().y);
+    float r = boundingBox(e->get_bounding_box().x, e->get_bounding_box().y, p->get_scale().x, p->get_scale().y);
+
+    r *= 0.6f;
+    bool isCollided = false;
+    if (d_sq < r * r) {
+        isCollided = true;
+    }
+
+    Physics::CollisionNode collisionNode{};
+    collisionNode.isCollided = isCollided;
+    collisionNode.angleOfCollision = 0;
+    return collisionNode;
+}
+
