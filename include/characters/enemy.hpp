@@ -14,6 +14,8 @@ public:
 	void set_position(vec2 position);
 
 	// Creates all the associated render resources and default transform
+	bool init(vec2 initialPosition, float bound);
+
 	bool init(vec2 initialPosition);
 	
 	// Update enemy position based on velocity vector
@@ -53,6 +55,6 @@ private:
 	float maxVelocity = 2.0f;
 	vec2 currentVelocity;
 	Direction direction;
-	float platformWidth;
-	float platformX;
+	float stopBound;
+	vec2 m_initialPosition;
 };
