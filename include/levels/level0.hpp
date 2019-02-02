@@ -48,6 +48,12 @@ private:
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
+	// Add enemies with hardcoded positions
+	void spawn_enemies();
+
+	// Helper to generates a new enemy
+	bool spawn_enemy(vec2 position, float bound);
+
 	// Generates a new floor
 	bool spawn_floor(vec2 position);
 
@@ -66,8 +72,8 @@ private:
 	Water m_water;
 
     Player m_player;
-	Enemy m_enemy;
 	Exit m_exit;
+	std::vector<Enemy> m_enemies;
     std::vector<Floor> m_floor;
 
     float m_current_speed;
