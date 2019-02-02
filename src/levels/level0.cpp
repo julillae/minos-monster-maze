@@ -272,7 +272,7 @@ bool Level0::update(float elapsed_ms)
 	}
 
 	// Checking Player - Exit Collision
-	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided)
+	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided && !is_player_at_goal)
 	{
 		if (m_player.is_alive()) {
 			m_water.set_player_win();
