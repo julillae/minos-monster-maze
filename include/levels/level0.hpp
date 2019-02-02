@@ -57,6 +57,8 @@ private:
 	// Generates a new floor
 	bool spawn_floor(vec2 position);
 
+	void reset_game();
+
 	// Generates hard-coded maze in each level
 	void generate_maze();
 private:
@@ -81,13 +83,16 @@ private:
     float m_next_floor_spawn;
 
     Mix_Music* m_background_music;
+	Mix_Chunk* m_salmon_dead_sound;
 
     // C++ rng
 	std::default_random_engine m_rng;
 	std::uniform_real_distribution<float> m_dist; // default 0..1
 
     // initial position of player
-	vec2 initialPosition = { 700.f, 600.f };
+	vec2 initialPosition = { 700.f, 625.f };
 
 	Physics* physicsHandler;
+
+	bool is_player_at_goal;
 };
