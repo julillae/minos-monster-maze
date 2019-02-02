@@ -55,12 +55,14 @@ public:
 	// Kills the player, changing its alive state and triggering on death events
 	void kill();
 
-
+	bool isBelowPlatform;
+	bool isLeftOfPlatform;
+	bool isRightOfPlatform;
 private:
 	double tolerance = 0.000001;
 	double maxVelocity = 12;
 	double accStep = 2.f;
-	double drag = 0.9;
+	double drag = 0.8;
 	vec2 currentVelocity;
 	vec2 currentAcceleration;
 	bool isOnPlatform;
