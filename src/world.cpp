@@ -12,6 +12,7 @@ namespace
 {
 	const size_t MAX_TURTLES = 15;
 	const size_t MAX_FISH = 5;
+	const size_t MAX_ENEMIES = 1;
 	const size_t TURTLE_DELAY_MS = 2000;
 	const size_t FISH_DELAY_MS = 5000;
 
@@ -127,7 +128,7 @@ bool World::init(vec2 screen, Physics* physicsHandler)
 		spawn_floor({ screen.x - 450 - 20 * i, screen.y - 100 });
 		MazeComponent& new_floor = m_floor.back();
 	}
-	return m_salmon.init(initialPosition) && m_water.init() && m_player.init(initialPosition) && m_enemy.init(initialPosition);
+	return m_salmon.init(initialPosition) && m_water.init() && m_player.init(initialPosition);
 }
 
 // Releases all the associated resources
@@ -146,13 +147,15 @@ void World::destroy()
 
 	m_salmon.destroy();
 	m_player.destroy();
-	m_enemy.destroy();
+	for (auto& enemy : m_enemies)
+		enemy.destroy();
 	for (auto& turtle : m_turtles)
 		turtle.destroy();
 	for (auto& floor : m_floor)
 		floor.destroy();
 	m_floor.clear();
 	m_turtles.clear();
+	m_enemies.clear();
 	glfwDestroyWindow(m_window);
 }
 
@@ -199,9 +202,8 @@ bool World::update(float elapsed_ms)
 	// faster based on current
 	m_salmon.update(elapsed_ms);
 	m_player.update(elapsed_ms);
-	m_enemy.update(elapsed_ms);
-	for (auto& turtle : m_turtles)
-		turtle.update(elapsed_ms * m_current_speed);
+	for (auto& enemy : m_enemies)
+		enemy.update(elapsed_ms);
 
 	// Removing out of screen turtles
 	auto turtle_it = m_turtles.begin();
@@ -231,6 +233,14 @@ bool World::update(float elapsed_ms)
 
 		// Next spawn
 		m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS/2);
+	}
+
+	// Spawning new enemies
+	if (m_enemies.size() <= MAX_ENEMIES)
+	{
+		if (!spawn_enemy())
+			return false;
+		Enemy& new_enemy = m_enemies.back();
 	}
 
 
@@ -300,7 +310,9 @@ void World::draw()
 	for (auto& turtle : m_turtles)
 		turtle.draw(projection_2D);
 	for (auto& floor : m_floor)
-		floor.draw(projection_2D);	
+		floor.draw(projection_2D);
+	for (auto& enemy : m_enemies)
+		enemy.draw(projection_2D);	
 	m_salmon.draw(projection_2D);
 	m_player.draw(projection_2D);
 	m_enemy.draw(projection_2D);
@@ -347,6 +359,18 @@ bool World::spawn_turtle()
 	return false;
 }
 
+bool World::spawn_enemy()
+{
+	Enemy enemy;
+	if (enemy.init({300.0f, 300.0f}, 30.0f))
+	{
+		m_enemies.emplace_back(enemy);
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn enemy");
+	return false;
+}
+
 bool World::spawn_floor(vec2 position)
 {
 	Floor floor;
@@ -386,8 +410,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		m_salmon.init(initialPosition);
 		m_player.destroy();
 		m_player.init(initialPosition);
-		m_enemy.destroy();
-		m_enemy.init(initialPosition);
+		m_enemies.clear();
 		m_turtles.clear();
 		m_water.reset_salmon_dead_time();
 		m_current_speed = 1.f;
