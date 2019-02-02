@@ -1,5 +1,7 @@
 #include "../include/physics.hpp"
 #include <algorithm>
+#include "../include/common.hpp"
+#include <math.h>
 
 // logic for gravity and potentially friction calculations go here
 
@@ -43,7 +45,7 @@ Physics::CollisionNode Physics::collisionWithFixedWalls(Player *p, const Floor *
     float d_sq = lineIntersection(p->get_position().x, f->get_position().x, p->get_position().y, f->get_position().y);
     float r = boundingBox(f->get_bounding_box().x, f->get_bounding_box().y, p->get_scale().x, p->get_scale().y);
 
-    r *= 0.6f;
+    r *= 0.9f;
     bool isCollided = false;
     if (d_sq < r * r) {
         isCollided = true;
@@ -53,7 +55,10 @@ Physics::CollisionNode Physics::collisionWithFixedWalls(Player *p, const Floor *
     collisionNode.isCollided = isCollided;
 
     if (isCollided) {
-        collisionNode.angleOfCollision = f->get_rotation();
+		float dy = p->get_position().y - f->get_position().y;
+		float dx = f->get_position().x - p->get_position().x;
+		float collisionAngle = atan2(dy, dx);
+        collisionNode.angleOfCollision = collisionAngle;
     } else {
         collisionNode.angleOfCollision = 0;
     }

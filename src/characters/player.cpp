@@ -107,6 +107,10 @@ bool Player::init(vec2 initialPosition)
 	m_rotation = 0.f;
 	currentVelocity = {0.0, 0.0};
 
+	isBelowPlatform = false;
+	isLeftOfPlatform = false;
+	isRightOfPlatform = false;
+
 	return true;
 }
 
@@ -221,15 +225,21 @@ void Player::update_velocity()
 	currentVelocity.x += currentAcceleration.x;
 	currentVelocity.y += currentAcceleration.y;
 
-	//if (currentVelocity.y > maxVelocity) currentVelocity.y = maxVelocity;
-	//if (currentVelocity.y < -maxVelocity) currentVelocity.y = -maxVelocity;
 	if (currentVelocity.x > maxVelocity) currentVelocity.x = maxVelocity;
 	if (currentVelocity.x < -maxVelocity) currentVelocity.x = -maxVelocity;
 
 	if (currentAcceleration.x < tolerance && currentAcceleration.x > -tolerance)
 		currentVelocity.x *= drag;
-	//if (currentAcceleration.y < tolerance && currentAcceleration.y > -tolerance)
-	//	currentVelocity.y *= drag;
+
+	if (isBelowPlatform) {
+		currentVelocity.y = std::max(0.f, currentVelocity.y);
+	}
+	if (isLeftOfPlatform) {
+		currentVelocity.x = std::min(0.f, currentVelocity.x);
+	}
+	if (isRightOfPlatform) {
+		currentVelocity.x = std::max(0.f, currentVelocity.x);
+	}
 }
 
 void Player::move()
