@@ -221,15 +221,11 @@ void Player::update_velocity()
 	currentVelocity.x += currentAcceleration.x;
 	currentVelocity.y += currentAcceleration.y;
 
-	//if (currentVelocity.y > maxVelocity) currentVelocity.y = maxVelocity;
-	//if (currentVelocity.y < -maxVelocity) currentVelocity.y = -maxVelocity;
 	if (currentVelocity.x > maxVelocity) currentVelocity.x = maxVelocity;
 	if (currentVelocity.x < -maxVelocity) currentVelocity.x = -maxVelocity;
 
 	if (currentAcceleration.x < tolerance && currentAcceleration.x > -tolerance)
 		currentVelocity.x *= drag;
-	//if (currentAcceleration.y < tolerance && currentAcceleration.y > -tolerance)
-	//	currentVelocity.y *= drag;
 }
 
 void Player::move()
