@@ -18,10 +18,14 @@ public:
 	// Set dead time
 	void set_salmon_dead();
 	void set_player_dead();
+	void set_player_win();
 	void reset_salmon_dead_time();
+	void reset_player_win_time();
 	float get_salmon_dead_time() const;
+	float get_player_win_time() const;
 
 private:
 	// When salmon is alive, the time is set to -1
 	float m_dead_time;
+	float m_win_time;
 };
