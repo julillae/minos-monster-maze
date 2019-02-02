@@ -177,13 +177,13 @@ bool World::update(float elapsed_ms)
 //	}
 
 	// Checking Player - Exit Collision
-	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided)
-	{
-		if (m_player.is_alive()) {
-			m_water.set_player_win();
-		}
-		is_player_at_goal = true;
-	}
+	//if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided)
+	//{
+	//	if (m_player.is_alive()) {
+	//		m_water.set_player_win();
+	//	}
+	//	is_player_at_goal = true;
+	//}
 
 	// TODO: Check for Player-Platform Collisions
 	bool isOnAtLeastOnePlatform = false;
@@ -315,7 +315,7 @@ void World::draw()
 		enemy.draw(projection_2D);	
 	m_salmon.draw(projection_2D);
 	m_player.draw(projection_2D);
-	m_enemy.draw(projection_2D);
+	//m_enemy.draw(projection_2D);
 	//m_exit.draw(projection_2D);
 
 	/////////////////////
