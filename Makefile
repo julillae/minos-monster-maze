@@ -420,6 +420,33 @@ src/gameAI.cpp.s:
 	$(MAKE) -f CMakeFiles/436d.dir/build.make CMakeFiles/436d.dir/src/gameAI.cpp.s
 .PHONY : src/gameAI.cpp.s
 
+src/mazeComponents/exit.o: src/mazeComponents/exit.cpp.o
+
+.PHONY : src/mazeComponents/exit.o
+
+# target to build an object file
+src/mazeComponents/exit.cpp.o:
+	$(MAKE) -f CMakeFiles/436d.dir/build.make CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o
+.PHONY : src/mazeComponents/exit.cpp.o
+
+src/mazeComponents/exit.i: src/mazeComponents/exit.cpp.i
+
+.PHONY : src/mazeComponents/exit.i
+
+# target to preprocess a source file
+src/mazeComponents/exit.cpp.i:
+	$(MAKE) -f CMakeFiles/436d.dir/build.make CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.i
+.PHONY : src/mazeComponents/exit.cpp.i
+
+src/mazeComponents/exit.s: src/mazeComponents/exit.cpp.s
+
+.PHONY : src/mazeComponents/exit.s
+
+# target to generate assembly for a file
+src/mazeComponents/exit.cpp.s:
+	$(MAKE) -f CMakeFiles/436d.dir/build.make CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.s
+.PHONY : src/mazeComponents/exit.cpp.s
+
 src/mazeComponents/fixedComponent.o: src/mazeComponents/fixedComponent.cpp.o
 
 .PHONY : src/mazeComponents/fixedComponent.o
@@ -447,6 +474,33 @@ src/mazeComponents/fixedComponent.cpp.s:
 	$(MAKE) -f CMakeFiles/436d.dir/build.make CMakeFiles/436d.dir/src/mazeComponents/fixedComponent.cpp.s
 .PHONY : src/mazeComponents/fixedComponent.cpp.s
 
+src/mazeComponents/floor.o: src/mazeComponents/floor.cpp.o
+
+.PHONY : src/mazeComponents/floor.o
+
+# target to build an object file
+src/mazeComponents/floor.cpp.o:
+	$(MAKE) -f CMakeFiles/436d.dir/build.make CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o
+.PHONY : src/mazeComponents/floor.cpp.o
+
+src/mazeComponents/floor.i: src/mazeComponents/floor.cpp.i
+
+.PHONY : src/mazeComponents/floor.i
+
+# target to preprocess a source file
+src/mazeComponents/floor.cpp.i:
+	$(MAKE) -f CMakeFiles/436d.dir/build.make CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.i
+.PHONY : src/mazeComponents/floor.cpp.i
+
+src/mazeComponents/floor.s: src/mazeComponents/floor.cpp.s
+
+.PHONY : src/mazeComponents/floor.s
+
+# target to generate assembly for a file
+src/mazeComponents/floor.cpp.s:
+	$(MAKE) -f CMakeFiles/436d.dir/build.make CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.s
+.PHONY : src/mazeComponents/floor.cpp.s
+
 src/mazeComponents/freeComponent.o: src/mazeComponents/freeComponent.cpp.o
 
 .PHONY : src/mazeComponents/freeComponent.o
@@ -473,6 +527,33 @@ src/mazeComponents/freeComponent.s: src/mazeComponents/freeComponent.cpp.s
 src/mazeComponents/freeComponent.cpp.s:
 	$(MAKE) -f CMakeFiles/436d.dir/build.make CMakeFiles/436d.dir/src/mazeComponents/freeComponent.cpp.s
 .PHONY : src/mazeComponents/freeComponent.cpp.s
+
+src/mazeComponents/ice.o: src/mazeComponents/ice.cpp.o
+
+.PHONY : src/mazeComponents/ice.o
+
+# target to build an object file
+src/mazeComponents/ice.cpp.o:
+	$(MAKE) -f CMakeFiles/436d.dir/build.make CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o
+.PHONY : src/mazeComponents/ice.cpp.o
+
+src/mazeComponents/ice.i: src/mazeComponents/ice.cpp.i
+
+.PHONY : src/mazeComponents/ice.i
+
+# target to preprocess a source file
+src/mazeComponents/ice.cpp.i:
+	$(MAKE) -f CMakeFiles/436d.dir/build.make CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.i
+.PHONY : src/mazeComponents/ice.cpp.i
+
+src/mazeComponents/ice.s: src/mazeComponents/ice.cpp.s
+
+.PHONY : src/mazeComponents/ice.s
+
+# target to generate assembly for a file
+src/mazeComponents/ice.cpp.s:
+	$(MAKE) -f CMakeFiles/436d.dir/build.make CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.s
+.PHONY : src/mazeComponents/ice.cpp.s
 
 src/mazeComponents/mazeComponent.o: src/mazeComponents/mazeComponent.cpp.o
 
@@ -624,12 +705,21 @@ help:
 	@echo "... src/gameAI.o"
 	@echo "... src/gameAI.i"
 	@echo "... src/gameAI.s"
+	@echo "... src/mazeComponents/exit.o"
+	@echo "... src/mazeComponents/exit.i"
+	@echo "... src/mazeComponents/exit.s"
 	@echo "... src/mazeComponents/fixedComponent.o"
 	@echo "... src/mazeComponents/fixedComponent.i"
 	@echo "... src/mazeComponents/fixedComponent.s"
+	@echo "... src/mazeComponents/floor.o"
+	@echo "... src/mazeComponents/floor.i"
+	@echo "... src/mazeComponents/floor.s"
 	@echo "... src/mazeComponents/freeComponent.o"
 	@echo "... src/mazeComponents/freeComponent.i"
 	@echo "... src/mazeComponents/freeComponent.s"
+	@echo "... src/mazeComponents/ice.o"
+	@echo "... src/mazeComponents/ice.i"
+	@echo "... src/mazeComponents/ice.s"
 	@echo "... src/mazeComponents/mazeComponent.o"
 	@echo "... src/mazeComponents/mazeComponent.i"
 	@echo "... src/mazeComponents/mazeComponent.s"

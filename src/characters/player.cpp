@@ -12,7 +12,7 @@
 
 Texture Player::fish_texture;
 
-bool Player::init()
+bool Player::init(vec2 initialPosition)
 {
 	
 	// Reads the salmon mesh from a file, which contains a list of vertices and indices
@@ -103,7 +103,7 @@ bool Player::init()
 	m_scale.y = 0.4f;
 	m_is_alive = true;
 	v_direction = Direction::none;
-	m_position = { 150.f, 200.f };
+	m_position = initialPosition;
 	m_rotation = 0.f;
 	currentVelocity = {0.0, 0.0};
 
@@ -123,23 +123,15 @@ void Player::update(float ms)
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// UPDATE PLAYER POSITION HERE BASED ON KEY PRESSED (World::on_key())
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		switch (v_direction) {
-			case Direction::up: vAcc = -accStep; break;
-			case Direction::down: vAcc = accStep; break;
-			default: vAcc = 0.f; break;
-		}
+
 		switch (h_direction) {
 			case Direction::left: hAcc = -accStep; break;
 			case Direction::right: hAcc = accStep; break;
 			default: hAcc = 0.f; break;
 		}
-		if (vAcc > maxAcceleration) vAcc = maxAcceleration;
-		if (vAcc < -maxAcceleration) vAcc = -maxAcceleration;
-		if (hAcc > maxAcceleration) hAcc = maxAcceleration;
-		if (hAcc < -maxAcceleration) hAcc = -maxAcceleration;
+		vAcc = gravityAcc;
 
 		set_acceleration({ hAcc, vAcc });
-
 		update_velocity();
 		move();
 
@@ -201,6 +193,7 @@ void Player::draw(const mat3& projection)
 	//	color[1] = 0.f;
 	//	color[2] = 0.f;
 	//}
+
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
@@ -228,37 +221,57 @@ void Player::update_velocity()
 	currentVelocity.x += currentAcceleration.x;
 	currentVelocity.y += currentAcceleration.y;
 
-	if (currentVelocity.y > maxVelocity) currentVelocity.y = maxVelocity;
-	if (currentVelocity.y < -maxVelocity) currentVelocity.y = -maxVelocity;
+	//if (currentVelocity.y > maxVelocity) currentVelocity.y = maxVelocity;
+	//if (currentVelocity.y < -maxVelocity) currentVelocity.y = -maxVelocity;
 	if (currentVelocity.x > maxVelocity) currentVelocity.x = maxVelocity;
 	if (currentVelocity.x < -maxVelocity) currentVelocity.x = -maxVelocity;
 
 	if (currentAcceleration.x < tolerance && currentAcceleration.x > -tolerance)
 		currentVelocity.x *= drag;
-	if (currentAcceleration.y < tolerance && currentAcceleration.y > -tolerance)
-		currentVelocity.y *= drag;
+	//if (currentAcceleration.y < tolerance && currentAcceleration.y > -tolerance)
+	//	currentVelocity.y *= drag;
 }
 
 void Player::move()
 {
 	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
+	currentFloorPos = std::min(fakeFloorPos, currentFloorPos);
+	if (m_position.y >= currentFloorPos - tolerance) {
+		m_position.y = currentFloorPos;
+		currentVelocity.y = 0.f;
+		isOnPlatform = true;
+	}
+	else {
+		set_in_free_fall();
+	}
+
+}
+
+void Player::set_on_platform(double yPos) {
+	isOnPlatform = true;
+	currentFloorPos = yPos;
+}
+
+void Player::set_in_free_fall() {
+	isOnPlatform = false;
+	currentFloorPos = fakeFloorPos;
 }
 
 void Player::set_direction(int key, int action)
 {
 	if (action == GLFW_PRESS) {
 		switch (key) {
-			case GLFW_KEY_DOWN: v_direction = Direction::down; break;
-			case GLFW_KEY_UP: v_direction = Direction::up; break;
+			//case GLFW_KEY_DOWN: v_direction = Direction::down; break;
+			case GLFW_KEY_UP: if (isOnPlatform) currentVelocity.y += jumpVel; break;
 			case GLFW_KEY_LEFT: h_direction = Direction::left; break;
 			case GLFW_KEY_RIGHT: h_direction = Direction::right; break;
 		}
 	}
 	else if (action == GLFW_RELEASE) {
 		switch (key) {
-			case GLFW_KEY_DOWN:
-				if (v_direction == Direction::down)
-					v_direction = Direction::none; break;
+			//case GLFW_KEY_DOWN:
+			//	if (v_direction == Direction::down)
+			//		v_direction = Direction::none; break;
 			case GLFW_KEY_UP: 
 				if (v_direction == Direction::up)
 					v_direction = Direction::none; break;

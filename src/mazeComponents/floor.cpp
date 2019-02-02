@@ -1,25 +1,18 @@
-// Header
-#include "../include/characters/turtle.hpp"
+#include "../include/mazeComponents/floor.hpp"
 
 #include <cmath>
 
-Texture Turtle::turtle_texture;
+ Texture Floor::texture;
 
-bool Turtle::init(vec2 initialPosition)
+bool Floor::init(vec2 position)
 {
-	// Load shared texture
-	if (!turtle_texture.is_valid())
-	{
-		if (!turtle_texture.load_from_file(textures_path("turtle.png")))
-		{
-			fprintf(stderr, "Failed to load turtle texture!");
-			return false;
-		}
-	}
+    if (!set_texture()) return false;
 
-	// The position corresponds to the center of the texture
-	float wr = turtle_texture.width * 0.5f;
-	float hr = turtle_texture.height * 0.5f;
+	set_position(position);
+
+    // The position corresponds to the center of the texture
+	float wr = texture.width * 0.5f;
+	float hr = texture.height * 0.5f;
 
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.02f };
@@ -58,23 +51,30 @@ bool Turtle::init(vec2 initialPosition)
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture
-	m_scale.x = -0.4f;
-	m_scale.y = 0.4f;
+    m_scale.x = 20.0f;
+	m_scale.y = 20.0f;
 	m_rotation = 0.f;
+
+	set_size();
 
 	return true;
 }
 
-void Turtle::update(float ms)
+bool Floor::set_texture()
 {
-	// Move fish along -X based on how much time has passed, this is to (partially) avoid
-	// having entities move at different speed based on the machine.
-	const float TURTLE_SPEED = 200.f;
-	float step = -TURTLE_SPEED * (ms / 1000);
-	m_position.x += step;
+    if (!texture.is_valid())
+    {
+        if (!texture.load_from_file(textures_path("solid.png")))
+		{
+             fprintf(stderr, "Failed to load floor texture!");
+            return false;
+		}
+    }
+
+    return true;
 }
 
-void Turtle::draw(const mat3& projection)
+void Floor::draw(const mat3& projection)
 {
 	// Transformation code, see Rendering and Transformation in the template specification for more info
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
@@ -111,7 +111,7 @@ void Turtle::draw(const mat3& projection)
 
 	// Enabling and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, turtle_texture.id);
+	glBindTexture(GL_TEXTURE_2D, texture.id);
 
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
@@ -123,9 +123,21 @@ void Turtle::draw(const mat3& projection)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-// Returns the local bounding coordinates scaled by the current size of the turtle 
-vec2 Turtle::get_bounding_box()const
+vec2 Floor::get_position()const
+{
+	return m_position;
+}
+
+
+// Returns the local bounding coordinates scaled by the current size of the component
+vec2 Floor::get_bounding_box()const
 {
 	// fabs is to avoid negative scale due to the facing direction
-	return { std::fabs(m_scale.x) * turtle_texture.width, std::fabs(m_scale.y) * turtle_texture.height };
+	return { std::fabs(m_scale.x) * texture.width, std::fabs(m_scale.y) * texture.height };
+}
+
+void Floor::set_size()
+{
+	m_width = std::fabs(m_scale.x) * texture.width;
+	m_height = std::fabs(m_scale.y) * texture.height;
 }
