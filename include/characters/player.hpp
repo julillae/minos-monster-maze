@@ -12,7 +12,7 @@ class Player : public Character
 	static Texture fish_texture;
 public:
 	// Creates all the associated render resources and default transform
-	bool init();
+	bool init(vec2 initialPosition);
 	
 	// Update player position based on velocity vector
 	// ms represents the number of milliseconds elapsed from the previous update() call
@@ -37,6 +37,12 @@ public:
 	// Moves the player's position by the specified offset
 	void move();
 
+	// Let character know it's currently on a platform (and its position)
+	void set_on_platform(double yPos);
+
+	// Let character know it's currently in freefall
+	void set_in_free_fall();
+
 	// Change player's movement direction
 	void set_direction(int key, int action);
 
@@ -53,9 +59,13 @@ public:
 private:
 	double tolerance = 0.000001;
 	double maxVelocity = 12;
-	double accStep = 0.6f;
-	double maxAcceleration = 4;
-	double drag = 0.95;
+	double accStep = 2.f;
+	double drag = 0.9;
 	vec2 currentVelocity;
 	vec2 currentAcceleration;
+	bool isOnPlatform;
+	double fakeFloorPos = 750.f;
+	double currentFloorPos = fakeFloorPos;
+	double gravityAcc = 9.81 * 0.2;
+	double jumpVel = -30.f;
 };

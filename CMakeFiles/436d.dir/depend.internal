@@ -8,7 +8,9 @@ CMakeFiles/436d.dir/src/a1.cpp.o
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/salmon.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/turtle.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/common.hpp
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/exit.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/fixedComponent.hpp
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/floor.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/mazeComponent.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/physics.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/project_path.hpp
@@ -142,6 +144,16 @@ CMakeFiles/436d.dir/src/common.cpp.o
 CMakeFiles/436d.dir/src/gameAI.cpp.o
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/gameAI.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/gameAI.cpp
+CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/exit.cpp
+ /usr/local/Cellar/glfw/3.2.1/include/GLFW/glfw3.h
+ ext/gl3w/gl3w.h
+ ext/gl3w/glcorearb.h
+ include/common.hpp
+ include/mazeComponents/exit.hpp
+ include/mazeComponents/fixedComponent.hpp
+ include/mazeComponents/mazeComponent.hpp
+ include/project_path.hpp
 CMakeFiles/436d.dir/src/mazeComponents/fixedComponent.cpp.o
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/fixedComponent.cpp
  /usr/local/Cellar/glfw/3.2.1/include/GLFW/glfw3.h
@@ -149,6 +161,16 @@ CMakeFiles/436d.dir/src/mazeComponents/fixedComponent.cpp.o
  ext/gl3w/glcorearb.h
  include/common.hpp
  include/mazeComponents/fixedComponent.hpp
+ include/mazeComponents/mazeComponent.hpp
+ include/project_path.hpp
+CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/floor.cpp
+ /usr/local/Cellar/glfw/3.2.1/include/GLFW/glfw3.h
+ ext/gl3w/gl3w.h
+ ext/gl3w/glcorearb.h
+ include/common.hpp
+ include/mazeComponents/fixedComponent.hpp
+ include/mazeComponents/floor.hpp
  include/mazeComponents/mazeComponent.hpp
  include/project_path.hpp
 CMakeFiles/436d.dir/src/mazeComponents/freeComponent.cpp.o
@@ -160,6 +182,16 @@ CMakeFiles/436d.dir/src/mazeComponents/freeComponent.cpp.o
  include/mazeComponents/freeComponent.hpp
  include/mazeComponents/mazeComponent.hpp
  include/project_path.hpp
+CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/ice.cpp
+ /usr/local/Cellar/glfw/3.2.1/include/GLFW/glfw3.h
+ ext/gl3w/gl3w.h
+ ext/gl3w/glcorearb.h
+ include/common.hpp
+ include/mazeComponents/fixedComponent.hpp
+ include/mazeComponents/ice.hpp
+ include/mazeComponents/mazeComponent.hpp
+ include/project_path.hpp
 CMakeFiles/436d.dir/src/mazeComponents/mazeComponent.cpp.o
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/mazeComponent.cpp
  /usr/local/Cellar/glfw/3.2.1/include/GLFW/glfw3.h
@@ -169,8 +201,20 @@ CMakeFiles/436d.dir/src/mazeComponents/mazeComponent.cpp.o
  include/mazeComponents/mazeComponent.hpp
  include/project_path.hpp
 CMakeFiles/436d.dir/src/physics.cpp.o
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/character.hpp
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/enemy.hpp
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/player.hpp
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/turtle.hpp
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/common.hpp
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/fixedComponent.hpp
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/floor.hpp
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/mazeComponent.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/physics.hpp
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/project_path.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/physics.cpp
+ /usr/local/Cellar/glfw/3.2.1/include/GLFW/glfw3.h
+ ext/gl3w/gl3w.h
+ ext/gl3w/glcorearb.h
 CMakeFiles/436d.dir/src/water.cpp.o
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/common.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/project_path.hpp
@@ -186,7 +230,9 @@ CMakeFiles/436d.dir/src/world.cpp.o
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/salmon.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/characters/turtle.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/common.hpp
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/exit.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/fixedComponent.hpp
+ /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/floor.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/mazeComponents/mazeComponent.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/physics.hpp
  /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/include/project_path.hpp

@@ -252,9 +252,48 @@ CMakeFiles/436d.dir/src/mazeComponents/freeComponent.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/436d.dir/src/mazeComponents/freeComponent.cpp.s"
 	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/freeComponent.cpp -o CMakeFiles/436d.dir/src/mazeComponents/freeComponent.cpp.s
 
+CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o: CMakeFiles/436d.dir/flags.make
+CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o: src/mazeComponents/floor.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o -c /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/floor.cpp
+
+CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/floor.cpp > CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.i
+
+CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/floor.cpp -o CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.s
+
+CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o: CMakeFiles/436d.dir/flags.make
+CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o: src/mazeComponents/ice.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o -c /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/ice.cpp
+
+CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/ice.cpp > CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.i
+
+CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/ice.cpp -o CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.s
+
+CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o: CMakeFiles/436d.dir/flags.make
+CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o: src/mazeComponents/exit.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o -c /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/exit.cpp
+
+CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/exit.cpp > CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.i
+
+CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/mazeComponents/exit.cpp -o CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.s
+
 CMakeFiles/436d.dir/src/gameAI.cpp.o: CMakeFiles/436d.dir/flags.make
 CMakeFiles/436d.dir/src/gameAI.cpp.o: src/gameAI.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/436d.dir/src/gameAI.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/436d.dir/src/gameAI.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/436d.dir/src/gameAI.cpp.o -c /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/gameAI.cpp
 
 CMakeFiles/436d.dir/src/gameAI.cpp.i: cmake_force
@@ -267,7 +306,7 @@ CMakeFiles/436d.dir/src/gameAI.cpp.s: cmake_force
 
 CMakeFiles/436d.dir/src/physics.cpp.o: CMakeFiles/436d.dir/flags.make
 CMakeFiles/436d.dir/src/physics.cpp.o: src/physics.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/436d.dir/src/physics.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/436d.dir/src/physics.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/436d.dir/src/physics.cpp.o -c /Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/src/physics.cpp
 
 CMakeFiles/436d.dir/src/physics.cpp.i: cmake_force
@@ -295,6 +334,9 @@ CMakeFiles/436d.dir/src/physics.cpp.s: cmake_force
 "CMakeFiles/436d.dir/src/mazeComponents/mazeComponent.cpp.o" \
 "CMakeFiles/436d.dir/src/mazeComponents/fixedComponent.cpp.o" \
 "CMakeFiles/436d.dir/src/mazeComponents/freeComponent.cpp.o" \
+"CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o" \
+"CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o" \
+"CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o" \
 "CMakeFiles/436d.dir/src/gameAI.cpp.o" \
 "CMakeFiles/436d.dir/src/physics.cpp.o"
 
@@ -316,11 +358,14 @@ CMakeFiles/436d.dir/src/physics.cpp.s: cmake_force
 436d: CMakeFiles/436d.dir/src/mazeComponents/mazeComponent.cpp.o
 436d: CMakeFiles/436d.dir/src/mazeComponents/fixedComponent.cpp.o
 436d: CMakeFiles/436d.dir/src/mazeComponents/freeComponent.cpp.o
+436d: CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o
+436d: CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o
+436d: CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o
 436d: CMakeFiles/436d.dir/src/gameAI.cpp.o
 436d: CMakeFiles/436d.dir/src/physics.cpp.o
 436d: CMakeFiles/436d.dir/build.make
 436d: CMakeFiles/436d.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Linking CXX executable 436d"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/yuntianwan/Documents/CPSC436D-GAME/game/minos-monster-maze/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Linking CXX executable 436d"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/436d.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

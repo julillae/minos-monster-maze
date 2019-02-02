@@ -7,7 +7,9 @@ CMakeFiles/436d.dir/src/a1.cpp.o: include/characters/player.hpp
 CMakeFiles/436d.dir/src/a1.cpp.o: include/characters/salmon.hpp
 CMakeFiles/436d.dir/src/a1.cpp.o: include/characters/turtle.hpp
 CMakeFiles/436d.dir/src/a1.cpp.o: include/common.hpp
+CMakeFiles/436d.dir/src/a1.cpp.o: include/mazeComponents/exit.hpp
 CMakeFiles/436d.dir/src/a1.cpp.o: include/mazeComponents/fixedComponent.hpp
+CMakeFiles/436d.dir/src/a1.cpp.o: include/mazeComponents/floor.hpp
 CMakeFiles/436d.dir/src/a1.cpp.o: include/mazeComponents/mazeComponent.hpp
 CMakeFiles/436d.dir/src/a1.cpp.o: include/physics.hpp
 CMakeFiles/436d.dir/src/a1.cpp.o: include/project_path.hpp
@@ -142,6 +144,16 @@ CMakeFiles/436d.dir/src/common.cpp.o: ext/gl3w/glcorearb.h
 CMakeFiles/436d.dir/src/gameAI.cpp.o: include/gameAI.hpp
 CMakeFiles/436d.dir/src/gameAI.cpp.o: src/gameAI.cpp
 
+CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o: src/mazeComponents/exit.cpp
+CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o: /usr/local/Cellar/glfw/3.2.1/include/GLFW/glfw3.h
+CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o: ext/gl3w/gl3w.h
+CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o: ext/gl3w/glcorearb.h
+CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o: include/common.hpp
+CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o: include/mazeComponents/exit.hpp
+CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o: include/mazeComponents/fixedComponent.hpp
+CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o: include/mazeComponents/mazeComponent.hpp
+CMakeFiles/436d.dir/src/mazeComponents/exit.cpp.o: include/project_path.hpp
+
 CMakeFiles/436d.dir/src/mazeComponents/fixedComponent.cpp.o: src/mazeComponents/fixedComponent.cpp
 CMakeFiles/436d.dir/src/mazeComponents/fixedComponent.cpp.o: /usr/local/Cellar/glfw/3.2.1/include/GLFW/glfw3.h
 CMakeFiles/436d.dir/src/mazeComponents/fixedComponent.cpp.o: ext/gl3w/gl3w.h
@@ -150,6 +162,16 @@ CMakeFiles/436d.dir/src/mazeComponents/fixedComponent.cpp.o: include/common.hpp
 CMakeFiles/436d.dir/src/mazeComponents/fixedComponent.cpp.o: include/mazeComponents/fixedComponent.hpp
 CMakeFiles/436d.dir/src/mazeComponents/fixedComponent.cpp.o: include/mazeComponents/mazeComponent.hpp
 CMakeFiles/436d.dir/src/mazeComponents/fixedComponent.cpp.o: include/project_path.hpp
+
+CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o: src/mazeComponents/floor.cpp
+CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o: /usr/local/Cellar/glfw/3.2.1/include/GLFW/glfw3.h
+CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o: ext/gl3w/gl3w.h
+CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o: ext/gl3w/glcorearb.h
+CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o: include/common.hpp
+CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o: include/mazeComponents/fixedComponent.hpp
+CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o: include/mazeComponents/floor.hpp
+CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o: include/mazeComponents/mazeComponent.hpp
+CMakeFiles/436d.dir/src/mazeComponents/floor.cpp.o: include/project_path.hpp
 
 CMakeFiles/436d.dir/src/mazeComponents/freeComponent.cpp.o: src/mazeComponents/freeComponent.cpp
 CMakeFiles/436d.dir/src/mazeComponents/freeComponent.cpp.o: /usr/local/Cellar/glfw/3.2.1/include/GLFW/glfw3.h
@@ -160,6 +182,16 @@ CMakeFiles/436d.dir/src/mazeComponents/freeComponent.cpp.o: include/mazeComponen
 CMakeFiles/436d.dir/src/mazeComponents/freeComponent.cpp.o: include/mazeComponents/mazeComponent.hpp
 CMakeFiles/436d.dir/src/mazeComponents/freeComponent.cpp.o: include/project_path.hpp
 
+CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o: src/mazeComponents/ice.cpp
+CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o: /usr/local/Cellar/glfw/3.2.1/include/GLFW/glfw3.h
+CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o: ext/gl3w/gl3w.h
+CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o: ext/gl3w/glcorearb.h
+CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o: include/common.hpp
+CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o: include/mazeComponents/fixedComponent.hpp
+CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o: include/mazeComponents/ice.hpp
+CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o: include/mazeComponents/mazeComponent.hpp
+CMakeFiles/436d.dir/src/mazeComponents/ice.cpp.o: include/project_path.hpp
+
 CMakeFiles/436d.dir/src/mazeComponents/mazeComponent.cpp.o: src/mazeComponents/mazeComponent.cpp
 CMakeFiles/436d.dir/src/mazeComponents/mazeComponent.cpp.o: /usr/local/Cellar/glfw/3.2.1/include/GLFW/glfw3.h
 CMakeFiles/436d.dir/src/mazeComponents/mazeComponent.cpp.o: ext/gl3w/gl3w.h
@@ -168,8 +200,20 @@ CMakeFiles/436d.dir/src/mazeComponents/mazeComponent.cpp.o: include/common.hpp
 CMakeFiles/436d.dir/src/mazeComponents/mazeComponent.cpp.o: include/mazeComponents/mazeComponent.hpp
 CMakeFiles/436d.dir/src/mazeComponents/mazeComponent.cpp.o: include/project_path.hpp
 
+CMakeFiles/436d.dir/src/physics.cpp.o: include/characters/character.hpp
+CMakeFiles/436d.dir/src/physics.cpp.o: include/characters/enemy.hpp
+CMakeFiles/436d.dir/src/physics.cpp.o: include/characters/player.hpp
+CMakeFiles/436d.dir/src/physics.cpp.o: include/characters/turtle.hpp
+CMakeFiles/436d.dir/src/physics.cpp.o: include/common.hpp
+CMakeFiles/436d.dir/src/physics.cpp.o: include/mazeComponents/fixedComponent.hpp
+CMakeFiles/436d.dir/src/physics.cpp.o: include/mazeComponents/floor.hpp
+CMakeFiles/436d.dir/src/physics.cpp.o: include/mazeComponents/mazeComponent.hpp
 CMakeFiles/436d.dir/src/physics.cpp.o: include/physics.hpp
+CMakeFiles/436d.dir/src/physics.cpp.o: include/project_path.hpp
 CMakeFiles/436d.dir/src/physics.cpp.o: src/physics.cpp
+CMakeFiles/436d.dir/src/physics.cpp.o: /usr/local/Cellar/glfw/3.2.1/include/GLFW/glfw3.h
+CMakeFiles/436d.dir/src/physics.cpp.o: ext/gl3w/gl3w.h
+CMakeFiles/436d.dir/src/physics.cpp.o: ext/gl3w/glcorearb.h
 
 CMakeFiles/436d.dir/src/water.cpp.o: include/common.hpp
 CMakeFiles/436d.dir/src/water.cpp.o: include/project_path.hpp
@@ -185,7 +229,9 @@ CMakeFiles/436d.dir/src/world.cpp.o: include/characters/player.hpp
 CMakeFiles/436d.dir/src/world.cpp.o: include/characters/salmon.hpp
 CMakeFiles/436d.dir/src/world.cpp.o: include/characters/turtle.hpp
 CMakeFiles/436d.dir/src/world.cpp.o: include/common.hpp
+CMakeFiles/436d.dir/src/world.cpp.o: include/mazeComponents/exit.hpp
 CMakeFiles/436d.dir/src/world.cpp.o: include/mazeComponents/fixedComponent.hpp
+CMakeFiles/436d.dir/src/world.cpp.o: include/mazeComponents/floor.hpp
 CMakeFiles/436d.dir/src/world.cpp.o: include/mazeComponents/mazeComponent.hpp
 CMakeFiles/436d.dir/src/world.cpp.o: include/physics.hpp
 CMakeFiles/436d.dir/src/world.cpp.o: include/project_path.hpp

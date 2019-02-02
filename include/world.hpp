@@ -96,4 +96,5 @@ private:
 	vec2 initialPosition = { 200.f, 500.f };
 
 	Physics* physicsHandler;
+
 };

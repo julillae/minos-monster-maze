@@ -1,5 +1,6 @@
 // Header
 #include "../include/world.hpp"
+#include "../include/physics.hpp"
 
 // stlib
 #include <string.h>
@@ -26,7 +27,7 @@ namespace
 World::World() : 
 	m_points(0),
 	m_next_turtle_spawn(0.f),
-	m_next_fish_spawn(0.f)
+	m_next_floor_spawn(0.f)
 {
 	// Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -38,8 +39,9 @@ World::~World()
 }
 
 // World initialization
-bool World::init(vec2 screen)
+bool World::init(vec2 screen, Physics* physicsHandler)
 {
+	this->physicsHandler = physicsHandler;
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
 	// Core Opengl 3.
@@ -118,8 +120,13 @@ bool World::init(vec2 screen)
 	fprintf(stderr, "Loaded music\n");
 
 	m_current_speed = 1.f;
-
-	return m_salmon.init() && m_water.init() && m_player.init();
+	
+	// initialize floors
+	for (int i = 0; i < 30; i++) {
+		spawn_floor({ screen.x - 450 - 20 * i, screen.y - 100 });
+		MazeComponent& new_floor = m_floor.back();
+	}
+	return m_salmon.init(initialPosition) && m_water.init() && m_player.init(initialPosition) && m_enemy.init(initialPosition);
 }
 
 // Releases all the associated resources
@@ -138,12 +145,13 @@ void World::destroy()
 
 	m_salmon.destroy();
 	m_player.destroy();
+	m_enemy.destroy();
 	for (auto& turtle : m_turtles)
 		turtle.destroy();
-	for (auto& fish : m_fish)
-		fish.destroy();
+	for (auto& floor : m_floor)
+		floor.destroy();
+	m_floor.clear();
 	m_turtles.clear();
-	m_fish.clear();
 	glfwDestroyWindow(m_window);
 }
 
@@ -154,43 +162,36 @@ bool World::update(float elapsed_ms)
         glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = { (float)w, (float)h };
 
-	// Checking Salmon - Turtle collisions
-	//for (const auto& turtle : m_turtles)
-	//{
-	//	if (m_salmon.collides_with(turtle))
-	//	{
-	//		if (m_salmon.is_alive()) {
-	//			Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
-	//			m_water.set_salmon_dead();
-	//		}
-	//		m_salmon.kill();
-	//		break;
-	//	}
-	//}
+	// Checking Player - Enemy Collision
+//	if (physicsHandler->collideWithEnemy(&m_player, &m_enemy).isCollided)
+//	{
+//		if (m_player.is_alive()) {
+//			Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+//			m_water.set_player_dead();
+//		}
+//		m_player.kill();
+//	}
 
-	// Checking Salmon - Fish collisions
-	auto fish_it = m_fish.begin();
-	while (fish_it != m_fish.end())
+	// TODO: Check for Player-Platform Collisions
+	bool isOnAtLeastOnePlatform = false;
+	for (const auto& floor: m_floor)
 	{
-		if (m_salmon.is_alive() && m_salmon.collides_with(*fish_it))
+		if (physicsHandler->collisionWithFixedWalls(&m_player, &floor).isCollided)
 		{
-			fish_it = m_fish.erase(fish_it);
-			m_salmon.light_up();
-			Mix_PlayChannel(-1, m_salmon_eat_sound, 0);
-			++m_points;
+			// do something
+			m_player.set_on_platform(m_player.get_position().y);
+			isOnAtLeastOnePlatform = true;
 		}
-		else
-			++fish_it;
 	}
-	
+	if (!isOnAtLeastOnePlatform) m_player.set_in_free_fall();
+
 	// Updating all entities, making the turtle and fish
 	// faster based on current
 	m_salmon.update(elapsed_ms);
 	m_player.update(elapsed_ms);
+	m_enemy.update(elapsed_ms);
 	for (auto& turtle : m_turtles)
 		turtle.update(elapsed_ms * m_current_speed);
-	for (auto& fish : m_fish)
-		fish.update(elapsed_ms * m_current_speed);
 
 	// Removing out of screen turtles
 	auto turtle_it = m_turtles.begin();
@@ -204,20 +205,6 @@ bool World::update(float elapsed_ms)
 		}
 
 		++turtle_it;
-	}
-
-	// Removing out of screen fish
-	fish_it = m_fish.begin();
-	while (fish_it != m_fish.end())
-	{
-		float w = fish_it->get_bounding_box().x / 2;
-		if (fish_it->get_position().x + w < 0.f)
-		{
-			fish_it = m_fish.erase(fish_it);
-			continue;
-		}
-
-		++fish_it;
 	}
 
 	// Spawning new turtles
@@ -236,28 +223,18 @@ bool World::update(float elapsed_ms)
 		m_next_turtle_spawn = (TURTLE_DELAY_MS / 2) + m_dist(m_rng) * (TURTLE_DELAY_MS/2);
 	}
 
-	// Spawning new fish
-	m_next_fish_spawn -= elapsed_ms * m_current_speed;
-	if (m_fish.size() <= MAX_FISH && m_next_fish_spawn < 0.f)
-	{
-		if (!spawn_fish())
-			return false;
-		Fish& new_fish = m_fish.back();
 
-		new_fish.set_position({ screen.x + 150, 50 + m_dist(m_rng) *  (screen.y - 100) });
-
-		m_next_fish_spawn = (FISH_DELAY_MS / 2) + m_dist(m_rng) * (FISH_DELAY_MS / 2);
-	}
-
-	// If salmon is dead, restart the game after the fading animation
-	if (!m_salmon.is_alive() &&
+	// If player is dead, restart the game after the fading animation
+	if (!m_player.is_alive() &&
 		m_water.get_salmon_dead_time() > 5) {
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
 		m_salmon.destroy();
-		m_salmon.init();
+		m_player.destroy();
+		m_player.init(initialPosition);
+		m_salmon.init(initialPosition);
+
 		m_turtles.clear();
-		m_fish.clear();
 		m_water.reset_salmon_dead_time();
 		m_current_speed = 1.f;
 	}
@@ -309,10 +286,11 @@ void World::draw()
 	// Drawing entities
 	for (auto& turtle : m_turtles)
 		turtle.draw(projection_2D);
-	for (auto& fish : m_fish)
-		fish.draw(projection_2D);
+	for (auto& floor : m_floor)
+		floor.draw(projection_2D);	
 	m_salmon.draw(projection_2D);
 	m_player.draw(projection_2D);
+	m_enemy.draw(projection_2D);
 
 	/////////////////////
 	// Truely render to the screen
@@ -346,7 +324,7 @@ bool World::is_over()const
 bool World::spawn_turtle()
 {
 	Turtle turtle;
-	if (turtle.init())
+	if (turtle.init({ 0, 0 }))
 	{
 		m_turtles.emplace_back(turtle);
 		return true;
@@ -355,16 +333,15 @@ bool World::spawn_turtle()
 	return false;
 }
 
-// Creates a new fish and if successfull adds it to the list of fish
-bool World::spawn_fish()
+bool World::spawn_floor(vec2 position)
 {
-	Fish fish;
-	if (fish.init())
+	Floor floor;
+	if (floor.init(position))
 	{
-		m_fish.emplace_back(fish);
+		m_floor.emplace_back(floor);
 		return true;
 	}
-	fprintf(stderr, "Failed to spawn fish");
+	fprintf(stderr, "Failed to spawn floor");
 	return false;
 }
 
@@ -392,11 +369,12 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		int w, h;
 		glfwGetWindowSize(m_window, &w, &h);
 		m_salmon.destroy(); 
-		m_salmon.init();
+		m_salmon.init(initialPosition);
 		m_player.destroy();
-		m_player.init();
+		m_player.init(initialPosition);
+		m_enemy.destroy();
+		m_enemy.init(initialPosition);
 		m_turtles.clear();
-		m_fish.clear();
 		m_water.reset_salmon_dead_time();
 		m_current_speed = 1.f;
 	}
