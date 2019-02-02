@@ -55,7 +55,6 @@ public:
 	// Kills the player, changing its alive state and triggering on death events
 	void kill();
 
-
 private:
 	double tolerance = 0.000001;
 	double maxVelocity = 12;
@@ -64,6 +63,9 @@ private:
 	vec2 currentVelocity;
 	vec2 currentAcceleration;
 	bool isOnPlatform;
+	bool isBelowPlatform;
+	bool isLeftOfPlatform;
+	bool isRightOfPlatform;
 	double fakeFloorPos = 750.f;
 	double currentFloorPos = fakeFloorPos;
 	double gravityAcc = 9.81 * 0.2;

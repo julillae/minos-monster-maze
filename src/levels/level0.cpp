@@ -266,13 +266,18 @@ bool Level0::update(float elapsed_ms)
 
 	// TODO: Check for Player-Platform Collisions
 	bool isOnAtLeastOnePlatform = false;
+	Physics::CollisionNode collisionNode;
 	for (const auto& floor: m_floor)
 	{
-		if (physicsHandler->collisionWithFixedWalls(&m_player, &floor).isCollided)
+		collisionNode = physicsHandler->collisionWithFixedWalls(&m_player, &floor);
+		if (collisionNode.isCollided)
 		{
 			// do something
-			m_player.set_on_platform(m_player.get_position().y);
-			isOnAtLeastOnePlatform = true;
+			float collisionAngle = collisionNode.angleOfCollision;
+			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
+				m_player.set_on_platform(m_player.get_position().y);
+				isOnAtLeastOnePlatform = true;
+			}
 		}
 	}
 	if (!isOnAtLeastOnePlatform) m_player.set_in_free_fall();
