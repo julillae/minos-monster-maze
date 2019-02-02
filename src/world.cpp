@@ -347,7 +347,7 @@ bool World::spawn_turtle()
 bool World::spawn_enemy()
 {
 	Enemy enemy;
-	if (enemy.init({300.0f, 300.0f}))
+	if (enemy.init({300.0f, 300.0f}, 30.0f))
 	{
 		m_enemies.emplace_back(enemy);
 		return true;

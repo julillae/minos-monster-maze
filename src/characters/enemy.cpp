@@ -15,7 +15,7 @@
 
 Texture Enemy::enemy_texture;
 
-bool Enemy::init(vec2 initialPosition)
+bool Enemy::init(vec2 initialPosition, float bound)
 {
 	const char* textureFile = textures_path("minotaur_right.png");
 	// printf("The type is %s\n", typeid(textures_path("minotaur_right.png")).name());
@@ -28,13 +28,17 @@ bool Enemy::init(vec2 initialPosition)
 	m_rotation = 0.f;
 	direction = right;
 	m_is_alive = true;
-	// initial_position = get_initial_position();
 	m_position = initialPosition;
 	currentVelocity = {maxVelocity, 0.0f};
-	platformWidth = 100.0f;
-	platformX = 300.f;
+	stopBound = bound;
+	m_initialPosition = initialPosition;
 
 	return true;
+}
+
+bool Enemy::init(vec2 initialPosition)
+{
+	return false;
 }
 
 // Called on each frame by World::update()
@@ -46,14 +50,14 @@ void Enemy::update(float ms)
 		// Update enemy position based on fixed path here
 		float step = currentVelocity.x;
 		if (direction == right) {
-			if ((m_position.x + step) >= (platformX + platformWidth)) {
+			if ((m_position.x + step) >= (m_initialPosition.x + stopBound)) {
 				direction = left;
 				m_scale.x = -1 * m_scale.x;
 			} else {
 				m_position.x += step;
 			}
 		} else if (direction == left) {
-			if ((m_position.x - step) <= (platformX - platformWidth)) {
+			if ((m_position.x - step) <= m_initialPosition.x) {
 				direction = right;
 				m_scale.x = -1 * m_scale.x;
 			} else {
