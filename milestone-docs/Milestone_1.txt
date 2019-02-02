@@ -1,0 +1,17 @@
+﻿Milestone 1 Requirements:
+
+
+1. 2D Transformations: 
+Basic transformations are performed to move the player character and enemies left and right. The character can also move vertically; the player can jump on command and falls back to the floor/platform they are standing on.
+2. Rendering code and shaders for background and sprites: 
+All the character assets in the game are current sprites. This includes the player (as a box), the enemies (as minotaur sprites), the door, and the platforms/floors. The platforms and door are coded as fixed components in the level design. 
+3. Keyboard/mouse control:
+The player character is controlled by the arrows on the keyboard. It can move left and right and jumps when the up arrow is pressed.         
+4. Random/hard-coded action of characters/assets:
+The enemy characters’ paths are hardcoded. That is, they begin at a hard-coded initial position and move left and right based on predefined bounds. Their speed within these bounds is determined by a parameterized velocity. In addition, basic collision detection is implemented between the character assets and the platforms and the player and the enemy (to allow the enemies to ‘kill’ the player on collision).
+5. Basic key-frame/state interpolation:
+Character (player and enemy) movement is determined as a function of their individual velocity and the time elapsed since the last clock ‘tick’. Players move back and forth, changing direction smoothly.
+6. Continuing execution and graceful termination:
+Basic collision detection between the enemies and the player means that the player dies on collision with an enemy minotaur. We included a basic animation to fade the screen when the player hits an enemy. This allows the game to reset the game to the state at the beginning of the level gracefully. When the player completes the level (i.e. reaches the door), the screen fades and the message “You win!” appears at the top. Since we didn’t implement any additional levels, the game resets the world to the state at the beginning of the level. Essentially, the player can keep playing the level in a loop.
+7. Creative:
+While the player is currently represented as a box, the enemy sprites are already rendered as minotaurs, the final representation of the main enemy in our game. The player also cannot pass through platforms from the bottom, left, or right sides using smart collision detection (by calculating angle of collision). The enemies currently patrol on a fixed path and do not pass through walls. Fixed-path enemies were originally planned for week 4 in our project plan. In addition, we implemented a full design of a maze level, with multiple platforms and a ‘goal’ door for the player to reach. Finally, we implemented a basic animation when the player completes the level (i.e. reaches the door), where the screen fades and the top of the windows says “You win!”.
