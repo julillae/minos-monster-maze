@@ -51,6 +51,7 @@ set(SOURCE_FILES
     src/mazeComponents/exit.cpp
     src/gameAI.cpp
     src/physics.cpp
+    src/levels/level0.cpp
     
 
     include/project_path.hpp
@@ -73,6 +74,7 @@ set(SOURCE_FILES
     include/mazeComponents/exit.hpp
     include/gameAI.hpp
     include/physics.hpp
+    include/levels/level0.hpp
     
 	)
 

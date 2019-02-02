@@ -48,6 +48,9 @@ private:
 	// Generates a new turtle
 	bool spawn_turtle();
 
+	// Generates a new enemy
+	bool spawn_enemy();
+
 	// Generates a new floor
 	bool spawn_floor(vec2 position);
 
@@ -77,8 +80,7 @@ private:
 	// Game entities
 	Salmon m_salmon;
 	Player m_player;
-	Enemy m_enemy;
-	Exit m_exit;
+	std::vector<Enemy> m_enemies;
 	std::vector<Turtle> m_turtles;
 	std::vector<Floor> m_floor;
 
