@@ -53,6 +53,8 @@ private:
 
 	bool spawn_ice();
 
+	void reset_game();
+
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
@@ -96,5 +98,4 @@ private:
 	vec2 initialPosition = { 200.f, 500.f };
 
 	Physics* physicsHandler;
-
 };
