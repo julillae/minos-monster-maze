@@ -99,8 +99,11 @@ bool Player::init(vec2 initialPosition)
 		return false;
 	
 	// Setting initial values
-	m_scale.x = -2.f;
-	m_scale.y = 2.f;
+	double scaleFactor = 2.f;
+	m_scale.x = -scaleFactor;
+	m_scale.y = scaleFactor;
+	width = fish_texture.width * scaleFactor;
+	height = fish_texture.height * scaleFactor;
 	m_is_alive = true;
 	v_direction = Direction::none;
 	m_position = initialPosition;
