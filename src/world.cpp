@@ -245,13 +245,13 @@ bool World::update(float elapsed_ms)
 
 
 	// If player is dead or beat the game, restart the game after the fading animation
-	if (!m_player.is_alive() && m_water.get_salmon_dead_time() > 5) {
+	if (!m_player.is_alive() && m_water.get_time_since_death() > 5) {
 		reset_game();
 	}
 
-	if (m_player.is_alive() && is_player_at_goal && m_water.get_player_win_time() > 5)
+	if (m_player.is_alive() && is_player_at_goal && m_water.get_time_since_level_complete() > 5)
 	{
-		m_water.set_player_win();
+		m_water.set_level_complete_time();
 		reset_game();
 	}
 
@@ -412,7 +412,7 @@ void World::on_key(GLFWwindow*, int key, int, int action, int mod)
 		m_player.init(initialPosition);
 		m_enemies.clear();
 		m_turtles.clear();
-		m_water.reset_salmon_dead_time();
+		m_water.reset_player_dead_time();
 		m_current_speed = 1.f;
 	}
 
@@ -446,7 +446,7 @@ void World::reset_game()
 	m_salmon.init(initialPosition);
 
 	m_turtles.clear();
-	m_water.reset_salmon_dead_time();
+	m_water.reset_player_dead_time();
 	m_water.reset_player_win_time();
 	m_current_speed = 1.f;
 	is_player_at_goal = false;
