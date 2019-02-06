@@ -274,9 +274,7 @@ bool Level0::update(float elapsed_ms)
 	// Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided && !is_player_at_goal)
 	{
-		if (m_player.is_alive()) {
-			m_water.set_player_win();
-		}
+		m_water.set_level_complete_time();
 		is_player_at_goal = true;
 	}
 
@@ -320,13 +318,12 @@ bool Level0::update(float elapsed_ms)
 		enemy.update(elapsed_ms);
 
 		// If player is dead or beat the game, restart the game after the fading animation
-	if (!m_player.is_alive() && m_water.get_salmon_dead_time() > 5) {
+	if (!m_player.is_alive() && m_water.get_time_since_death() > 1) {
 		reset_game();
 	}
 
-	if (m_player.is_alive() && is_player_at_goal && m_water.get_player_win_time() > 5)
+	if (m_player.is_alive() && is_player_at_goal && m_water.get_time_since_level_complete() > 1)
 	{
-		m_water.set_player_win();
 		reset_game();
 	}
 
@@ -459,6 +456,7 @@ void Level0::reset_game()
 	m_player.init(initialPosition);
 
 	m_water.reset_player_win_time();
+	m_water.reset_player_dead_time();
 	m_current_speed = 1.f;
 	is_player_at_goal = false;
 }
