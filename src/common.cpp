@@ -9,7 +9,7 @@
 #include <sstream>
 
 #ifdef __APPLE_CC__
-float osScaleFactor = 2.f;
+float osScaleFactor = 1.f;
 #else
 float osScaleFactor = 1.f;
 #endif
