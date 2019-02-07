@@ -3,6 +3,7 @@
 #include "../include/physics.hpp"
 
 // stlib
+#include <stdio.h>
 #include <string.h>
 #include <cassert>
 #include <sstream>
@@ -372,10 +373,17 @@ void Level0::draw()
 	float right = (float)w;// *0.5;
 	float bottom = (float)h;// *0.5;
 
+	vec2 p_position = m_player.get_position();
+	//printf("%f", 2.f / (p_position.x));
+
 	float sx = 2.f / (right - left);
-	float sy = 2.f / (top - bottom);
+	float sy = 2.f / (top - bottom); //this is where you play around with the camera
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
+	if (false){
+		float tx = -(4*p_position.x)/(right - left);
+		float ty = -(4*p_position.y)/(top - bottom);
+	}
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	for (auto& floor : m_floor)
