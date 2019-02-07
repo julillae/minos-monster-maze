@@ -194,8 +194,9 @@ void Player::draw(const mat3& projection)
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
 
-	// !!! Salmon Color
+	// Player Color
 	float color[] = { 1.f, 1.f, 1.f };
+
 	//if (!m_is_alive) {
 	//	color[1] = 0.f;
 	//	color[2] = 0.f;
