@@ -164,6 +164,11 @@ bool Level0::init(vec2 screen, Physics* physicsHandler)
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 0);
 	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "A1 Assignment", nullptr, nullptr);
+	int screenX = screen.x;
+	int screenY = screen.y;
+	int testWidth;
+	int testHeight;
+	glfwGetFramebufferSize(const_cast<GLFWwindow *>(m_window), &testWidth, &testHeight);
 	if (m_window == nullptr)
 		return false;
 
