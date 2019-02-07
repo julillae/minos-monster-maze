@@ -10,6 +10,12 @@
 #include <math.h>
 #include <cmath>
 
+bool isMac = false;
+
+#ifdef __APPLE_CC__
+isMac = true;
+#endif
+
 Texture Player::fish_texture;
 
 bool Player::init(vec2 initialPosition)
@@ -195,7 +201,12 @@ void Player::draw(const mat3& projection)
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
 
 	// !!! Salmon Color
-	float color[] = { 1.f, 1.f, 1.f };
+	float testNum = 1.f;
+	if (isMac) {
+		testNum = 0.f;
+	}
+	float color[] = { testNum, 1.f, 1.f };
+
 	//if (!m_is_alive) {
 	//	color[1] = 0.f;
 	//	color[2] = 0.f;
