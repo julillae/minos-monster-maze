@@ -10,10 +10,10 @@
 #include <math.h>
 #include <cmath>
 
-bool isMac = false;
-
 #ifdef __APPLE_CC__
-isMac = true;
+bool isMac = true;
+#else
+bool isMac = false;
 #endif
 
 Texture Player::fish_texture;
