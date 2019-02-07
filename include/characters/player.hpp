@@ -58,6 +58,9 @@ public:
 	bool isBelowPlatform;
 	bool isLeftOfPlatform;
 	bool isRightOfPlatform;
+	double width;
+	double height;
+
 private:
 	double tolerance = 0.000001;
 	double maxVelocity = 12;
