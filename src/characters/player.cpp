@@ -10,49 +10,14 @@
 #include <math.h>
 #include <cmath>
 
-Texture Player::fish_texture;
+Texture Player::player_texture;
 
 bool Player::init(vec2 initialPosition)
 {
-	
-	// Reads the salmon mesh from a file, which contains a list of vertices and indices
-	//FILE* mesh_file = fopen(mesh_path("salmon.mesh"), "r");
-	//if (mesh_file == nullptr)
-	//	return false;
 
-	// Reading vertices and colors
-	//size_t num_vertices;
-	//fscanf(mesh_file, "%zu\n", &num_vertices);
-	//for (size_t i = 0; i < num_vertices; ++i)
-	//{
-		//float x, y, z;
-		//float _u[3]; // unused
-		//int r, g, b;
-		//fscanf(mesh_file, "%f %f %f %f %f %f %d %d %d\n", &x, &y, &z, _u, _u+1, _u+2, &r, &g, &b);
-		//Vertex vertex;
-		//vertex.position = { x, y, -z }; 
-		//vertex.color = { (float)r / 255, (float)g / 255, (float)b / 255 };
-		//vertices.push_back(vertex);
-	//}
-
-	// Reading associated indices
-	//size_t num_indices;
-	//fscanf(mesh_file, "%zu\n", &num_indices);
-	//for (size_t i = 0; i < num_indices; ++i)
-	//{
-		//int idx[3];
-		//fscanf(mesh_file, "%d %d %d\n", idx, idx + 1, idx + 2);
-		//indices.push_back((uint16_t)idx[0]);
-		//indices.push_back((uint16_t)idx[1]);
-		//indices.push_back((uint16_t)idx[2]);
-	//}
-
-	// Done reading
-	//fclose(mesh_file);
-
-	if (!fish_texture.is_valid())
+	if (!player_texture.is_valid())
 	{
-		if (!fish_texture.load_from_file(textures_path("player.png")))
+		if (!player_texture.load_from_file(textures_path("player.png")))
 		{
 			fprintf(stderr, "Failed to load turtle texture!");
 			return false;
@@ -60,8 +25,8 @@ bool Player::init(vec2 initialPosition)
 	}
 
 	// The position corresponds to the center of the texture
-	float wr = fish_texture.width * 0.5f;
-	float hr = fish_texture.height * 0.5f;
+	float wr = player_texture.width * 0.5f;
+	float hr = player_texture.height * 0.5f;
 
 	TexturedVertex vertices[4];
 	vertices[0].position = { -wr, +hr, -0.01f };
@@ -102,8 +67,8 @@ bool Player::init(vec2 initialPosition)
 	double scaleFactor = 2.f;
 	m_scale.x = -scaleFactor;
 	m_scale.y = scaleFactor;
-	width = fish_texture.width * scaleFactor;
-	height = fish_texture.height * scaleFactor;
+	width = player_texture.width * scaleFactor;
+	height = player_texture.height * scaleFactor;
 	m_is_alive = true;
 	v_direction = Direction::none;
 	m_position = initialPosition;
@@ -127,10 +92,6 @@ void Player::update(float ms)
 
 	if (m_is_alive)
 	{
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// UPDATE PLAYER POSITION HERE BASED ON KEY PRESSED (World::on_key())
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 		switch (h_direction) {
 			case Direction::left: hAcc = -accStep; break;
 			case Direction::right: hAcc = accStep; break;
@@ -189,18 +150,13 @@ void Player::draw(const mat3& projection)
 
 	// Enabling and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, fish_texture.id);
+	glBindTexture(GL_TEXTURE_2D, player_texture.id);
 
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
 
 	// Player Color
 	float color[] = { 1.f, 1.f, 1.f };
-
-	//if (!m_is_alive) {
-	//	color[1] = 0.f;
-	//	color[2] = 0.f;
-	//}
 
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
@@ -209,15 +165,12 @@ void Player::draw(const mat3& projection)
 	glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-// Returns the local bounding coordinates scaled by the current size of the fish 
+// Returns the local bounding coordinates scaled by the current size of the player 
 vec2 Player::get_bounding_box()const
 {
 	// fabs is to avoid negative scale due to the facing direction
-	return { std::fabs(m_scale.x) * fish_texture.width, std::fabs(m_scale.y) * fish_texture.height };
+	return { std::fabs(m_scale.x) * player_texture.width, std::fabs(m_scale.y) * player_texture.height };
 }
-
-// Simple bounding box collision check, 
-
 
 void Player::set_acceleration(vec2 acc)
 {
@@ -275,17 +228,19 @@ void Player::set_direction(int key, int action)
 {
 	if (action == GLFW_PRESS) {
 		switch (key) {
-			//case GLFW_KEY_DOWN: v_direction = Direction::down; break;
 			case GLFW_KEY_UP: if (isOnPlatform) currentVelocity.y += jumpVel; break;
-			case GLFW_KEY_LEFT: h_direction = Direction::left; break;
-			case GLFW_KEY_RIGHT: h_direction = Direction::right; break;
+			case GLFW_KEY_LEFT: 
+				h_direction = Direction::left; 
+				m_scale.x = -std::fabs(m_scale.x);
+				break;
+			case GLFW_KEY_RIGHT: 
+				h_direction = Direction::right; 
+				m_scale.x = std::fabs(m_scale.x);
+				break;
 		}
 	}
 	else if (action == GLFW_RELEASE) {
 		switch (key) {
-			//case GLFW_KEY_DOWN:
-			//	if (v_direction == Direction::down)
-			//		v_direction = Direction::none; break;
 			case GLFW_KEY_UP: 
 				if (v_direction == Direction::up)
 					v_direction = Direction::none; break;
