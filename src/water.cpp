@@ -52,11 +52,11 @@ void Water::set_player_dead() {
 	m_dead_time = glfwGetTime();
 }
 
-void Water::set_player_win() {
+void Water::set_level_complete_time() {
 	m_win_time = glfwGetTime();
 }
 
-void Water::reset_salmon_dead_time() {
+void Water::reset_player_dead_time() {
 	m_dead_time = -1;
 }
 
@@ -64,11 +64,11 @@ void Water::reset_player_win_time() {
 	m_win_time = -1;
 }
 
-float Water::get_salmon_dead_time() const {
+float Water::get_time_since_death() const {
 	return glfwGetTime() - m_dead_time;
 }
 
-float Water::get_player_win_time() const {
+float Water::get_time_since_level_complete() const {
 	return glfwGetTime() - m_win_time;
 }
 
@@ -88,8 +88,8 @@ void Water::draw(const mat3& projection) {
 	GLuint win_timer_uloc = glGetUniformLocation(effect.program, "win_timer");
 	glUniform1i(screen_text_uloc, 0);
 	glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
-	glUniform1f(dead_timer_uloc, (m_dead_time > 0) ? (float)((glfwGetTime() - m_dead_time) * 10.0f) : -1);
-	glUniform1f(win_timer_uloc, (m_win_time > 0) ? (float)((glfwGetTime() - m_win_time) * 10.0f) : -1);
+	glUniform1f(dead_timer_uloc, (m_dead_time > 0) ? (float)((glfwGetTime() - m_dead_time) * 80.0f) : -1);
+	glUniform1f(win_timer_uloc, (m_win_time > 0) ? (float)((glfwGetTime() - m_win_time) * 80.0f) : -1);
 
 	// Draw the screen texture on the quad geometry
 	// Setting vertices
