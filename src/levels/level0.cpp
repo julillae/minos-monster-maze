@@ -164,13 +164,13 @@ bool Level0::init(vec2 screen, Physics* physicsHandler)
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 0);
 	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "A1 Assignment", nullptr, nullptr);
-	int screenX = screen.x;
-	int screenY = screen.y;
-	int testWidth;
-	int testHeight;
-	glfwGetFramebufferSize(const_cast<GLFWwindow *>(m_window), &testWidth, &testHeight);
 	if (m_window == nullptr)
 		return false;
+
+	// hack used to make sure the display for macOS with retina display issue is consistent with display on other systems
+	int testWidth;
+	glfwGetFramebufferSize(const_cast<GLFWwindow *>(m_window), &testWidth, nullptr);
+	osScaleFactor = testWidth / screen.x;
 
 	glfwMakeContextCurrent(m_window);
 	glfwSwapInterval(1); // vsync
@@ -383,12 +383,22 @@ void Level0::draw()
 
 	float sx = 2.f / (right - left);
 	float sy = 2.f / (top - bottom); //this is where you play around with the camera
-	float tx = -(right + left) / (right - left);
-	float ty = -(top + bottom) / (top - bottom);
-	if (false){
-		float tx = -(4*p_position.x)/(right - left);
-		float ty = -(4*p_position.y)/(top - bottom);
+	
+	float tx = 0.f;
+	float ty = 0.f;
+	bool cameraTracking = false;
+	if (cameraTracking){
+		// translation if camera tracks player
+		tx = -(2*p_position.x)/(right - left);
+		ty = -(2*p_position.y)/(top - bottom);
 	}
+	else {
+		// translation for fixed camera
+		tx = -(right + left) / (right - left);
+		ty = -(top + bottom) / (top - bottom);
+	}
+	sx *= osScaleFactor;
+	sy *= osScaleFactor;
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	for (auto& floor : m_floor)

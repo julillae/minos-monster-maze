@@ -95,4 +95,6 @@ private:
 	Physics* physicsHandler;
 
 	bool is_player_at_goal;
+	// Part of hack needed to deal with the MacOs Retina Display issue where it doubles the pixels rendered
+	float osScaleFactor = 1.f;
 };
