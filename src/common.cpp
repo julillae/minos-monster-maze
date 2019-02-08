@@ -8,12 +8,6 @@
 #include <iostream>
 #include <sstream>
 
-#ifdef __APPLE_CC__
-float osScaleFactor = 2.f;
-#else
-float osScaleFactor = 1.f;
-#endif
-
 void gl_flush_errors()
 {
 	while (glGetError() != GL_NO_ERROR);
@@ -266,7 +260,7 @@ void Renderable::transform_begin()
 
 void Renderable::transform_scale(vec2 scale)
 {
-	mat3 S = { { osScaleFactor * scale.x, 0.f, 0.f },{ 0.f, osScaleFactor * scale.y, 0.f },{ 0.f, 0.f, 1.f } };
+	mat3 S = { { scale.x, 0.f, 0.f },{ 0.f, scale.y, 0.f },{ 0.f, 0.f, 1.f } };
 	transform = mul(transform, S);
 }
 
@@ -280,7 +274,7 @@ void Renderable::transform_rotate(float radians)
 
 void Renderable::transform_translate(vec2 offset)
 {
-	mat3 T = { { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ osScaleFactor * offset.x, osScaleFactor * offset.y, 1.f } };
+	mat3 T = { { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ offset.x, offset.y, 1.f } };
 	transform = mul(transform, T);
 }
 
