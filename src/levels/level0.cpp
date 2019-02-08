@@ -290,15 +290,12 @@ bool Level0::update(float elapsed_ms)
 	for (auto& enemy : m_enemies)
 		enemy.update(elapsed_ms);
 
-		// If player is dead or beat the game, restart the game after the fading animation
-	if (!m_player.is_alive() && m_water.get_time_since_death() > 1) {
+	// If player is dead or beat the game, restart the game after the fading animation
+	if (!m_player.is_alive() && m_water.get_time_since_death() > 1)
 		reset_game();
-	}
 
 	if (m_player.is_alive() && is_player_at_goal && m_water.get_time_since_level_complete() > 1)
-	{
 		reset_game();
-	}
 
 	return true;
 }
