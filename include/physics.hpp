@@ -6,6 +6,8 @@
 #include "../include/characters/turtle.hpp"
 #include "../include/mazeComponents/exit.hpp"
 
+#include <vector>
+
 class Physics
 {
 
@@ -25,6 +27,8 @@ public:
     CollisionNode collideWithEnemy(Player *p, const Enemy *t);
 
     CollisionNode collideWithExit (Player *p, const Exit *e);
+
+	void characterCollisionsWithFixedComponents(Player *c, std::vector<Floor> fixedComponents);
 
     float lineIntersection(float x_pos1, float x_pos2, float y_pos1, float y_pos2);
 
