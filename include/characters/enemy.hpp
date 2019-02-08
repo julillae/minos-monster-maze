@@ -34,6 +34,10 @@ public:
 	// Moves the enemy's position by the specified offset
 	void move();
 
+	// Freeze the enemy and unfreeze
+	void freeze();
+	void unfreeze();
+
 	// Change enemy's movement direction
 	void set_direction(Direction direction);
 
@@ -57,4 +61,5 @@ private:
 	Direction direction;
 	float stopBound;
 	vec2 m_initialPosition;
+	bool m_frozen;
 };
