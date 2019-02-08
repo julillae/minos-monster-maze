@@ -178,6 +178,16 @@ bool Enemy::set_texture(const char* texturePath)
 	return true;
 }
 
+void Enemy::freeze()
+{
+	m_frozen = true;
+}
+
+void Enemy::unfreeze()
+{
+	m_frozen = false;
+}
+
 void Enemy::move()
 {
 	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
