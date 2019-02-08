@@ -1,6 +1,7 @@
 #include "../include/physics.hpp"
 #include <algorithm>
 #include "../include/common.hpp"
+#define _USE_MATH_DEFINES
 #include <math.h>
 
 // logic for gravity and potentially friction calculations go here
@@ -79,5 +80,44 @@ Physics::CollisionNode Physics::collideWithExit (Player *p, const Exit *e) {
     collisionNode.isCollided = isCollided;
     collisionNode.angleOfCollision = 0;
     return collisionNode;
+}
+
+void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floor> fixedComponents)
+{
+	// TODO: Check for Player-Platform Collisions
+	bool isOnAtLeastOnePlatform = false;
+	bool isLeftOfAtLeastOnePlatform = false;
+	bool isRightOfAtLeastOnePlatform = false;
+	bool isBelowAtLeastOnePlatform = false;
+
+	Physics::CollisionNode collisionNode;
+	for (const auto& floor : fixedComponents)
+	{
+		collisionNode = collisionWithFixedWalls(c, &floor);
+		if (collisionNode.isCollided)
+		{
+			// do something
+			float collisionAngle = collisionNode.angleOfCollision;
+			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
+				c->set_on_platform(c->get_position().y);
+				isOnAtLeastOnePlatform = true;
+			}
+
+			if (collisionAngle > -M_PI / 4 && collisionAngle < M_PI / 4) {
+				isLeftOfAtLeastOnePlatform = true;
+			}
+			if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
+				isBelowAtLeastOnePlatform = true;
+			}
+			if (collisionAngle > 3 * M_PI / 4 || collisionAngle < -3 * M_PI / 4) {
+				isRightOfAtLeastOnePlatform = true;
+			}
+		}
+	}
+	if (!isOnAtLeastOnePlatform) c->set_in_free_fall();
+	c->isLeftOfPlatform = isLeftOfAtLeastOnePlatform;
+	c->isRightOfPlatform = isRightOfAtLeastOnePlatform;
+	c->isBelowPlatform = isBelowAtLeastOnePlatform;
+
 }
 

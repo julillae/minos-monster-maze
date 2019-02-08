@@ -284,42 +284,9 @@ bool Level0::update(float elapsed_ms)
 		is_player_at_goal = true;
 	}
 
-	// TODO: Check for Player-Platform Collisions
-	bool isOnAtLeastOnePlatform = false;
-	bool isLeftOfAtLeastOnePlatform = false;
-	bool isRightOfAtLeastOnePlatform = false;
-	bool isBelowAtLeastOnePlatform = false;
-
-	Physics::CollisionNode collisionNode;
-	for (const auto& floor: m_floor)
-	{
-		collisionNode = physicsHandler->collisionWithFixedWalls(&m_player, &floor);
-		if (collisionNode.isCollided)
-		{
-			// do something
-			float collisionAngle = collisionNode.angleOfCollision;
-			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
-				m_player.set_on_platform(m_player.get_position().y);
-				isOnAtLeastOnePlatform = true;
-			}
-
-			if (collisionAngle > -M_PI / 4 && collisionAngle < M_PI / 4) {
-				isLeftOfAtLeastOnePlatform = true;
-			}
-			if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
-				isBelowAtLeastOnePlatform = true;
-			}
-			if (collisionAngle > 3 * M_PI / 4 || collisionAngle < -3 * M_PI / 4) {
-				isRightOfAtLeastOnePlatform = true;
-			}
-		}
-	}
-	if (!isOnAtLeastOnePlatform) m_player.set_in_free_fall();
-	m_player.isLeftOfPlatform = isLeftOfAtLeastOnePlatform;
-	m_player.isRightOfPlatform = isRightOfAtLeastOnePlatform;
-	m_player.isBelowPlatform = isBelowAtLeastOnePlatform;
-
+	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
 	m_player.update(elapsed_ms);
+
 	for (auto& enemy : m_enemies)
 		enemy.update(elapsed_ms);
 
