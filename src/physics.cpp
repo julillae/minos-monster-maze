@@ -84,7 +84,6 @@ Physics::CollisionNode Physics::collideWithExit (Player *p, const Exit *e) {
 
 void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floor> fixedComponents)
 {
-	// TODO: Check for Player-Platform Collisions
 	bool isOnAtLeastOnePlatform = false;
 	bool isLeftOfAtLeastOnePlatform = false;
 	bool isRightOfAtLeastOnePlatform = false;
@@ -96,7 +95,6 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 		collisionNode = collisionWithFixedWalls(c, &floor);
 		if (collisionNode.isCollided)
 		{
-			// do something
 			float collisionAngle = collisionNode.angleOfCollision;
 			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
 				c->set_on_platform(c->get_position().y);

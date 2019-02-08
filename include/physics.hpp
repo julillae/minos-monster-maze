@@ -28,6 +28,10 @@ public:
 
     CollisionNode collideWithExit (Player *p, const Exit *e);
 
+	//Note: eventually, we will want to make Player into the more generic Character class
+	//      so that we can use the logic for Smart Enemies as well.
+	//      Also will eventually want to make Floor into the more generic FixedComponent
+	//      So that this will work when we have multiple types of platforms
 	void characterCollisionsWithFixedComponents(Player *c, std::vector<Floor> fixedComponents);
 
     float lineIntersection(float x_pos1, float x_pos2, float y_pos1, float y_pos2);
