@@ -7,6 +7,7 @@
 #include <string.h>
 #include <cassert>
 #include <sstream>
+#include <time.h>
 
 namespace
 {
@@ -208,6 +209,8 @@ bool Level0::init(vec2 screen, Physics* physicsHandler)
 		fprintf(stderr, "Failed to open audio device");
 		return false;
 	}
+	
+
 
 	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
 	m_salmon_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
@@ -227,10 +230,17 @@ bool Level0::init(vec2 screen, Physics* physicsHandler)
 
 	m_current_speed = 1.f;
 	is_player_at_goal = false;
+	int w, h;
+	glfwGetFramebufferSize(m_window, &w, &h);
+	glViewport(0, 0, w, h);
+	float left = 0.f;// *-0.5;
+	float right = (float)w;// *0.5;
+	prev_tx = -(700.f*2.f)/(right - left);
 
 	generate_maze();
 	
 	spawn_enemies();
+	
 	
 	return m_water.init() && m_player.init(initialPosition);
 }
@@ -386,19 +396,34 @@ void Level0::draw()
 	
 	float tx = 0.f;
 	float ty = 0.f;
-	bool cameraTracking = false;
+	bool cameraTracking = true;
+	//float prev_ty = -(2*p_position.y)/(top - bottom);
 	if (cameraTracking){
 		// translation if camera tracks player
-		tx = -(2*p_position.x)/(right - left);
-		ty = -(2*p_position.y)/(top - bottom);
+		if (m_player.isOnPlatform){
+			//glutTimerFunc(33,timerProc,1);
+			ty = -(2*p_position.y)/(top - bottom);
+			prev_ty = -(2*p_position.y)/(top - bottom);
+			
+		}else{
+			ty=prev_ty;
+		}
+		float tem_x = -(2*p_position.x)/(right - left);	
+		if (tem_x>(0.2f+prev_tx) || tem_x<(prev_tx-0.2f)){
+			tx = -(2*p_position.x)/(right - left);
+			//printf("%f\n", tx);
+			prev_tx = tx;
+		}else{
+			tx = prev_tx;
+		}
 	}
 	else {
 		// translation for fixed camera
 		tx = -(right + left) / (right - left);
 		ty = -(top + bottom) / (top - bottom);
 	}
-	sx *= osScaleFactor;
-	sy *= osScaleFactor;
+	//sx *= osScaleFactor;
+	//sy *= osScaleFactor;
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	for (auto& floor : m_floor)
@@ -482,4 +507,10 @@ void Level0::reset_game()
 	m_water.reset_player_dead_time();
 	m_current_speed = 1.f;
 	is_player_at_goal = false;
+}
+
+void Level0::delay(float secs)
+{
+	float end = clock()/CLOCKS_PER_SEC + secs;
+	while((clock()/CLOCKS_PER_SEC) < end);
 }

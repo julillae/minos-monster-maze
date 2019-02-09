@@ -58,6 +58,7 @@ public:
 	bool isBelowPlatform;
 	bool isLeftOfPlatform;
 	bool isRightOfPlatform;
+	bool isOnPlatform;
 	double width;
 	double height;
 
@@ -68,7 +69,7 @@ private:
 	double drag = 0.8;
 	vec2 currentVelocity;
 	vec2 currentAcceleration;
-	bool isOnPlatform;
+	//bool isOnPlatform;
 	double fakeFloorPos = 750.f;
 	double currentFloorPos = fakeFloorPos;
 	double gravityAcc = 9.81 * 0.2;
