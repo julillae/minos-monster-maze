@@ -422,8 +422,8 @@ void Level0::draw()
 		tx = -(right + left) / (right - left);
 		ty = -(top + bottom) / (top - bottom);
 	}
-	//sx *= osScaleFactor;
-	//sy *= osScaleFactor;
+	sx *= osScaleFactor;
+	sy *= osScaleFactor;
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	for (auto& floor : m_floor)
