@@ -34,7 +34,7 @@ public:
 	void move();
 
 	// Let character know it's currently on a platform (and its position)
-	void set_on_platform(double yPos);
+	void set_on_platform(float yPos);
 
 	// Let character know it's currently in freefall
 	void set_in_free_fall();
@@ -54,19 +54,19 @@ public:
 	bool isBelowPlatform;
 	bool isLeftOfPlatform;
 	bool isRightOfPlatform;
-	double width;
-	double height;
+	float width;
+	float height;
 
 private:
-	double tolerance = 0.000001;
-	double maxVelocity = 12;
-	double accStep = 2.f;
-	double drag = 0.8;
+	float tolerance = 0.000001;
+	float maxVelocity = 10;
+	float accStep = 1.f;
+	float drag = 0.75;
 	vec2 currentVelocity;
 	vec2 currentAcceleration;
 	bool isOnPlatform;
-	double fakeFloorPos = 750.f;
-	double currentFloorPos = fakeFloorPos;
-	double gravityAcc = 9.81 * 0.2;
-	double jumpVel = -25.f;
+	float fakeFloorPos = 750.f;
+	float currentFloorPos = fakeFloorPos;
+	float gravityAcc = 9.81 * 0.12;
+	float jumpVel = -18.f;
 };
