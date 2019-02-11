@@ -221,6 +221,11 @@ void Enemy::set_position(vec2 position)
 	m_position = position;
 }
 
+void Enemy::reset_position()
+{
+	m_position = m_initialPosition;
+}
+
 vec2 Enemy::get_bounding_box()const
 {
     return { std::fabs(m_scale.x) * enemy_texture.width, std::fabs(m_scale.y) * enemy_texture.height };

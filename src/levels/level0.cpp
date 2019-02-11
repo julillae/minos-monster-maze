@@ -487,11 +487,10 @@ void Level0::reset_game()
 	m_player.destroy();
 	m_player.init(initialPosition);
 
-	m_enemies.clear();
-	spawn_enemies();
-
-	m_floor.clear();
-	generate_maze();
+	for (Enemy& enemy : m_enemies) {
+		enemy.reset_position();
+		enemy.unfreeze();
+	};
 
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
