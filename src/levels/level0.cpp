@@ -458,12 +458,7 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
 	{
-		int w, h;
-		glfwGetWindowSize(m_window, &w, &h);
-		m_player.destroy();
-		m_player.init(initialPosition);
-		m_enemies.clear();
-		m_current_speed = 1.f;
+		reset_game();
 	}
 
 	// Control the current speed with `<` `>`
