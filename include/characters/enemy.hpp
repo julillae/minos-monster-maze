@@ -34,11 +34,18 @@ public:
 	// Moves the enemy's position by the specified offset
 	void move();
 
+	// Freeze the enemy and unfreeze
+	void freeze();
+	void unfreeze();
+
 	// Change enemy's movement direction
 	void set_direction(Direction direction);
 
 	// Set enemy's rotation in radians
 	void set_rotation(float radians);
+
+	// Sets the enemy position to its initial position
+	void reset_position();
 
 	// True if the enemy is alive
 	bool is_alive()const;
@@ -57,4 +64,5 @@ private:
 	Direction direction;
 	float stopBound;
 	vec2 m_initialPosition;
+	bool m_frozen;
 };
