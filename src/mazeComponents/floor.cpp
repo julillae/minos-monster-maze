@@ -51,8 +51,8 @@ bool Floor::init(vec2 position)
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture
-    m_scale.x = 25.0f;
-	m_scale.y = 25.0f;
+    m_scale.x = 25.0 / texture.width;
+	m_scale.y = 25.0 / texture.height;
 	m_rotation = 0.f;
 
 	set_size();
@@ -64,9 +64,9 @@ bool Floor::set_texture()
 {
     if (!texture.is_valid())
     {
-        if (!texture.load_from_file(textures_path("solid.png")))
+        if (!texture.load_from_file(textures_path("platform.jpg")))
 		{
-             fprintf(stderr, "Failed to load floor texture!");
+             fprintf(stderr, "Failed to load platform texture!");
             return false;
 		}
     }

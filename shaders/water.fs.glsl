@@ -44,6 +44,6 @@ void main()
 	vec2 coord = distort(uv);
 
     vec4 in_color = texture(screen_texture, coord);
-    color = color_shift(in_color);
-    color = fade_color(color);
+    //color = color_shift(in_color);
+    color = fade_color(in_color);
 }
