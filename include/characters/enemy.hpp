@@ -44,6 +44,9 @@ public:
 	// Set enemy's rotation in radians
 	void set_rotation(float radians);
 
+	// Sets the enemy position to its initial position
+	void reset_position();
+
 	// True if the enemy is alive
 	bool is_alive()const;
 
