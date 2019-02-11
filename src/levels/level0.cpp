@@ -209,14 +209,19 @@ bool Level0::init(vec2 screen, Physics* physicsHandler)
 		return false;
 	}
 
-	m_background_music = Mix_LoadMUS(audio_path("music.wav"));
+	//Note: the following music credits needs to be added to a credit scene at the end of the game
+	//“Secret Catacombs”
+	//by Eric Matyas
+	//www.soundimage.org
+
+	m_background_music = Mix_LoadMUS(audio_path("secret_catacombs.wav"));
 	m_salmon_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
 
 	if (m_background_music == nullptr)
 	{
 		fprintf(stderr, "Failed to load sound\n %s\n make sure the data directory is present",
 			audio_path("salmon_dead.wav"),
-			audio_path("music.wav"));
+			audio_path("secret_catacombs.wav"));
 		return false;
 	}
 
