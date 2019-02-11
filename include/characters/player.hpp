@@ -21,10 +21,6 @@ public:
 	// Renders the player
 	void draw(const mat3& projection)override;
 
-	// Collision routines for enemies and fixed maze components
-	//bool collides_with(const Turtle& turtle);
-	//bool collides_with(const Fish& fish);
-
 	// Returns the local bounding coordinates scaled by the current size of the fish 
 	vec2 get_bounding_box()const;
 

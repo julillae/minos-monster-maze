@@ -211,7 +211,7 @@ bool Level0::init(vec2 screen, Physics* physicsHandler)
 	}
 
 	//Note: the following music credits needs to be added to a credit scene at the end of the game
-	//“Secret Catacombs”
+	//Â“Secret CatacombsÂ”
 	//by Eric Matyas
 	//www.soundimage.org
 
@@ -298,54 +298,19 @@ bool Level0::update(float elapsed_ms)
 		}
 	}
 
-	// TODO: Check for Player-Platform Collisions
-	bool isOnAtLeastOnePlatform = false;
-	bool isLeftOfAtLeastOnePlatform = false;
-	bool isRightOfAtLeastOnePlatform = false;
-	bool isBelowAtLeastOnePlatform = false;
-
-	Physics::CollisionNode collisionNode;
-	for (const auto& floor: m_floor)
-	{
-		collisionNode = physicsHandler->collisionWithFixedWalls(&m_player, &floor);
-		if (collisionNode.isCollided)
-		{
-			// do something
-			float collisionAngle = collisionNode.angleOfCollision;
-			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
-				m_player.set_on_platform(m_player.get_position().y);
-				isOnAtLeastOnePlatform = true;
-			}
-
-			if (collisionAngle > -M_PI / 4 && collisionAngle < M_PI / 4) {
-				isLeftOfAtLeastOnePlatform = true;
-			}
-			if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
-				isBelowAtLeastOnePlatform = true;
-			}
-			if (collisionAngle > 3 * M_PI / 4 || collisionAngle < -3 * M_PI / 4) {
-				isRightOfAtLeastOnePlatform = true;
-			}
-		}
-	}
-	if (!isOnAtLeastOnePlatform) m_player.set_in_free_fall();
-	m_player.isLeftOfPlatform = isLeftOfAtLeastOnePlatform;
-	m_player.isRightOfPlatform = isRightOfAtLeastOnePlatform;
-	m_player.isBelowPlatform = isBelowAtLeastOnePlatform;
-
+	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
 	m_player.update(elapsed_ms);
+
 	for (auto& enemy : m_enemies)
 		enemy.update(elapsed_ms);
 
-		// If player is dead or beat the game, restart the game after the fading animation
+
+	// If player is dead or beat the game, restart the game after the fading animation
 	if (!m_player.is_alive() && m_water.get_time_since_death() > 1.5) {
 		reset_game();
-	}
 
 	if (m_player.is_alive() && is_player_at_goal && m_water.get_time_since_level_complete() > 1.5)
-	{
 		reset_game();
-	}
 
 	return true;
 }
