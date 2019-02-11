@@ -104,6 +104,7 @@ bool Level0::spawn_floor(vec2 position)
 // Generates maze
 void Level0::generate_maze()
 {
+	fprintf(stderr, "Generating maze\n");
 	// Initial tile
 	spawn_floor({0, 0});
 	const float initial_x = 40.0;
@@ -277,6 +278,10 @@ bool Level0::update(float elapsed_ms)
 			if (m_player.is_alive()) {
 				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
 				m_water.set_player_dead();
+
+				for(Enemy& e : m_enemies) {
+					e.freeze();
+				}
 			}
 			m_player.kill();
 		}
@@ -287,6 +292,10 @@ bool Level0::update(float elapsed_ms)
 	{
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
+
+		for(Enemy& enemy : m_enemies) {
+			enemy.freeze();
+		}
 	}
 
 	// TODO: Check for Player-Platform Collisions
@@ -329,11 +338,11 @@ bool Level0::update(float elapsed_ms)
 		enemy.update(elapsed_ms);
 
 		// If player is dead or beat the game, restart the game after the fading animation
-	if (!m_player.is_alive() && m_water.get_time_since_death() > 1) {
+	if (!m_player.is_alive() && m_water.get_time_since_death() > 1.5) {
 		reset_game();
 	}
 
-	if (m_player.is_alive() && is_player_at_goal && m_water.get_time_since_level_complete() > 1)
+	if (m_player.is_alive() && is_player_at_goal && m_water.get_time_since_level_complete() > 1.5)
 	{
 		reset_game();
 	}
@@ -455,12 +464,7 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
 	{
-		int w, h;
-		glfwGetWindowSize(m_window, &w, &h);
-		m_player.destroy();
-		m_player.init(initialPosition);
-		m_enemies.clear();
-		m_current_speed = 1.f;
+		reset_game();
 	}
 
 	// Control the current speed with `<` `>`
@@ -483,6 +487,11 @@ void Level0::reset_game()
 	glfwGetWindowSize(m_window, &w, &h);
 	m_player.destroy();
 	m_player.init(initialPosition);
+
+	for (Enemy& enemy : m_enemies) {
+		enemy.reset_position();
+		enemy.unfreeze();
+	};
 
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
