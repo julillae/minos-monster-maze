@@ -178,6 +178,16 @@ bool Enemy::set_texture(const char* texturePath)
 	return true;
 }
 
+void Enemy::freeze()
+{
+	m_frozen = true;
+}
+
+void Enemy::unfreeze()
+{
+	m_frozen = false;
+}
+
 void Enemy::move()
 {
 	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
@@ -209,6 +219,11 @@ void Enemy::kill()
 void Enemy::set_position(vec2 position)
 {
 	m_position = position;
+}
+
+void Enemy::reset_position()
+{
+	m_position = m_initialPosition;
 }
 
 vec2 Enemy::get_bounding_box()const
