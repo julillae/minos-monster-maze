@@ -220,7 +220,7 @@ bool Level0::init(vec2 screen, Physics* physicsHandler)
 
 	if (m_background_music == nullptr)
 	{
-		fprintf(stderr, "Failed to load sound\n %s\n make sure the data directory is present",
+		fprintf(stderr, "Failed to load sound\n %s,%s\n make sure the data directory is present",
 			audio_path("salmon_dead.wav"),
 			audio_path("secret_catacombs.wav"));
 		return false;

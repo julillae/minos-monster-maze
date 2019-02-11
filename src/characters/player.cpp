@@ -64,7 +64,7 @@ bool Player::init(vec2 initialPosition)
 		return false;
 	
 	// Setting initial values
-	double scaleFactor = 2.f;
+	float scaleFactor = 2.f;
 	m_scale.x = -scaleFactor;
 	m_scale.y = scaleFactor;
 	width = player_texture.width * scaleFactor;
@@ -87,8 +87,6 @@ void Player::update(float ms)
 {
 	float vAcc;
 	float hAcc;
-	float vVel;
-	float hVel;
 
 	if (m_is_alive)
 	{
@@ -185,7 +183,7 @@ void Player::update_velocity()
 	if (currentVelocity.x > maxVelocity) currentVelocity.x = maxVelocity;
 	if (currentVelocity.x < -maxVelocity) currentVelocity.x = -maxVelocity;
 
-	if (currentAcceleration.x < tolerance && currentAcceleration.x > -tolerance)
+	if (currentAcceleration.x < tolerance && currentAcceleration.x > -tolerance && isOnPlatform)
 		currentVelocity.x *= drag;
 
 	if (isBelowPlatform) {
@@ -214,7 +212,7 @@ void Player::move()
 
 }
 
-void Player::set_on_platform(double yPos) {
+void Player::set_on_platform(float yPos) {
 	isOnPlatform = true;
 	currentFloorPos = yPos;
 }
