@@ -1,6 +1,5 @@
 // internal
 #include "../include/common.hpp"
-#include "../include/world.hpp"
 #include "../include/physics.hpp"
 #include "../include/levels/level0.hpp"
 

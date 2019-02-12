@@ -9,7 +9,7 @@
 #include "../mazeComponents/floor.hpp"
 #include "../mazeComponents/exit.hpp"
 #include "../mazeComponents/ice.hpp"
-#include "../water.hpp"
+#include "../renderEffects.hpp"
 #include "../physics.hpp"
 
 // stlib
@@ -71,7 +71,7 @@ private:
 	Texture m_screen_tex;
 
 	// Water effect
-	Water m_water;
+	RenderEffects m_water;
 
     Player m_player;
 	Exit m_exit;
@@ -80,7 +80,7 @@ private:
 
     float m_current_speed;
 
-    float m_next_floor_spawn;
+    float m_seed_rng;
 
     Mix_Music* m_background_music;
 	Mix_Chunk* m_salmon_dead_sound;

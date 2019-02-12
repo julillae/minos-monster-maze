@@ -1,8 +1,8 @@
-#include "../include/water.hpp"
+#include "../include/renderEffects.hpp"
 
 #include <iostream>
 
-bool Water::init() {
+bool RenderEffects::init() {
 	m_dead_time = -1;
 	m_win_time = -1;
 
@@ -36,7 +36,7 @@ bool Water::init() {
 	return true;
 }
 
-void Water::destroy() {
+void RenderEffects::destroy() {
 	glDeleteBuffers(1, &mesh.vbo);
 
 	glDeleteShader(effect.vertex);
@@ -44,35 +44,31 @@ void Water::destroy() {
 	glDeleteShader(effect.program);
 }
 
-void Water::set_salmon_dead() {
+void RenderEffects::set_player_dead() {
 	m_dead_time = glfwGetTime();
 }
 
-void Water::set_player_dead() {
-	m_dead_time = glfwGetTime();
-}
-
-void Water::set_level_complete_time() {
+void RenderEffects::set_level_complete_time() {
 	m_win_time = glfwGetTime();
 }
 
-void Water::reset_player_dead_time() {
+void RenderEffects::reset_player_dead_time() {
 	m_dead_time = -1;
 }
 
-void Water::reset_player_win_time() {
+void RenderEffects::reset_player_win_time() {
 	m_win_time = -1;
 }
 
-float Water::get_time_since_death() const {
+float RenderEffects::get_time_since_death() const {
 	return glfwGetTime() - m_dead_time;
 }
 
-float Water::get_time_since_level_complete() const {
+float RenderEffects::get_time_since_level_complete() const {
 	return glfwGetTime() - m_win_time;
 }
 
-void Water::draw(const mat3& projection) {
+void RenderEffects::draw(const mat3& projection) {
 	// Enabling alpha channel for textures
 	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
