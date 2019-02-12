@@ -33,11 +33,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/project_path.hpp.in" "${CMAK
 set(SOURCE_FILES
 	src/a1.cpp
 	src/common.cpp
-	src/characters/fish.cpp
-	src/characters/salmon.cpp
-	src/characters/turtle.cpp
-	src/water.cpp
-	src/world.cpp
+	src/renderEffects.cpp
     src/characters/character.cpp
     src/characters/player.cpp
     src/characters/enemy.cpp
@@ -56,11 +52,7 @@ set(SOURCE_FILES
 
     include/project_path.hpp
 	include/common.hpp
-	include/characters/fish.hpp
-	include/characters/salmon.hpp
-	include/characters/turtle.hpp
-	include/water.hpp
-	include/world.hpp
+	include/renderEffects.hpp
     include/characters/character.hpp
     include/characters/player.hpp
     include/characters/enemy.hpp

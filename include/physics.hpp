@@ -3,7 +3,6 @@
 #include "../include/characters/enemy.hpp"
 #include "../include/characters/player.hpp"
 #include "../include/mazeComponents/floor.hpp"
-#include "../include/characters/turtle.hpp"
 #include "../include/mazeComponents/exit.hpp"
 
 #include <vector>

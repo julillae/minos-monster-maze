@@ -10,8 +10,6 @@
 
 namespace
 {
-	const size_t MAX_ENEMIES = 1;
-
 	const size_t MAZE_WIDTH = 49;
 	const size_t MAZE_HEIGHT = 28;
 
@@ -56,8 +54,7 @@ namespace
 	}
 }
 
-Level0::Level0() : 
-	m_next_floor_spawn(0.f)
+Level0::Level0() : m_seed_rng(0.f)
 {
 	// Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());

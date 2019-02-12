@@ -3,7 +3,7 @@
 #include "common.hpp"
 
 
-class Water : public Renderable
+class RenderEffects : public Renderable
 {
 public:
 	// Creates all the associated render resources and default transform
@@ -16,7 +16,6 @@ public:
 	void draw(const mat3& projection)override;
 
 	// Set dead time
-	void set_salmon_dead();
 	void set_player_dead();
 	void set_level_complete_time();
 	void reset_player_dead_time();
