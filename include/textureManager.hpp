@@ -1,0 +1,8 @@
+//
+// Created by Regina on 2019-02-14.
+//
+
+#ifndef INC_436D_TEXTUREMANAGER_H
+#define INC_436D_TEXTUREMANAGER_H
+
+#endif //INC_436D_TEXTUREMANAGER_H
