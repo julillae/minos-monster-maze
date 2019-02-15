@@ -1,8 +1,12 @@
-//
-// Created by Regina on 2019-02-14.
-//
+#pragma once
 
-#ifndef INC_436D_TEXTUREMANAGER_H
-#define INC_436D_TEXTUREMANAGER_H
+#include "common.hpp"
 
-#endif //INC_436D_TEXTUREMANAGER_H
+class TextureManager
+{
+
+public:
+
+    bool static load_texture(const char* fileName, Texture* texture, Renderable* renderable);
+
+};

@@ -12,11 +12,11 @@ class Player : public Character
 	static Texture player_texture;
 public:
 	// Creates all the associated render resources and default transform
-	bool init(vec2 initialPosition);
+	bool init(vec2 initialPosition)override;
 	
 	// Update player position based on velocity vector
 	// ms represents the number of milliseconds elapsed from the previous update() call
-	void update(float ms);
+	void update(float ms)override;
 	
 	// Renders the player
 	void draw(const mat3& projection)override;
