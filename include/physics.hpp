@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../include/characters/enemy.hpp"
+#include "../include/characters/simple.hpp"
 #include "../include/characters/player.hpp"
 #include "../include/mazeComponents/floor.hpp"
 #include "../include/mazeComponents/exit.hpp"
@@ -23,7 +24,7 @@ public:
 
     CollisionNode collisionWithFixedWalls(Player *p, const Floor *m);
 
-    CollisionNode collideWithEnemy(Player *p, const Enemy *t);
+    CollisionNode collideWithEnemy(Player *p, const Simple *t);
 
     CollisionNode collideWithExit (Player *p, const Exit *e);
 

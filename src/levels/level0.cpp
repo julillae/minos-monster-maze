@@ -71,15 +71,16 @@ void Level0::spawn_enemies() {
 	spawn_enemy({825.f, 550.f}, 150.f);
 	spawn_enemy({100.f, 375.f}, 400.f);
 	
-	Enemy& new_enemy = m_enemies.back();
+	// Simple& new_enemy = m_enemies.back();
 }
 
 bool Level0::spawn_enemy(vec2 position, float bound)
 {
-	Enemy enemy;
-	if (enemy.init(position, bound))
+	Simple enemy;
+	if (enemy.init(position))
 	{
-		m_enemies.emplace_back(enemy);
+		enemy.set_bound(bound);
+		m_enemies.push_back(enemy);
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn enemy");
@@ -269,14 +270,14 @@ bool Level0::update(float elapsed_ms)
 	vec2 screen = { (float)w, (float)h };
 
 	// Checking Player - Enemy Collision
-	for (Enemy& enemy : m_enemies) {
+	for (Simple& enemy : m_enemies) {
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
 		{
 			if (m_player.is_alive()) {
 				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
 				m_water.set_player_dead();
 
-				for(Enemy& e : m_enemies) {
+				for(Simple& e : m_enemies) {
 					e.freeze();
 				}
 			}
@@ -290,7 +291,7 @@ bool Level0::update(float elapsed_ms)
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
 
-		for(Enemy& enemy : m_enemies) {
+		for(Simple& enemy : m_enemies) {
 			enemy.freeze();
 		}
 	}
@@ -450,7 +451,7 @@ void Level0::reset_game()
 	m_player.destroy();
 	m_player.init(initialPosition);
 
-	for (Enemy& enemy : m_enemies) {
+	for (Simple& enemy : m_enemies) {
 		enemy.reset_position();
 		enemy.unfreeze();
 	};

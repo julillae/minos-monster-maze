@@ -14,7 +14,7 @@ public:
 	void set_position(vec2 position);
 
 	// Creates all the associated render resources and default transform
-	bool init(vec2 initialPosition, float bound);
+	
 
 	bool init(vec2 initialPosition);
 	
@@ -23,13 +23,13 @@ public:
 	void update(float ms);
 	
 	// Renders the enemy
-	void draw(const mat3& projection)override;
+	void draw(const mat3& projection);
 
 	// Collision routines for enemies and fixed maze components
 	//bool collides_with(const Turtle& turtle);
 	//bool collides_with(const Fish& fish);
 
-	bool set_texture(const char* texturePath);
+	// bool set_texture(const char* texturePath) = 0;
 
 	// Moves the enemy's position by the specified offset
 	void move();
@@ -62,7 +62,6 @@ private:
 	float maxVelocity = 2.0f;
 	vec2 currentVelocity;
 	Direction direction;
-	float stopBound;
 	vec2 m_initialPosition;
 	bool m_frozen;
 };
