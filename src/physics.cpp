@@ -119,3 +119,33 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 
 }
 
+void Physics::characterVelocityUpdate(Player* c)
+{
+	float platformDrag = 0.75; //eventually make this a property of the platform
+
+	vec2 cAcc = c->get_acceleration();
+	vec2 cVelocity = c->get_velocity();
+	float maxVelocity = c->maxVelocity;
+
+	cVelocity.x += cAcc.x;
+	cVelocity.y += cAcc.y;
+
+	if (cVelocity.x > maxVelocity) cVelocity.x = maxVelocity;
+	if (cVelocity.x < -maxVelocity) cVelocity.x = -maxVelocity;
+
+	if (cAcc.x < g_tolerance && cAcc.x > -g_tolerance && c->isOnPlatform)
+		cVelocity.x *= platformDrag;
+
+	if (c->isBelowPlatform) {
+		cVelocity.y = std::max(0.f, cVelocity.y);
+	}
+	if (c->isLeftOfPlatform) {
+		cVelocity.x = std::min(0.f, cVelocity.x);
+	}
+	if (c->isRightOfPlatform) {
+		cVelocity.x = std::max(0.f, cVelocity.x);
+	}
+
+	c->set_velocity(cVelocity);
+}
+

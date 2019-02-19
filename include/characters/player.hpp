@@ -27,8 +27,14 @@ public:
 	// Set the player's acceleration vector
 	void set_acceleration(vec2 acc);
 
-	// Update player's velocity based on acceleration
-	void update_velocity();
+	// Get the player's acceleration vector
+	vec2 get_acceleration();
+
+	// Set the player's velocity vector
+	void set_velocity(vec2 vel);
+
+	// Get the player's velocity vector
+	vec2 get_velocity();
 
 	// Moves the player's position by the specified offset
 	void move();
@@ -56,15 +62,14 @@ public:
 	bool isRightOfPlatform;
 	float width;
 	float height;
+	float maxVelocity = 10;
+	bool isOnPlatform;
 
 private:
-	float tolerance = 0.000001;
-	float maxVelocity = 10;
 	float accStep = 1.f;
 	float drag = 0.75;
 	vec2 currentVelocity;
 	vec2 currentAcceleration;
-	bool isOnPlatform;
 	float fakeFloorPos = 750.f;
 	float currentFloorPos = fakeFloorPos;
 	float gravityAcc = 9.81 * 0.12;

@@ -1,5 +1,6 @@
 // Header
 #include "../include/characters/player.hpp"
+#include "../include/common.hpp"
 
 // internal
 
@@ -98,7 +99,6 @@ void Player::update(float ms)
 		vAcc = gravityAcc;
 
 		set_acceleration({ hAcc, vAcc });
-		update_velocity();
 		move();
 
 	}
@@ -175,33 +175,26 @@ void Player::set_acceleration(vec2 acc)
 	currentAcceleration.x = acc.x; currentAcceleration.y = acc.y;
 }
 
-void Player::update_velocity()
+vec2 Player::get_acceleration()
 {
-	currentVelocity.x += currentAcceleration.x;
-	currentVelocity.y += currentAcceleration.y;
+	return currentAcceleration;
+}
 
-	if (currentVelocity.x > maxVelocity) currentVelocity.x = maxVelocity;
-	if (currentVelocity.x < -maxVelocity) currentVelocity.x = -maxVelocity;
+void Player::set_velocity(vec2 vel)
+{
+	currentVelocity.x = vel.x; currentVelocity.y = vel.y;
+}
 
-	if (currentAcceleration.x < tolerance && currentAcceleration.x > -tolerance && isOnPlatform)
-		currentVelocity.x *= drag;
-
-	if (isBelowPlatform) {
-		currentVelocity.y = std::max(0.f, currentVelocity.y);
-	}
-	if (isLeftOfPlatform) {
-		currentVelocity.x = std::min(0.f, currentVelocity.x);
-	}
-	if (isRightOfPlatform) {
-		currentVelocity.x = std::max(0.f, currentVelocity.x);
-	}
+vec2 Player::get_velocity()
+{
+	return currentVelocity;
 }
 
 void Player::move()
 {
 	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
 	currentFloorPos = std::min(fakeFloorPos, currentFloorPos);
-	if (m_position.y >= currentFloorPos - tolerance) {
+	if (m_position.y >= currentFloorPos - g_tolerance) {
 		m_position.y = currentFloorPos;
 		currentVelocity.y = 0.f;
 		isOnPlatform = true;
