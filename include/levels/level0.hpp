@@ -4,6 +4,7 @@
 #include "../common.hpp"
 #include "../characters/player.hpp"
 #include "../characters/enemy.hpp"
+#include "../characters/simple.hpp"
 #include "../mazeComponents/mazeComponent.hpp"
 #include "../mazeComponents/fixedComponent.hpp"
 #include "../mazeComponents/floor.hpp"
@@ -75,7 +76,7 @@ private:
 
     Player m_player;
 	Exit m_exit;
-	std::vector<Enemy> m_enemies;
+	std::vector<Simple> m_enemies;
     std::vector<Floor> m_floor;
 
     float m_seed_rng;
