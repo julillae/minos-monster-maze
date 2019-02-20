@@ -36,10 +36,6 @@ bool Enemy::init(vec2 initialPosition, float bound)
 	return true;
 }
 
-bool Enemy::init(vec2 initialPosition)
-{
-	return false;
-}
 
 // Called on each frame by World::update()
 void Enemy::update(float ms)

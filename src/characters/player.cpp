@@ -1,6 +1,7 @@
 // Header
 #include "../include/characters/player.hpp"
 #include "../include/common.hpp"
+#include "../include/physics.hpp"
 
 // internal
 
@@ -13,9 +14,9 @@
 
 Texture Player::player_texture;
 
-bool Player::init(vec2 initialPosition)
+bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 {
-
+	this->physicsHandler = physicsHandler;
 	if (!player_texture.is_valid())
 	{
 		if (!player_texture.load_from_file(textures_path("player.png")))
@@ -74,7 +75,7 @@ bool Player::init(vec2 initialPosition)
 	v_direction = Direction::none;
 	m_position = initialPosition;
 	m_rotation = 0.f;
-	currentVelocity = {0.0, 0.0};
+	m_velocity = {0.0, 0.0};
 
 	isBelowPlatform = false;
 	isLeftOfPlatform = false;
@@ -86,29 +87,9 @@ bool Player::init(vec2 initialPosition)
 // Called on each frame by World::update()
 void Player::update(float ms)
 {
-	float vAcc;
-	float hAcc;
-
-	if (m_is_alive)
-	{
-		switch (h_direction) {
-			case Direction::left: hAcc = -accStep; break;
-			case Direction::right: hAcc = accStep; break;
-			default: hAcc = 0.f; break;
-		}
-		vAcc = gravityAcc;
-
-		set_acceleration({ hAcc, vAcc });
-		move();
-
-	}
-	else
-	{
-		// If dead we make it face upwards and sink deep down
-		set_rotation(3.1415f);
-		//move({ 0.f, step });
-	}
-
+	physicsHandler->characterAccelerationUpdate(this);
+	physicsHandler->characterVelocityUpdate(this);
+	if (m_is_alive)	move();
 }
 
 void Player::draw(const mat3& projection)
@@ -169,24 +150,8 @@ vec2 Player::get_bounding_box()const {
 	return { std::fabs(m_scale.x) * player_texture.width, std::fabs(m_scale.y) * player_texture.height };
 }
 
-void Player::set_acceleration(vec2 acc) {
-	currentAcceleration.x = acc.x; currentAcceleration.y = acc.y;
-}
-
-vec2 Player::get_acceleration() {
-	return currentAcceleration;
-}
-
-void Player::set_velocity(vec2 vel) {
-	currentVelocity.x = vel.x; currentVelocity.y = vel.y;
-}
-
-vec2 Player::get_velocity() {
-	return currentVelocity;
-}
-
 void Player::move() {
-	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
+	m_position.x += m_velocity.x; m_position.y += m_velocity.y;
 }
 
 void Player::set_on_platform(float yPos) {
@@ -201,7 +166,7 @@ void Player::set_direction(int key, int action)
 {
 	if (action == GLFW_PRESS) {
 		switch (key) {
-			case GLFW_KEY_UP: if (isOnPlatform) currentVelocity.y += jumpVel; break;
+			case GLFW_KEY_UP: if (isOnPlatform) m_velocity.y += jumpVel; break;
 			case GLFW_KEY_LEFT: 
 				h_direction = Direction::left; 
 				m_scale.x = -std::fabs(m_scale.x);
@@ -226,18 +191,3 @@ void Player::set_direction(int key, int action)
 		}
 	}
 }
-
-
-void Player::set_rotation(float radians) {
-	m_rotation = radians;
-}
-
-bool Player::is_alive()const {
-	return m_is_alive;
-}
-
-// Called when the salmon collides with a turtle
-void Player::kill() {
-	m_is_alive = false;
-}
-
