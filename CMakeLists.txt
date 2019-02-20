@@ -34,6 +34,7 @@ set(SOURCE_FILES
 	src/a1.cpp
 	src/common.cpp
     src/textureManager.cpp
+    src/spriteSheet.cpp
 	src/renderEffects.cpp
     src/characters/character.cpp
     src/characters/player.cpp
@@ -54,6 +55,7 @@ set(SOURCE_FILES
     include/project_path.hpp
 	include/common.hpp
     include/textureManager.hpp
+    include/spriteSheet.hpp
 	include/renderEffects.hpp
     include/characters/character.hpp
     include/characters/player.hpp

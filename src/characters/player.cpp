@@ -10,21 +10,28 @@
 #include <math.h>
 #include <cmath>
 
-Texture Player::player_texture;
+//Texture Player::player_texture;
 
 bool Player::init(vec2 initialPosition)
 {
 
-	const char* textureFile = textures_path("player.png");
+	const char* textureFile = textures_path("player-sprite-sheet.png");
 
-	if (!TextureManager::load_texture(textureFile, &player_texture, this)) return false;
+	if (!TextureManager::load_texture(textureFile, &m_texture, this)) return false;
+
+	float spriteSheetWidth = 8.0f;
+	float spriteSheetHeight = 5.0f;
+
+	spriteSheet.init(&m_texture, { spriteSheetWidth, spriteSheetHeight });
+
+	spriteSheet.set_render_data(this, 0);
 	
 	// Setting initial values
-	float scaleFactor = 2.f;
+    float scaleFactor = 2.0f;
 	m_scale.x = -scaleFactor;
-	m_scale.y = scaleFactor;
-	width = player_texture.width * scaleFactor;
-	height = player_texture.height * scaleFactor;
+    m_scale.y = scaleFactor;
+    width = m_texture.width / spriteSheetWidth * scaleFactor - 12;
+    height = m_texture.height / spriteSheetHeight * scaleFactor - 14;
 	m_is_alive = true;
 	v_direction = Direction::none;
 	m_position = initialPosition;
@@ -58,17 +65,13 @@ void Player::update(float ms)
 		move();
 
 	}
-	else
-	{
-		// If dead we make it face upwards and sink deep down
-		set_rotation(3.1415f);
-		//move({ 0.f, step });
-	}
 
 }
 
 void Player::draw(const mat3& projection)
 {
+	set_animation();
+
 	transform_begin();
 
 	transform_translate(m_position);
@@ -104,7 +107,7 @@ void Player::draw(const mat3& projection)
 
 	// Enabling and binding texture to slot 0
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, player_texture.id);
+	glBindTexture(GL_TEXTURE_2D, m_texture.id);
 
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
@@ -115,6 +118,9 @@ void Player::draw(const mat3& projection)
 	glUniform3fv(color_uloc, 1, color);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
+	// magnifies texture to avoid it being blurry when scaled
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 	// Drawing!
 	glDrawElements(GL_TRIANGLES,6, GL_UNSIGNED_SHORT, nullptr);
 }
@@ -123,7 +129,7 @@ void Player::draw(const mat3& projection)
 vec2 Player::get_bounding_box()const
 {
 	// fabs is to avoid negative scale due to the facing direction
-	return { std::fabs(m_scale.x) * player_texture.width, std::fabs(m_scale.y) * player_texture.height };
+	return { width, height };
 }
 
 void Player::set_acceleration(vec2 acc)
@@ -223,5 +229,74 @@ bool Player::is_alive()const
 void Player::kill()
 {
 	m_is_alive = false;
+}
+
+void Player::set_animation()
+{
+	int numTiles;
+	int tileIndex;
+	bool isRepeat = true;
+
+	float animSpeed = 0.2f;
+
+	// Calculate animation
+	if (m_is_alive)
+	{
+		is_anim_once = false;
+
+		// idle animation
+		if (currentAcceleration.x == 0.f)
+		{
+			numTiles = 5;
+			tileIndex = 0;
+		}
+
+		// running animation
+		if (currentAcceleration.x != 0.f)
+		{
+			numTiles = 8;
+			tileIndex = 8;
+		}
+
+		// jump up
+		if (currentVelocity.y < 0)
+		{
+			numTiles = 1;
+			tileIndex = 9;
+		}
+
+		// falling down
+		if (currentVelocity.y > 0)
+		{
+			numTiles = 1;
+			tileIndex = 14;
+		}
+
+	} else
+	{
+		isRepeat = false;
+
+		if (is_anim_once)
+		{
+			numTiles = 1;
+			tileIndex = 38;
+		} else
+		{
+			numTiles = 7;
+			tileIndex = 32;
+		}
+
+	}
+
+	// Increment animation time
+	m_animTime += animSpeed;
+
+	// Apply animation
+	tileIndex = tileIndex + (int)m_animTime % numTiles;
+
+	// do not repeat death animation
+	if (!isRepeat && tileIndex == 38) is_anim_once = true;
+
+	spriteSheet.set_render_data(this, tileIndex);
 }
 

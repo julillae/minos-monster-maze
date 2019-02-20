@@ -9,7 +9,6 @@ class FixedComponent;
 
 class Player : public Character
 {
-	static Texture player_texture;
 public:
 	// Creates all the associated render resources and default transform
 	bool init(vec2 initialPosition)override;
@@ -50,6 +49,9 @@ public:
 
 	// Kills the player, changing its alive state and triggering on death events
 	void kill();
+
+	// Sets the correct sprite sheet tile for appropriate animation
+	void set_animation();
 
 	bool isBelowPlatform;
 	bool isLeftOfPlatform;
