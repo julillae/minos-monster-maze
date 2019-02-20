@@ -22,16 +22,6 @@ bool SpriteSheet::set_render_data(Renderable* renderable, int index)
 
     TexturedVertex vertices[4];
 
-//    fprintf(stderr, "index %d!\n", index);
-//    fprintf(stderr, "xTile %d!\n", xTile);
-//    fprintf(stderr, "yTile %d!\n", yTile);
-//    fprintf(stderr, "spriteWidth * xTile %f: \n", xStep * xTile);
-//    fprintf(stderr, "spriteHeight * (yTile + 1) %f: \n", yStep * (yTile + 1));
-//    fprintf(stderr, "spriteWidth * (xTile + 1) %f: \n", xStep * (xTile + 1));
-//    fprintf(stderr, "spriteHeight * yTile %f: \n", yStep * yTile);
-//    fprintf(stderr, "spriteWidth * xTile %f: \n", xStep * xTile);
-
-
     vertices[0].position = { -wr, +hr, -0.01f };
     vertices[0].texcoord = { xStep * xTile, yStep * (yTile + 1) };
     vertices[1].position = { +wr, +hr, -0.01f };
