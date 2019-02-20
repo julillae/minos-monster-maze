@@ -10,7 +10,6 @@ class Enemy : public Character
 	static Texture enemy_texture;
 
 public:
-
 	// Creates all the associated render resources and default transform
 	bool init(vec2 initialPosition, float bound);
 	
@@ -23,15 +22,9 @@ public:
 
 	bool set_texture(const char* texturePath);
 
-	// Moves the enemy's position by the specified offset
-	void move();
-
 	// Freeze the enemy and unfreeze
 	void freeze();
 	void unfreeze();
-
-	// Change enemy's movement direction
-	void set_direction(Direction direction);
 
 	// Sets the enemy position to its initial position
 	void reset_position();
@@ -41,9 +34,7 @@ public:
 
 
 private:
-	float maxVelocity = 2.0f;
-	vec2 currentVelocity;
-	Direction direction;
+	float speed = 2.0f;
 	float stopBound;
 	vec2 m_initialPosition;
 	bool m_frozen;

@@ -420,7 +420,7 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// action can be GLFW_PRESS GLFW_RELEASE GLFW_REPEAT
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	m_player.set_direction(key, action);
+	m_player.on_key(key, action);
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
