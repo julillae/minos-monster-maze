@@ -15,8 +15,6 @@ public:
 
 	// Creates all the associated render resources and default transform
 	bool init(vec2 initialPosition, float bound);
-
-	bool init(vec2 initialPosition);
 	
 	// Update enemy position based on velocity vector
 	// ms represents the number of milliseconds elapsed from the previous update() call
@@ -24,10 +22,6 @@ public:
 	
 	// Renders the enemy
 	void draw(const mat3& projection)override;
-
-	// Collision routines for enemies and fixed maze components
-	//bool collides_with(const Turtle& turtle);
-	//bool collides_with(const Fish& fish);
 
 	bool set_texture(const char* texturePath);
 

@@ -152,3 +152,24 @@ void Physics::characterVelocityUpdate(Player* c)
 	c->set_velocity(cVelocity);
 }
 
+void Physics::characterAccelerationUpdate(Player * c)
+{
+	float vAcc;
+	float hAcc;
+	Direction h_direction = c->get_h_direction();
+	float accStep = c->accStep;
+
+	if (c->is_alive()) {
+		switch (h_direction) {
+			case Direction::left: hAcc = -accStep; break;
+			case Direction::right: hAcc = accStep; break;
+			default: hAcc = 0.f; break;
+		}
+		vAcc = gravityAcc;
+		c->set_acceleration({ hAcc, vAcc });
+	} else {
+		c->set_rotation(M_PI);
+	}
+
+}
+

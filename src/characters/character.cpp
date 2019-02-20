@@ -1,5 +1,10 @@
 // Header
 #include "../include/characters/character.hpp"
+#include "../include/physics.hpp"
+
+bool Character::init(vec2 initialPosition, Physics * physicsHandler) {
+	return false;
+}
 
 // Call if init() was successful
 // Releases all graphics resources
@@ -14,13 +19,42 @@ void Character::destroy()
 	glDeleteShader(effect.program);
 }
 
-vec2 Character::get_position()const
-{
+void Character::set_acceleration(vec2 acc) {
+	m_acceleration.x = acc.x; m_acceleration.y = acc.y;
+}
+
+vec2 Character::get_acceleration() {
+	return m_acceleration;
+}
+
+void Character::set_velocity(vec2 vel) {
+	m_velocity.x = vel.x; m_velocity.y = vel.y;
+}
+
+vec2 Character::get_velocity() {
+	return m_velocity;
+}
+
+vec2 Character::get_position()const {
 	return m_position;
 }
 
-vec2 Character::get_scale()const
-{
+vec2 Character::get_scale()const {
 	return m_scale;
 }
 
+Direction Character::get_h_direction() {
+	return h_direction;
+}
+
+void Character::set_rotation(float radians) {
+	m_rotation = radians;
+}
+
+bool Character::is_alive()const {
+	return m_is_alive;
+}
+
+void Character::kill() {
+	m_is_alive = false;
+}
