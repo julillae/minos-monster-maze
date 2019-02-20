@@ -15,6 +15,7 @@ public:
     Physics();
 
     ~Physics();
+	float gravityAcc = 9.81f * 0.12f;
 
     struct CollisionNode {
         bool isCollided;
@@ -34,6 +35,8 @@ public:
 	void characterCollisionsWithFixedComponents(Player *c, std::vector<Floor> fixedComponents);
 
 	void characterVelocityUpdate(Player *c);
+
+	void characterAccelerationUpdate(Player *c);
 
     float lineIntersection(float x_pos1, float x_pos2, float y_pos1, float y_pos2);
 

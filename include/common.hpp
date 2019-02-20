@@ -20,7 +20,7 @@
 #define audio_path(name) data_path  "/audio/" name
 #define mesh_path(name) data_path  "/meshes/" name
 
-static float g_tolerance = 0.000001;
+static float g_tolerance = 0.000001f;
 
 // Not much math is needed and there are already way too many libraries linked (:
 // If you want to do some overloads..
