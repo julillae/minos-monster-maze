@@ -296,7 +296,6 @@ bool Level0::update(float elapsed_ms)
 		}
 	}
 
-	physicsHandler
 	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
 	m_player.update(elapsed_ms);
 
@@ -455,7 +454,10 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
     if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_SPACE ) {
         increment += 2;
         rotation = (increment * M_PI ) / 180;
-
+        // reset increment
+        if (increment == 360) {
+        	increment = 0;
+        }
     }
 
 	// Resetting game
