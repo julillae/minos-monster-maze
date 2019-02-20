@@ -4,21 +4,40 @@
 #include <vector>
 using namespace std;
 
+// Enum for character states
+// set StateMAX = last item in enum, needed to know how many states are available
+enum State { idle, running, jumping, falling, rotating, StateMAX = rotating};
+
 struct Edge {
-	int src;
-	int dest;
+	State src;
+	State dest;
 	int weight;
 };
 
-typedef pair<int, int> Pair;
+typedef pair<State, int> DestWeightPair;
+
+// boolean for whether state change was successful or not
+// int for cost of change
+typedef pair<bool, int> ChangeCost;
 
 // StateTree is a weighted graph represented by an adjacency list
 class StateTree
 {
 public:
 	// vector of vectors of Pairs used to represent an adjacency list
-	vector<vector<Pair>> adjList;
+	vector<vector<DestWeightPair>> adjList;
 
-	// Constructor
-	StateTree(vector<Edge> const &edges, int numNodes);
+	// Constructor creates a StateTree given all edges and the starting node
+	StateTree(vector<Edge> const &edges, State startingNode);
+
+	vector<DestWeightPair> getChildren();
+
+	ChangeCost changeState(State newState);
+
+	void resetStateTree();
+
+	State currentState;
+
+private:
+	State root;
 };
