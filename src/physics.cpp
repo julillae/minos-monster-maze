@@ -136,6 +136,9 @@ void Physics::characterVelocityUpdate(Player* c)
 	if (cAcc.x < g_tolerance && cAcc.x > -g_tolerance && c->isOnPlatform)
 		cVelocity.x *= platformDrag;
 
+	if (c->isOnPlatform) {
+		cVelocity.y = std::min(0.f, cVelocity.y);
+	}
 	if (c->isBelowPlatform) {
 		cVelocity.y = std::max(0.f, cVelocity.y);
 	}
