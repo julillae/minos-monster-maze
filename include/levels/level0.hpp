@@ -78,8 +78,6 @@ private:
 	std::vector<Enemy> m_enemies;
     std::vector<Floor> m_floor;
 
-    float m_current_speed;
-
     float m_seed_rng;
 
     Mix_Music* m_background_music;
