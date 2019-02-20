@@ -23,23 +23,22 @@ bool Enemy::init(vec2 initialPosition, float bound)
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture
-	m_scale.x = 0.4f;
-	m_scale.y = 0.4f;
+	float scaleFactor = 0.4f;
+	m_scale.x = scaleFactor;
+	m_scale.y = scaleFactor;
+	width = enemy_texture.width * scaleFactor;
+	height = enemy_texture.height * scaleFactor;
 	m_rotation = 0.f;
 	direction = right;
 	m_is_alive = true;
 	m_position = initialPosition;
-	currentVelocity = {maxVelocity, 0.0f};
+	m_velocity = {speed, 0.0f};
 	stopBound = bound;
 	m_initialPosition = initialPosition;
 
 	return true;
 }
 
-bool Enemy::init(vec2 initialPosition)
-{
-	return false;
-}
 
 // Called on each frame by World::update()
 void Enemy::update(float ms)
@@ -48,28 +47,23 @@ void Enemy::update(float ms)
 	if (m_is_alive)
 	{
 		// Update enemy position based on fixed path here
-		float step = currentVelocity.x;
-		if (direction == right) {
-			if ((m_position.x + step) >= (m_initialPosition.x + stopBound)) {
-				direction = left;
-				m_scale.x = -1 * m_scale.x;
-			} else {
-				m_position.x += step;
-			}
-		} else if (direction == left) {
-			if ((m_position.x - step) <= m_initialPosition.x) {
-				direction = right;
-				m_scale.x = -1 * m_scale.x;
-			} else {
-				m_position.x -= step;
-			}
-		}
+		float vel_x = m_velocity.x;
+		float vel_y = m_velocity.y;
+		float right_bound = m_initialPosition.x + stopBound;
+		float left_bound = m_initialPosition.x;
+		float next_pos_x = m_position.x + vel_x;
 
+		if (((vel_x > 0) && (next_pos_x >= right_bound)) ||
+			((vel_x < 0) && (next_pos_x <= left_bound))) {
+			vel_x *= -1;
+			m_scale.x *= -1;
+			set_velocity({ vel_x, vel_y });
+		}
+		move();
 	}
 	else
 	{
-		// If dead reset back to original position (for now)
-		// set_position();
+		// If dead reset do something
 	}
 
 }
@@ -188,39 +182,6 @@ void Enemy::unfreeze()
 	m_frozen = false;
 }
 
-void Enemy::move()
-{
-	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
-}
-
-void Enemy::set_direction(Direction d)
-{
-	direction = d;
-}
-
-
-void Enemy::set_rotation(float radians)
-{
-	m_rotation = radians;
-}
-
-bool Enemy::is_alive()const
-{
-	return m_is_alive;
-}
-
-// Called when enemy collides with something that can do it harm
-void Enemy::kill()
-{
-	m_is_alive = false;
-}
-
-
-void Enemy::set_position(vec2 position)
-{
-	m_position = position;
-}
-
 void Enemy::reset_position()
 {
 	m_position = m_initialPosition;
@@ -228,5 +189,5 @@ void Enemy::reset_position()
 
 vec2 Enemy::get_bounding_box()const
 {
-    return { std::fabs(m_scale.x) * enemy_texture.width, std::fabs(m_scale.y) * enemy_texture.height };
+    return { width, height };
 }

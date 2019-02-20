@@ -97,7 +97,7 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 		{
 			float collisionAngle = collisionNode.angleOfCollision;
 			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
-				c->set_on_platform(c->get_position().y);
+				c->set_on_platform();
 				isOnAtLeastOnePlatform = true;
 			}
 
@@ -116,6 +116,60 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 	c->isLeftOfPlatform = isLeftOfAtLeastOnePlatform;
 	c->isRightOfPlatform = isRightOfAtLeastOnePlatform;
 	c->isBelowPlatform = isBelowAtLeastOnePlatform;
+
+}
+
+void Physics::characterVelocityUpdate(Player* c)
+{
+	float platformDrag = 0.75; //eventually make this a property of the platform
+
+	vec2 cAcc = c->get_acceleration();
+	vec2 cVelocity = c->get_velocity();
+	float maxVelocity = c->maxVelocity;
+
+	cVelocity.x += cAcc.x;
+	cVelocity.y += cAcc.y;
+
+	if (cVelocity.x > maxVelocity) cVelocity.x = maxVelocity;
+	if (cVelocity.x < -maxVelocity) cVelocity.x = -maxVelocity;
+
+	if (cAcc.x < g_tolerance && cAcc.x > -g_tolerance && c->isOnPlatform)
+		cVelocity.x *= platformDrag;
+
+	if (c->isOnPlatform) {
+		cVelocity.y = std::min(0.f, cVelocity.y);
+	}
+	if (c->isBelowPlatform) {
+		cVelocity.y = std::max(0.f, cVelocity.y);
+	}
+	if (c->isLeftOfPlatform) {
+		cVelocity.x = std::min(0.f, cVelocity.x);
+	}
+	if (c->isRightOfPlatform) {
+		cVelocity.x = std::max(0.f, cVelocity.x);
+	}
+
+	c->set_velocity(cVelocity);
+}
+
+void Physics::characterAccelerationUpdate(Player * c)
+{
+	float vAcc;
+	float hAcc;
+	Direction h_direction = c->get_h_direction();
+	float accStep = c->accStep;
+
+	if (c->is_alive()) {
+		switch (h_direction) {
+			case Direction::left: hAcc = -accStep; break;
+			case Direction::right: hAcc = accStep; break;
+			default: hAcc = 0.f; break;
+		}
+		vAcc = gravityAcc;
+		c->set_acceleration({ hAcc, vAcc });
+	} else {
+		c->set_rotation(M_PI);
+	}
 
 }
 
