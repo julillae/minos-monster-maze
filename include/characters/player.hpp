@@ -4,7 +4,6 @@
 
 class Player : public Character
 {
-	static Texture player_texture;
 public:
 	// Creates all the associated render resources and default transform
 	bool init(vec2 initialPosition, Physics* physicsHandler)override;
@@ -27,6 +26,9 @@ public:
 
 	// Change player's state based on keyboard input
 	void on_key(int key, int action);
+
+	// Sets the correct sprite sheet tile for appropriate animation
+	void set_animation();
 
 	bool isBelowPlatform;
 	bool isLeftOfPlatform;

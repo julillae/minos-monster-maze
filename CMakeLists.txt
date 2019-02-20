@@ -33,6 +33,8 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/project_path.hpp.in" "${CMAK
 set(SOURCE_FILES
 	src/a1.cpp
 	src/common.cpp
+    src/renderManager.cpp
+    src/spriteSheet.cpp
 	src/renderEffects.cpp
     src/characters/character.cpp
     src/characters/player.cpp
@@ -52,6 +54,8 @@ set(SOURCE_FILES
 
     include/project_path.hpp
 	include/common.hpp
+    include/renderManager.hpp
+    include/spriteSheet.hpp
 	include/renderEffects.hpp
     include/characters/character.hpp
     include/characters/player.hpp
