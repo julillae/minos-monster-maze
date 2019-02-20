@@ -234,7 +234,7 @@ bool Level0::init(vec2 screen, Physics* physicsHandler)
 	
 	spawn_enemies();
 	
-	return m_water.init() && m_player.init(initialPosition);
+	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
 // Releases all the associated resources
@@ -295,7 +295,6 @@ bool Level0::update(float elapsed_ms)
 	}
 
 	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
-	physicsHandler->characterVelocityUpdate(&m_player);
 	m_player.update(elapsed_ms);
 
 	for (auto& enemy : m_enemies)
@@ -421,7 +420,7 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// action can be GLFW_PRESS GLFW_RELEASE GLFW_REPEAT
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	m_player.set_direction(key, action);
+	m_player.on_key(key, action);
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
@@ -441,7 +440,7 @@ void Level0::reset_game()
 	int w, h;
 	glfwGetWindowSize(m_window, &w, &h);
 	m_player.destroy();
-	m_player.init(initialPosition);
+	m_player.init(initialPosition, physicsHandler);
 
 	for (Enemy& enemy : m_enemies) {
 		enemy.reset_position();
