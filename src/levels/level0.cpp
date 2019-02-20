@@ -296,6 +296,7 @@ bool Level0::update(float elapsed_ms)
 	}
 
 	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
+	physicsHandler->characterVelocityUpdate(&m_player);
 	m_player.update(elapsed_ms);
 
 	for (auto& enemy : m_enemies)
