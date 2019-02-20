@@ -154,7 +154,7 @@ void Player::move() {
 	m_position.x += m_velocity.x; m_position.y += m_velocity.y;
 }
 
-void Player::set_on_platform(float yPos) {
+void Player::set_on_platform() {
 	isOnPlatform = true;
 }
 

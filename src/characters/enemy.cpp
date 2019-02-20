@@ -23,8 +23,11 @@ bool Enemy::init(vec2 initialPosition, float bound)
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture
-	m_scale.x = 0.4f;
-	m_scale.y = 0.4f;
+	float scaleFactor = 0.4f;
+	m_scale.x = scaleFactor;
+	m_scale.y = scaleFactor;
+	width = enemy_texture.width * scaleFactor;
+	height = enemy_texture.height * scaleFactor;
 	m_rotation = 0.f;
 	direction = right;
 	m_is_alive = true;
@@ -194,29 +197,6 @@ void Enemy::set_direction(Direction d)
 	direction = d;
 }
 
-
-void Enemy::set_rotation(float radians)
-{
-	m_rotation = radians;
-}
-
-bool Enemy::is_alive()const
-{
-	return m_is_alive;
-}
-
-// Called when enemy collides with something that can do it harm
-void Enemy::kill()
-{
-	m_is_alive = false;
-}
-
-
-void Enemy::set_position(vec2 position)
-{
-	m_position = position;
-}
-
 void Enemy::reset_position()
 {
 	m_position = m_initialPosition;
@@ -224,5 +204,5 @@ void Enemy::reset_position()
 
 vec2 Enemy::get_bounding_box()const
 {
-    return { std::fabs(m_scale.x) * enemy_texture.width, std::fabs(m_scale.y) * enemy_texture.height };
+    return { width, height };
 }

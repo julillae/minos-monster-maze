@@ -97,7 +97,7 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 		{
 			float collisionAngle = collisionNode.angleOfCollision;
 			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
-				c->set_on_platform(c->get_position().y);
+				c->set_on_platform();
 				isOnAtLeastOnePlatform = true;
 			}
 
