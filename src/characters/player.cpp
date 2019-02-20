@@ -1,5 +1,7 @@
 // Header
 #include "../include/characters/player.hpp"
+#include "../include/common.hpp"
+#include "../include/physics.hpp"
 
 // internal
 
@@ -10,10 +12,9 @@
 #include <math.h>
 #include <cmath>
 
-//Texture Player::player_texture;
-
-bool Player::init(vec2 initialPosition)
+bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 {
+	this->physicsHandler = physicsHandler;
 
 	const char* textureFile = textures_path("player-sprite-sheet.png");
 
@@ -33,10 +34,9 @@ bool Player::init(vec2 initialPosition)
     width = m_texture.width / spriteSheetWidth * scaleFactor - 12;
     height = m_texture.height / spriteSheetHeight * scaleFactor - 14;
 	m_is_alive = true;
-	v_direction = Direction::none;
 	m_position = initialPosition;
 	m_rotation = 0.f;
-	currentVelocity = {0.0, 0.0};
+	m_velocity = {0.0, 0.0};
 
 	isBelowPlatform = false;
 	isLeftOfPlatform = false;
@@ -48,24 +48,9 @@ bool Player::init(vec2 initialPosition)
 // Called on each frame by World::update()
 void Player::update(float ms)
 {
-	float vAcc;
-	float hAcc;
-
-	if (m_is_alive)
-	{
-		switch (h_direction) {
-			case Direction::left: hAcc = -accStep; break;
-			case Direction::right: hAcc = accStep; break;
-			default: hAcc = 0.f; break;
-		}
-		vAcc = gravityAcc;
-
-		set_acceleration({ hAcc, vAcc });
-		update_velocity();
-		move();
-
-	}
-
+	physicsHandler->characterAccelerationUpdate(this);
+	physicsHandler->characterVelocityUpdate(this);
+	if (m_is_alive)	move();
 }
 
 void Player::draw(const mat3& projection)
@@ -126,109 +111,44 @@ void Player::draw(const mat3& projection)
 }
 
 // Returns the local bounding coordinates scaled by the current size of the player 
-vec2 Player::get_bounding_box()const
-{
+vec2 Player::get_bounding_box()const {
 	// fabs is to avoid negative scale due to the facing direction
 	return { width, height };
 }
 
-void Player::set_acceleration(vec2 acc)
-{
-	currentAcceleration.x = acc.x; currentAcceleration.y = acc.y;
-}
-
-void Player::update_velocity()
-{
-	currentVelocity.x += currentAcceleration.x;
-	currentVelocity.y += currentAcceleration.y;
-
-	if (currentVelocity.x > maxVelocity) currentVelocity.x = maxVelocity;
-	if (currentVelocity.x < -maxVelocity) currentVelocity.x = -maxVelocity;
-
-	if (currentAcceleration.x < tolerance && currentAcceleration.x > -tolerance && isOnPlatform)
-		currentVelocity.x *= drag;
-
-	if (isBelowPlatform) {
-		currentVelocity.y = std::max(0.f, currentVelocity.y);
-	}
-	if (isLeftOfPlatform) {
-		currentVelocity.x = std::min(0.f, currentVelocity.x);
-	}
-	if (isRightOfPlatform) {
-		currentVelocity.x = std::max(0.f, currentVelocity.x);
-	}
-}
-
-void Player::move()
-{
-	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
-	currentFloorPos = std::min(fakeFloorPos, currentFloorPos);
-	if (m_position.y >= currentFloorPos - tolerance) {
-		m_position.y = currentFloorPos;
-		currentVelocity.y = 0.f;
-		isOnPlatform = true;
-	}
-	else {
-		set_in_free_fall();
-	}
-
-}
-
-void Player::set_on_platform(float yPos) {
+void Player::set_on_platform() {
 	isOnPlatform = true;
-	currentFloorPos = yPos;
 }
 
 void Player::set_in_free_fall() {
 	isOnPlatform = false;
-	currentFloorPos = fakeFloorPos;
 }
 
-void Player::set_direction(int key, int action)
+void Player::on_key(int key, int action)
 {
 	if (action == GLFW_PRESS) {
 		switch (key) {
-			case GLFW_KEY_UP: if (isOnPlatform) currentVelocity.y += jumpVel; break;
-			case GLFW_KEY_LEFT: 
-				h_direction = Direction::left; 
-				m_scale.x = -std::fabs(m_scale.x);
-				break;
-			case GLFW_KEY_RIGHT: 
-				h_direction = Direction::right; 
-				m_scale.x = std::fabs(m_scale.x);
-				break;
+		case GLFW_KEY_UP: if (isOnPlatform) m_velocity.y += jumpVel; break;
+		case GLFW_KEY_LEFT:
+			direction = Direction::left;
+			m_scale.x = -std::fabs(m_scale.x);
+			break;
+		case GLFW_KEY_RIGHT:
+			direction = Direction::right;
+			m_scale.x = std::fabs(m_scale.x);
+			break;
 		}
 	}
 	else if (action == GLFW_RELEASE) {
 		switch (key) {
-			case GLFW_KEY_UP: 
-				if (v_direction == Direction::up)
-					v_direction = Direction::none; break;
-			case GLFW_KEY_LEFT: 
-				if (h_direction == Direction::left)
-					h_direction = Direction::none; break;
-			case GLFW_KEY_RIGHT: 
-				if (h_direction == Direction::right)
-					h_direction = Direction::none; break;
+		case GLFW_KEY_LEFT:
+			if (direction == Direction::left)
+				direction = Direction::none; break;
+		case GLFW_KEY_RIGHT:
+			if (direction == Direction::right)
+				direction = Direction::none; break;
 		}
 	}
-}
-
-
-void Player::set_rotation(float radians)
-{
-	m_rotation = radians;
-}
-
-bool Player::is_alive()const
-{
-	return m_is_alive;
-}
-
-// Called when the salmon collides with a turtle
-void Player::kill()
-{
-	m_is_alive = false;
 }
 
 void Player::set_animation()
@@ -245,28 +165,28 @@ void Player::set_animation()
 		is_anim_once = false;
 
 		// idle animation
-		if (currentAcceleration.x == 0.f)
+		if (m_acceleration.x == 0.f)
 		{
 			numTiles = 5;
 			tileIndex = 0;
 		}
 
 		// running animation
-		if (currentAcceleration.x != 0.f)
+		if (m_acceleration.x != 0.f)
 		{
 			numTiles = 8;
 			tileIndex = 8;
 		}
 
 		// jump up
-		if (currentVelocity.y < 0)
+		if (m_velocity.y < 0)
 		{
 			numTiles = 1;
 			tileIndex = 9;
 		}
 
 		// falling down
-		if (currentVelocity.y > 0)
+		if (m_velocity.y > 0)
 		{
 			numTiles = 1;
 			tileIndex = 14;
@@ -299,4 +219,3 @@ void Player::set_animation()
 
 	spriteSheet.set_render_data(this, tileIndex);
 }
-

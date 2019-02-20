@@ -228,14 +228,13 @@ bool Level0::init(vec2 screen, Physics* physicsHandler)
 	
 	fprintf(stderr, "Loaded music\n");
 
-	m_current_speed = 1.f;
 	is_player_at_goal = false;
 
 	generate_maze();
 	
 	spawn_enemies();
 	
-	return m_water.init() && m_player.init(initialPosition);
+	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
 // Releases all the associated resources
@@ -421,7 +420,7 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// action can be GLFW_PRESS GLFW_RELEASE GLFW_REPEAT
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	m_player.set_direction(key, action);
+	m_player.on_key(key, action);
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
@@ -429,13 +428,6 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
 		reset_game();
 	}
 
-	// Control the current speed with `<` `>`
-	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) &&  key == GLFW_KEY_COMMA)
-		m_current_speed -= 0.1f;
-	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
-		m_current_speed += 0.1f;
-	
-	m_current_speed = fmax(0.f, m_current_speed);
 }
 
 void Level0::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
@@ -448,7 +440,7 @@ void Level0::reset_game()
 	int w, h;
 	glfwGetWindowSize(m_window, &w, &h);
 	m_player.destroy();
-	m_player.init(initialPosition);
+	m_player.init(initialPosition, physicsHandler);
 
 	for (Enemy& enemy : m_enemies) {
 		enemy.reset_position();
@@ -457,6 +449,6 @@ void Level0::reset_game()
 
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
-	m_current_speed = 1.f;
+	//m_current_speed = 1.f;
 	is_player_at_goal = false;
 }
