@@ -71,14 +71,15 @@ void Level0::spawn_enemies() {
 	spawn_enemy({825.f, 550.f}, 150.f);
 	spawn_enemy({100.f, 375.f}, 400.f);
 	
-	Enemy& new_enemy = m_enemies.back();
+	Simple& new_enemy = m_enemies.back();
 }
 
 bool Level0::spawn_enemy(vec2 position, float bound)
 {
-	Enemy enemy;
-	if (enemy.init(position, bound))
+	Simple enemy;
+	if (enemy.init(position, physicsHandler))
 	{
+		enemy.set_bound(bound);
 		m_enemies.emplace_back(enemy);
 		return true;
 	}
