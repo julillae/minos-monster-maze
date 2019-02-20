@@ -1,5 +1,6 @@
 // Header
 #include "../include/characters/player.hpp"
+#include "../include/common.hpp"
 
 // internal
 
@@ -98,7 +99,6 @@ void Player::update(float ms)
 		vAcc = gravityAcc;
 
 		set_acceleration({ hAcc, vAcc });
-		update_velocity();
 		move();
 
 	}
@@ -164,62 +164,37 @@ void Player::draw(const mat3& projection)
 }
 
 // Returns the local bounding coordinates scaled by the current size of the player 
-vec2 Player::get_bounding_box()const
-{
+vec2 Player::get_bounding_box()const {
 	// fabs is to avoid negative scale due to the facing direction
 	return { std::fabs(m_scale.x) * player_texture.width, std::fabs(m_scale.y) * player_texture.height };
 }
 
-void Player::set_acceleration(vec2 acc)
-{
+void Player::set_acceleration(vec2 acc) {
 	currentAcceleration.x = acc.x; currentAcceleration.y = acc.y;
 }
 
-void Player::update_velocity()
-{
-	currentVelocity.x += currentAcceleration.x;
-	currentVelocity.y += currentAcceleration.y;
-
-	if (currentVelocity.x > maxVelocity) currentVelocity.x = maxVelocity;
-	if (currentVelocity.x < -maxVelocity) currentVelocity.x = -maxVelocity;
-
-	if (currentAcceleration.x < tolerance && currentAcceleration.x > -tolerance && isOnPlatform)
-		currentVelocity.x *= drag;
-
-	if (isBelowPlatform) {
-		currentVelocity.y = std::max(0.f, currentVelocity.y);
-	}
-	if (isLeftOfPlatform) {
-		currentVelocity.x = std::min(0.f, currentVelocity.x);
-	}
-	if (isRightOfPlatform) {
-		currentVelocity.x = std::max(0.f, currentVelocity.x);
-	}
+vec2 Player::get_acceleration() {
+	return currentAcceleration;
 }
 
-void Player::move()
-{
-	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
-	currentFloorPos = std::min(fakeFloorPos, currentFloorPos);
-	if (m_position.y >= currentFloorPos - tolerance) {
-		m_position.y = currentFloorPos;
-		currentVelocity.y = 0.f;
-		isOnPlatform = true;
-	}
-	else {
-		set_in_free_fall();
-	}
+void Player::set_velocity(vec2 vel) {
+	currentVelocity.x = vel.x; currentVelocity.y = vel.y;
+}
 
+vec2 Player::get_velocity() {
+	return currentVelocity;
+}
+
+void Player::move() {
+	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
 }
 
 void Player::set_on_platform(float yPos) {
 	isOnPlatform = true;
-	currentFloorPos = yPos;
 }
 
 void Player::set_in_free_fall() {
 	isOnPlatform = false;
-	currentFloorPos = fakeFloorPos;
 }
 
 void Player::set_direction(int key, int action)
@@ -253,19 +228,16 @@ void Player::set_direction(int key, int action)
 }
 
 
-void Player::set_rotation(float radians)
-{
+void Player::set_rotation(float radians) {
 	m_rotation = radians;
 }
 
-bool Player::is_alive()const
-{
+bool Player::is_alive()const {
 	return m_is_alive;
 }
 
 // Called when the salmon collides with a turtle
-void Player::kill()
-{
+void Player::kill() {
 	m_is_alive = false;
 }
 

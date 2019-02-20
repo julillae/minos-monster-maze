@@ -33,6 +33,8 @@ public:
 	//      So that this will work when we have multiple types of platforms
 	void characterCollisionsWithFixedComponents(Player *c, std::vector<Floor> fixedComponents);
 
+	void characterVelocityUpdate(Player *c);
+
     float lineIntersection(float x_pos1, float x_pos2, float y_pos1, float y_pos2);
 
     float boundingBox(float bb_x, float bb_y, float scale_x, float scale_y);
