@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../common.hpp"
-#include "../textureManager.hpp"
+#include "../renderManager.hpp"
 #include "../spriteSheet.hpp"
 
 class Physics;
