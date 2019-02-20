@@ -28,6 +28,7 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 	spriteSheet.set_render_data(this, 0);
 	
 	// Setting initial values
+	initStateTree();
     float scaleFactor = 2.0f;
 	m_scale.x = -scaleFactor;
     m_scale.y = scaleFactor;
@@ -35,7 +36,6 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 	int verticalTrim = 14;
     width = m_texture.width / spriteSheetWidth * scaleFactor - horizontalTrim;
     height = m_texture.height / spriteSheetHeight * scaleFactor - verticalTrim;
-	m_is_alive = true;
 	m_position = initialPosition;
 	m_rotation = 0.f;
 	m_velocity = {0.0, 0.0};
@@ -52,12 +52,12 @@ void Player::update(float ms)
 {
 	physicsHandler->characterAccelerationUpdate(this);
 	physicsHandler->characterVelocityUpdate(this);
-	if (m_is_alive)	move();
+	if (is_alive()) move();
 }
 
 void Player::draw(const mat3& projection)
 {
-	set_animation();
+	//set_animation();
 
 	RenderManager::draw(projection, m_position, m_rotation, m_scale, &m_texture, this);
 }
@@ -112,7 +112,7 @@ void Player::set_animation()
 	float animSpeed = 0.2f;
 
 	// Calculate animation
-	if (m_is_alive)
+	if (is_alive())
 	{
 		is_anim_once = false;
 

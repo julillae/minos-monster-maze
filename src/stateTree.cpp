@@ -17,6 +17,7 @@ StateTree::StateTree(vector<Edge> const & edges, State startingNode)
 
 	root = startingNode;
 	currentState = root;
+	//vector<DestWeightPair> test = adjList[currentState];
 }
 
 vector<DestWeightPair> StateTree::getChildren()
