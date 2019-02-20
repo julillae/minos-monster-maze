@@ -19,17 +19,11 @@ public:
 	// Returns the local bounding coordinates scaled by the current size of the fish 
 	vec2 get_bounding_box()const;
 
-	// Set the player's acceleration vector
-	//void set_acceleration(vec2 acc);
-
-	// Set the player's velocity vector
-	//void set_velocity(vec2 vel);
-
 	// Moves the player's position by the specified offset
 	void move();
 
 	// Let character know it's currently on a platform (and its position)
-	void set_on_platform(float yPos);
+	void set_on_platform();
 
 	// Let character know it's currently in freefall
 	void set_in_free_fall();
@@ -40,8 +34,6 @@ public:
 	bool isBelowPlatform;
 	bool isLeftOfPlatform;
 	bool isRightOfPlatform;
-	float width;
-	float height;
 	float maxVelocity = 10;
 	bool isOnPlatform;
 	float accStep = 1.f;

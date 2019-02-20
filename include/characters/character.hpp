@@ -41,9 +41,6 @@ public:
 	// Moves the character's position by the specified offset
 	void move(vec2 off);
 
-	// Let character know it's currently on a platform (and its position)
-	void set_on_platform(double yPos);
-
 	// Change character movement direction
 	void set_direction(int key, int action);
 
@@ -59,6 +56,8 @@ public:
 	// Kills the character, changing its alive state and triggering on death events
 	void kill();
 
+	float width;
+	float height;
 
 protected:
 	Physics* physicsHandler;
