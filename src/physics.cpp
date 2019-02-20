@@ -172,6 +172,6 @@ void Physics::characterAccelerationUpdate(Player * c)
 
 void Physics::characterRotationUpdate(Player *c, double rotation)
 {
-    // fall off platform
+    // implement logic to allow player to fall off angled platforms
 }
 
