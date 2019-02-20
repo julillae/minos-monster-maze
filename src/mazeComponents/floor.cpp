@@ -10,6 +10,8 @@ bool Floor::init(vec2 position)
 
     if (!TextureManager::load_texture(textureFile, &texture, this)) return false;
 
+    if (!TextureManager::set_render_data(&texture, this)) return false;
+
 	set_position(position);
 
 	// Setting initial values, scale is negative to make it face the opposite way

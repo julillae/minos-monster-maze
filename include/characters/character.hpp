@@ -2,6 +2,7 @@
 
 #include "../common.hpp"
 #include "../textureManager.hpp"
+#include "../spriteSheet.hpp"
 
 class Character : public Renderable
 {
@@ -58,4 +59,8 @@ protected:
     // 1.f in each dimension. 1.f is as big as the associated texture
 	float m_rotation; // in radians
 	size_t m_num_indices; // passed to glDrawElements
+	Texture m_texture;
+	SpriteSheet spriteSheet;
+	float m_animTime = 0.f;
+	bool is_anim_once = false;
 };
