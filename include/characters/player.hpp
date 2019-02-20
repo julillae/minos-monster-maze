@@ -11,7 +11,7 @@ public:
 	
 	// Update player position based on velocity vector
 	// ms represents the number of milliseconds elapsed from the previous update() call
-	void update(float ms);
+	void update(float ms)override;
 	
 	// Renders the player
 	void draw(const mat3& projection)override;
