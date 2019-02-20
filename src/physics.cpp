@@ -168,6 +168,10 @@ void Physics::characterAccelerationUpdate(Player * c)
 		vAcc = gravityAcc;
 		c->set_acceleration({ hAcc, vAcc });
 	}
+}
 
+void Physics::characterRotationUpdate(Player *c, double rotation)
+{
+    // fall off platform
 }
 

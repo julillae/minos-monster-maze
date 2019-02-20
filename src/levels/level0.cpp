@@ -12,6 +12,8 @@ namespace
 {
 	const size_t MAZE_WIDTH = 49;
 	const size_t MAZE_HEIGHT = 28;
+    float increment = 0;
+	double rotation = 0;
 
 	// 1 = platform
 	// 2 = exit
@@ -268,20 +270,20 @@ bool Level0::update(float elapsed_ms)
 	vec2 screen = { (float)w, (float)h };
 
 	// Checking Player - Enemy Collision
-	for (Enemy& enemy : m_enemies) {
-		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
-		{
-			if (m_player.is_alive()) {
-				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
-				m_water.set_player_dead();
-
-				for(Enemy& e : m_enemies) {
-					e.freeze();
-				}
-			}
-			m_player.kill();
-		}
-	}
+//	for (Enemy& enemy : m_enemies) {
+//		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
+//		{
+//			if (m_player.is_alive()) {
+//				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+//				m_water.set_player_dead();
+//
+//				for(Enemy& e : m_enemies) {
+//					e.freeze();
+//				}
+//			}
+//			m_player.kill();
+//		}
+//	}
 
 	// Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided && !is_player_at_goal)
@@ -294,6 +296,7 @@ bool Level0::update(float elapsed_ms)
 		}
 	}
 
+	physicsHandler
 	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
 	m_player.update(elapsed_ms);
 
@@ -362,11 +365,11 @@ void Level0::draw()
 	
 	float tx = 0.f;
 	float ty = 0.f;
-	bool cameraTracking = false;
+	bool cameraTracking = true;
 	if (cameraTracking){
 		// translation if camera tracks player
-		tx = -(2*p_position.x)/(right - left);
-		ty = -(2*p_position.y)/(top - bottom);
+		tx = -(osScaleFactor*2*p_position.x)/(right - left);
+		ty = -(osScaleFactor*2*p_position.y)/(top - bottom);
 	}
 	else {
 		// translation for fixed camera
@@ -375,9 +378,34 @@ void Level0::draw()
 	}
 	sx *= osScaleFactor;
 	sy *= osScaleFactor;
-	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
-	for (auto& floor : m_floor)
+	float c = cosf(static_cast<float>(-rotation));
+	float s = sinf(static_cast<float>(-rotation));
+
+	// translate to player's location
+	mat3 translation_matrix_l = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {tx, ty, 1.f}};
+	mat3 scaling_matrix = {{sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ 0.f, 0.f, 1.f }};
+
+	mat3 R = { { c, s, 0.f },
+			   { -s, c, 0.f },
+			   { 0.f, 0.f, 1.f } };
+
+//	mat3 translation_matrix_r = { {1.f, 0.f, 0.f},
+//								  {0.f, 1.f, 0.f},
+//								  {-tx, -ty, 1.f}};
+
+    mat3 translation_matrix_r = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {-tx, -ty, 1.f}};
+
+
+    mat3 projection_2D{ { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ 0.f, 0.f, 1.f } };
+
+    projection_2D = mul(projection_2D, translation_matrix_l);
+    projection_2D = mul(projection_2D, scaling_matrix);
+    projection_2D = mul(projection_2D, R);
+
+
+
+    for (auto& floor : m_floor)
 		floor.draw(projection_2D);
 	for (auto& enemy : m_enemies)
 		enemy.draw(projection_2D);
@@ -421,6 +449,14 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	m_player.on_key(key, action);
+
+	// rotation with key
+
+    if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_SPACE ) {
+        increment += 2;
+        rotation = (increment * M_PI ) / 180;
+
+    }
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
