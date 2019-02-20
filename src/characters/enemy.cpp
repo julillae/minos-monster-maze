@@ -59,19 +59,6 @@ void Enemy::update(float ms)
 			m_scale.x *= -1;
 			set_velocity({ vel_x, vel_y });
 		}
-		//if (direction == right) {
-		//	if ((m_position.x + speed) >= (m_initialPosition.x + stopBound)) {
-		//		direction = left;
-		//		m_scale.x = -1 * m_scale.x;
-		//		set_velocity({ -speed, 0.0f });
-		//	}
-		//} else if (direction == left) {
-		//	if ((m_position.x - speed) <= m_initialPosition.x) {
-		//		direction = right;
-		//		m_scale.x = -1 * m_scale.x;
-		//		set_velocity({ speed, 0.0f });
-		//	}
-		//}
 		move();
 	}
 	else
