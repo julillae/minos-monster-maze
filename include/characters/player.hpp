@@ -70,8 +70,6 @@ private:
 	float drag = 0.75;
 	vec2 currentVelocity;
 	vec2 currentAcceleration;
-	float fakeFloorPos = 750.f;
-	float currentFloorPos = fakeFloorPos;
 	float gravityAcc = 9.81 * 0.12;
 	float jumpVel = -18.f;
 };

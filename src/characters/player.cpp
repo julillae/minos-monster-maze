@@ -164,55 +164,37 @@ void Player::draw(const mat3& projection)
 }
 
 // Returns the local bounding coordinates scaled by the current size of the player 
-vec2 Player::get_bounding_box()const
-{
+vec2 Player::get_bounding_box()const {
 	// fabs is to avoid negative scale due to the facing direction
 	return { std::fabs(m_scale.x) * player_texture.width, std::fabs(m_scale.y) * player_texture.height };
 }
 
-void Player::set_acceleration(vec2 acc)
-{
+void Player::set_acceleration(vec2 acc) {
 	currentAcceleration.x = acc.x; currentAcceleration.y = acc.y;
 }
 
-vec2 Player::get_acceleration()
-{
+vec2 Player::get_acceleration() {
 	return currentAcceleration;
 }
 
-void Player::set_velocity(vec2 vel)
-{
+void Player::set_velocity(vec2 vel) {
 	currentVelocity.x = vel.x; currentVelocity.y = vel.y;
 }
 
-vec2 Player::get_velocity()
-{
+vec2 Player::get_velocity() {
 	return currentVelocity;
 }
 
-void Player::move()
-{
+void Player::move() {
 	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
-	currentFloorPos = std::min(fakeFloorPos, currentFloorPos);
-	if (m_position.y >= currentFloorPos - g_tolerance) {
-		m_position.y = currentFloorPos;
-		currentVelocity.y = 0.f;
-		isOnPlatform = true;
-	}
-	else {
-		set_in_free_fall();
-	}
-
 }
 
 void Player::set_on_platform(float yPos) {
 	isOnPlatform = true;
-	currentFloorPos = yPos;
 }
 
 void Player::set_in_free_fall() {
 	isOnPlatform = false;
-	currentFloorPos = fakeFloorPos;
 }
 
 void Player::set_direction(int key, int action)
@@ -246,19 +228,16 @@ void Player::set_direction(int key, int action)
 }
 
 
-void Player::set_rotation(float radians)
-{
+void Player::set_rotation(float radians) {
 	m_rotation = radians;
 }
 
-bool Player::is_alive()const
-{
+bool Player::is_alive()const {
 	return m_is_alive;
 }
 
 // Called when the salmon collides with a turtle
-void Player::kill()
-{
+void Player::kill() {
 	m_is_alive = false;
 }
 
