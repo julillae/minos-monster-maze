@@ -15,7 +15,7 @@ public:
 	
 	// Update enemy position based on velocity vector
 	// ms represents the number of milliseconds elapsed from the previous update() call
-	void update(float ms);
+	void update(float ms)override;
 	
 	// Renders the enemy
 	void draw(const mat3& projection)override;

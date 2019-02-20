@@ -15,7 +15,7 @@ public:
     Physics();
 
     ~Physics();
-	float gravityAcc = 9.81 * 0.12;
+	float gravityAcc = 9.81f * 0.12f;
 
     struct CollisionNode {
         bool isCollided;
