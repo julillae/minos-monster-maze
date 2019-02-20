@@ -72,7 +72,6 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 	width = player_texture.width * scaleFactor;
 	height = player_texture.height * scaleFactor;
 	m_is_alive = true;
-	v_direction = Direction::none;
 	m_position = initialPosition;
 	m_rotation = 0.f;
 	m_velocity = {0.0, 0.0};
@@ -150,10 +149,6 @@ vec2 Player::get_bounding_box()const {
 	return { std::fabs(m_scale.x) * player_texture.width, std::fabs(m_scale.y) * player_texture.height };
 }
 
-void Player::move() {
-	m_position.x += m_velocity.x; m_position.y += m_velocity.y;
-}
-
 void Player::set_on_platform() {
 	isOnPlatform = true;
 }
@@ -162,32 +157,29 @@ void Player::set_in_free_fall() {
 	isOnPlatform = false;
 }
 
-void Player::set_direction(int key, int action)
+void Player::on_key(int key, int action)
 {
 	if (action == GLFW_PRESS) {
 		switch (key) {
-			case GLFW_KEY_UP: if (isOnPlatform) m_velocity.y += jumpVel; break;
-			case GLFW_KEY_LEFT: 
-				h_direction = Direction::left; 
-				m_scale.x = -std::fabs(m_scale.x);
-				break;
-			case GLFW_KEY_RIGHT: 
-				h_direction = Direction::right; 
-				m_scale.x = std::fabs(m_scale.x);
-				break;
+		case GLFW_KEY_UP: if (isOnPlatform) m_velocity.y += jumpVel; break;
+		case GLFW_KEY_LEFT:
+			direction = Direction::left;
+			m_scale.x = -std::fabs(m_scale.x);
+			break;
+		case GLFW_KEY_RIGHT:
+			direction = Direction::right;
+			m_scale.x = std::fabs(m_scale.x);
+			break;
 		}
 	}
 	else if (action == GLFW_RELEASE) {
 		switch (key) {
-			case GLFW_KEY_UP: 
-				if (v_direction == Direction::up)
-					v_direction = Direction::none; break;
-			case GLFW_KEY_LEFT: 
-				if (h_direction == Direction::left)
-					h_direction = Direction::none; break;
-			case GLFW_KEY_RIGHT: 
-				if (h_direction == Direction::right)
-					h_direction = Direction::none; break;
+		case GLFW_KEY_LEFT:
+			if (direction == Direction::left)
+				direction = Direction::none; break;
+		case GLFW_KEY_RIGHT:
+			if (direction == Direction::right)
+				direction = Direction::none; break;
 		}
 	}
 }

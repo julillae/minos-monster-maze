@@ -19,17 +19,14 @@ public:
 	// Returns the local bounding coordinates scaled by the current size of the fish 
 	vec2 get_bounding_box()const;
 
-	// Moves the player's position by the specified offset
-	void move();
-
 	// Let character know it's currently on a platform (and its position)
 	void set_on_platform();
 
 	// Let character know it's currently in freefall
 	void set_in_free_fall();
 
-	// Change player's movement direction
-	void set_direction(int key, int action);
+	// Change player's state based on keyboard input
+	void on_key(int key, int action);
 
 	bool isBelowPlatform;
 	bool isLeftOfPlatform;

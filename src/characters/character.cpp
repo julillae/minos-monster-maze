@@ -43,8 +43,18 @@ vec2 Character::get_scale()const {
 	return m_scale;
 }
 
+void Character::move()
+{
+	m_position.x += m_velocity.x; m_position.y += m_velocity.y;
+}
+
+void Character::set_direction(Direction d)
+{
+	direction = d;
+}
+
 Direction Character::get_h_direction() {
-	return h_direction;
+	return direction;
 }
 
 void Character::set_rotation(float radians) {

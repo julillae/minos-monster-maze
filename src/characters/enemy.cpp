@@ -32,7 +32,7 @@ bool Enemy::init(vec2 initialPosition, float bound)
 	direction = right;
 	m_is_alive = true;
 	m_position = initialPosition;
-	currentVelocity = {maxVelocity, 0.0f};
+	m_velocity = {speed, 0.0f};
 	stopBound = bound;
 	m_initialPosition = initialPosition;
 
@@ -47,28 +47,36 @@ void Enemy::update(float ms)
 	if (m_is_alive)
 	{
 		// Update enemy position based on fixed path here
-		float step = currentVelocity.x;
-		if (direction == right) {
-			if ((m_position.x + step) >= (m_initialPosition.x + stopBound)) {
-				direction = left;
-				m_scale.x = -1 * m_scale.x;
-			} else {
-				m_position.x += step;
-			}
-		} else if (direction == left) {
-			if ((m_position.x - step) <= m_initialPosition.x) {
-				direction = right;
-				m_scale.x = -1 * m_scale.x;
-			} else {
-				m_position.x -= step;
-			}
-		}
+		float vel_x = m_velocity.x;
+		float vel_y = m_velocity.y;
+		float right_bound = m_initialPosition.x + stopBound;
+		float left_bound = m_initialPosition.x;
+		float next_pos_x = m_position.x + vel_x;
 
+		if (((vel_x > 0) && (next_pos_x >= right_bound)) ||
+			((vel_x < 0) && (next_pos_x <= left_bound))) {
+			vel_x *= -1;
+			m_scale.x *= -1;
+			set_velocity({ vel_x, vel_y });
+		}
+		//if (direction == right) {
+		//	if ((m_position.x + speed) >= (m_initialPosition.x + stopBound)) {
+		//		direction = left;
+		//		m_scale.x = -1 * m_scale.x;
+		//		set_velocity({ -speed, 0.0f });
+		//	}
+		//} else if (direction == left) {
+		//	if ((m_position.x - speed) <= m_initialPosition.x) {
+		//		direction = right;
+		//		m_scale.x = -1 * m_scale.x;
+		//		set_velocity({ speed, 0.0f });
+		//	}
+		//}
+		move();
 	}
 	else
 	{
-		// If dead reset back to original position (for now)
-		// set_position();
+		// If dead reset do something
 	}
 
 }
@@ -185,16 +193,6 @@ void Enemy::freeze()
 void Enemy::unfreeze()
 {
 	m_frozen = false;
-}
-
-void Enemy::move()
-{
-	m_position.x += currentVelocity.x; m_position.y += currentVelocity.y;
-}
-
-void Enemy::set_direction(Direction d)
-{
-	direction = d;
 }
 
 void Enemy::reset_position()

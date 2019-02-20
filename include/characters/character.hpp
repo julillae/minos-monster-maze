@@ -38,11 +38,11 @@ public:
 	// Returns the current scale of the character
 	vec2 get_scale()const;
 
-	// Moves the character's position by the specified offset
-	void move(vec2 off);
+	// Moves the character based on current velocity
+	void move();
 
 	// Change character movement direction
-	void set_direction(int key, int action);
+	void set_direction(Direction d);
 
 	// Get character's horizontal direction
 	Direction get_h_direction();
@@ -67,8 +67,7 @@ protected:
 	vec2 m_scale;
 	bool m_is_alive; // True if the character is alive
 	bool m_is_collided; // True if character collided with object
-	Direction h_direction; // direction of horizontal movement
-	Direction v_direction; // direction of vertical movement
+	Direction direction; // direction of intended movement
     // 1.f in each dimension. 1.f is as big as the associated texture
 	float m_rotation; // in radians
 	size_t m_num_indices; // passed to glDrawElements
