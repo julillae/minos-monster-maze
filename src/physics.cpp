@@ -167,8 +167,6 @@ void Physics::characterAccelerationUpdate(Player * c)
 		}
 		vAcc = gravityAcc;
 		c->set_acceleration({ hAcc, vAcc });
-	} else {
-		c->set_rotation(M_PI);
 	}
 
 }

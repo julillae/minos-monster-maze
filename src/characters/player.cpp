@@ -31,8 +31,10 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
     float scaleFactor = 2.0f;
 	m_scale.x = -scaleFactor;
     m_scale.y = scaleFactor;
-    width = m_texture.width / spriteSheetWidth * scaleFactor - 12;
-    height = m_texture.height / spriteSheetHeight * scaleFactor - 14;
+	int horizontalTrim = 12;
+	int verticalTrim = 14;
+    width = m_texture.width / spriteSheetWidth * scaleFactor - horizontalTrim;
+    height = m_texture.height / spriteSheetHeight * scaleFactor - verticalTrim;
 	m_is_alive = true;
 	m_position = initialPosition;
 	m_rotation = 0.f;
