@@ -13,7 +13,7 @@ namespace
 	const size_t MAZE_WIDTH = 49;
 	const size_t MAZE_HEIGHT = 28;
     float increment = 0;
-	double rotation = 0;
+	float rotation = 0;
 
 	// 1 = platform
 	// 2 = exit
@@ -285,7 +285,7 @@ bool Level0::update(float elapsed_ms)
 //		}
 //	}
 
-	// Checking Player - Exit Collision
+//	 Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided && !is_player_at_goal)
 	{
 		m_water.set_level_complete_time();
@@ -297,6 +297,7 @@ bool Level0::update(float elapsed_ms)
 	}
 
 	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
+	physicsHandler->characterRotationUpdate(&m_player, rotation);
 	m_player.update(elapsed_ms);
 
 	for (auto& enemy : m_enemies)
@@ -453,7 +454,7 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
 
     if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_SPACE ) {
         increment += 2;
-        rotation = (increment * M_PI ) / 180;
+        rotation = static_cast<float>((increment * M_PI ) / 180);
         // reset increment
         if (increment == 360) {
         	increment = 0;

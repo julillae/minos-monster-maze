@@ -10,31 +10,34 @@ Physics::Physics() = default;
 
 Physics::~Physics() = default;
 
-float Physics::lineIntersection(float x_pos1, float x_pos2, float y_pos1, float y_pos2) {
-    float dx = x_pos1 - x_pos2;
-    float dy = y_pos1 - y_pos2;
-    float d_sq = dx * dx + dy * dy;
-    return d_sq;
-}
-
-float Physics::boundingBox(float bb_x, float bb_y, float scale_x, float scale_y)
+bool circleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
 {
-    float other_r = std::max(bb_x, bb_y);
-    float my_r = std::max(scale_x, scale_y);
-    float r = std::max(other_r, my_r);
-    return r;
+    float xDistance = c1.x - c2.x;
+    float yDistance = c1.y - c2.y;
+    float radius = r1 + r2;
+    radius *= 0.4f;
+    return xDistance * xDistance + yDistance * yDistance < radius * radius;
+}
+
+float find_length(vec2 v)
+{
+    return sqrt((v.x * v.x) + (v.y * v.y));
+}
+
+vec2 normalize_length(vec2 v)
+{
+    float length = find_length(v);
+    v = {v.x / length, v.y / length};
+    return v;
 }
 
 
-Physics::CollisionNode Physics::collideWithEnemy (Player *c, const Enemy *t) {
-    float d_sq = lineIntersection(c->get_position().x, t->get_position().x, c->get_position().y, t->get_position().y);
-    float r = boundingBox(t->get_bounding_box().x, t->get_bounding_box().y, c->get_scale().x, c->get_scale().y);
+Physics::CollisionNode Physics::collideWithEnemy (Player *p, const Enemy *e) {
 
-    r *= 0.6f;
-    bool isCollided = false;
-    if (d_sq < r * r) {
-        isCollided = true;
-    }
+    float other_r = std::max(e->get_bounding_box().x, e->get_bounding_box().y);
+    float my_r = std::max(p->width, p->height);
+
+    bool isCollided = circleToCircleIntersection(p->get_position(), e->get_position(), other_r, my_r);
 
     Physics::CollisionNode collisionNode{};
     collisionNode.isCollided = isCollided;
@@ -43,23 +46,20 @@ Physics::CollisionNode Physics::collideWithEnemy (Player *c, const Enemy *t) {
 }
 
 Physics::CollisionNode Physics::collisionWithFixedWalls(Player *p, const Floor *f) {
-    float d_sq = lineIntersection(p->get_position().x, f->get_position().x, p->get_position().y, f->get_position().y);
-    float r = boundingBox(f->get_bounding_box().x, f->get_bounding_box().y, p->width, p->height);
+    float other_r = std::max(p->get_bounding_box().x, f->get_bounding_box().y);
+    float my_r = std::max(p->width, p->height);
 
-    r *= 0.9f;
-    bool isCollided = false;
-    if (d_sq < r * r) {
-        isCollided = true;
-    }
+    bool isCollided = circleToCircleIntersection(p->get_position(), f->get_position(), other_r, my_r);
 
     CollisionNode collisionNode{};
     collisionNode.isCollided = isCollided;
 
-    if (isCollided) {
+	if (isCollided) {
 		float dy = p->get_position().y - f->get_position().y;
 		float dx = f->get_position().x - p->get_position().x;
 		float collisionAngle = atan2(dy, dx);
         collisionNode.angleOfCollision = collisionAngle;
+
     } else {
         collisionNode.angleOfCollision = 0;
     }
@@ -67,14 +67,10 @@ Physics::CollisionNode Physics::collisionWithFixedWalls(Player *p, const Floor *
 }
 
 Physics::CollisionNode Physics::collideWithExit (Player *p, const Exit *e) {
-    float d_sq = lineIntersection(p->get_position().x, e->get_position().x, p->get_position().y, e->get_position().y);
-    float r = boundingBox(e->get_bounding_box().x, e->get_bounding_box().y, p->get_scale().x, p->get_scale().y);
+	float other_r = std::max(p->get_bounding_box().x, e->get_bounding_box().y);
+	float my_r = std::max(p->width, p->height);
 
-    r *= 0.6f;
-    bool isCollided = false;
-    if (d_sq < r * r) {
-        isCollided = true;
-    }
+	bool isCollided = circleToCircleIntersection(p->get_position(), e->get_position(), other_r, my_r);
 
     Physics::CollisionNode collisionNode{};
     collisionNode.isCollided = isCollided;
@@ -82,19 +78,17 @@ Physics::CollisionNode Physics::collideWithExit (Player *p, const Exit *e) {
     return collisionNode;
 }
 
-void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floor> fixedComponents)
-{
+void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floor> fixedComponents) {
 	bool isOnAtLeastOnePlatform = false;
 	bool isLeftOfAtLeastOnePlatform = false;
 	bool isRightOfAtLeastOnePlatform = false;
 	bool isBelowAtLeastOnePlatform = false;
+	bool isSet = false;
 
 	Physics::CollisionNode collisionNode;
-	for (const auto& floor : fixedComponents)
-	{
+	for (const auto &floor : fixedComponents) {
 		collisionNode = collisionWithFixedWalls(c, &floor);
-		if (collisionNode.isCollided)
-		{
+		if (collisionNode.isCollided) {
 			float collisionAngle = collisionNode.angleOfCollision;
 			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
 				c->set_on_platform();
@@ -110,8 +104,15 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 			if (collisionAngle > 3 * M_PI / 4 || collisionAngle < -3 * M_PI / 4) {
 				isRightOfAtLeastOnePlatform = true;
 			}
+
+			vec2 colNormal = normalize_length(
+					{floor.get_position().x - c->get_position().x, floor.get_position().y - c->get_position().y});
+			vec2 newPos = {c->get_position().x - colNormal.x, c->get_position().y - colNormal.y};
+			c->set_position(newPos);
+
 		}
 	}
+
 	if (!isOnAtLeastOnePlatform) c->set_in_free_fall();
 	c->isLeftOfPlatform = isLeftOfAtLeastOnePlatform;
 	c->isRightOfPlatform = isRightOfAtLeastOnePlatform;
@@ -170,8 +171,38 @@ void Physics::characterAccelerationUpdate(Player * c)
 	}
 }
 
-void Physics::characterRotationUpdate(Player *c, double rotation)
+void Physics::characterRotationUpdate(Player *c, float rotation)
 {
-    // implement logic to allow player to fall off angled platforms
+
+    vec2 cAcc = c->get_acceleration();
+    vec2 pos = c->get_position();
+    vec2 cVel = c->get_velocity();
+
+    cVel.x += cAcc.x;
+    cVel.y += cAcc.y;
+
+    if ((rotation > M_PI/10 && rotation < 4.72) && c->isOnPlatform) {
+        // make the player fall down
+
+
+        if (c->isLeftOfPlatform) {
+            c->set_position({pos.x + 1, pos.y});
+        } else {
+            c->set_position({pos.x - 2, pos.y});
+
+        }
+    } else if (rotation > 4.72) {
+
+        if (c->isRightOfPlatform) {
+            c->set_position({pos.x + 1, pos.y});
+        } else {
+            c->set_position({pos.x + 2, pos.y});
+        }
+
+        c->set_velocity(cVel);
+
+
+
+    }
 }
 
