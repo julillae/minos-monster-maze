@@ -12,25 +12,6 @@
 #include <typeinfo>
 #include <cmath>
 
-// Put implementations specific to Enemies (not applicable to Player)
-// but common across both simple and complex enemies here
-
-bool Enemy::init(vec2 initialPosition, Physics * physicsHandler) 
-{
-	return false;
-}
-
-void Enemy::update(float ms)
-{
-	if (m_is_alive)	move();
-}
-
-void Enemy::draw(const mat3& projection)
-{
-	RenderManager::draw(projection, m_position, m_rotation, m_scale, &m_texture, this);
-	
-}
-
 void Enemy::freeze()
 {
 	m_frozen = true;

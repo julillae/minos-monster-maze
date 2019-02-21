@@ -13,18 +13,10 @@ bool Smart::init(vec2 initialPosition, Physics * physicsHandler)
 
     RenderManager::set_render_data(&m_texture, this);
 
-	// Setting initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture
-	float scaleFactor = 0.4f;
-	m_scale.x = scaleFactor;
-	m_scale.y = scaleFactor;
-	width = m_texture.width * scaleFactor;
-	height = m_texture.height * scaleFactor;
-	m_rotation = 0.f;
+	set_properties(initialPosition, 0.4f, speed);
+	width = smart_texture.width * m_scale.x;
+	height = smart_texture.height * m_scale.y;
 	direction = right;
-	m_is_alive = true;
-	m_position = initialPosition;
-	m_velocity = {speed, 0.0f};
 	m_initialPosition = initialPosition;
 
 	return true;

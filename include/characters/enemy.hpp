@@ -9,15 +9,6 @@ class Enemy : public Character
 {
 
 public:
-	// Creates all the associated render resources and default transform
-	virtual bool init(vec2 initialPosition, Physics* physicsHandler);
-	
-	// Update enemy position based on velocity vector
-	// ms represents the number of milliseconds elapsed from the previous update() call
-	virtual void update(float ms);
-	
-	// Renders the enemy
-	void draw(const mat3& projection)override;
 
 	// Freeze the enemy and unfreeze
 	void freeze();
