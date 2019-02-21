@@ -4,12 +4,11 @@
 
 // Put shared implementation for simple enemies here
 
-Texture Simple::simple_texture;
 
 bool Simple::init(vec2 initialPosition, Physics * physicsHandler)
 {
 	this->physicsHandler = physicsHandler;
-	direction = right;
+	direction = Direction::right;
 	m_stopBound = 10.f;
 	m_initialPosition = initialPosition;
 
@@ -19,7 +18,7 @@ bool Simple::init(vec2 initialPosition, Physics * physicsHandler)
 void Simple::update(float ms)
 {
 
-	if (m_is_alive)
+	if (is_alive())
 	{
 		// Update enemy position based on fixed path here
 		float vel_x = m_velocity.x;

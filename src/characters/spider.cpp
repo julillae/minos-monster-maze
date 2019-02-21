@@ -16,6 +16,7 @@ bool Spider::init(vec2 initialPosition, Physics * physicsHandler)
 
 	RenderManager::set_render_data(&spider_texture, this);
 
+	initStateTree();
 	set_properties(initialPosition, 0.4f, speed);
 	width = spider_texture.width * m_scale.x;
 	height = spider_texture.height * m_scale.y;

@@ -51,6 +51,7 @@ set(SOURCE_FILES
     src/gameAI.cpp
     src/physics.cpp
     src/levels/level0.cpp
+    src/stateTree.cpp
     
 
     include/project_path.hpp
@@ -73,6 +74,7 @@ set(SOURCE_FILES
     include/gameAI.hpp
     include/physics.hpp
     include/levels/level0.hpp
+    include/stateTree.hpp
     
 	)
 
