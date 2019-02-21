@@ -283,7 +283,7 @@ bool Level0::update(float elapsed_ms)
 		}
 	}
 
-	// Checking Player - Exit Collision
+//	 Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided && !is_player_at_goal)
 	{
 		m_water.set_level_complete_time();
@@ -365,8 +365,8 @@ void Level0::draw()
 	bool cameraTracking = false;
 	if (cameraTracking){
 		// translation if camera tracks player
-		tx = -(2*p_position.x)/(right - left);
-		ty = -(2*p_position.y)/(top - bottom);
+		tx = -(osScaleFactor*2*p_position.x)/(right - left);
+		ty = -(osScaleFactor*2*p_position.y)/(top - bottom);
 	}
 	else {
 		// translation for fixed camera
@@ -375,9 +375,18 @@ void Level0::draw()
 	}
 	sx *= osScaleFactor;
 	sy *= osScaleFactor;
-	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
-	for (auto& floor : m_floor)
+	// translate to player's location
+	mat3 translation_matrix = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {tx, ty, 1.f}};
+	// scale after translation
+	mat3 scaling_matrix = {{sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ 0.f, 0.f, 1.f }};
+
+    mat3 projection_2D{ { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ 0.f, 0.f, 1.f } };
+
+    projection_2D = mul(projection_2D, translation_matrix);
+    projection_2D = mul(projection_2D, scaling_matrix);
+
+    for (auto& floor : m_floor)
 		floor.draw(projection_2D);
 	for (auto& enemy : m_enemies)
 		enemy.draw(projection_2D);
