@@ -174,8 +174,3 @@ bool Player::can_jump()
 {
 	return characterState->getStateChangeCost(jumping).first;
 }
-
-//bool Player::can_run()
-//{
-//	return characterState->getStateChangeCost(running).first;
-//}

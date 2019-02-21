@@ -449,6 +449,5 @@ void Level0::reset_game()
 
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
-	//m_current_speed = 1.f;
 	is_player_at_goal = false;
 }
