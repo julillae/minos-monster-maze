@@ -1,6 +1,6 @@
 #include "../include/spriteSheet.hpp"
 
-void SpriteSheet::init(Texture* texture, const vec2 spriteDims)
+void SpriteSheet::init(Texture* texture, const vec2 spriteDims, Renderable* renderable)
 {
     this->texture = texture;
     this->dims = spriteDims;
@@ -40,7 +40,7 @@ bool SpriteSheet::set_render_data(Renderable* renderable, int index)
     // Vertex Buffer creation
     glGenBuffers(1, &renderable->mesh.vbo);
     glBindBuffer(GL_ARRAY_BUFFER, renderable->mesh.vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 4, vertices, GL_DYNAMIC_DRAW);
 
     // Index Buffer creation
     glGenBuffers(1, &renderable->mesh.ibo);
@@ -57,6 +57,40 @@ bool SpriteSheet::set_render_data(Renderable* renderable, int index)
         return false;
 
     return true;
+
+}
+
+void SpriteSheet::update_render_data(Renderable *renderable, int index)
+{
+    float spriteWidth = texture->width / dims.x;
+    float spriteHeight = texture->height / dims.y;
+    float xStep =  1 / dims.x;
+    float yStep =  1 / dims.y;
+
+    // The position corresponds to the center of the texture
+    float wr = spriteWidth * 0.5f;
+    float hr = spriteHeight * 0.5f;
+
+    int xTile = index % (int) dims.x;
+    int yTile = (int) (index / (int) dims.x) % (int) dims.y;
+
+    TexturedVertex vertices[4];
+
+    vertices[0].position = { -wr, +hr, -0.01f };
+    vertices[0].texcoord = { xStep * xTile, yStep * (yTile + 1) };
+    vertices[1].position = { +wr, +hr, -0.01f };
+    vertices[1].texcoord = { xStep * (xTile + 1), yStep * (yTile + 1) };
+    vertices[2].position = { +wr, -hr, -0.01f };
+    vertices[2].texcoord = { xStep * (xTile + 1), yStep * yTile };
+    vertices[3].position = { -wr, -hr, -0.01f };
+    vertices[3].texcoord = { xStep * xTile, yStep * yTile };
+
+    // Clearing errors
+    gl_flush_errors();
+
+    glBindBuffer(GL_ARRAY_BUFFER, renderable->mesh.vbo);
+
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(TexturedVertex) * 4, vertices);
 
 }
 
