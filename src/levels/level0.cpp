@@ -379,31 +379,15 @@ void Level0::draw()
 	sx *= osScaleFactor;
 	sy *= osScaleFactor;
 
-	float c = cosf(static_cast<float>(-rotation));
-	float s = sinf(static_cast<float>(-rotation));
-
 	// translate to player's location
-	mat3 translation_matrix_l = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {tx, ty, 1.f}};
+	mat3 translation_matrix = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {tx, ty, 1.f}};
 	// scale after translation
 	mat3 scaling_matrix = {{sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ 0.f, 0.f, 1.f }};
 
-	// create a rotation matrix
-	mat3 R = { { c, s, 0.f },
-			   { -s, c, 0.f },
-			   { 0.f, 0.f, 1.f } };
-
-	mat3 translation_matrix_r = { {1.f, 0.f, 0.f},
-								  {0.f, 1.f, 0.f},
-								  {-tx, -ty, 1.f}};
-
-
     mat3 projection_2D{ { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ 0.f, 0.f, 1.f } };
 
-    projection_2D = mul(projection_2D, translation_matrix_l);
+    projection_2D = mul(projection_2D, translation_matrix);
     projection_2D = mul(projection_2D, scaling_matrix);
-    projection_2D = mul(projection_2D, R);
-
-
 
     for (auto& floor : m_floor)
 		floor.draw(projection_2D);
@@ -449,17 +433,6 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	m_player.on_key(key, action);
-
-	// rotation with key
-
-//    if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_SPACE ) {
-//        increment += 2;
-//        rotation = static_cast<float>((increment * M_PI ) / 180);
-//        // reset increment
-//        if (increment == 360) {
-//        	increment = 0;
-//        }
-//    }
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)

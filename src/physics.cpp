@@ -194,26 +194,3 @@ void Physics::characterAccelerationUpdate(Player * c)
 	}
 }
 
-void Physics::characterRotationUpdate(Player *c, float rotation)
-{
-
-    vec2 cAcc = c->get_acceleration();
-    vec2 pos = c->get_position();
-    vec2 cVel = c->get_velocity();
-
-    cVel.x += cAcc.x;
-    cVel.y += cAcc.y;
-
-//    if ((rotation > M_PI/10 && rotation < 4.72) && c->isOnPlatform) {
-//        // make the player fall down
-//
-//
-//    } else if (rotation > 4.72) {
-//
-//
-//        c->set_velocity(cVel);
-//
-//
-//    }
-}
-
