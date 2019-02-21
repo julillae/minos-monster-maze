@@ -152,22 +152,43 @@ void Physics::characterVelocityUpdate(Player* c)
 	c->set_velocity(cVelocity);
 }
 
-void Physics::characterAccelerationUpdate(Player * c)
-{
-	float vAcc;
-	float hAcc;
-	Direction h_direction = c->get_h_direction();
-	float accStep = c->accStep;
+void Physics::characterAccelerationUpdate(Player * c) {
+    float vAcc;
+    float hAcc;
+    Direction h_direction = c->get_h_direction();
+    float accStep = c->accStep;
 
-	if (c->is_alive()) {
-		switch (h_direction) {
-			case Direction::left: hAcc = -accStep; break;
-			case Direction::right: hAcc = accStep; break;
-			default: hAcc = 0.f; break;
-		}
-		vAcc = gravityAcc;
-		c->set_acceleration({ hAcc, vAcc });
-	}
+    if (c->is_alive()) {
+        switch (h_direction) {
+            case Direction::left:
+                hAcc = -accStep;
+                break;
+            case Direction::right:
+                hAcc = accStep;
+                break;
+            default:
+                hAcc = 0.f;
+                break;
+        }
+        vAcc = gravityAcc;
+        c->set_acceleration({hAcc, vAcc});
+    }
+}
+
+void Physics::characterRotationUpdate(Player *c, float rotation)
+{
+
+    vec2 pos = c->get_position();
+
+        if ((rotation > M_PI/10 && rotation < 4.72) && c->isOnPlatform) {
+//            c->set_position({pos.x - 2, pos.y});
+
+        } else if (rotation > 4.72) {
+
+            // do something
+        }
+
 
 }
+
 

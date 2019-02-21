@@ -42,5 +42,7 @@ public:
 
     float boundingBox(float bb_x, float bb_y, float scale_x, float scale_y);
 
+	void characterRotationUpdate(Player *c, float rotation);
+
 
 };
