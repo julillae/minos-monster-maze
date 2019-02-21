@@ -73,6 +73,10 @@ void Character::set_rotation(float radians) {
 	m_rotation = radians;
 }
 
+void Character::set_position(vec2 pos) {
+	m_position = pos;
+}
+
 bool Character::is_alive()const {
 	return characterState->currentState != dead;
 }
