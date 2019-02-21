@@ -38,11 +38,9 @@ public:
 
 	void characterAccelerationUpdate(Player *c);
 
-    float lineIntersection(float x_pos1, float x_pos2, float y_pos1, float y_pos2);
-
-    float boundingBox(float bb_x, float bb_y, float scale_x, float scale_y);
-
 	void characterRotationUpdate(Player *c, float rotation);
 
-
+	bool isZero(float f);
+  
+	bool notZero(float f);
 };
