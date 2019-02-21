@@ -10,12 +10,14 @@ Physics::Physics() = default;
 
 Physics::~Physics() = default;
 
+int floor_tolerance = 40;
+
 bool circleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
 {
     float xDistance = c1.x - c2.x;
     float yDistance = c1.y - c2.y;
     float radius = r1 + r2;
-    radius *= 0.4f;
+    radius *= 0.45f;
     return xDistance * xDistance + yDistance * yDistance < radius * radius;
 }
 
@@ -83,7 +85,6 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 	bool isLeftOfAtLeastOnePlatform = false;
 	bool isRightOfAtLeastOnePlatform = false;
 	bool isBelowAtLeastOnePlatform = false;
-	bool isSet = false;
 
 	Physics::CollisionNode collisionNode;
 	for (const auto &floor : fixedComponents) {
@@ -105,11 +106,19 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 				isRightOfAtLeastOnePlatform = true;
 			}
 
+			// get the normalized vector
 			vec2 colNormal = normalize_length(
 					{floor.get_position().x - c->get_position().x, floor.get_position().y - c->get_position().y});
 			vec2 newPos = {c->get_position().x - colNormal.x, c->get_position().y - colNormal.y};
-			c->set_position(newPos);
 
+			// get the floor position
+			vec2 floorPos = floor.get_position();
+			vec2 playPos = c->get_position();
+
+			// if the player position deviates too much from the floor position, push the player back up
+			if (floorPos.y - playPos.y < floor_tolerance) {
+                c->set_position(newPos);
+            }
 		}
 	}
 
@@ -181,28 +190,16 @@ void Physics::characterRotationUpdate(Player *c, float rotation)
     cVel.x += cAcc.x;
     cVel.y += cAcc.y;
 
-    if ((rotation > M_PI/10 && rotation < 4.72) && c->isOnPlatform) {
-        // make the player fall down
-
-
-        if (c->isLeftOfPlatform) {
-            c->set_position({pos.x + 1, pos.y});
-        } else {
-            c->set_position({pos.x - 2, pos.y});
-
-        }
-    } else if (rotation > 4.72) {
-
-        if (c->isRightOfPlatform) {
-            c->set_position({pos.x + 1, pos.y});
-        } else {
-            c->set_position({pos.x + 2, pos.y});
-        }
-
-        c->set_velocity(cVel);
-
-
-
-    }
+//    if ((rotation > M_PI/10 && rotation < 4.72) && c->isOnPlatform) {
+//        // make the player fall down
+//
+//
+//    } else if (rotation > 4.72) {
+//
+//
+//        c->set_velocity(cVel);
+//
+//
+//    }
 }
 
