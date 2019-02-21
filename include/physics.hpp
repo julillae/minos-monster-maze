@@ -37,7 +37,4 @@ public:
 	void characterVelocityUpdate(Player *c);
 
 	void characterAccelerationUpdate(Player *c);
-
-	void characterRotationUpdate(Player *c, float rotation);
-
 };
