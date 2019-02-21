@@ -1,6 +1,4 @@
 #include "../include/characters/enemy.hpp"
-#include "../include/common.hpp"
-#include "../include/physics.hpp"
 
 // internal
 

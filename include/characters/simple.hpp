@@ -9,7 +9,7 @@
 
 class Simple: public Enemy
 {
-    static Texture simple_texture;
+
     public:
         // Creates all the associated render resources and default transform
         bool init(vec2 initialPosition, Physics* physicsHandler)override;

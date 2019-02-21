@@ -11,7 +11,7 @@ void Character::set_properties(vec2 initialPosition, float scaleFactor, float xV
 	m_scale.x = scaleFactor;
 	m_scale.y = scaleFactor;
 	m_rotation = 0.f;
-	m_is_alive = true;
+	//m_is_alive = true;
 	m_position = initialPosition;
 	m_velocity = {xVel, 0.0f};
 }
@@ -27,6 +27,8 @@ void Character::destroy()
 	glDeleteShader(effect.vertex);
 	glDeleteShader(effect.fragment);
 	glDeleteShader(effect.program);
+
+	free(characterState);
 }
 
 void Character::set_acceleration(vec2 acc) {
@@ -72,9 +74,50 @@ void Character::set_rotation(float radians) {
 }
 
 bool Character::is_alive()const {
-	return m_is_alive;
+	return characterState->currentState != dead;
 }
 
 void Character::kill() {
-	m_is_alive = false;
+	characterState->changeState(dead);
 }
+
+void Character::initStateTree()
+{
+	vector<Edge> edges = {
+		{idle, running, 1},
+		{idle, jumping, 1},
+		{idle, rising, 1},
+		{idle, falling, 1},
+		{idle, frozen, 1},
+		{idle, dead, 1},
+		{running, idle, 1},
+		{running, jumping, 1},
+		{running, falling, 1},
+		{running, frozen, 1},
+		{running, dead, 1},
+		{jumping, rising, 0},
+		{jumping, frozen, 0},
+		{jumping, dead, 0},
+		{rising, idle, 1},
+		{rising, falling, 1},
+		{rising, frozen, 1},
+		{rising, dead, 1},
+		{falling, landing, 1},
+		{falling, frozen, 1},
+		{falling, dead, 1},
+		{landing, idle, 1},
+		{landing, running, 1},
+		{landing, jumping, 1},
+		{landing, dead, 1},
+		{frozen, thawing},
+		{thawing, idle, 0},
+		{thawing, running, 0},
+		{thawing, rising, 0},
+		{thawing, falling, 0},
+		{dead, reviving, 0},
+		{reviving, idle, 0}
+	};
+
+	characterState = new StateTree(edges, idle);
+}
+

@@ -16,7 +16,7 @@ bool Smart::init(vec2 initialPosition, Physics * physicsHandler)
 	set_properties(initialPosition, 0.4f, speed);
 	width = smart_texture.width * m_scale.x;
 	height = smart_texture.height * m_scale.y;
-	direction = right;
+	direction = Direction::right;
 	m_initialPosition = initialPosition;
 
 	return true;
@@ -25,7 +25,7 @@ bool Smart::init(vec2 initialPosition, Physics * physicsHandler)
 void Smart::update(float ms)
 {
 
-	if (m_is_alive)
+	if (is_alive())
 	{
 		// Update enemy position to follow the player using enemy AI
 		

@@ -23,10 +23,11 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 	float spriteSheetWidth = 8.0f;
 	float spriteSheetHeight = 5.0f;
 
-	spriteSheet.init(&m_texture, { spriteSheetWidth, spriteSheetHeight });
+	spriteSheet.init(&m_texture, { spriteSheetWidth, spriteSheetHeight }, this);
 
 	spriteSheet.set_render_data(this, 0);
 
+    initStateTree();
 	set_properties(initialPosition, 2.0f, 0.f);
 	int horizontalTrim = 12;
 	int verticalTrim = 14;
@@ -46,7 +47,7 @@ void Player::update(float ms)
 {
 	physicsHandler->characterAccelerationUpdate(this);
 	physicsHandler->characterVelocityUpdate(this);
-	if (m_is_alive)	move();
+	if (is_alive()) move();
 }
 
 void Player::draw(const mat3& projection)
@@ -63,6 +64,7 @@ vec2 Player::get_bounding_box()const {
 }
 
 void Player::set_on_platform() {
+	characterState->changeState(landing);
 	isOnPlatform = true;
 }
 
@@ -74,7 +76,9 @@ void Player::on_key(int key, int action)
 {
 	if (action == GLFW_PRESS) {
 		switch (key) {
-		case GLFW_KEY_UP: if (isOnPlatform) m_velocity.y += jumpVel; break;
+		case GLFW_KEY_UP:
+			if (can_jump()) characterState->changeState(jumping);
+			break;
 		case GLFW_KEY_LEFT:
 			direction = Direction::left;
 			m_scale.x = -std::fabs(m_scale.x);
@@ -88,11 +92,15 @@ void Player::on_key(int key, int action)
 	else if (action == GLFW_RELEASE) {
 		switch (key) {
 		case GLFW_KEY_LEFT:
-			if (direction == Direction::left)
-				direction = Direction::none; break;
+			if (direction == Direction::left) {
+				direction = Direction::none;
+			}
+			break;
 		case GLFW_KEY_RIGHT:
-			if (direction == Direction::right)
-				direction = Direction::none; break;
+			if (direction == Direction::right) {
+				direction = Direction::none;
+			}
+			break;
 		}
 	}
 }
@@ -106,40 +114,31 @@ void Player::set_animation()
 	float animSpeed = 0.2f;
 
 	// Calculate animation
-	if (m_is_alive)
+	if (is_alive())
 	{
 		is_anim_once = false;
-
-		// idle animation
-		if (m_acceleration.x == 0.f)
-		{
+		switch (characterState->currentState) {
+		case idle:
 			numTiles = 5;
 			tileIndex = 0;
-		}
-
-		// running animation
-		if (m_acceleration.x != 0.f)
-		{
+			break;
+		case running:
 			numTiles = 8;
 			tileIndex = 8;
-		}
-
-		// jump up
-		if (m_velocity.y < 0)
-		{
+			break;
+		case jumping:
+		case rising:
 			numTiles = 1;
 			tileIndex = 9;
-		}
-
-		// falling down
-		if (m_velocity.y > 0)
-		{
+			break;
+		case falling:
 			numTiles = 1;
 			tileIndex = 14;
+		default:
+			numTiles = 1;
+			tileIndex = 0;
 		}
-
-	} else
-	{
+	} else {
 		isRepeat = false;
 
 		if (is_anim_once)
@@ -163,5 +162,10 @@ void Player::set_animation()
 	// do not repeat death animation
 	if (!isRepeat && tileIndex == 38) is_anim_once = true;
 
-	spriteSheet.set_render_data(this, tileIndex);
+	spriteSheet.update_render_data(this, tileIndex);
+}
+
+bool Player::can_jump()
+{
+	return characterState->getStateChangeCost(jumping).first;
 }
