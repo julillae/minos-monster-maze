@@ -25,12 +25,23 @@ vector<DestWeightPair> StateTree::getChildren()
 	return adjList[currentState];
 }
 
-ChangeCost StateTree::changeState(State newState)
+bool StateTree::changeState(State newState)
 {
 	vector<DestWeightPair> validNewStates = getChildren();
 	for (auto &pair : validNewStates) {
 		if (pair.first == newState) {
 			currentState = newState;
+			return true;
+		}
+	}
+	return false;
+}
+
+ChangeCost StateTree::getStateChangeCost(State newState)
+{
+	vector<DestWeightPair> validNewStates = getChildren();
+	for (auto &pair : validNewStates) {
+		if (pair.first == newState) {
 			return make_pair(true, pair.second);
 		}
 	}

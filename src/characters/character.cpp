@@ -98,7 +98,6 @@ void Character::initStateTree()
 		{falling, dead, 1},
 		{frozen, idle, 0},
 		{frozen, running, 0},
-		{frozen, jumping, 0},
 		{frozen, rising, 0},
 		{frozen, falling, 0},
 		{dead, idle, 0}

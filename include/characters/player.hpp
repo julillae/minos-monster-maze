@@ -30,13 +30,15 @@ public:
 	// Sets the correct sprite sheet tile for appropriate animation
 	void set_animation();
 
+	// Returns true if the character is in a state that can jump
+	bool can_jump();
+
 	bool isBelowPlatform;
 	bool isLeftOfPlatform;
 	bool isRightOfPlatform;
 	float maxVelocity = 10;
 	bool isOnPlatform;
 	float accStep = 1.f;
-
-private:
 	float jumpVel = -18.f;
+	
 };
