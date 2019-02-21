@@ -270,20 +270,20 @@ bool Level0::update(float elapsed_ms)
 	vec2 screen = { (float)w, (float)h };
 
 	// Checking Player - Enemy Collision
-//	for (Enemy& enemy : m_enemies) {
-//		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
-//		{
-//			if (m_player.is_alive()) {
-//				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
-//				m_water.set_player_dead();
-//
-//				for(Enemy& e : m_enemies) {
-//					e.freeze();
-//				}
-//			}
-//			m_player.kill();
-//		}
-//	}
+	for (Enemy& enemy : m_enemies) {
+		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
+		{
+			if (m_player.is_alive()) {
+				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+				m_water.set_player_dead();
+
+				for(Enemy& e : m_enemies) {
+					e.freeze();
+				}
+			}
+			m_player.kill();
+		}
+	}
 
 //	 Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided && !is_player_at_goal)
@@ -365,7 +365,7 @@ void Level0::draw()
 	
 	float tx = 0.f;
 	float ty = 0.f;
-	bool cameraTracking = true;
+	bool cameraTracking = false;
 	if (cameraTracking){
 		// translation if camera tracks player
 		tx = -(osScaleFactor*2*p_position.x)/(right - left);
@@ -384,17 +384,17 @@ void Level0::draw()
 
 	// translate to player's location
 	mat3 translation_matrix_l = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {tx, ty, 1.f}};
+	// scale after translation
 	mat3 scaling_matrix = {{sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ 0.f, 0.f, 1.f }};
 
+	// create a rotation matrix
 	mat3 R = { { c, s, 0.f },
 			   { -s, c, 0.f },
 			   { 0.f, 0.f, 1.f } };
 
-//	mat3 translation_matrix_r = { {1.f, 0.f, 0.f},
-//								  {0.f, 1.f, 0.f},
-//								  {-tx, -ty, 1.f}};
-
-    mat3 translation_matrix_r = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {-tx, -ty, 1.f}};
+	mat3 translation_matrix_r = { {1.f, 0.f, 0.f},
+								  {0.f, 1.f, 0.f},
+								  {-tx, -ty, 1.f}};
 
 
     mat3 projection_2D{ { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ 0.f, 0.f, 1.f } };
@@ -452,14 +452,14 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	// rotation with key
 
-    if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_SPACE ) {
-        increment += 2;
-        rotation = static_cast<float>((increment * M_PI ) / 180);
-        // reset increment
-        if (increment == 360) {
-        	increment = 0;
-        }
-    }
+//    if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_SPACE ) {
+//        increment += 2;
+//        rotation = static_cast<float>((increment * M_PI ) / 180);
+//        // reset increment
+//        if (increment == 360) {
+//        	increment = 0;
+//        }
+//    }
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
