@@ -273,13 +273,13 @@ bool Level0::update(float elapsed_ms)
 		{
 			if (m_player.is_alive()) {
 				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+				m_player.kill();
 				m_water.set_player_dead();
 
 				for(Enemy& e : m_enemies) {
 					e.freeze();
 				}
 			}
-			m_player.kill();
 		}
 	}
 
@@ -458,6 +458,5 @@ void Level0::reset_game()
 
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
-	//m_current_speed = 1.f;
 	is_player_at_goal = false;
 }
