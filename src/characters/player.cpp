@@ -23,7 +23,7 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 	float spriteSheetWidth = 8.0f;
 	float spriteSheetHeight = 5.0f;
 
-	spriteSheet.init(&m_texture, { spriteSheetWidth, spriteSheetHeight });
+	spriteSheet.init(&m_texture, { spriteSheetWidth, spriteSheetHeight }, this);
 
 	spriteSheet.set_render_data(this, 0);
 	
@@ -57,7 +57,7 @@ void Player::update(float ms)
 
 void Player::draw(const mat3& projection)
 {
-	//set_animation();
+	set_animation();
 
 	RenderManager::draw(projection, m_position, m_rotation, m_scale, &m_texture, this);
 }
@@ -172,7 +172,7 @@ void Player::set_animation()
 	// do not repeat death animation
 	if (!isRepeat && tileIndex == 38) is_anim_once = true;
 
-	spriteSheet.set_render_data(this, tileIndex);
+	spriteSheet.update_render_data(this, tileIndex);
 }
 
 bool Player::can_jump()
