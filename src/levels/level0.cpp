@@ -276,17 +276,17 @@ bool Level0::update(float elapsed_ms)
 		{
 			if (m_player.is_alive()) {
 				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+				m_player.kill();
 				m_water.set_player_dead();
 
 				for(Enemy& e : m_enemies) {
 					e.freeze();
 				}
 			}
-			m_player.kill();
 		}
 	}
 
-	// Checking Player - Exit Collision
+//	 Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided && !is_player_at_goal)
 	{
 		m_water.set_level_complete_time();
@@ -369,8 +369,8 @@ void Level0::draw()
 	bool cameraTracking = false;
 	if (cameraTracking){
 		// translation if camera tracks player
-		tx = -(2*p_position.x)/(right - left);
-		ty = -(2*p_position.y)/(top - bottom);
+		tx = -(osScaleFactor*2*p_position.x)/(right - left);
+		ty = -(osScaleFactor*2*p_position.y)/(top - bottom);
 	}
 	else {
 		// translation for fixed camera
@@ -398,7 +398,10 @@ void Level0::draw()
 	projection_2D = mul(projection_2D, scaling_matrix);
 	projection_2D = mul(projection_2D, R);
 
-	for (auto& floor : m_floor)
+    projection_2D = mul(projection_2D, translation_matrix);
+    projection_2D = mul(projection_2D, scaling_matrix);
+
+    for (auto& floor : m_floor)
 		floor.draw(projection_2D);
 	for (auto& enemy : m_enemies)
 		enemy.draw(projection_2D);
@@ -479,6 +482,5 @@ void Level0::reset_game()
 
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
-	//m_current_speed = 1.f;
 	is_player_at_goal = false;
 }

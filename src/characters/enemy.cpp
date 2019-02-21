@@ -23,14 +23,14 @@ bool Enemy::init(vec2 initialPosition, float bound)
 
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture
+	initStateTree();
 	float scaleFactor = 0.4f;
 	m_scale.x = scaleFactor;
 	m_scale.y = scaleFactor;
 	width = enemy_texture.width * scaleFactor;
 	height = enemy_texture.height * scaleFactor;
 	m_rotation = 0.f;
-	direction = right;
-	m_is_alive = true;
+	direction = Direction::right;
 	m_position = initialPosition;
 	m_velocity = {speed, 0.0f};
 	stopBound = bound;
@@ -44,7 +44,7 @@ bool Enemy::init(vec2 initialPosition, float bound)
 void Enemy::update(float ms)
 {
 
-	if (m_is_alive)
+	if (is_alive())
 	{
 		// Update enemy position based on fixed path here
 		float vel_x = m_velocity.x;
