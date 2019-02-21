@@ -33,8 +33,6 @@ public:
 	// Returns true if the character is in a state that can jump
 	bool can_jump();
 
-	// Returns true if the character is in a state that can run
-	//bool can_run();
 
 	bool isBelowPlatform;
 	bool isLeftOfPlatform;
