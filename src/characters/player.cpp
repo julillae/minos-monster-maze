@@ -69,6 +69,7 @@ vec2 Player::get_bounding_box()const {
 }
 
 void Player::set_on_platform() {
+	characterState->changeState(landing);
 	isOnPlatform = true;
 }
 
@@ -80,8 +81,9 @@ void Player::on_key(int key, int action)
 {
 	if (action == GLFW_PRESS) {
 		switch (key) {
-		case GLFW_KEY_UP: if (isOnPlatform) m_velocity.y += jumpVel; break;
-		//case GLFW_KEY_UP: if (can_jump()) characterState->changeState(jumping); break;
+		case GLFW_KEY_UP: 
+			if (can_jump()) characterState->changeState(jumping);
+			break;
 		case GLFW_KEY_LEFT:
 			direction = Direction::left;
 			m_scale.x = -std::fabs(m_scale.x);
@@ -95,12 +97,14 @@ void Player::on_key(int key, int action)
 	else if (action == GLFW_RELEASE) {
 		switch (key) {
 		case GLFW_KEY_LEFT:
-			if (direction == Direction::left)
+			if (direction == Direction::left) {
 				direction = Direction::none;
+			}
 			break;
 		case GLFW_KEY_RIGHT:
-			if (direction == Direction::right)
+			if (direction == Direction::right) {
 				direction = Direction::none;
+			}
 			break;
 		}
 	}
@@ -118,37 +122,28 @@ void Player::set_animation()
 	if (is_alive())
 	{
 		is_anim_once = false;
-
-		// idle animation
-		if (m_acceleration.x == 0.f)
-		{
+		switch (characterState->currentState) {
+		case idle:
 			numTiles = 5;
 			tileIndex = 0;
-		}
-
-		// running animation
-		if (m_acceleration.x != 0.f)
-		{
+			break;
+		case running:
 			numTiles = 8;
 			tileIndex = 8;
-		}
-
-		// jump up
-		if (m_velocity.y < 0)
-		{
+			break;
+		case jumping:
+		case rising:
 			numTiles = 1;
 			tileIndex = 9;
-		}
-
-		// falling down
-		if (m_velocity.y > 0)
-		{
+			break;
+		case falling:
 			numTiles = 1;
 			tileIndex = 14;
+		default:
+			numTiles = 1;
+			tileIndex = 0;
 		}
-
-	} else
-	{
+	} else {
 		isRepeat = false;
 
 		if (is_anim_once)
@@ -179,3 +174,8 @@ bool Player::can_jump()
 {
 	return characterState->getStateChangeCost(jumping).first;
 }
+
+//bool Player::can_run()
+//{
+//	return characterState->getStateChangeCost(running).first;
+//}

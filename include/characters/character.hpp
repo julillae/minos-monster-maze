@@ -65,6 +65,7 @@ public:
 	StateTree* characterState;
 	float width;
 	float height;
+	bool isOnPlatform;
 
 protected:
 	Physics* physicsHandler;
