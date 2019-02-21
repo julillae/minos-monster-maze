@@ -13,6 +13,9 @@ namespace
 	const size_t MAZE_WIDTH = 49;
 	const size_t MAZE_HEIGHT = 28;
 
+	float increment = 0;
+	float rotation = 0;
+
 	// 1 = platform
 	// 2 = exit
 	const int MAZE[MAZE_HEIGHT][MAZE_WIDTH] = { 
@@ -295,6 +298,7 @@ bool Level0::update(float elapsed_ms)
 	}
 
 	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
+	physicsHandler->characterRotationUpdate(&m_player, rotation);
 	m_player.update(elapsed_ms);
 
 	for (auto& enemy : m_enemies)
@@ -375,7 +379,24 @@ void Level0::draw()
 	}
 	sx *= osScaleFactor;
 	sy *= osScaleFactor;
-	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
+
+	float c = cosf(static_cast<float>(-rotation));
+	float s = sinf(static_cast<float>(-rotation));
+
+// create a rotation matrix
+	mat3 R = { { c, s, 0.f },
+			   { -s, c, 0.f },
+			   { 0.f, 0.f, 1.f } };
+
+	mat3 translation_matrix = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {tx, ty, 1.f}};
+	// scale after translation
+	mat3 scaling_matrix = {{sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ 0.f, 0.f, 1.f }};
+
+	mat3 projection_2D{ { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ 0.f, 0.f, 1.f } };
+
+	projection_2D = mul(projection_2D, translation_matrix);
+	projection_2D = mul(projection_2D, scaling_matrix);
+	projection_2D = mul(projection_2D, R);
 
 	for (auto& floor : m_floor)
 		floor.draw(projection_2D);
@@ -421,6 +442,15 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	m_player.on_key(key, action);
+
+	    if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_SPACE ) {
+        increment += 2;
+        rotation = static_cast<float>((increment * M_PI ) / 180);
+        // reset increment
+        if (increment == 360) {
+            increment = 0;
+        }
+    }
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)

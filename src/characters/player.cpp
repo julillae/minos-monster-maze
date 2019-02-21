@@ -52,6 +52,7 @@ void Player::update(float ms)
 {
 	physicsHandler->characterAccelerationUpdate(this);
 	physicsHandler->characterVelocityUpdate(this);
+	physicsHandler->characterRotationUpdate(this, 0);
 	if (m_is_alive)	move();
 }
 

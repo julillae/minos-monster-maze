@@ -52,7 +52,9 @@ public:
 	// Set character rotation in radians
 	void set_rotation(float radians);
 
-	// True if the character is alive
+	void set_position(vec2 pos);
+
+		// True if the character is alive
 	bool is_alive()const;
 
 	// Kills the character, changing its alive state and triggering on death events
