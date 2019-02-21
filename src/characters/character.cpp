@@ -82,7 +82,6 @@ void Character::initStateTree()
 		{idle, dead, 1},
 		{running, idle, 1},
 		{running, jumping, 1},
-		{running, rising, 1},
 		{running, falling, 1},
 		{running, frozen, 1},
 		{running, dead, 1},
@@ -93,15 +92,22 @@ void Character::initStateTree()
 		{rising, falling, 1},
 		{rising, frozen, 1},
 		{rising, dead, 1},
-		{falling, idle, 1},
+		{falling, landing, 1},
 		{falling, frozen, 1},
 		{falling, dead, 1},
-		{frozen, idle, 0},
-		{frozen, running, 0},
-		{frozen, rising, 0},
-		{frozen, falling, 0},
-		{dead, idle, 0}
+		{landing, idle, 1},
+		{landing, running, 1},
+		{landing, jumping, 1},
+		{landing, dead, 1},
+		{frozen, thawing},
+		{thawing, idle, 0},
+		{thawing, running, 0},
+		{thawing, rising, 0},
+		{thawing, falling, 0},
+		{dead, reviving, 0},
+		{reviving, idle, 0}
 	};
 
 	characterState = new StateTree(edges, idle);
 }
+
