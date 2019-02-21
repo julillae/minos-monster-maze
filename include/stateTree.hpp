@@ -32,7 +32,12 @@ public:
 
 	vector<DestWeightPair> getChildren();
 
-	ChangeCost changeState(State newState);
+	// returns true if state successfully changed, false otherwise
+	bool changeState(State newState);
+
+	// gets ChangeCost for hypothetically changing to newState
+	// does not actually change state
+	ChangeCost getStateChangeCost(State newState);
 
 	void resetStateTree();
 

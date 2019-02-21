@@ -81,6 +81,7 @@ void Player::on_key(int key, int action)
 	if (action == GLFW_PRESS) {
 		switch (key) {
 		case GLFW_KEY_UP: if (isOnPlatform) m_velocity.y += jumpVel; break;
+		//case GLFW_KEY_UP: if (can_jump()) characterState->changeState(jumping); break;
 		case GLFW_KEY_LEFT:
 			direction = Direction::left;
 			m_scale.x = -std::fabs(m_scale.x);
@@ -95,10 +96,12 @@ void Player::on_key(int key, int action)
 		switch (key) {
 		case GLFW_KEY_LEFT:
 			if (direction == Direction::left)
-				direction = Direction::none; break;
+				direction = Direction::none;
+			break;
 		case GLFW_KEY_RIGHT:
 			if (direction == Direction::right)
-				direction = Direction::none; break;
+				direction = Direction::none;
+			break;
 		}
 	}
 }
@@ -170,4 +173,9 @@ void Player::set_animation()
 	if (!isRepeat && tileIndex == 38) is_anim_once = true;
 
 	spriteSheet.set_render_data(this, tileIndex);
+}
+
+bool Player::can_jump()
+{
+	return characterState->getStateChangeCost(jumping).first;
 }

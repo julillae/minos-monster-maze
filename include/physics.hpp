@@ -42,5 +42,7 @@ public:
 
     float boundingBox(float bb_x, float bb_y, float scale_x, float scale_y);
 
+	bool isZero(float f);
 
+	bool notZero(float f);
 };

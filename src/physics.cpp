@@ -133,6 +133,11 @@ void Physics::characterVelocityUpdate(Player* c)
 	if (cVelocity.x > maxVelocity) cVelocity.x = maxVelocity;
 	if (cVelocity.x < -maxVelocity) cVelocity.x = -maxVelocity;
 
+	if (c->characterState->currentState == jumping) {
+		cVelocity.y += c->jumpVel;
+		c->characterState->changeState(rising);
+	}
+
 	if (cAcc.x < g_tolerance && cAcc.x > -g_tolerance && c->isOnPlatform)
 		cVelocity.x *= platformDrag;
 
@@ -171,3 +176,10 @@ void Physics::characterAccelerationUpdate(Player * c)
 
 }
 
+bool Physics::isZero(float f) {
+	return (std::fabs(f) < g_tolerance);
+}
+
+bool Physics::notZero(float f) {
+	return !isZero(f);
+}
