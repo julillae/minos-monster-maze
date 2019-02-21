@@ -26,19 +26,13 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 	spriteSheet.init(&m_texture, { spriteSheetWidth, spriteSheetHeight });
 
 	spriteSheet.set_render_data(this, 0);
-	
-	// Setting initial values
-    float scaleFactor = 2.0f;
-	m_scale.x = -scaleFactor;
-    m_scale.y = scaleFactor;
+
+	set_properties(initialPosition, 2.0f, 0.f);
 	int horizontalTrim = 12;
 	int verticalTrim = 14;
-    width = m_texture.width / spriteSheetWidth * scaleFactor - horizontalTrim;
-    height = m_texture.height / spriteSheetHeight * scaleFactor - verticalTrim;
-	m_is_alive = true;
-	m_position = initialPosition;
-	m_rotation = 0.f;
-	m_velocity = {0.0, 0.0};
+	width = m_texture.width / spriteSheetWidth * m_scale.x - horizontalTrim;
+	height = m_texture.height / spriteSheetHeight * m_scale.y - verticalTrim;
+
 
 	isBelowPlatform = false;
 	isLeftOfPlatform = false;

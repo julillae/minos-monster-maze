@@ -20,7 +20,6 @@ class Simple: public Enemy
 
         void set_bound(float bound);
 
-        void draw(const mat3& projection)override;
     // protected:
         float m_stopBound;
 	

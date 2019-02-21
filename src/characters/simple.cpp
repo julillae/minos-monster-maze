@@ -9,24 +9,7 @@ Texture Simple::simple_texture;
 bool Simple::init(vec2 initialPosition, Physics * physicsHandler)
 {
 	this->physicsHandler = physicsHandler;
-    
-    const char* textureFile = textures_path("minotaur_right.png");
-	if (!RenderManager::load_texture(textureFile, &simple_texture, this)) return false;
-
-	 RenderManager::set_render_data(&simple_texture, this);
-
-	// Setting initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture
-	float scaleFactor = 0.4f;
-	m_scale.x = scaleFactor;
-	m_scale.y = scaleFactor;
-	width = simple_texture.width * scaleFactor;
-	height = simple_texture.height * scaleFactor;
-	m_rotation = 0.f;
 	direction = right;
-	m_is_alive = true;
-	m_position = initialPosition;
-	m_velocity = {speed, 0.0f};
 	m_stopBound = 10.f;
 	m_initialPosition = initialPosition;
 
@@ -53,18 +36,9 @@ void Simple::update(float ms)
 		}
 		move();
 	}
-	else
-	{
-		// If dead reset do something
-	}
 
 }
 
-void Simple::draw(const mat3& projection)
-{
-	RenderManager::draw(projection, m_position, m_rotation, m_scale, &simple_texture, this);
-
-}
 
 void Simple::set_bound(float bound) 
 {
