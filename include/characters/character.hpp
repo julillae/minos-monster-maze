@@ -40,6 +40,8 @@ public:
 	// Returns the current character position
 	vec2 get_position()const;
 
+	void set_position(vec2 pos);
+
 	// Returns the current scale of the character
 	vec2 get_scale()const;
 
