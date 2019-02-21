@@ -12,8 +12,6 @@ namespace
 {
 	const size_t MAZE_WIDTH = 49;
 	const size_t MAZE_HEIGHT = 28;
-    float increment = 0;
-	float rotation = 0;
 
 	// 1 = platform
 	// 2 = exit
@@ -297,7 +295,6 @@ bool Level0::update(float elapsed_ms)
 	}
 
 	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
-	physicsHandler->characterRotationUpdate(&m_player, rotation);
 	m_player.update(elapsed_ms);
 
 	for (auto& enemy : m_enemies)
