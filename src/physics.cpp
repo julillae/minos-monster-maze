@@ -21,6 +21,22 @@ bool circleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
     return xDistance * xDistance + yDistance * yDistance < radius * radius;
 }
 
+bool valueInRange(float value, float min, float max) {
+    return (value >= min) && (value <= max);
+}
+
+bool squareToSquareIntersection(vec2 rectA, vec2 rectB, vec2 boundA, vec2 boundB)
+{
+    bool xOverlap = valueInRange(rectA.x, rectB.x, rectB.x + boundB.x)
+                    || valueInRange(rectB.x, rectA.x, rectA.x + boundA.x);
+
+    bool yOverlap = valueInRange(rectA.y, rectB.y, rectB.y + boundB.y)
+                    || valueInRange(rectB.y, rectA.y, rectA.y + boundA.y);
+
+    return xOverlap && yOverlap;
+}
+
+
 float find_length(vec2 v)
 {
     return sqrt((v.x * v.x) + (v.y * v.y));
@@ -36,10 +52,8 @@ vec2 normalize_length(vec2 v)
 
 Physics::CollisionNode Physics::collideWithEnemy (Player *p, const Enemy *e) {
 
-    float other_r = std::max(e->get_bounding_box().x, e->get_bounding_box().y);
-    float my_r = std::max(p->width, p->height);
-
-    bool isCollided = circleToCircleIntersection(p->get_position(), e->get_position(), other_r, my_r);
+    bool isCollided = squareToSquareIntersection
+            (p->get_position(), e->get_position(), p->get_bounding_box(), e->get_bounding_box());
 
     Physics::CollisionNode collisionNode{};
     collisionNode.isCollided = isCollided;
