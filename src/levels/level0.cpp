@@ -398,9 +398,6 @@ void Level0::draw()
 	projection_2D = mul(projection_2D, scaling_matrix);
 	projection_2D = mul(projection_2D, R);
 
-    projection_2D = mul(projection_2D, translation_matrix);
-    projection_2D = mul(projection_2D, scaling_matrix);
-
     for (auto& floor : m_floor)
 		floor.draw(projection_2D);
 	for (auto& enemy : m_enemies)
