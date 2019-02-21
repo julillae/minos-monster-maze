@@ -37,4 +37,8 @@ public:
 	void characterVelocityUpdate(Player *c);
 
 	void characterAccelerationUpdate(Player *c);
+
+	bool isZero(float f);
+  
+	bool notZero(float f);
 };
