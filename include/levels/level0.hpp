@@ -53,7 +53,7 @@ private:
 	void spawn_enemies();
 
 	// Helper to generates a new enemy
-	bool spawn_enemy(vec2 position, float bound);
+	bool spawn_simple_enemy(vec2 position, float bound);
 
 	// Generates a new floor
 	bool spawn_floor(vec2 position);
