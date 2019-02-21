@@ -133,12 +133,14 @@ void Physics::characterVelocityUpdate(Player* c)
 	if (cVelocity.x > maxVelocity) cVelocity.x = maxVelocity;
 	if (cVelocity.x < -maxVelocity) cVelocity.x = -maxVelocity;
 
+	if (c->characterState->currentState == jumping) {
+		cVelocity.y += c->jumpVel;
+		c->characterState->changeState(rising);
+	}
+
 	if (cAcc.x < g_tolerance && cAcc.x > -g_tolerance && c->isOnPlatform)
 		cVelocity.x *= platformDrag;
 
-	if (c->isOnPlatform) {
-		cVelocity.y = std::min(0.f, cVelocity.y);
-	}
 	if (c->isBelowPlatform) {
 		cVelocity.y = std::max(0.f, cVelocity.y);
 	}
@@ -147,6 +149,19 @@ void Physics::characterVelocityUpdate(Player* c)
 	}
 	if (c->isRightOfPlatform) {
 		cVelocity.x = std::max(0.f, cVelocity.x);
+	}
+
+	if (c->isOnPlatform) {
+		cVelocity.y = std::min(0.f, cVelocity.y);
+		if (isZero(cAcc.x))
+			c->characterState->changeState(idle);
+		else
+			c->characterState->changeState(running);
+	} else {
+		if (cVelocity.y < 0)
+			c->characterState->changeState(rising);
+		else
+			c->characterState->changeState(falling);
 	}
 
 	c->set_velocity(cVelocity);
@@ -171,3 +186,10 @@ void Physics::characterAccelerationUpdate(Player * c)
 
 }
 
+bool Physics::isZero(float f) {
+	return (std::fabs(f) < g_tolerance);
+}
+
+bool Physics::notZero(float f) {
+	return !isZero(f);
+}
