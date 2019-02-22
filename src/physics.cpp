@@ -178,7 +178,6 @@ void Physics::characterVelocityUpdate(Player* c)
 }
 
 void Physics::characterAccelerationUpdate(Player * c) {
-	vec2 rotatedGravity = rotateVec(gravityAcc, rotation);
 	vec2 horzAcc = {0.f, 0.f};
     Direction h_direction = c->get_h_direction();
     float accStep = c->accStep;
@@ -189,7 +188,10 @@ void Physics::characterAccelerationUpdate(Player * c) {
 		else if (h_direction == Direction::right)
 			horzAcc = { accStep, 0.f };
     }
-	vec2 newAcc = add(horzAcc, rotatedGravity);
+
+	vec2 rotatedHorzAcc = rotateVec(horzAcc, rotation);
+	vec2 rotatedGravity = rotateVec(gravityAcc, rotation);
+	vec2 newAcc = add(rotatedHorzAcc, rotatedGravity);
     c->set_acceleration(newAcc);
 }
 

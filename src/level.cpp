@@ -13,7 +13,7 @@
 
 namespace
 {
-	float increment = 0;
+	int increment = 0;
 	float rotation = 0;
     void glfw_err_cb(int error, const char* desc)
     {
@@ -458,22 +458,20 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	m_player.on_key(key, action);
 
-	if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_Z) {
-		increment += 1;
+	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+		if (key == GLFW_KEY_Z) increment = (increment + 1) % 360;
+		if (key == GLFW_KEY_X) increment = (increment - 1) % 360;
 		rotation = static_cast<float>((increment * M_PI) / 180);
-		// reset increment
-		if (increment == 360) {
-			increment = 0;
-		}
+	}
+
+	/*if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_Z) {
+		increment = (increment + 1) % 360;
+		rotation = static_cast<float>((increment * M_PI) / 180);
 	}
 	if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_X) {
-		increment -= 1;
+		increment = (increment - 1) % 360;
 		rotation = static_cast<float>((increment * M_PI) / 180);
-		// reset increment
-		if (increment == -360) {
-			increment = 0;
-		}
-    }
+    }*/
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
