@@ -13,8 +13,6 @@ public:
     // Renders the component
 	void draw(const mat3& projection)override;
 
-    bool set_texture();
-
 	vec2 get_position()const;
 
 	// Returns the bounding box for collision detection, called by collides_with()
