@@ -85,7 +85,8 @@ void Level::generate_maze()
 	bool setting_enemy = false;
 	vec2 enemy_start_pos;
 
-    float i, j = 0.f;
+    float i = 0.f; 
+	float j = 0.f;
 
 	for (auto &row : m_maze) {
         j = 0.f;
@@ -93,6 +94,16 @@ void Level::generate_maze()
 
 			float x_pos = (j * tile_width) + initial_x;
 			float y_pos = (i * tile_height) + initial_y;
+
+			if (setting_enemy && cell != 4) {
+				// If we were setting enemy positions, and we hit a cell with no enemy,
+				// Spawn the enemy we were setting
+
+				float last_x_pos = x_pos - tile_width;
+				float distance = abs(last_x_pos - enemy_start_pos.x);
+				spawn_spider_enemy(enemy_start_pos, distance);
+				setting_enemy = false;
+			}
 
 			if (cell == 1) {
 				// Spawn platform
@@ -125,14 +136,6 @@ void Level::generate_maze()
 					setting_enemy = true;
 					enemy_start_pos = {x_pos, y_pos};
 				}
-			} else if (setting_enemy) {
-				// If we were setting enemy positions, and we hit a cell with no enemy,
-				// Spawn the enemy we were setting
-
-				float last_x_pos = x_pos - tile_width;
-				float distance = abs(last_x_pos - enemy_start_pos.x);
-				spawn_spider_enemy(enemy_start_pos, distance);
-				setting_enemy = false;
 			}
 
             j = j + 1.f;
