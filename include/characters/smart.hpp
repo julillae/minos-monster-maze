@@ -17,4 +17,6 @@ class Smart: public Enemy
         // ms represents the number of milliseconds elapsed from the previous update() call
         void update(float ms)override;
 
+        void set_animation()override;
+
 };
