@@ -35,7 +35,7 @@ void Character::destroy()
 }
 
 void Character::set_acceleration(vec2 acc) {
-	m_acceleration.x = acc.x; m_acceleration.y = acc.y;
+	m_acceleration = acc;
 }
 
 vec2 Character::get_acceleration() {
@@ -43,7 +43,7 @@ vec2 Character::get_acceleration() {
 }
 
 void Character::set_velocity(vec2 vel) {
-	m_velocity.x = vel.x; m_velocity.y = vel.y;
+	m_velocity = vel;
 }
 
 vec2 Character::get_velocity() {
@@ -60,7 +60,7 @@ vec2 Character::get_scale()const {
 
 void Character::move()
 {
-	m_position.x += m_velocity.x; m_position.y += m_velocity.y;
+	m_position = add(m_position, m_velocity);
 }
 
 void Character::set_direction(Direction d)

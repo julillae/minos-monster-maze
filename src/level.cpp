@@ -281,21 +281,23 @@ bool Level::update(float elapsed_ms)
         glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = { (float)w, (float)h };
 
+	physicsHandler->updateWorldRotation(rotation);
+
 	// Checking Player - Enemy Collision
-//	for (Enemy& enemy : m_enemies) {
-//		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
-//		{
-//			if (m_player.is_alive()) {
-//				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
-//				m_player.kill();
-//				m_water.set_player_dead();
-//
-//				for(Enemy& e : m_enemies) {
-//					e.freeze();
-//				}
-//			}
-//		}
-//	}
+	for (Enemy& enemy : m_enemies) {
+		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
+		{
+			if (!m_player.isInvincible && m_player.is_alive()) {
+				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+				m_player.kill();
+				m_water.set_player_dead();
+
+				for(Enemy& e : m_enemies) {
+					e.freeze();
+				}
+			}
+		}
+	}
 
 //	 Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided && !is_player_at_goal)
@@ -309,7 +311,7 @@ bool Level::update(float elapsed_ms)
 	}
 
 	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
-	physicsHandler->characterRotationUpdate(&m_player, rotation);
+	m_player.set_rotation(rotation);
 	m_player.update(elapsed_ms);
 
 	for (auto& enemy : m_enemies)
@@ -376,7 +378,7 @@ void Level::draw()
 	
 	float tx = 0.f;
 	float ty = 0.f;
-	bool cameraTracking = true;
+	bool cameraTracking = false;
 	if (cameraTracking){
 		// translation if camera tracks player
 		tx = -p_position.x;

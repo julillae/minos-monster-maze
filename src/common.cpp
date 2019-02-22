@@ -85,6 +85,16 @@ vec2 normalize(vec2 v)
 	return { v.x / m, v.y / m };
 }
 
+vec2 add(vec2 v1, vec2 v2)
+{
+	return vec2({v1.x + v2.x, v1.y + v2.y});
+}
+
+vec2 negate(vec2 v)
+{
+	return vec2({ -v.x, -v.y });
+}
+
 Texture::Texture()
 {
 
