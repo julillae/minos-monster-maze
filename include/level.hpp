@@ -95,9 +95,14 @@ private:
 	// Part of hack needed to deal with the MacOs Retina Display issue where it doubles the pixels rendered
 	float osScaleFactor = 1.f;
 
-    // Variables set by subclass
-	vec2 initialPosition = { 700.f, 625.f };
+    // Variables determined by level data
+	vec2 initialPosition;
 
+	// Rows of the maze where:
+	// 1 = platform
+	// 2 = exit
+	// 3 = initial position
+	// 4 = spider enemy (and its path)
     std::vector<std::vector <int>> m_maze;
     float m_maze_width;
     float m_maze_height;
