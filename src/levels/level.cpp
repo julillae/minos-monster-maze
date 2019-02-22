@@ -89,12 +89,19 @@ void Level::generate_maze()
 	const float initial_y = 30.0;
 	float tile_width = 0.f;
 	float tile_height = 0.f;
+	
+	bool setting_enemy = false;
+	vec2 enemy_start_pos;
 
     float i, j = 0.f;
 
 	for (auto &row : m_maze) {
         j = 0.f;
-		for (int &cell : row) {
+		for (int &cell : row) {	
+
+			float x_pos = (j * tile_width) + initial_x;
+			float y_pos = (i * tile_height) + initial_y;
+
 			if (cell == 1) {
 				MazeComponent& new_floor = m_floor.back();	
 
@@ -104,19 +111,25 @@ void Level::generate_maze()
 					tile_height = new_floor.get_height();
 				}
 
-				float x_pos = (j * tile_width) + initial_x;
-				float y_pos = (i * tile_height) + initial_y;
-
 				spawn_floor({x_pos, y_pos});
 			} else if (cell == 2) {
 				Exit new_exit;
 
-				float x_pos = (j * tile_width) + initial_x;
-				float y_pos = (i * tile_height) + initial_y;
-
 				new_exit.init({x_pos, y_pos});
 
 				m_exit = new_exit;
+			} else if (cell == 3) {
+				if (!setting_enemy) {
+					setting_enemy = true;
+					enemy_start_pos = {x_pos, y_pos};
+				}
+			} else if (setting_enemy) {
+				// If we were setting enemy positions, and we hit a cell with no enemy,
+				// Spawn the enemy we were setting
+
+				float distance = x_pos - enemy_start_pos.x;
+				spawn_spider_enemy(enemy_start_pos, distance);
+				setting_enemy = false;
 			}
 
             j = j + 1.f;
@@ -228,7 +241,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, char* levelName)
 
 	generate_maze();
 	
-	spawn_enemies();
+	// spawn_enemies();
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
