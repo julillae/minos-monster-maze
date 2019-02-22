@@ -92,7 +92,7 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 		collisionNode = collisionWithFixedWalls(c, &floor);
 		if (collisionNode.isCollided) {
 			float collisionAngle = collisionNode.angleOfCollision;
-			//collisionAngle = fmod(collisionAngle - rotation, M_PI);
+			collisionAngle = fmod(collisionAngle + rotation, M_PI);
 			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
 				c->set_on_platform();
 				isOnAtLeastOnePlatform = true;
@@ -138,19 +138,24 @@ void Physics::characterVelocityUpdate(Player* c)
 
 		vec2 cAcc = c->get_acceleration();
 		vec2 cVelocity = c->get_velocity();
-		float maxVelocity = c->maxVelocity;
-
 		cVelocity = add(cVelocity, cAcc);
 
-		if (cVelocity.x > maxVelocity) cVelocity.x = maxVelocity;
-		if (cVelocity.x < -maxVelocity) cVelocity.x = -maxVelocity;
+		// rotate velocity vector back to normal orientation to reuse existing logic
+		cVelocity = rotateVec(cVelocity, -rotation);
+		//cAcc = rotateVec(cVelocity, -rotation);
+
+		float maxHorzSpeed = c->maxHorzSpeed;
+		float horzDirection = fabs(cVelocity.x) / cVelocity.x;
+		float horzSpeed = fabs(cVelocity.x);
+		horzSpeed = min(maxHorzSpeed, horzSpeed) * horzDirection;
+		cVelocity.x = horzSpeed;
 
 		if (c->characterState->currentState == jumping) {
 			cVelocity.y += c->jumpVel;
 			c->characterState->changeState(rising);
 		}
 
-		if (cAcc.x < g_tolerance && cAcc.x > -g_tolerance && c->isOnPlatform)
+		if (isZero(cAcc.x) && c->isOnPlatform)
 			cVelocity.x *= platformDrag;
 
 		if (c->isBelowPlatform) {
@@ -177,6 +182,8 @@ void Physics::characterVelocityUpdate(Player* c)
 				c->characterState->changeState(falling);
 		}
 
+		// rotate back to current rotation
+		cVelocity = rotateVec(cVelocity, rotation);
 		c->set_velocity(cVelocity);
 	}
 }

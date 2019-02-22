@@ -37,7 +37,7 @@ public:
 	bool isBelowPlatform;
 	bool isLeftOfPlatform;
 	bool isRightOfPlatform;
-	float maxVelocity = 10;
+	float maxHorzSpeed = 10;
 	float accStep = 1.f;
 	float jumpVel = -18.f;
 	
