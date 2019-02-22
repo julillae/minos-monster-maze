@@ -378,7 +378,7 @@ void Level::draw()
 	
 	float tx = 0.f;
 	float ty = 0.f;
-	bool cameraTracking = false;
+	bool cameraTracking = true;
 	if (cameraTracking){
 		// translation if camera tracks player
 		tx = -p_position.x;
@@ -458,13 +458,21 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	m_player.on_key(key, action);
 
-	    if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_SPACE ) {
-        increment += 2;
-        rotation = static_cast<float>((increment * M_PI ) / 180);
-        // reset increment
-        if (increment == 360) {
-            increment = 0;
-        }
+	if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_Z) {
+		increment += 1;
+		rotation = static_cast<float>((increment * M_PI) / 180);
+		// reset increment
+		if (increment == 360) {
+			increment = 0;
+		}
+	}
+	if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_X) {
+		increment -= 1;
+		rotation = static_cast<float>((increment * M_PI) / 180);
+		// reset increment
+		if (increment == -360) {
+			increment = 0;
+		}
     }
 
 	// Resetting game
