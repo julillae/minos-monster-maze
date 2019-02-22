@@ -271,20 +271,20 @@ bool Level0::update(float elapsed_ms)
 	vec2 screen = { (float)w, (float)h };
 
 	// Checking Player - Enemy Collision
-	for (Enemy& enemy : m_enemies) {
-		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
-		{
-			if (m_player.is_alive()) {
-				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
-				m_player.kill();
-				m_water.set_player_dead();
-
-				for(Enemy& e : m_enemies) {
-					e.freeze();
-				}
-			}
-		}
-	}
+//	for (Enemy& enemy : m_enemies) {
+//		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
+//		{
+//			if (m_player.is_alive()) {
+//				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+//				m_player.kill();
+//				m_water.set_player_dead();
+//
+//				for(Enemy& e : m_enemies) {
+//					e.freeze();
+//				}
+//			}
+//		}
+//	}
 
 //	 Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided && !is_player_at_goal)
@@ -380,23 +380,34 @@ void Level0::draw()
 	sx *= osScaleFactor;
 	sy *= osScaleFactor;
 
-	float c = cosf(static_cast<float>(-rotation));
-	float s = sinf(static_cast<float>(-rotation));
+	float c = cosf(-rotation);
+	float s = sinf(-rotation);
 
-// create a rotation matrix
-	mat3 R = { { c, s, 0.f },
-			   { -s, c, 0.f },
-			   { 0.f, 0.f, 1.f } };
+    // modify the translation matrix based on rotation
+    if (rotation > 0) {
+        float theta = atan(ty/tx);
+        float r = ty * sinf(theta);
+        ty = r * sinf(rotation + theta) ;
+        tx = r * cosf(rotation + theta);
+    }
 
-	mat3 translation_matrix = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {tx, ty, 1.f}};
-	// scale after translation
-	mat3 scaling_matrix = {{sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ 0.f, 0.f, 1.f }};
+    // create a rotation matrix
+    mat3 R = { { c, s, 0.f },
+               { -s, c, 0.f },
+               { 0.f, 0.f, 1.f } };
 
-	mat3 projection_2D{ { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ 0.f, 0.f, 1.f } };
+    mat3 translation_matrix = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {tx, ty, 1.f}};
+    // scale after translation
+    mat3 scaling_matrix = {{sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ 0.f, 0.f, 1.f }};
 
-	projection_2D = mul(projection_2D, translation_matrix);
-	projection_2D = mul(projection_2D, scaling_matrix);
-	projection_2D = mul(projection_2D, R);
+    mat3 translation_matrix_r = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {-tx, -ty, 1.f}};
+
+
+    mat3 projection_2D{ { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ 0.f, 0.f, 1.f } };
+
+    projection_2D = mul(projection_2D, translation_matrix);
+    projection_2D = mul(projection_2D, scaling_matrix);
+    projection_2D = mul(projection_2D, R);
 
     for (auto& floor : m_floor)
 		floor.draw(projection_2D);
@@ -480,4 +491,6 @@ void Level0::reset_game()
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
 	is_player_at_goal = false;
+	increment = 0;
+	rotation = 0;
 }
