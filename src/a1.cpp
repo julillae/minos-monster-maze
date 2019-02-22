@@ -24,8 +24,8 @@ int main(int argc, char* argv[])
 {
 	// Initializing world (after renderer.init().. sorry)
 	Physics *physicsHandler = new Physics();
-	std::string levelName = "level0";
-	if (!world.init({ (float)width, (float)height }, physicsHandler, levelName))
+	int startLevel = 0;
+	if (!world.init({ (float)width, (float)height }, physicsHandler, startLevel))
 	{
 		// Time to read the error message
 		std::cout << "Press any key to exit" << std::endl;
