@@ -395,23 +395,36 @@ void Level0::draw()
 	float sy = 2.f / (top - bottom); //this is where you play around with the camera
 	
 	float tx = 0.f;
-	float ty = 0.f;
+	//float ty = 0.f;
 	bool cameraTracking = true;
 	//float prev_ty = -(2*p_position.y)/(top - bottom);
 	if (cameraTracking){
 		// translation if camera tracks player
 		if (m_player.isOnPlatform){
-			//glutTimerFunc(33,timerProc,1);
-			ty = -(2*p_position.y)/(top - bottom);
-			prev_ty = -(2*p_position.y)/(top - bottom);
+			float target = -(2*p_position.y)/(top - bottom);
+			float difference = target - prev_ty;
+			float delta = difference*0.1f;
+				ty = prev_ty + delta;
+				//printf("%f\n",ty);
+				prev_ty = ty;
 			
 		}else{
 			ty=prev_ty;
 		}
 		float tem_x = -(2*p_position.x)/(right - left);	
-		if (tem_x>(0.2f+prev_tx) || tem_x<(prev_tx-0.2f)){
-			tx = -(2*p_position.x)/(right - left);
+		if (tem_x>rightbound){
+			float range = 0.4f;
+			rightbound = tem_x;
+			leftbound = rightbound-range;
+			tx = tem_x;
+			prev_tx = tx;
+			//tx = -(2*p_position.x)/(right - left);
 			//printf("%f\n", tx);
+		}else if (tem_x<leftbound){
+			float range = 0.4f;
+			leftbound = tem_x;
+			rightbound = leftbound+range;
+			tx=tem_x;
 			prev_tx = tx;
 		}else{
 			tx = prev_tx;
