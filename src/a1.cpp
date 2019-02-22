@@ -1,7 +1,7 @@
 // internal
 #include "../include/common.hpp"
 #include "../include/physics.hpp"
-#include "../include/levels/level0.hpp"
+#include "../include/levels/level.hpp"
 
 #define GL3W_IMPLEMENTATION
 #include <gl3w.h>
@@ -13,7 +13,7 @@
 using Clock = std::chrono::high_resolution_clock;
 
 // Global 
-Level0 world;
+Level world;
 const int width = 1280;
 const int height = 720;
 const char* title = "Your Title Here";
@@ -23,7 +23,8 @@ int main(int argc, char* argv[])
 {
 	// Initializing world (after renderer.init().. sorry)
 	Physics *physicsHandler = new Physics();
-	if (!world.init({ (float)width, (float)height }, physicsHandler))
+	char *levelName = "level0";
+	if (!world.init({ (float)width, (float)height }, physicsHandler, levelName))
 	{
 		// Time to read the error message
 		std::cout << "Press any key to exit" << std::endl;
