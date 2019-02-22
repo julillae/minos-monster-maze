@@ -14,7 +14,9 @@
 namespace
 {
 	int increment = 0;
-	float rotation = 0;
+	float rotation = 0.f;
+	bool isRotating = false;
+	bool previouslyFrozen = false;
     void glfw_err_cb(int error, const char* desc)
     {
         fprintf(stderr, "%d: %s", error, desc);
@@ -280,8 +282,20 @@ bool Level::update(float elapsed_ms)
 	int w, h;
         glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = { (float)w, (float)h };
+	bool applyFreeze = false;
+	bool applyThaw = false;
 
 	physicsHandler->updateWorldRotation(rotation);
+
+	// freezes and unfreezes character for rotation
+	if (isRotating && !previouslyFrozen) {
+		applyFreeze = true;
+		previouslyFrozen = true;
+	}
+	else if (!isRotating && previouslyFrozen) {
+		applyThaw = true;
+		previouslyFrozen = false;
+	}
 
 	// Checking Player - Enemy Collision
 	for (Enemy& enemy : m_enemies) {
@@ -291,10 +305,6 @@ bool Level::update(float elapsed_ms)
 				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
 				m_player.kill();
 				m_water.set_player_dead();
-
-				for(Enemy& e : m_enemies) {
-					e.freeze();
-				}
 			}
 		}
 	}
@@ -304,19 +314,27 @@ bool Level::update(float elapsed_ms)
 	{
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
-
-		for(Enemy& enemy : m_enemies) {
-			enemy.freeze();
-		}
 	}
 
 	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
 	m_player.set_rotation(rotation);
+	if (applyFreeze) {
+		m_player.freeze();
+	}
+	else if (applyThaw) {
+		physicsHandler->updateCharacterVelocityRotation(&m_player);
+		m_player.unfreeze();
+	}
 	m_player.update(elapsed_ms);
 
-	for (auto& enemy : m_enemies)
+	for (auto& enemy : m_enemies) {
+		if (applyFreeze) {
+			enemy.freeze();
+		} else if (applyThaw) {
+			enemy.unfreeze();
+		}
 		enemy.update(elapsed_ms);
-
+	}
 
 	// If player is dead or beat the game, restart the game after the fading animation
 	if (!m_player.is_alive() && m_water.get_time_since_death() > 1.5)
@@ -459,19 +477,19 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 	m_player.on_key(key, action);
 
 	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-		if (key == GLFW_KEY_Z) increment = (increment + 1) % 360;
-		if (key == GLFW_KEY_X) increment = (increment - 1) % 360;
+		if (key == GLFW_KEY_Z) {
+			isRotating = true;
+			increment = (increment + 1) % 360;
+		}
+		if (key == GLFW_KEY_X) {
+			isRotating = true;
+			increment = (increment - 1) % 360;
+		}
 		rotation = static_cast<float>((increment * M_PI) / 180);
 	}
-
-	/*if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_Z) {
-		increment = (increment + 1) % 360;
-		rotation = static_cast<float>((increment * M_PI) / 180);
+	else if (action == GLFW_RELEASE && (key == GLFW_KEY_Z || key == GLFW_KEY_X)) {
+		isRotating = false;
 	}
-	if ((action == GLFW_PRESS || action == GLFW_REPEAT) && key == GLFW_KEY_X) {
-		increment = (increment - 1) % 360;
-		rotation = static_cast<float>((increment * M_PI) / 180);
-    }*/
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
@@ -502,5 +520,6 @@ void Level::reset_game()
 	m_water.reset_player_dead_time();
 	is_player_at_goal = false;
 	increment = 0;
-	rotation = 0;
+	rotation = 0.f;
+	previouslyFrozen = false;
 }

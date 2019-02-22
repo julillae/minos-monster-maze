@@ -42,6 +42,8 @@ public:
 
 	void updateWorldRotation(float currentRotation);
 
+	void updateCharacterVelocityRotation(Character * c);
+
 	bool isZero(float f);
   
 	bool notZero(float f);
