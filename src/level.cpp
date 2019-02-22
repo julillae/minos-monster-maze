@@ -370,46 +370,45 @@ void Level::draw()
 	float bottom = (float)h;// *0.5;
 
 	vec2 p_position = m_player.get_position();
-	//printf("%f", 2.f / (p_position.x));
 
-	float sx = 2.f / (right - left);
-	float sy = 2.f / (top - bottom); //this is where you play around with the camera
+	float sx = 2.f * osScaleFactor / (right - left);
+	float sy = 2.f * osScaleFactor / (top - bottom); //this is where you play around with the camera
 	
 	float tx = 0.f;
 	float ty = 0.f;
 	bool cameraTracking = true;
 	if (cameraTracking){
 		// translation if camera tracks player
-		tx = -(osScaleFactor * 2 * p_position.x) / 2;
-		ty = -(osScaleFactor * 2 * p_position.y) / 2;
+		tx = -p_position.x;
+		ty = -p_position.y;
 	}
 	else {
 		// translation for fixed camera
 		tx = -(right + left)/2;
 		ty = -(top + bottom)/2;
 	}
-	sx *= osScaleFactor;
-	sy *= osScaleFactor;
 
 	float c = cosf(-rotation);
 	float s = sinf(-rotation);
 
-    // create a rotation matrix
-    mat3 R = { { c, s, 0.f },
-               { -s, c, 0.f },
-               { 0.f, 0.f, 1.f } };
+	mat3 scaling_matrix = { {sx, 0.f, 0.f },
+							{ 0.f, sy, 0.f },
+							{ 0.f, 0.f, 1.f } };
 
-    mat3 translation_matrix = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {tx, ty, 1.f}};
-    // scale after translation
-    mat3 scaling_matrix = {{sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ 0.f, 0.f, 1.f }};
+    mat3 rotation_matrix = { { c, s, 0.f },
+							{ -s, c, 0.f },
+							{ 0.f, 0.f, 1.f } };
 
-    mat3 translation_matrix_r = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {-tx, -ty, 1.f}};
+    mat3 translation_matrix = { {1.f, 0.f, 0.f}, 
+								{0.f, 1.f, 0.f},
+								{tx, ty, 1.f} };
 
-
-    mat3 projection_2D{ { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ 0.f, 0.f, 1.f } };
+    mat3 projection_2D{ { 1.f, 0.f, 0.f },
+						{ 0.f, 1.f, 0.f },
+						{ 0.f, 0.f, 1.f } };
 
     projection_2D = mul(projection_2D, scaling_matrix);
-	projection_2D = mul(projection_2D, R);
+	projection_2D = mul(projection_2D, rotation_matrix);
 	projection_2D = mul(projection_2D, translation_matrix);
 
     for (auto& floor : m_floor)

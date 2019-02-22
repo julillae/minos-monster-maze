@@ -237,6 +237,11 @@ void Physics::characterRotationUpdate(Player *c, float rotation) {
 //	}
 }
 
+void Physics::updateWorldRotation(float currentRotation)
+{
+	rotation = currentRotation;
+}
+
 
 bool Physics::isZero(float f) {
 	return (fabs(f) < g_tolerance);
