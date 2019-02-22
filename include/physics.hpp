@@ -15,6 +15,8 @@ public:
     Physics();
 
     ~Physics();
+
+	float rotation = 0.f;	// world rotation in radians
 	float gravityAcc = 9.81f * 0.12f;
 
     struct CollisionNode {
@@ -39,6 +41,8 @@ public:
 	void characterAccelerationUpdate(Player *c);
 
 	void characterRotationUpdate(Player *c, float rotation);
+
+	void updateWorldRotation(float rotation);
 
 	bool isZero(float f);
   
