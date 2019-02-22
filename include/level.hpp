@@ -1,18 +1,18 @@
 #pragma once
 
 // internal
-#include "../common.hpp"
-#include "../characters/player.hpp"
-#include "../characters/enemy.hpp"
-#include "../characters/simple.hpp"
-#include "../characters/spider.hpp"
-#include "../mazeComponents/mazeComponent.hpp"
-#include "../mazeComponents/fixedComponent.hpp"
-#include "../mazeComponents/floor.hpp"
-#include "../mazeComponents/exit.hpp"
-#include "../mazeComponents/ice.hpp"
-#include "../renderEffects.hpp"
-#include "../physics.hpp"
+#include "common.hpp"
+#include "characters/player.hpp"
+#include "characters/enemy.hpp"
+#include "characters/simple.hpp"
+#include "characters/spider.hpp"
+#include "mazeComponents/mazeComponent.hpp"
+#include "mazeComponents/fixedComponent.hpp"
+#include "mazeComponents/floor.hpp"
+#include "mazeComponents/exit.hpp"
+#include "mazeComponents/ice.hpp"
+#include "renderEffects.hpp"
+#include "physics.hpp"
 
 // stlib
 #include <vector>

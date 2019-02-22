@@ -1,5 +1,5 @@
 // Header
-#include "../include/levels/level.hpp"
+#include "../include/level.hpp"
 #include "../include/physics.hpp"
 
 // stlib
@@ -32,7 +32,7 @@ Level::~Level()
 }
 
 void Level::read_txt_file(std::string levelName) {
-	std::string fileName = levelName.append(".txt");
+	std::string fileName = "levels/" + levelName + ".txt";
     std::ifstream filein(fileName);
 
     for (std::string line; std::getline(filein, line);) {
