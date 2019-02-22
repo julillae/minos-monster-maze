@@ -92,6 +92,7 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 		collisionNode = collisionWithFixedWalls(c, &floor);
 		if (collisionNode.isCollided) {
 			float collisionAngle = collisionNode.angleOfCollision;
+			//collisionAngle = fmod(collisionAngle - rotation, M_PI);
 			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
 				c->set_on_platform();
 				isOnAtLeastOnePlatform = true;
@@ -132,49 +133,52 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 
 void Physics::characterVelocityUpdate(Player* c)
 {
-	float platformDrag = 0.75; //eventually make this a property of the platform
+	if (c->characterState->currentState != frozen) {
+		float platformDrag = 0.75; //eventually make this a property of the platform
 
-	vec2 cAcc = c->get_acceleration();
-	vec2 cVelocity = c->get_velocity();
-	float maxVelocity = c->maxVelocity;
+		vec2 cAcc = c->get_acceleration();
+		vec2 cVelocity = c->get_velocity();
+		float maxVelocity = c->maxVelocity;
 
-	cVelocity = add(cVelocity, cAcc);
+		cVelocity = add(cVelocity, cAcc);
 
-	if (cVelocity.x > maxVelocity) cVelocity.x = maxVelocity;
-	if (cVelocity.x < -maxVelocity) cVelocity.x = -maxVelocity;
+		if (cVelocity.x > maxVelocity) cVelocity.x = maxVelocity;
+		if (cVelocity.x < -maxVelocity) cVelocity.x = -maxVelocity;
 
-	if (c->characterState->currentState == jumping) {
-		cVelocity.y += c->jumpVel;
-		c->characterState->changeState(rising);
-	}
-
-	if (cAcc.x < g_tolerance && cAcc.x > -g_tolerance && c->isOnPlatform)
-		cVelocity.x *= platformDrag;
-
-	if (c->isBelowPlatform) {
-		cVelocity.y = std::max(0.f, cVelocity.y);
-	}
-	if (c->isLeftOfPlatform) {
-		cVelocity.x = std::min(0.f, cVelocity.x);
-	}
-	if (c->isRightOfPlatform) {
-		cVelocity.x = std::max(0.f, cVelocity.x);
-	}
-
-	if (c->isOnPlatform) {
-		cVelocity.y = std::min(0.f, cVelocity.y);
-		if (isZero(cAcc.x))
-			c->characterState->changeState(idle);
-		else
-			c->characterState->changeState(running);
-	} else {
-		if (cVelocity.y < 0)
+		if (c->characterState->currentState == jumping) {
+			cVelocity.y += c->jumpVel;
 			c->characterState->changeState(rising);
-		else
-			c->characterState->changeState(falling);
-	}
+		}
 
-	c->set_velocity(cVelocity);
+		if (cAcc.x < g_tolerance && cAcc.x > -g_tolerance && c->isOnPlatform)
+			cVelocity.x *= platformDrag;
+
+		if (c->isBelowPlatform) {
+			cVelocity.y = std::max(0.f, cVelocity.y);
+		}
+		if (c->isLeftOfPlatform) {
+			cVelocity.x = std::min(0.f, cVelocity.x);
+		}
+		if (c->isRightOfPlatform) {
+			cVelocity.x = std::max(0.f, cVelocity.x);
+		}
+
+		if (c->isOnPlatform) {
+			cVelocity.y = std::min(0.f, cVelocity.y);
+			if (isZero(cAcc.x))
+				c->characterState->changeState(idle);
+			else
+				c->characterState->changeState(running);
+		}
+		else {
+			if (cVelocity.y < 0)
+				c->characterState->changeState(rising);
+			else
+				c->characterState->changeState(falling);
+		}
+
+		c->set_velocity(cVelocity);
+	}
 }
 
 void Physics::characterAccelerationUpdate(Player * c) {
@@ -198,6 +202,13 @@ void Physics::characterAccelerationUpdate(Player * c) {
 void Physics::updateWorldRotation(float currentRotation)
 {
 	rotation = currentRotation;
+}
+
+void Physics::updateCharacterVelocityRotation(Character *c)
+{
+	vec2 currentVelocityVector = c->get_velocity();
+	vec2 rotatedVelocityVector = rotateVec(currentVelocityVector, rotation);
+	c->set_velocity(rotatedVelocityVector);
 }
 
 

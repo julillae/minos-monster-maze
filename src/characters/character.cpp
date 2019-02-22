@@ -58,9 +58,21 @@ vec2 Character::get_scale()const {
 	return m_scale;
 }
 
-void Character::move()
-{
-	m_position = add(m_position, m_velocity);
+void Character::freeze() {
+	preFreezeState = characterState->currentState;
+	characterState->changeState(frozen);
+	m_frozen = true;
+}
+
+void Character::unfreeze() {
+	characterState->changeState(thawing);
+	characterState->changeState(preFreezeState);
+	m_frozen = false;
+}
+
+void Character::move() {
+	if (characterState->currentState != frozen)
+		m_position = add(m_position, m_velocity);
 }
 
 void Character::set_direction(Direction d)
@@ -115,6 +127,7 @@ void Character::initStateTree()
 		{landing, idle, 1},
 		{landing, running, 1},
 		{landing, jumping, 1},
+		{landing, frozen, 1},
 		{landing, dead, 1},
 		{frozen, thawing},
 		{thawing, idle, 0},

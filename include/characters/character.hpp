@@ -47,6 +47,11 @@ public:
 	// Returns the current scale of the character
 	vec2 get_scale()const;
 
+	// Freeze and unfreeze the character
+	void freeze();
+
+	void unfreeze();
+
 	// Moves the character based on current velocity
 	void move();
 
@@ -91,4 +96,6 @@ protected:
 	SpriteSheet spriteSheet;
 	float m_animTime = 0.f;
 	bool is_anim_once = false;
+	bool m_frozen;
+	State preFreezeState;
 };
