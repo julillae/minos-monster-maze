@@ -1,18 +1,18 @@
 #pragma once
 
 // internal
-#include "../common.hpp"
-#include "../characters/player.hpp"
-#include "../characters/enemy.hpp"
-#include "../characters/simple.hpp"
-#include "../characters/spider.hpp"
-#include "../mazeComponents/mazeComponent.hpp"
-#include "../mazeComponents/fixedComponent.hpp"
-#include "../mazeComponents/floor.hpp"
-#include "../mazeComponents/exit.hpp"
-#include "../mazeComponents/ice.hpp"
-#include "../renderEffects.hpp"
-#include "../physics.hpp"
+#include "common.hpp"
+#include "characters/player.hpp"
+#include "characters/enemy.hpp"
+#include "characters/simple.hpp"
+#include "characters/spider.hpp"
+#include "mazeComponents/mazeComponent.hpp"
+#include "mazeComponents/fixedComponent.hpp"
+#include "mazeComponents/floor.hpp"
+#include "mazeComponents/exit.hpp"
+#include "mazeComponents/ice.hpp"
+#include "renderEffects.hpp"
+#include "physics.hpp"
 
 // stlib
 #include <vector>
@@ -22,16 +22,16 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 
-// One of our many worlds
+// Level class
 
-class Level0
+class Level
 {
 public:
-	Level0();
-	~Level0();
+	Level();
+	~Level();
 
     // Creates a window, sets up events and begins the game
-	bool init(vec2 screen, Physics* physicsHandler);
+	bool init(vec2 screen, Physics* physicsHandler, std::string levelName);
 
 	// Releases all associated resource
     void destroy();
@@ -45,15 +45,15 @@ public:
 	// Should the game be over ?
 	bool is_over()const;
 
+    int get_maze();
 private:
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-	// Add enemies with hardcoded positions
-	void spawn_enemies();
+    void read_txt_file(std::string levelName);
 
-	// Helper to generates a new enemy
+	// Generate a spider enemy
 	bool spawn_spider_enemy(vec2 position, float bound);
 
 	// Generates a new floor
@@ -89,12 +89,21 @@ private:
 	std::default_random_engine m_rng;
 	std::uniform_real_distribution<float> m_dist; // default 0..1
 
-    // initial position of player
-	vec2 initialPosition = { 700.f, 625.f };
-
 	Physics* physicsHandler;
 
 	bool is_player_at_goal;
 	// Part of hack needed to deal with the MacOs Retina Display issue where it doubles the pixels rendered
 	float osScaleFactor = 1.f;
+
+    // Variables determined by level data
+	vec2 initialPosition;
+
+	// Rows of the maze where:
+	// 1 = platform
+	// 2 = exit
+	// 3 = initial position
+	// 4 = spider enemy (and its path)
+    std::vector<std::vector <int>> m_maze;
+    float m_maze_width;
+    float m_maze_height;
 };

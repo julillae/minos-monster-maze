@@ -1,5 +1,5 @@
 // Header
-#include "../include/levels/level0.hpp"
+#include "../include/level.hpp"
 #include "../include/physics.hpp"
 
 // stlib
@@ -8,73 +8,45 @@
 #include <cassert>
 #include <sstream>
 
+#include <iostream>
+#include <fstream>
+
 namespace
 {
-	const size_t MAZE_WIDTH = 49;
-	const size_t MAZE_HEIGHT = 28;
-
-	// 1 = platform
-	// 2 = exit
-	const int MAZE[MAZE_HEIGHT][MAZE_WIDTH] = { 
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-	};
-	namespace
-	{
-		void glfw_err_cb(int error, const char* desc)
-		{
-			fprintf(stderr, "%d: %s", error, desc);
-		}
-	}
+    void glfw_err_cb(int error, const char* desc)
+    {
+        fprintf(stderr, "%d: %s", error, desc);
+    }
 }
 
-Level0::Level0() : m_seed_rng(0.f)
+
+Level::Level() : m_seed_rng(0.f)
 {
-	// Seeding rng with random device
+// Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
 }
 
-Level0::~Level0()
+Level::~Level()
 {
 
 }
 
-void Level0::spawn_enemies() {
-	// Hardcoded positions of enemies
-	spawn_spider_enemy({100.f, 660.f}, 1000.f);
-	spawn_spider_enemy({825.f, 560.f}, 150.f);
-	spawn_spider_enemy({100.f, 385.f}, 400.f);
-	
-	Enemy& new_enemy = m_enemies.back();
+void Level::read_txt_file(std::string levelName) {
+	std::string fileName = "levels/" + levelName + ".txt";
+    std::ifstream filein(fileName);
+
+    for (std::string line; std::getline(filein, line);) {
+        std::vector <int> row;
+        for(char& c : line) {
+            // Covert char to int and push to row
+            row.push_back(c - '0');
+        }
+        // Push row to maze array
+        m_maze.push_back(row);
+    }
 }
 
-bool Level0::spawn_spider_enemy(vec2 position, float bound)
+bool Level::spawn_spider_enemy(vec2 position, float bound)
 {
 	Spider enemy;
 	if (enemy.init(position, physicsHandler))
@@ -87,7 +59,7 @@ bool Level0::spawn_spider_enemy(vec2 position, float bound)
 	return false;
 }
 
-bool Level0::spawn_floor(vec2 position)
+bool Level::spawn_floor(vec2 position)
 {
 	Floor floor;
 	if (floor.init(position))
@@ -100,7 +72,7 @@ bool Level0::spawn_floor(vec2 position)
 }
 
 // Generates maze
-void Level0::generate_maze()
+void Level::generate_maze()
 {
 	fprintf(stderr, "Generating maze\n");
 	// Initial tile
@@ -109,40 +81,79 @@ void Level0::generate_maze()
 	const float initial_y = 30.0;
 	float tile_width = 0.f;
 	float tile_height = 0.f;
+	
+	bool setting_enemy = false;
+	vec2 enemy_start_pos;
 
-	for (int i = 0; i < MAZE_HEIGHT; ++i) {
-		for (int j = 0; j < MAZE_WIDTH; ++j) {
-			if (MAZE[i][j] == 1) {
+    float i = 0.f; 
+	float j = 0.f;
+
+	for (auto &row : m_maze) {
+        j = 0.f;
+		for (int &cell : row) {	
+
+			float x_pos = (j * tile_width) + initial_x;
+			float y_pos = (i * tile_height) + initial_y;
+
+			if (setting_enemy && cell != 4) {
+				// If we were setting enemy positions, and we hit a cell with no enemy,
+				// Spawn the enemy we were setting
+
+				float last_x_pos = x_pos - tile_width;
+				float distance = abs(last_x_pos - enemy_start_pos.x);
+				spawn_spider_enemy(enemy_start_pos, distance);
+				setting_enemy = false;
+			}
+
+			if (cell == 1) {
+				// Spawn platform
 				MazeComponent& new_floor = m_floor.back();	
 
 				// Assuming all tiles are the same size, we only need to grab these values once
 				if (tile_width == 0.f || tile_height == 0.f) {
 					tile_width = new_floor.get_width();
 					tile_height = new_floor.get_height();
+
+					// Fix x and y positions if tile_width was zero
+					x_pos = (j * tile_width) + initial_x;
+					y_pos = (i * tile_height) + initial_y;
 				}
 
-				float x_pos = (j * tile_width) + initial_x;
-				float y_pos = (i * tile_height) + initial_y;
-
 				spawn_floor({x_pos, y_pos});
-			} else if (MAZE[i][j] == 2) {
+			} else if (cell == 2) {
+				// Add exit
 				Exit new_exit;
-
-				float x_pos = (j * tile_width) + initial_x;
-				float y_pos = (i * tile_height) + initial_y;
 
 				new_exit.init({x_pos, y_pos});
 
 				m_exit = new_exit;
+			} else if (cell == 3) {
+				// Set initial position of player
+				initialPosition = {x_pos, y_pos};
+			} else if (cell == 4) {
+				// Begin setting enemy path
+				if (!setting_enemy) {
+					setting_enemy = true;
+					enemy_start_pos = {x_pos, y_pos};
+				}
 			}
+
+            j = j + 1.f;
 		}
+        i = i + 1.f;
 	}
+
+    // Set global variables
+    m_maze_width = j;
+    m_maze_height = i;
 }
 
-// Level0 initialization
-bool Level0::init(vec2 screen, Physics* physicsHandler)
+// Level initialization
+bool Level::init(vec2 screen, Physics* physicsHandler, std::string levelName)
 {
 	this->physicsHandler = physicsHandler;
+
+    read_txt_file(levelName);
 
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
@@ -181,8 +192,8 @@ bool Level0::init(vec2 screen, Physics* physicsHandler)
 	// Input is handled using GLFW, for more info see
 	// http://www.glfw.org/docs/latest/input_guide.html
 	glfwSetWindowUserPointer(m_window, this);
-	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((Level0*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
-	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((Level0*)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1); };
+	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((Level*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
+	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((Level*)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1); };
 	glfwSetKeyCallback(m_window, key_redirect);
 	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
 
@@ -233,13 +244,13 @@ bool Level0::init(vec2 screen, Physics* physicsHandler)
 
 	generate_maze();
 	
-	spawn_enemies();
+	// spawn_enemies();
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
 // Releases all the associated resources
-void Level0::destroy()
+void Level::destroy()
 {
 	glDeleteFramebuffers(1, &m_frame_buffer);
 
@@ -262,7 +273,7 @@ void Level0::destroy()
 }
 
 // Update our game world
-bool Level0::update(float elapsed_ms)
+bool Level::update(float elapsed_ms)
 {
 	int w, h;
         glfwGetFramebufferSize(m_window, &w, &h);
@@ -314,7 +325,7 @@ bool Level0::update(float elapsed_ms)
 
 // Render our game world
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
-void Level0::draw()
+void Level::draw()
 {
 	// Clearing error buffer
 	gl_flush_errors();
@@ -417,13 +428,13 @@ void Level0::draw()
 }
 
 // Should the game be over ?
-bool Level0::is_over()const
+bool Level::is_over()const
 {
 	return glfwWindowShouldClose(m_window);
 }
 
 // On key callback
-void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
+void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// key is of 'type' GLFW_KEY_
@@ -440,12 +451,12 @@ void Level0::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 }
 
-void Level0::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
+void Level::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
 
 }
 
-void Level0::reset_game()
+void Level::reset_game()
 {
 	int w, h;
 	glfwGetWindowSize(m_window, &w, &h);

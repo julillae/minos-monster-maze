@@ -50,7 +50,7 @@ set(SOURCE_FILES
     src/mazeComponents/exit.cpp
     src/gameAI.cpp
     src/physics.cpp
-    src/levels/level0.cpp
+    src/level.cpp
     src/stateTree.cpp
     
 
@@ -73,13 +73,16 @@ set(SOURCE_FILES
     include/mazeComponents/exit.hpp
     include/gameAI.hpp
     include/physics.hpp
-    include/levels/level0.hpp
+    include/level.hpp
     include/stateTree.hpp
     
 	)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC src/)
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/levels
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 # Added this so policy CMP0065 doesn't scream
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS 0)
