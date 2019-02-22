@@ -9,6 +9,7 @@
 // stlib
 #include <chrono>
 #include <iostream>
+#include <math.h>
 
 using Clock = std::chrono::high_resolution_clock;
 
@@ -32,8 +33,10 @@ int main(int argc, char* argv[])
 	}
 
 	auto t = Clock::now();
+	float dt = 1000.0 / 60.0;	// set for 60fps display
+	float timeAcc = 0.f;
 
-	// variable timestep loop.. can be improved (:
+	// fixed update timestep loop.. can be improved (:
 	while (!world.is_over())
 	{
 		// Processes system messages, if this wasn't present the window would become unresponsive
@@ -43,8 +46,12 @@ int main(int argc, char* argv[])
 		auto now = Clock::now();
 		float elapsed_sec = (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
 		t = now;
+		timeAcc += elapsed_sec;
 
-		world.update(elapsed_sec);
+		while (timeAcc >= dt) {
+			world.update(timeAcc/dt);
+			timeAcc -= dt;
+		}
 		world.draw();
 	}
 
