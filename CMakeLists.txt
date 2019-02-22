@@ -33,12 +33,15 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/project_path.hpp.in" "${CMAK
 set(SOURCE_FILES
 	src/a1.cpp
 	src/common.cpp
+    src/renderManager.cpp
+    src/spriteSheet.cpp
 	src/renderEffects.cpp
     src/characters/character.cpp
     src/characters/player.cpp
     src/characters/enemy.cpp
     src/characters/smart.cpp
     src/characters/simple.cpp
+    src/characters/spider.cpp
     src/mazeComponents/mazeComponent.cpp
     src/mazeComponents/fixedComponent.cpp
     src/mazeComponents/freeComponent.cpp
@@ -48,16 +51,20 @@ set(SOURCE_FILES
     src/gameAI.cpp
     src/physics.cpp
     src/levels/level.cpp
+    src/stateTree.cpp
     
 
     include/project_path.hpp
 	include/common.hpp
+    include/renderManager.hpp
+    include/spriteSheet.hpp
 	include/renderEffects.hpp
     include/characters/character.hpp
     include/characters/player.hpp
     include/characters/enemy.hpp
     include/characters/smart.hpp
     include/characters/simple.hpp
+    include/characters/spider.hpp
     include/mazeComponents/mazeComponent.hpp
     include/mazeComponents/fixedComponent.hpp
     include/mazeComponents/freeComponent.hpp
@@ -67,6 +74,7 @@ set(SOURCE_FILES
     include/gameAI.hpp
     include/physics.hpp
     include/levels/level.hpp
+    include/stateTree.hpp
     
 	)
 

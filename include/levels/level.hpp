@@ -4,6 +4,8 @@
 #include "../common.hpp"
 #include "../characters/player.hpp"
 #include "../characters/enemy.hpp"
+#include "../characters/simple.hpp"
+#include "../characters/spider.hpp"
 #include "../mazeComponents/mazeComponent.hpp"
 #include "../mazeComponents/fixedComponent.hpp"
 #include "../mazeComponents/floor.hpp"
@@ -55,7 +57,7 @@ private:
 	void spawn_enemies();
 
 	// Helper to generates a new enemy
-	bool spawn_enemy(vec2 position, float bound);
+	bool spawn_spider_enemy(vec2 position, float bound);
 
 	// Generates a new floor
 	bool spawn_floor(vec2 position);
@@ -78,10 +80,8 @@ private:
 
     Player m_player;
 	Exit m_exit;
-	std::vector<Enemy> m_enemies;
+	std::vector<Spider> m_enemies;
     std::vector<Floor> m_floor;
-
-    float m_current_speed;
 
     float m_seed_rng;
 

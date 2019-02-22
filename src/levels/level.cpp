@@ -47,18 +47,19 @@ void Level::read_txt_file(char* levelName) {
 
 void Level::spawn_enemies() {
 	// Hardcoded positions of enemies
-	spawn_enemy({100.f, 650.f}, 1000.f);
-	spawn_enemy({825.f, 550.f}, 150.f);
-	spawn_enemy({100.f, 375.f}, 400.f);
+	spawn_spider_enemy({100.f, 650.f}, 1000.f);
+    spawn_spider_enemy({825.f, 550.f}, 150.f);
+    spawn_spider_enemy({100.f, 375.f}, 400.f);
 	
 	Enemy& new_enemy = m_enemies.back();
 }
 
-bool Level::spawn_enemy(vec2 position, float bound)
+bool Level::spawn_spider_enemy(vec2 position, float bound)
 {
-	Enemy enemy;
-	if (enemy.init(position, bound))
+	Spider enemy;
+	if (enemy.init(position, physicsHandler))
 	{
+		enemy.set_bound(bound);
 		m_enemies.emplace_back(enemy);
 		return true;
 	}
@@ -223,14 +224,13 @@ bool Level::init(vec2 screen, Physics* physicsHandler, char* levelName)
 	
 	fprintf(stderr, "Loaded music\n");
 
-	m_current_speed = 1.f;
 	is_player_at_goal = false;
 
 	generate_maze();
 	
 	spawn_enemies();
 	
-	return m_water.init() && m_player.init(initialPosition);
+	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
 // Releases all the associated resources
@@ -269,17 +269,17 @@ bool Level::update(float elapsed_ms)
 		{
 			if (m_player.is_alive()) {
 				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+				m_player.kill();
 				m_water.set_player_dead();
 
 				for(Enemy& e : m_enemies) {
 					e.freeze();
 				}
 			}
-			m_player.kill();
 		}
 	}
 
-	// Checking Player - Exit Collision
+//	 Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided && !is_player_at_goal)
 	{
 		m_water.set_level_complete_time();
@@ -361,8 +361,8 @@ void Level::draw()
 	bool cameraTracking = false;
 	if (cameraTracking){
 		// translation if camera tracks player
-		tx = -(2*p_position.x)/(right - left);
-		ty = -(2*p_position.y)/(top - bottom);
+		tx = -(osScaleFactor*2*p_position.x)/(right - left);
+		ty = -(osScaleFactor*2*p_position.y)/(top - bottom);
 	}
 	else {
 		// translation for fixed camera
@@ -371,9 +371,18 @@ void Level::draw()
 	}
 	sx *= osScaleFactor;
 	sy *= osScaleFactor;
-	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
-	for (auto& floor : m_floor)
+	// translate to player's location
+	mat3 translation_matrix = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {tx, ty, 1.f}};
+	// scale after translation
+	mat3 scaling_matrix = {{sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ 0.f, 0.f, 1.f }};
+
+    mat3 projection_2D{ { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ 0.f, 0.f, 1.f } };
+
+    projection_2D = mul(projection_2D, translation_matrix);
+    projection_2D = mul(projection_2D, scaling_matrix);
+
+    for (auto& floor : m_floor)
 		floor.draw(projection_2D);
 	for (auto& enemy : m_enemies)
 		enemy.draw(projection_2D);
@@ -416,7 +425,7 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// action can be GLFW_PRESS GLFW_RELEASE GLFW_REPEAT
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	m_player.set_direction(key, action);
+	m_player.on_key(key, action);
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
@@ -424,13 +433,6 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		reset_game();
 	}
 
-	// Control the current speed with `<` `>`
-	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) &&  key == GLFW_KEY_COMMA)
-		m_current_speed -= 0.1f;
-	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
-		m_current_speed += 0.1f;
-	
-	m_current_speed = fmax(0.f, m_current_speed);
 }
 
 void Level::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
@@ -443,7 +445,7 @@ void Level::reset_game()
 	int w, h;
 	glfwGetWindowSize(m_window, &w, &h);
 	m_player.destroy();
-	m_player.init(initialPosition);
+	m_player.init(initialPosition, physicsHandler);
 
 	for (Enemy& enemy : m_enemies) {
 		enemy.reset_position();
@@ -452,6 +454,5 @@ void Level::reset_game()
 
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
-	m_current_speed = 1.f;
 	is_player_at_goal = false;
 }

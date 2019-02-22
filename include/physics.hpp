@@ -15,6 +15,7 @@ public:
     Physics();
 
     ~Physics();
+	float gravityAcc = 9.81f * 0.12f;
 
     struct CollisionNode {
         bool isCollided;
@@ -33,9 +34,11 @@ public:
 	//      So that this will work when we have multiple types of platforms
 	void characterCollisionsWithFixedComponents(Player *c, std::vector<Floor> fixedComponents);
 
-    float lineIntersection(float x_pos1, float x_pos2, float y_pos1, float y_pos2);
+	void characterVelocityUpdate(Player *c);
 
-    float boundingBox(float bb_x, float bb_y, float scale_x, float scale_y);
+	void characterAccelerationUpdate(Player *c);
 
-
+	bool isZero(float f);
+  
+	bool notZero(float f);
 };
