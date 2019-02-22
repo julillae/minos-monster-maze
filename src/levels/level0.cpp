@@ -366,30 +366,22 @@ void Level0::draw()
 	
 	float tx = 0.f;
 	float ty = 0.f;
-	bool cameraTracking = false;
+	bool cameraTracking = true;
 	if (cameraTracking){
 		// translation if camera tracks player
-		tx = -(osScaleFactor*2*p_position.x)/(right - left);
-		ty = -(osScaleFactor*2*p_position.y)/(top - bottom);
+		tx = -(osScaleFactor * 2 * p_position.x) / 2;
+		ty = -(osScaleFactor * 2 * p_position.y) / 2;
 	}
 	else {
 		// translation for fixed camera
-		tx = -(right + left) / (right - left);
-		ty = -(top + bottom) / (top - bottom);
+		tx = -(right + left)/2;
+		ty = -(top + bottom)/2;
 	}
 	sx *= osScaleFactor;
 	sy *= osScaleFactor;
 
 	float c = cosf(-rotation);
 	float s = sinf(-rotation);
-
-    // modify the translation matrix based on rotation
-    if (rotation > 0) {
-        float theta = atan(ty/tx);
-        float r = ty * sinf(theta);
-        ty = r * sinf(rotation + theta) ;
-        tx = r * cosf(rotation + theta);
-    }
 
     // create a rotation matrix
     mat3 R = { { c, s, 0.f },
@@ -405,9 +397,9 @@ void Level0::draw()
 
     mat3 projection_2D{ { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ 0.f, 0.f, 1.f } };
 
-    projection_2D = mul(projection_2D, translation_matrix);
     projection_2D = mul(projection_2D, scaling_matrix);
-    projection_2D = mul(projection_2D, R);
+	projection_2D = mul(projection_2D, R);
+	projection_2D = mul(projection_2D, translation_matrix);
 
     for (auto& floor : m_floor)
 		floor.draw(projection_2D);
