@@ -13,5 +13,7 @@ class Spider: public Simple
         bool init(vec2 initialPosition, Physics* physicsHandler)override;
 
         void draw(const mat3& projection)override;
+
+        void set_animation()override;
 	
 };
