@@ -13,6 +13,10 @@ public:
 	// Creates all the associated render resources and default transform
 	virtual bool init(vec2 initialPosition, Physics* physicsHandler);
 
+	void set_properties(vec2 initialPosition, float scaleFactor, float xVel);
+
+	void set_dimensions(Texture* texture, float spriteSheetWidth, float spriteSheetHeight, int xTrim, int yTrim);
+
 	// Releases all associated resources
 	void destroy();
 
@@ -63,6 +67,9 @@ public:
 
 	// Initializes character state tree
 	void initStateTree();
+
+	// Sets the correct sprite sheet tile for appropriate animation
+	virtual void set_animation() = 0;
 
 	StateTree* characterState;
 	float width;
