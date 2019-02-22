@@ -37,27 +37,8 @@ public:
 	bool isBelowPlatform;
 	bool isLeftOfPlatform;
 	bool isRightOfPlatform;
-<<<<<<< HEAD
-	bool isOnPlatform;
-	double width;
-	double height;
-
-private:
-	double tolerance = 0.000001;
-	double maxVelocity = 12;
-	double accStep = 2.f;
-	double drag = 0.8;
-	vec2 currentVelocity;
-	vec2 currentAcceleration;
-	//bool isOnPlatform;
-	double fakeFloorPos = 750.f;
-	double currentFloorPos = fakeFloorPos;
-	double gravityAcc = 9.81 * 0.2;
-	double jumpVel = -25.f;
-=======
 	float maxVelocity = 10;
 	float accStep = 1.f;
 	float jumpVel = -18.f;
 	
->>>>>>> 5f111dc06446d8373ae494a1d1da1dadb680ea11
 };
