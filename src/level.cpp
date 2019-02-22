@@ -95,22 +95,32 @@ void Level::generate_maze()
 			float y_pos = (i * tile_height) + initial_y;
 
 			if (cell == 1) {
+				// Spawn platform
 				MazeComponent& new_floor = m_floor.back();	
 
 				// Assuming all tiles are the same size, we only need to grab these values once
 				if (tile_width == 0.f || tile_height == 0.f) {
 					tile_width = new_floor.get_width();
 					tile_height = new_floor.get_height();
+
+					// Fix x and y positions if tile_width was zero
+					x_pos = (j * tile_width) + initial_x;
+					y_pos = (i * tile_height) + initial_y;
 				}
 
 				spawn_floor({x_pos, y_pos});
 			} else if (cell == 2) {
+				// Add exit
 				Exit new_exit;
 
 				new_exit.init({x_pos, y_pos});
 
 				m_exit = new_exit;
 			} else if (cell == 3) {
+				// Set initial position of player
+				initialPosition = {x_pos, y_pos};
+			} else if (cell == 4) {
+				// Begin setting enemy path
 				if (!setting_enemy) {
 					setting_enemy = true;
 					enemy_start_pos = {x_pos, y_pos};
@@ -119,7 +129,8 @@ void Level::generate_maze()
 				// If we were setting enemy positions, and we hit a cell with no enemy,
 				// Spawn the enemy we were setting
 
-				float distance = x_pos - enemy_start_pos.x;
+				float last_x_pos = x_pos - tile_width;
+				float distance = abs(last_x_pos - enemy_start_pos.x);
 				spawn_spider_enemy(enemy_start_pos, distance);
 				setting_enemy = false;
 			}
