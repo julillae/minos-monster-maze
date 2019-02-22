@@ -1,7 +1,7 @@
 // internal
 #include "../include/common.hpp"
 #include "../include/physics.hpp"
-#include "../include/levels/level.hpp"
+#include "../include/level.hpp"
 
 #define GL3W_IMPLEMENTATION
 #include <gl3w.h>
