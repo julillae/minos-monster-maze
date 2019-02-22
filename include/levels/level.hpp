@@ -53,10 +53,7 @@ private:
 
     void read_txt_file(char* levelName);
 
-	// Add enemies with hardcoded positions
-	void spawn_enemies();
-
-	// Helper to generates a new enemy
+	// Generate a spider enemy
 	bool spawn_spider_enemy(vec2 position, float bound);
 
 	// Generates a new floor
