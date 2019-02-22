@@ -210,7 +210,7 @@ void Physics::characterAccelerationUpdate(Player * c)
 }
 
 bool Physics::isZero(float f) {
-	return (std::fabs(f) < g_tolerance);
+	return (fabs(f) < g_tolerance);
 }
 
 bool Physics::notZero(float f) {

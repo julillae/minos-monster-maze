@@ -13,6 +13,8 @@ public:
 	// Creates all the associated render resources and default transform
 	virtual bool init(vec2 initialPosition, Physics* physicsHandler);
 
+	void set_properties(vec2 initialPosition, float scaleFactor, float xVel);
+
 	// Releases all associated resources
 	void destroy();
 
