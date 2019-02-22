@@ -6,6 +6,16 @@ bool Character::init(vec2 initialPosition, Physics * physicsHandler) {
 	return false;
 }
 
+void Character::set_properties(vec2 initialPosition, float scaleFactor, float xVel)
+{
+	m_scale.x = scaleFactor;
+	m_scale.y = scaleFactor;
+	m_rotation = 0.f;
+	//m_is_alive = true;
+	m_position = initialPosition;
+	m_velocity = {xVel, 0.0f};
+}
+
 // Call if init() was successful
 // Releases all graphics resources
 void Character::destroy()
