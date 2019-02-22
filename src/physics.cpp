@@ -178,6 +178,7 @@ void Physics::characterVelocityUpdate(Player* c)
 }
 
 void Physics::characterAccelerationUpdate(Player * c) {
+	vec2 rotatedGravity = rotateVec(gravityAcc, rotation);
 	vec2 horzAcc = {0.f, 0.f};
     Direction h_direction = c->get_h_direction();
     float accStep = c->accStep;
@@ -188,30 +189,8 @@ void Physics::characterAccelerationUpdate(Player * c) {
 		else if (h_direction == Direction::right)
 			horzAcc = { accStep, 0.f };
     }
-	vec2 newAcc = add(horzAcc, gravityAcc);
+	vec2 newAcc = add(horzAcc, rotatedGravity);
     c->set_acceleration(newAcc);
-}
-
-void Physics::characterRotationUpdate(Player *c, float rotation) {
-
-    vec2 pos = c->get_position();
-    vec2 velocity = c->get_velocity();
-    float angled_factor = 0.8f;
-
-    if ((rotation > M_PI/2 && c->isOnPlatform && !c->isLeftOfPlatform)) {
-        // do nothing
-    }
-
-//    if ((rotation > M_PI / 4 && rotation < M_PI/2) && c->isOnPlatform) {
-//            c->set_position({pos.x - 4, pos.y});
-//            velocity.x *= angled_factor;
-//            c->set_velocity(velocity);
-//
-//    } else if (rotation > M_PI/2) {
-//		velocity.x *= angled_factor;
-//		c->set_position({pos.x + 2, pos.y});
-//		c->set_velocity(velocity);
-//	}
 }
 
 void Physics::updateWorldRotation(float currentRotation)

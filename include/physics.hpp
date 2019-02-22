@@ -40,8 +40,6 @@ public:
 
 	void characterAccelerationUpdate(Player *c);
 
-	void characterRotationUpdate(Player *c, float rotation);
-
 	void updateWorldRotation(float currentRotation);
 
 	bool isZero(float f);
