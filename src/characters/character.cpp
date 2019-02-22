@@ -6,17 +6,30 @@ bool Character::init(vec2 initialPosition, Physics * physicsHandler) {
 	return false;
 }
 
+void Character::set_properties(vec2 initialPosition, float scaleFactor, float xVel)
+{
+	m_scale.x = scaleFactor;
+	m_scale.y = scaleFactor;
+	m_rotation = 0.f;
+	m_position = initialPosition;
+	m_velocity = {xVel, 0.0f};
+}
+
+void Character::set_dimensions(Texture* texture, float spriteSheetWidth, float spriteSheetHeight, int xTrim, int yTrim)
+{
+	width = (texture->width / spriteSheetWidth - xTrim) * m_scale.x;
+	height = (texture->height / spriteSheetHeight - yTrim) * m_scale.y;
+}
+
 // Call if init() was successful
 // Releases all graphics resources
 void Character::destroy()
 {
 	glDeleteBuffers(1, &mesh.vbo);
 	glDeleteBuffers(1, &mesh.ibo);
-	glDeleteBuffers(1, &mesh.vao);
+	glDeleteVertexArrays(1, &mesh.vao);
 
-	glDeleteShader(effect.vertex);
-	glDeleteShader(effect.fragment);
-	glDeleteShader(effect.program);
+	effect.release();
 
 	free(characterState);
 }

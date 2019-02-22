@@ -22,23 +22,16 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 
 	float spriteSheetWidth = 8.0f;
 	float spriteSheetHeight = 5.0f;
+    int horizontalTrim = 6;
+    int verticalTrim = 7;
 
 	spriteSheet.init(&m_texture, { spriteSheetWidth, spriteSheetHeight }, this);
 
 	spriteSheet.set_render_data(this, 0);
-	
-	// Setting initial values
-	initStateTree();
-    float scaleFactor = 2.0f;
-	m_scale.x = -scaleFactor;
-    m_scale.y = scaleFactor;
-	int horizontalTrim = 12;
-	int verticalTrim = 14;
-    width = m_texture.width / spriteSheetWidth * scaleFactor - horizontalTrim;
-    height = m_texture.height / spriteSheetHeight * scaleFactor - verticalTrim;
-	m_position = initialPosition;
-	m_rotation = 0.f;
-	m_velocity = {0.0, 0.0};
+
+    initStateTree();
+	set_properties(initialPosition, 2.0f, 0.f);
+	set_dimensions(&m_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
 
 	isBelowPlatform = false;
 	isLeftOfPlatform = false;
@@ -82,7 +75,7 @@ void Player::on_key(int key, int action)
 {
 	if (action == GLFW_PRESS) {
 		switch (key) {
-		case GLFW_KEY_UP: 
+		case GLFW_KEY_UP:
 			if (can_jump()) characterState->changeState(jumping);
 			break;
 		case GLFW_KEY_LEFT:

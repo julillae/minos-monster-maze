@@ -1,7 +1,7 @@
 // internal
 #include "../include/common.hpp"
 #include "../include/physics.hpp"
-#include "../include/levels/level0.hpp"
+#include "../include/level.hpp"
 
 #define GL3W_IMPLEMENTATION
 #include <gl3w.h>
@@ -9,11 +9,12 @@
 // stlib
 #include <chrono>
 #include <iostream>
+#include <math.h>
 
 using Clock = std::chrono::high_resolution_clock;
 
 // Global 
-Level0 world;
+Level world;
 const int width = 1280;
 const int height = 720;
 const char* title = "Your Title Here";
@@ -23,7 +24,8 @@ int main(int argc, char* argv[])
 {
 	// Initializing world (after renderer.init().. sorry)
 	Physics *physicsHandler = new Physics();
-	if (!world.init({ (float)width, (float)height }, physicsHandler))
+	std::string levelName = "level0";
+	if (!world.init({ (float)width, (float)height }, physicsHandler, levelName))
 	{
 		// Time to read the error message
 		std::cout << "Press any key to exit" << std::endl;
@@ -32,8 +34,10 @@ int main(int argc, char* argv[])
 	}
 
 	auto t = Clock::now();
+	float dt = 1000.0 / 60.0;	// set for 60fps display
+	float timeAcc = 0.f;
 
-	// variable timestep loop.. can be improved (:
+	// fixed update timestep loop.. can be improved (:
 	while (!world.is_over())
 	{
 		// Processes system messages, if this wasn't present the window would become unresponsive
@@ -43,8 +47,12 @@ int main(int argc, char* argv[])
 		auto now = Clock::now();
 		float elapsed_sec = (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count() / 1000;
 		t = now;
+		timeAcc += elapsed_sec;
 
-		world.update(elapsed_sec);
+		while (timeAcc >= dt) {
+			world.update(timeAcc/dt);
+			timeAcc -= dt;
+		}
 		world.draw();
 	}
 
