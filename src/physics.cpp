@@ -37,20 +37,6 @@ bool rectToRectIntersection(vec2 rectA, vec2 rectB, vec2 boundA, vec2 boundB)
     return xOverlap && yOverlap;
 }
 
-
-float find_length(vec2 v)
-{
-    return sqrt((v.x * v.x) + (v.y * v.y));
-}
-
-vec2 normalize_length(vec2 v)
-{
-    float length = find_length(v);
-    v = {v.x / length, v.y / length};
-    return v;
-}
-
-
 Physics::CollisionNode Physics::collideWithEnemy (Player *p, const Enemy *e) {
 
     bool isCollided = rectToRectIntersection
@@ -121,14 +107,14 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 				isRightOfAtLeastOnePlatform = true;
 			}
 
-			// get the normalized vector
-			vec2 colNormal = normalize_length(
-					{floor.get_position().x - c->get_position().x, floor.get_position().y - c->get_position().y});
-			vec2 newPos = {c->get_position().x - colNormal.x, c->get_position().y - colNormal.y};
-
 			// get the floor position
 			vec2 floorPos = floor.get_position();
 			vec2 playPos = c->get_position();
+
+			// get the normalized vector
+			vec2 colNormal = normalize(add(floorPos, negate(playPos)));
+			vec2 newPos = add(playPos, negate(colNormal));
+
 
 			// if the player position deviates too much from the floor position, push the player back up
 			if (floorPos.y - playPos.y < floor_tolerance) {
@@ -152,8 +138,7 @@ void Physics::characterVelocityUpdate(Player* c)
 	vec2 cVelocity = c->get_velocity();
 	float maxVelocity = c->maxVelocity;
 
-	cVelocity.x += cAcc.x;
-	cVelocity.y += cAcc.y;
+	cVelocity = add(cVelocity, cAcc);
 
 	if (cVelocity.x > maxVelocity) cVelocity.x = maxVelocity;
 	if (cVelocity.x < -maxVelocity) cVelocity.x = -maxVelocity;
@@ -193,26 +178,18 @@ void Physics::characterVelocityUpdate(Player* c)
 }
 
 void Physics::characterAccelerationUpdate(Player * c) {
-    float vAcc;
-    float hAcc;
+	vec2 horzAcc = {0.f, 0.f};
     Direction h_direction = c->get_h_direction();
     float accStep = c->accStep;
 
     if (c->is_alive()) {
-        switch (h_direction) {
-            case Direction::left:
-                hAcc = -accStep;
-                break;
-            case Direction::right:
-                hAcc = accStep;
-                break;
-            default:
-                hAcc = 0.f;
-                break;
-        }
-        vAcc = gravityAcc;
-        c->set_acceleration({hAcc, vAcc});
+		if (h_direction == Direction::left)
+			horzAcc = { -accStep, 0.f };
+		else if (h_direction == Direction::right)
+			horzAcc = { accStep, 0.f };
     }
+	vec2 newAcc = add(horzAcc, gravityAcc);
+    c->set_acceleration(newAcc);
 }
 
 void Physics::characterRotationUpdate(Player *c, float rotation) {

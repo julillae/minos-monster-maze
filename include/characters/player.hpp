@@ -33,7 +33,7 @@ public:
 	// Returns true if the character is in a state that can jump
 	bool can_jump();
 
-
+	bool isInvincible = true;
 	bool isBelowPlatform;
 	bool isLeftOfPlatform;
 	bool isRightOfPlatform;
