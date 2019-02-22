@@ -31,8 +31,9 @@ Level::~Level()
 
 }
 
-void Level::read_txt_file(char* levelName) {
-    std::ifstream filein("level0.txt");
+void Level::read_txt_file(std::string levelName) {
+	std::string fileName = levelName.append(".txt");
+    std::ifstream filein(fileName);
 
     for (std::string line; std::getline(filein, line);) {
         std::vector <int> row;
@@ -128,16 +129,13 @@ void Level::generate_maze()
         i = i + 1.f;
 	}
 
-    fprintf(stderr, "Width:%f\n", j);
-    fprintf(stderr, "Height:%f\n", i);
-
     // Set global variables
     m_maze_width = j;
     m_maze_height = i;
 }
 
 // Level initialization
-bool Level::init(vec2 screen, Physics* physicsHandler, char* levelName)
+bool Level::init(vec2 screen, Physics* physicsHandler, std::string levelName)
 {
 	this->physicsHandler = physicsHandler;
 

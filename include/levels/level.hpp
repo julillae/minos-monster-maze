@@ -31,7 +31,7 @@ public:
 	~Level();
 
     // Creates a window, sets up events and begins the game
-	bool init(vec2 screen, Physics* physicsHandler, char* levelName);
+	bool init(vec2 screen, Physics* physicsHandler, std::string levelName);
 
 	// Releases all associated resource
     void destroy();
@@ -51,7 +51,7 @@ private:
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-    void read_txt_file(char* levelName);
+    void read_txt_file(std::string levelName);
 
 	// Generate a spider enemy
 	bool spawn_spider_enemy(vec2 position, float bound);

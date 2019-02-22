@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 {
 	// Initializing world (after renderer.init().. sorry)
 	Physics *physicsHandler = new Physics();
-	char *levelName = "level0";
+	std::string levelName = "level0";
 	if (!world.init({ (float)width, (float)height }, physicsHandler, levelName))
 	{
 		// Time to read the error message
