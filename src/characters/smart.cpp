@@ -36,3 +36,8 @@ void Smart::update(float ms)
 	}
 
 }
+
+void Smart::set_animation()
+{
+    // TODO: add animation 
+}

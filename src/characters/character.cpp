@@ -11,9 +11,14 @@ void Character::set_properties(vec2 initialPosition, float scaleFactor, float xV
 	m_scale.x = scaleFactor;
 	m_scale.y = scaleFactor;
 	m_rotation = 0.f;
-	//m_is_alive = true;
 	m_position = initialPosition;
 	m_velocity = {xVel, 0.0f};
+}
+
+void Character::set_dimensions(Texture* texture, float spriteSheetWidth, float spriteSheetHeight, int xTrim, int yTrim)
+{
+	width = (texture->width / spriteSheetWidth - xTrim) * m_scale.x;
+	height = (texture->height / spriteSheetHeight - yTrim) * m_scale.y;
 }
 
 // Call if init() was successful

@@ -67,9 +67,9 @@ Level0::~Level0()
 
 void Level0::spawn_enemies() {
 	// Hardcoded positions of enemies
-	spawn_spider_enemy({100.f, 650.f}, 1000.f);
-    spawn_spider_enemy({825.f, 550.f}, 150.f);
-    spawn_spider_enemy({100.f, 375.f}, 400.f);
+	spawn_spider_enemy({100.f, 660.f}, 1000.f);
+	spawn_spider_enemy({825.f, 560.f}, 150.f);
+	spawn_spider_enemy({100.f, 385.f}, 400.f);
 	
 	Enemy& new_enemy = m_enemies.back();
 }

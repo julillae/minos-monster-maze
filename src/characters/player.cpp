@@ -22,6 +22,8 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 
 	float spriteSheetWidth = 8.0f;
 	float spriteSheetHeight = 5.0f;
+    int horizontalTrim = 6;
+    int verticalTrim = 7;
 
 	spriteSheet.init(&m_texture, { spriteSheetWidth, spriteSheetHeight }, this);
 
@@ -29,11 +31,7 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 
     initStateTree();
 	set_properties(initialPosition, 2.0f, 0.f);
-	int horizontalTrim = 12;
-	int verticalTrim = 14;
-	width = m_texture.width / spriteSheetWidth * m_scale.x - horizontalTrim;
-	height = m_texture.height / spriteSheetHeight * m_scale.y - verticalTrim;
-
+	set_dimensions(&m_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
 
 	isBelowPlatform = false;
 	isLeftOfPlatform = false;
