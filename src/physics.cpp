@@ -218,14 +218,23 @@ void Physics::characterAccelerationUpdate(Player * c) {
 void Physics::characterRotationUpdate(Player *c, float rotation) {
 
     vec2 pos = c->get_position();
+    vec2 velocity = c->get_velocity();
+    float angled_factor = 0.8f;
 
-    if ((rotation > M_PI / 10 && rotation < 4.72) && c->isOnPlatform) {
-//            c->set_position({pos.x - 2, pos.y});
-
-    } else if (rotation > 4.72) {
-
-        // do something
+    if ((rotation > M_PI/2 && c->isOnPlatform && !c->isLeftOfPlatform)) {
+        // do nothing
     }
+
+//    if ((rotation > M_PI / 4 && rotation < M_PI/2) && c->isOnPlatform) {
+//            c->set_position({pos.x - 4, pos.y});
+//            velocity.x *= angled_factor;
+//            c->set_velocity(velocity);
+//
+//    } else if (rotation > M_PI/2) {
+//		velocity.x *= angled_factor;
+//		c->set_position({pos.x + 2, pos.y});
+//		c->set_velocity(velocity);
+//	}
 }
 
 
