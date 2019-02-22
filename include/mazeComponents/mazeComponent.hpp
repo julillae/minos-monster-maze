@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../common.hpp"
+#include "../renderManager.hpp"
 
 class MazeComponent : public Renderable
 {
