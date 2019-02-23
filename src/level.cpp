@@ -314,6 +314,7 @@ bool Level::update(float elapsed_ms)
 	{
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
+		m_player.set_invincibility(true);
 	}
 
 	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
