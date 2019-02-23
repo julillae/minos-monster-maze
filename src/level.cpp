@@ -301,7 +301,7 @@ bool Level::update(float elapsed_ms)
 	for (Enemy& enemy : m_enemies) {
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
 		{
-			if (!m_player.isInvincible && m_player.is_alive()) {
+			if (!m_player.is_invincible() && m_player.is_alive()) {
 				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
 				m_player.kill();
 				m_water.set_player_dead();

@@ -128,8 +128,8 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 			vec2 playPos = c->get_position();
 
 			// get the normalized vector
-			vec2 colNormal = normalize(add(floorPos, negate(playPos)));
-			vec2 newPos = add(playPos, negate(colNormal));
+			vec2 colNormal = normalize(add(floorPos, negateVec(playPos)));
+			vec2 newPos = add(playPos, negateVec(colNormal));
 
 
 			// if the player position deviates too much from the floor position, push the player back up
@@ -146,7 +146,7 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 
 }
 
-void Physics::characterVelocityUpdate(Player* c)
+void Physics::characterVelocityUpdate(Character* c)
 {
 	if (c->characterState->currentState != frozen) {
 		float platformDrag = 0.75; //eventually make this a property of the platform
@@ -203,7 +203,7 @@ void Physics::characterVelocityUpdate(Player* c)
 	}
 }
 
-void Physics::characterAccelerationUpdate(Player * c) {
+void Physics::characterAccelerationUpdate(Character * c) {
 	vec2 horzAcc = {0.f, 0.f};
     Direction h_direction = c->get_h_direction();
     float accStep = c->accStep;

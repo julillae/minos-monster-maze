@@ -34,7 +34,7 @@ float dot(vec3 l, vec3 r);
 mat3  mul(const mat3& l, const mat3& r);
 vec2  normalize(vec2 v);
 vec2  add(vec2 v1, vec2 v2);
-vec2  negate(vec2 v);
+vec2  negateVec(vec2 v);
 float vecLength(vec2 v);
 vec2 rotateVec(vec2 v, float rotation);
 

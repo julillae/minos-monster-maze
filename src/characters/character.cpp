@@ -100,6 +100,10 @@ void Character::kill() {
 	characterState->changeState(dead);
 }
 
+bool Character::is_invincible()const {
+	return isInvincible;
+}
+
 void Character::initStateTree()
 {
 	vector<Edge> edges = {
