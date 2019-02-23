@@ -13,6 +13,7 @@
 #include "mazeComponents/ice.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
+#include "helpMenu.hpp"
 
 // stlib
 #include <vector>
@@ -80,6 +81,7 @@ private:
 	Exit m_exit;
 	std::vector<Spider> m_enemies;
     std::vector<Floor> m_floor;
+    HelpMenu m_help_menu;
 
     float m_seed_rng;
 
@@ -110,4 +112,7 @@ private:
 	// 3 = initial position
 	// 4 = spider enemy (and its path)
     std::vector<std::vector <int>> m_maze;
+
+
+    bool show_help_menu = false;
 };
