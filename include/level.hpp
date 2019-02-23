@@ -13,6 +13,7 @@
 #include "mazeComponents/ice.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
+#include "helpMenu.hpp"
 
 // stlib
 #include <vector>
@@ -79,6 +80,7 @@ private:
 	Exit m_exit;
 	std::vector<Spider> m_enemies;
     std::vector<Floor> m_floor;
+    HelpMenu m_help_menu;
 
     float m_seed_rng;
 
@@ -106,4 +108,6 @@ private:
     std::vector<std::vector <int>> m_maze;
     float m_maze_width;
     float m_maze_height;
+
+    bool show_help_menu = false;
 };
