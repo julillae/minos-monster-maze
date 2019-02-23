@@ -33,12 +33,11 @@ public:
 	// Returns true if the character is in a state that can jump
 	bool can_jump();
 
-	bool isInvincible = true;
+	bool isInvincible = false;
 	bool isBelowPlatform;
 	bool isLeftOfPlatform;
 	bool isRightOfPlatform;
 	float maxHorzSpeed = 10;
 	float accStep = 1.f;
 	float jumpVel = -18.f;
-	
 };
