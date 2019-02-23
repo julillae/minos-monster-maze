@@ -243,8 +243,8 @@ bool Level::init(vec2 screen, Physics* physicsHandler, std::string levelName)
 	is_player_at_goal = false;
 
 	generate_maze();
-	
-	// spawn_enemies();
+
+	m_help_menu.init({screen.x / 2, screen.y / 2});
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -268,6 +268,7 @@ void Level::destroy()
 		floor.destroy();
 	m_enemies.clear();
 	m_floor.clear();
+	m_help_menu.destroy();
 
 	glfwDestroyWindow(m_window);
 }
@@ -422,6 +423,15 @@ void Level::draw()
 
 	m_water.draw(projection_2D);
 
+	if (show_help_menu)
+	{
+		m_help_menu.set_visibility(true);
+	} else {
+		m_help_menu.set_visibility(false);
+	}
+
+	m_help_menu.draw(projection_2D);
+
 	//////////////////
 	// Presenting
 	glfwSwapBuffers(m_window);
@@ -442,6 +452,20 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	m_player.on_key(key, action);
+
+	if (action == GLFW_PRESS && key == GLFW_KEY_H) {
+	    show_help_menu = !show_help_menu;
+	    if (show_help_menu) {
+			for(Enemy& e : m_enemies) {
+				e.freeze();
+			}
+	    } else {
+			for(Enemy& e : m_enemies) {
+				e.unfreeze();
+			}
+	    }
+
+	}
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
