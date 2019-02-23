@@ -81,8 +81,32 @@ mat3 mul(const mat3 & l, const mat3 & r)
 
 vec2 normalize(vec2 v)
 {
-	float m = sqrtf(dot(v, v));
+	float m = vecLength(v);
 	return { v.x / m, v.y / m };
+}
+
+vec2 add(vec2 v1, vec2 v2)
+{
+	return vec2({v1.x + v2.x, v1.y + v2.y});
+}
+
+vec2 negateVec(vec2 v)
+{
+	return vec2({ -v.x, -v.y });
+}
+
+float vecLength(vec2 v)
+{
+	return sqrtf(dot(v, v));
+}
+
+vec2 rotateVec(vec2 v, float rotation)
+{
+	float originalAngle = atan2(v.y, v.x);
+	float length = vecLength(v);
+	float newY = length * sinf(originalAngle + rotation);
+	float newX = length * cosf(originalAngle + rotation);
+	return {newX, newY};
 }
 
 Texture::Texture()

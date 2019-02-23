@@ -47,11 +47,18 @@ public:
 	// Returns the current scale of the character
 	vec2 get_scale()const;
 
+	// Freeze and unfreeze the character
+	void freeze();
+
+	void unfreeze();
+
 	// Moves the character based on current velocity
 	void move();
 
 	// Change character movement direction
 	void set_direction(Direction d);
+
+	bool is_invincible()const;
 
 	// Get character's horizontal direction
 	Direction get_h_direction();
@@ -59,7 +66,7 @@ public:
 	// Set character rotation in radians
 	void set_rotation(float radians);
 
-	// True if the character is alive
+		// True if the character is alive
 	bool is_alive()const;
 
 	// Kills the character, changing its alive state and triggering on death events
@@ -75,6 +82,16 @@ public:
 	float width;
 	float height;
 	bool isOnPlatform;
+	// collision related fields
+	bool isBelowPlatform;
+	bool isLeftOfPlatform;
+	bool isRightOfPlatform;
+
+	// constants
+	float jumpVel = -18.f;
+	float maxHorzSpeed = 10;
+	float accStep = 1.f;
+	float m_animTime = 0.f;
 
 protected:
 	Physics* physicsHandler;
@@ -82,13 +99,20 @@ protected:
 	vec2 m_acceleration;
 	vec2 m_position;
 	vec2 m_scale;
-	bool m_is_collided; // True if character collided with object
+
+	// rotational elements
+	float m_rotation; // in radians
+
+	// states
+	bool m_frozen;
+	State preFreezeState;
+	bool isInvincible = false;
+
 	Direction direction; // direction of intended movement
     // 1.f in each dimension. 1.f is as big as the associated texture
-	float m_rotation; // in radians
 	size_t m_num_indices; // passed to glDrawElements
 	Texture m_texture;
 	SpriteSheet spriteSheet;
-	float m_animTime = 0.f;
 	bool is_anim_once = false;
+
 };
