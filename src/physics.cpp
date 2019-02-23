@@ -11,8 +11,6 @@ Physics::Physics() = default;
 
 Physics::~Physics() = default;
 
-int floor_tolerance = 40;
-
 bool circleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
 {
     float xDistance = c1.x - c2.x;
@@ -35,6 +33,35 @@ bool rectToRectIntersection(vec2 rectA, vec2 rectB, vec2 boundA, vec2 boundB)
                     || valueInRange(rectB.y, rectA.y, rectA.y + boundA.y);
 
     return xOverlap && yOverlap;
+}
+
+vec2 calculateNewPosition(vec2 c1, vec2 c2) {
+    vec2 colNormal = normalize(add(c2, negateVec(c1)));
+    vec2 newPos = add(c1, negateVec(colNormal));
+    return newPos;
+}
+
+vec2 Physics::calculateDimensionsAfterRotation(vec2 c1, vec2 bound) {
+	float midX = c1.x + bound.x/2;
+	float midY = c1.y + bound.y/2;
+
+	float cornersX[4] = {c1.x - midX, c1.x - midX, c1.x + bound.x - midX, c1.x + bound.x - midX};
+	float cornersY[4] = {c1.y - midY, c1.y - midY, c1.y + bound.y - midY, c1.y + bound.y - midY};
+
+	float newX = 1e10;
+	float newY = 1e10;
+
+	for (int i=0; i<4; i=i+1) {
+		newX = min(newX, cornersX[i]*cosf(rotation) - cornersY[i]*sin(rotation) + midX);
+		newY = min(newY, cornersX[i]*sinf(rotation) - cornersY[i]*cos(rotation) + midY);
+	}
+
+	float newWidth = midX - newX;
+	float newHeight = midY - newY;
+
+	vec2 newDimensions = {newWidth, newHeight};
+
+	return newDimensions;
 }
 
 Physics::CollisionNode Physics::collideWithEnemy (Player *p, const Enemy *e) {
@@ -126,13 +153,22 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 			// get the floor position
 			vec2 floorPos = floor.get_position();
 			vec2 playPos = c->get_position();
+			int floor_tolerance = 40;
+
+			// get character's direction
+            Direction h_direction = c->get_h_direction();
 
 			// get the normalized vector
-			vec2 colNormal = normalize(add(floorPos, negateVec(playPos)));
-			vec2 newPos = add(playPos, negateVec(colNormal));
+			vec2 newPos = calculateNewPosition(playPos, floorPos);
 
+//			if (rotation > 0 && rotation < M_PI/2 && h_direction == Direction::right) {
+//			   // calculate new dimensions
+//
+//            } else if (rotation > 0 && rotation < M_PI/2 && h_direction == Direction::left) {
+//				// calculate new dimensions
+//            }
 
-			// if the player position deviates too much from the floor position, push the player back up
+            // if the player position deviates too much from the floor position, push the player back up
 			if (floorPos.y - playPos.y < floor_tolerance) {
                 c->set_position(newPos);
             }

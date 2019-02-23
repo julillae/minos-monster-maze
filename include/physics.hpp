@@ -44,6 +44,8 @@ public:
 
 	void updateCharacterVelocityRotation(Character * c);
 
+	vec2 calculateDimensionsAfterRotation(vec2 c1, vec2 bound);
+
 	bool isZero(float f);
   
 	bool notZero(float f);
