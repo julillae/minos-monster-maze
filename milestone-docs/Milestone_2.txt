@@ -20,6 +20,7 @@ Milestone 2 Requirements:
     - Level resets when player dies. 
     - Player continues onto second level when they complete the first
     - Game resets to first level when second level is completed
+    - Player no longer sinks to the floor when jumping or moving
     - Changes to make the display resolution of the game consistent across different operating systems, particularly on macOS’ retina display
     - Changed update frequency to be a fixed time-step rather than relying on local clock speeds, so that the game runs at a consistent speed on different computers
     -
