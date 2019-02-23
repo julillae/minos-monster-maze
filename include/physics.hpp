@@ -36,9 +36,9 @@ public:
 	//      So that this will work when we have multiple types of platforms
 	void characterCollisionsWithFixedComponents(Player *c, std::vector<Floor> fixedComponents);
 
-	void characterVelocityUpdate(Player *c);
+	void characterVelocityUpdate(Character *c);
 
-	void characterAccelerationUpdate(Player *c);
+	void characterAccelerationUpdate(Character *c);
 
 	void updateWorldRotation(float currentRotation);
 
