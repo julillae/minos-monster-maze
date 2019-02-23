@@ -18,7 +18,7 @@ bool Simple::init(vec2 initialPosition, Physics * physicsHandler)
 void Simple::update(float ms)
 {
 
-	if (is_alive())
+	if (is_alive() && !m_frozen)
 	{
 		// Update enemy position based on fixed path here
 		float vel_x = m_velocity.x;

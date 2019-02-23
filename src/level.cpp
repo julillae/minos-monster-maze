@@ -13,6 +13,10 @@
 
 namespace
 {
+	int increment = 0;
+	float rotation = 0.f;
+	bool isRotating = false;
+	bool previouslyFrozen = false;
     void glfw_err_cb(int error, const char* desc)
     {
         fprintf(stderr, "%d: %s", error, desc);
@@ -278,19 +282,29 @@ bool Level::update(float elapsed_ms)
 	int w, h;
         glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = { (float)w, (float)h };
+	bool applyFreeze = false;
+	bool applyThaw = false;
+
+	physicsHandler->updateWorldRotation(rotation);
+
+	// freezes and unfreezes character for rotation
+	if (isRotating && !previouslyFrozen) {
+		applyFreeze = true;
+		previouslyFrozen = true;
+	}
+	else if (!isRotating && previouslyFrozen) {
+		applyThaw = true;
+		previouslyFrozen = false;
+	}
 
 	// Checking Player - Enemy Collision
 	for (Enemy& enemy : m_enemies) {
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
 		{
-			if (m_player.is_alive()) {
+			if (!m_player.is_invincible() && m_player.is_alive()) {
 				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
 				m_player.kill();
 				m_water.set_player_dead();
-
-				for(Enemy& e : m_enemies) {
-					e.freeze();
-				}
 			}
 		}
 	}
@@ -300,18 +314,27 @@ bool Level::update(float elapsed_ms)
 	{
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
-
-		for(Enemy& enemy : m_enemies) {
-			enemy.freeze();
-		}
 	}
 
 	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
+	m_player.set_rotation(rotation);
+	if (applyFreeze) {
+		m_player.freeze();
+	}
+	else if (applyThaw) {
+		physicsHandler->updateCharacterVelocityRotation(&m_player);
+		m_player.unfreeze();
+	}
 	m_player.update(elapsed_ms);
 
-	for (auto& enemy : m_enemies)
+	for (auto& enemy : m_enemies) {
+		if (applyFreeze) {
+			enemy.freeze();
+		} else if (applyThaw) {
+			enemy.unfreeze();
+		}
 		enemy.update(elapsed_ms);
-
+	}
 
 	// If player is dead or beat the game, restart the game after the fading animation
 	if (!m_player.is_alive() && m_water.get_time_since_death() > 1.5)
@@ -367,36 +390,46 @@ void Level::draw()
 	float bottom = (float)h;// *0.5;
 
 	vec2 p_position = m_player.get_position();
-	//printf("%f", 2.f / (p_position.x));
 
-	float sx = 2.f / (right - left);
-	float sy = 2.f / (top - bottom); //this is where you play around with the camera
+	float sx = 2.f * osScaleFactor / (right - left);
+	float sy = 2.f * osScaleFactor / (top - bottom); //this is where you play around with the camera
 	
 	float tx = 0.f;
 	float ty = 0.f;
-	bool cameraTracking = false;
+	bool cameraTracking = true;
 	if (cameraTracking){
 		// translation if camera tracks player
-		tx = -(osScaleFactor*2*p_position.x)/(right - left);
-		ty = -(osScaleFactor*2*p_position.y)/(top - bottom);
+		tx = -p_position.x;
+		ty = -p_position.y;
 	}
 	else {
 		// translation for fixed camera
-		tx = -(right + left) / (right - left);
-		ty = -(top + bottom) / (top - bottom);
+		tx = -(right + left)/2;
+		ty = -(top + bottom)/2;
 	}
-	sx *= osScaleFactor;
-	sy *= osScaleFactor;
 
-	// translate to player's location
-	mat3 translation_matrix = { {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {tx, ty, 1.f}};
-	// scale after translation
-	mat3 scaling_matrix = {{sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ 0.f, 0.f, 1.f }};
+	float c = cosf(-rotation);
+	float s = sinf(-rotation);
 
-    mat3 projection_2D{ { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ 0.f, 0.f, 1.f } };
+	mat3 scaling_matrix = { {sx, 0.f, 0.f },
+							{ 0.f, sy, 0.f },
+							{ 0.f, 0.f, 1.f } };
 
-    projection_2D = mul(projection_2D, translation_matrix);
+    mat3 rotation_matrix = { { c, s, 0.f },
+							{ -s, c, 0.f },
+							{ 0.f, 0.f, 1.f } };
+
+    mat3 translation_matrix = { {1.f, 0.f, 0.f}, 
+								{0.f, 1.f, 0.f},
+								{tx, ty, 1.f} };
+
+    mat3 projection_2D{ { 1.f, 0.f, 0.f },
+						{ 0.f, 1.f, 0.f },
+						{ 0.f, 0.f, 1.f } };
+
     projection_2D = mul(projection_2D, scaling_matrix);
+	projection_2D = mul(projection_2D, rotation_matrix);
+	projection_2D = mul(projection_2D, translation_matrix);
 
     for (auto& floor : m_floor)
 		floor.draw(projection_2D);
@@ -442,6 +475,21 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	m_player.on_key(key, action);
+
+	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+		if (key == GLFW_KEY_Z) {
+			isRotating = true;
+			increment = (increment + 1) % 360;
+		}
+		if (key == GLFW_KEY_X) {
+			isRotating = true;
+			increment = (increment - 1) % 360;
+		}
+		rotation = static_cast<float>((increment * M_PI) / 180);
+	}
+	else if (action == GLFW_RELEASE && (key == GLFW_KEY_Z || key == GLFW_KEY_X)) {
+		isRotating = false;
+	}
 
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
@@ -495,4 +543,7 @@ void Level::reset_game()
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
 	is_player_at_goal = false;
+	increment = 0;
+	rotation = 0.f;
+	previouslyFrozen = false;
 }
