@@ -3,6 +3,7 @@
 #include "../include/common.hpp"
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <cmath>
 
 // logic for gravity and potentially friction calculations go here
 
@@ -35,20 +36,6 @@ bool rectToRectIntersection(vec2 rectA, vec2 rectB, vec2 boundA, vec2 boundB)
 
     return xOverlap && yOverlap;
 }
-
-
-float find_length(vec2 v)
-{
-    return sqrt((v.x * v.x) + (v.y * v.y));
-}
-
-vec2 normalize_length(vec2 v)
-{
-    float length = find_length(v);
-    v = {v.x / length, v.y / length};
-    return v;
-}
-
 
 Physics::CollisionNode Physics::collideWithEnemy (Player *p, const Enemy *e) {
 
@@ -105,6 +92,20 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 		collisionNode = collisionWithFixedWalls(c, &floor);
 		if (collisionNode.isCollided) {
 			float collisionAngle = collisionNode.angleOfCollision;
+
+			// logic needed to get new angle (collisionAngle + rotation) within
+			// the needed -pi to pi range
+			collisionAngle = fmod(collisionAngle + rotation, 2 * M_PI);
+			float anglePastPi = 0.f;
+			if (collisionAngle > M_PI) {
+				anglePastPi = collisionAngle - M_PI;
+				collisionAngle = -M_PI + anglePastPi;
+			}
+			else if (collisionAngle < -M_PI) {
+				anglePastPi = collisionAngle + M_PI;
+				collisionAngle = M_PI + anglePastPi;
+			}
+
 			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
 				c->set_on_platform();
 				isOnAtLeastOnePlatform = true;
@@ -120,14 +121,16 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 				isRightOfAtLeastOnePlatform = true;
 			}
 
-			// get the normalized vector
-			vec2 colNormal = normalize_length(
-					{floor.get_position().x - c->get_position().x, floor.get_position().y - c->get_position().y});
-			vec2 newPos = {c->get_position().x - colNormal.x, c->get_position().y - colNormal.y};
 
+			//TODO: doublecheck the logic that pushes player back "up" to see if it still works properly with rotation
 			// get the floor position
 			vec2 floorPos = floor.get_position();
 			vec2 playPos = c->get_position();
+
+			// get the normalized vector
+			vec2 colNormal = normalize(add(floorPos, negateVec(playPos)));
+			vec2 newPos = add(playPos, negateVec(colNormal));
+
 
 			// if the player position deviates too much from the floor position, push the player back up
 			if (floorPos.y - playPos.y < floor_tolerance) {
@@ -143,71 +146,95 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 
 }
 
-void Physics::characterVelocityUpdate(Player* c)
+void Physics::characterVelocityUpdate(Character* c)
 {
-	float platformDrag = 0.75; //eventually make this a property of the platform
+	if (c->characterState->currentState != frozen) {
+		float platformDrag = 0.75; //eventually make this a property of the platform
+		
+		vec2 cVelocity = c->get_velocity();
 
-	vec2 cAcc = c->get_acceleration();
-	vec2 cVelocity = c->get_velocity();
-	float maxVelocity = c->maxVelocity;
+		// rotate velocity vector back to normal orientation to reuse existing logic
+		cVelocity = rotateVec(cVelocity, -rotation);
+		vec2 cAcc = c->get_acceleration();
+		cVelocity = add(cVelocity, cAcc);
 
-	cVelocity.x += cAcc.x;
-	cVelocity.y += cAcc.y;
+		float maxHorzSpeed = c->maxHorzSpeed;
+		float horzDirection = 1.f;
+		if (cVelocity.x < 0) horzDirection = -1;
+		float horzSpeed = fabs(cVelocity.x);
+		horzSpeed = min(maxHorzSpeed, horzSpeed) * horzDirection;
+		cVelocity.x = horzSpeed;
 
-	if (cVelocity.x > maxVelocity) cVelocity.x = maxVelocity;
-	if (cVelocity.x < -maxVelocity) cVelocity.x = -maxVelocity;
-
-	if (c->characterState->currentState == jumping) {
-		cVelocity.y += c->jumpVel;
-		c->characterState->changeState(rising);
-	}
-
-	if (cAcc.x < g_tolerance && cAcc.x > -g_tolerance && c->isOnPlatform)
-		cVelocity.x *= platformDrag;
-
-	if (c->isBelowPlatform) {
-		cVelocity.y = std::max(0.f, cVelocity.y);
-	}
-	if (c->isLeftOfPlatform) {
-		cVelocity.x = std::min(0.f, cVelocity.x);
-	}
-	if (c->isRightOfPlatform) {
-		cVelocity.x = std::max(0.f, cVelocity.x);
-	}
-
-	if (c->isOnPlatform) {
-		cVelocity.y = std::min(0.f, cVelocity.y);
-		if (isZero(cAcc.x))
-			c->characterState->changeState(idle);
-		else
-			c->characterState->changeState(running);
-	} else {
-		if (cVelocity.y < 0)
+		if (c->characterState->currentState == jumping) {
+			cVelocity.y += c->jumpVel;
 			c->characterState->changeState(rising);
-		else
-			c->characterState->changeState(falling);
-	}
-
-	c->set_velocity(cVelocity);
-}
-
-void Physics::characterAccelerationUpdate(Player * c)
-{
-	float vAcc;
-	float hAcc;
-	Direction h_direction = c->get_h_direction();
-	float accStep = c->accStep;
-
-	if (c->is_alive()) {
-		switch (h_direction) {
-			case Direction::left: hAcc = -accStep; break;
-			case Direction::right: hAcc = accStep; break;
-			default: hAcc = 0.f; break;
 		}
-		vAcc = gravityAcc;
-		c->set_acceleration({ hAcc, vAcc });
+
+		if (isZero(cAcc.x) && c->isOnPlatform)
+			cVelocity.x *= platformDrag;
+
+		if (c->isBelowPlatform) {
+			cVelocity.y = std::max(0.f, cVelocity.y);
+		}
+		if (c->isLeftOfPlatform) {
+			cVelocity.x = std::min(0.f, cVelocity.x);
+		}
+		if (c->isRightOfPlatform) {
+			cVelocity.x = std::max(0.f, cVelocity.x);
+		}
+
+		if (c->isOnPlatform) {
+			cVelocity.y = std::min(0.f, cVelocity.y);
+			if (isZero(cAcc.x))
+				c->characterState->changeState(idle);
+			else
+				c->characterState->changeState(running);
+		}
+		else {
+			if (cVelocity.y < 0)
+				c->characterState->changeState(rising);
+			else
+				c->characterState->changeState(falling);
+		}
+
+		// rotate back to current rotation
+		cVelocity = rotateVec(cVelocity, rotation);
+		c->set_velocity(cVelocity);
 	}
 }
+
+void Physics::characterAccelerationUpdate(Character * c) {
+	vec2 horzAcc = {0.f, 0.f};
+    Direction h_direction = c->get_h_direction();
+    float accStep = c->accStep;
+
+    if (c->is_alive()) {
+		if (h_direction == Direction::left)
+			horzAcc = { -accStep, 0.f };
+		else if (h_direction == Direction::right)
+			horzAcc = { accStep, 0.f };
+    }
+
+	//TODO: get angle of the platform player is standing on and apply angle as appropriate
+	//		for player's horizontal acceleration.
+	//		note that the angle should be different depending on whether the player's moving left or right
+	//		as long as the platform is not perfectly horizontal
+	vec2 newAcc = add(horzAcc, gravityAcc);
+    c->set_acceleration(newAcc);
+}
+
+void Physics::updateWorldRotation(float currentRotation)
+{
+	rotation = currentRotation;
+}
+
+void Physics::updateCharacterVelocityRotation(Character *c)
+{
+	vec2 currentVelocityVector = c->get_velocity();
+	vec2 rotatedVelocityVector = rotateVec(currentVelocityVector, rotation);
+	c->set_velocity(rotatedVelocityVector);
+}
+
 
 bool Physics::isZero(float f) {
 	return (fabs(f) < g_tolerance);
