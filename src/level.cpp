@@ -429,7 +429,11 @@ void Level::draw()
 						{ 0.f, 0.f, 1.f } };
 
     projection_2D = mul(projection_2D, scaling_matrix);
-	projection_2D = mul(projection_2D, rotation_matrix);
+    if (!show_help_menu)
+	{
+		projection_2D = mul(projection_2D, rotation_matrix);
+	}
+
 	projection_2D = mul(projection_2D, translation_matrix);
 
     for (auto& floor : m_floor)
@@ -486,19 +490,22 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	m_player.on_key(key, action);
 
-	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-		if (key == GLFW_KEY_Z) {
-			isRotating = true;
-			increment = (increment + 1) % 360;
+	if (!show_help_menu)
+	{
+		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+			if (key == GLFW_KEY_Z) {
+				isRotating = true;
+				increment = (increment + 1) % 360;
+			}
+			if (key == GLFW_KEY_X) {
+				isRotating = true;
+				increment = (increment - 1) % 360;
+			}
+			rotation = static_cast<float>((increment * M_PI) / 180);
 		}
-		if (key == GLFW_KEY_X) {
-			isRotating = true;
-			increment = (increment - 1) % 360;
+		else if (action == GLFW_RELEASE && (key == GLFW_KEY_Z || key == GLFW_KEY_X)) {
+			isRotating = false;
 		}
-		rotation = static_cast<float>((increment * M_PI) / 180);
-	}
-	else if (action == GLFW_RELEASE && (key == GLFW_KEY_Z || key == GLFW_KEY_X)) {
-		isRotating = false;
 	}
 
 	if (action == GLFW_PRESS && key == GLFW_KEY_H) {
