@@ -32,7 +32,7 @@ public:
 	~Level();
 
     // Creates a window, sets up events and begins the game
-	bool init(vec2 screen, Physics* physicsHandler, std::string levelName);
+	bool init(vec2 screen, Physics* physicsHandler, int startLevel);
 
 	// Releases all associated resource
     void destroy();
@@ -52,7 +52,7 @@ private:
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-    void read_txt_file(std::string levelName);
+    void read_level_data();
 
 	// Generate a spider enemy
 	bool spawn_spider_enemy(vec2 position, float bound);
@@ -60,6 +60,7 @@ private:
 	// Generates a new floor
 	bool spawn_floor(vec2 position);
 
+	void load_new_level();
 	void reset_game();
 
 	// Generates hard-coded maze in each level
@@ -97,8 +98,13 @@ private:
 	// Part of hack needed to deal with the MacOs Retina Display issue where it doubles the pixels rendered
 	float osScaleFactor = 1.f;
 
+	int num_levels = 2;
+	int current_level = 0;
+
     // Variables determined by level data
 	vec2 initialPosition;
+	float m_maze_width;
+    float m_maze_height;
 
 	// Rows of the maze where:
 	// 1 = platform
@@ -106,8 +112,7 @@ private:
 	// 3 = initial position
 	// 4 = spider enemy (and its path)
     std::vector<std::vector <int>> m_maze;
-    float m_maze_width;
-    float m_maze_height;
+
 
     bool show_help_menu = false;
 };
