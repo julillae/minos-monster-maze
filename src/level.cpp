@@ -35,8 +35,10 @@ Level::~Level()
 
 }
 
-void Level::read_txt_file(std::string levelName) {
-	std::string fileName = "levels/" + levelName + ".txt";
+void Level::read_level_data() {
+	std::string level = std::to_string(current_level);
+	fprintf(stderr, "Loading level %s\n", level.c_str());
+	std::string fileName = "levels/level" + level + ".txt";
     std::ifstream filein(fileName);
 
     for (std::string line; std::getline(filein, line);) {
@@ -79,10 +81,11 @@ bool Level::spawn_floor(vec2 position)
 void Level::generate_maze()
 {
 	fprintf(stderr, "Generating maze\n");
-	// Initial tile
-	spawn_floor({0, 0});
 	const float initial_x = 40.0;
 	const float initial_y = 30.0;
+	// Initial tile
+	spawn_floor({initial_x, initial_y});
+
 	float tile_width = 0.f;
 	float tile_height = 0.f;
 	
@@ -153,11 +156,9 @@ void Level::generate_maze()
 }
 
 // Level initialization
-bool Level::init(vec2 screen, Physics* physicsHandler, std::string levelName)
+bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 {
 	this->physicsHandler = physicsHandler;
-
-    read_txt_file(levelName);
 
 	//-------------------------------------------------------------------------
 	// GLFW / OGL Initialization
@@ -246,6 +247,8 @@ bool Level::init(vec2 screen, Physics* physicsHandler, std::string levelName)
 
 	is_player_at_goal = false;
 
+	current_level = startLevel;
+    read_level_data();
 	generate_maze();
 
 	m_help_menu.init(initialPosition);
@@ -315,6 +318,7 @@ bool Level::update(float elapsed_ms)
 	{
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
+		m_player.set_invincibility(true);
 	}
 
 	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
@@ -533,17 +537,41 @@ void Level::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 
 }
 
+void Level::load_new_level()
+{
+	for (auto& floor : m_floor)
+		floor.destroy();
+
+	for (auto& enemy : m_enemies)
+		enemy.destroy();
+	
+	m_floor.clear();
+	m_enemies.clear();
+	m_maze.clear();
+
+	current_level++;
+	if (current_level >= num_levels)
+		current_level = 0;
+
+	read_level_data();
+	generate_maze();
+}
+
 void Level::reset_game()
 {
 	int w, h;
 	glfwGetWindowSize(m_window, &w, &h);
 	m_player.destroy();
-	m_player.init(initialPosition, physicsHandler);
+	
+	if (is_player_at_goal)
+		load_new_level();
+	else
+		for (Enemy& enemy : m_enemies) {
+			enemy.reset_position();
+			enemy.unfreeze();
+		};
 
-	for (Enemy& enemy : m_enemies) {
-		enemy.reset_position();
-		enemy.unfreeze();
-	};
+	m_player.init(initialPosition, physicsHandler);
 
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
