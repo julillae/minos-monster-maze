@@ -1,4 +1,11 @@
-#include<bits/stdc++.h>
+#include <cfloat>
+#include <iostream> 
+#include <set>
+#include <stack>
+#include <stdlib.h> 
+#include <string.h>
+#include <utility> 
+
 using namespace std;
 
 #include "../include/gameAI.hpp"
