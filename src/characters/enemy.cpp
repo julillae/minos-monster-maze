@@ -10,16 +10,6 @@
 #include <typeinfo>
 #include <cmath>
 
-void Enemy::freeze()
-{
-	m_frozen = true;
-}
-
-void Enemy::unfreeze()
-{
-	m_frozen = false;
-}
-
 void Enemy::reset_position()
 {
 	m_position = m_initialPosition;

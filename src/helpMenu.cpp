@@ -48,8 +48,8 @@ bool HelpMenu::init(vec2 position)
     set_position(position);
 
     // Setting initial values, scale is negative to make it face the opposite way
-    m_scale.x = 0.5f;
-    m_scale.y = 0.5f;
+    m_scale.x = 0.51f;
+    m_scale.y = 0.51f;
     m_rotation = 0.f;
 
     return true;
