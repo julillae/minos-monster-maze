@@ -247,8 +247,8 @@ bool Level::init(vec2 screen, Physics* physicsHandler, std::string levelName)
 	is_player_at_goal = false;
 
 	generate_maze();
-	
-	// spawn_enemies();
+
+	m_help_menu.init(initialPosition);
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -272,6 +272,7 @@ void Level::destroy()
 		floor.destroy();
 	m_enemies.clear();
 	m_floor.clear();
+	m_help_menu.destroy();
 
 	glfwDestroyWindow(m_window);
 }
@@ -335,6 +336,8 @@ bool Level::update(float elapsed_ms)
 		}
 		enemy.update(elapsed_ms);
 	}
+
+	m_help_menu.set_visibility(show_help_menu);
 
 	// If player is dead or beat the game, restart the game after the fading animation
 	if (!m_player.is_alive() && m_water.get_time_since_death() > 1.5)
@@ -419,7 +422,7 @@ void Level::draw()
 							{ -s, c, 0.f },
 							{ 0.f, 0.f, 1.f } };
 
-    mat3 translation_matrix = { {1.f, 0.f, 0.f}, 
+    mat3 translation_matrix = { {1.f, 0.f, 0.f},
 								{0.f, 1.f, 0.f},
 								{tx, ty, 1.f} };
 
@@ -428,7 +431,11 @@ void Level::draw()
 						{ 0.f, 0.f, 1.f } };
 
     projection_2D = mul(projection_2D, scaling_matrix);
-	projection_2D = mul(projection_2D, rotation_matrix);
+    if (!show_help_menu)
+	{
+		projection_2D = mul(projection_2D, rotation_matrix);
+	}
+
 	projection_2D = mul(projection_2D, translation_matrix);
 
     for (auto& floor : m_floor)
@@ -455,6 +462,8 @@ void Level::draw()
 
 	m_water.draw(projection_2D);
 
+	m_help_menu.draw(projection_2D);
+
 	//////////////////
 	// Presenting
 	glfwSwapBuffers(m_window);
@@ -476,19 +485,39 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	m_player.on_key(key, action);
 
-	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-		if (key == GLFW_KEY_Z) {
-			isRotating = true;
-			increment = (increment + 1) % 360;
+	if (!show_help_menu)
+	{
+		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+			if (key == GLFW_KEY_Z) {
+				isRotating = true;
+				increment = (increment + 1) % 360;
+			}
+			if (key == GLFW_KEY_X) {
+				isRotating = true;
+				increment = (increment - 1) % 360;
+			}
+			rotation = static_cast<float>((increment * M_PI) / 180);
 		}
-		if (key == GLFW_KEY_X) {
-			isRotating = true;
-			increment = (increment - 1) % 360;
+		else if (action == GLFW_RELEASE && (key == GLFW_KEY_Z || key == GLFW_KEY_X)) {
+			isRotating = false;
 		}
-		rotation = static_cast<float>((increment * M_PI) / 180);
 	}
-	else if (action == GLFW_RELEASE && (key == GLFW_KEY_Z || key == GLFW_KEY_X)) {
-		isRotating = false;
+
+	if (action == GLFW_PRESS && key == GLFW_KEY_H) {
+		show_help_menu = !show_help_menu;
+		if (show_help_menu) {
+			for(Enemy& e : m_enemies) {
+				e.freeze();
+			}
+			m_help_menu.set_position(m_player.get_position());
+			m_player.freeze();
+		} else {
+			for(Enemy& e : m_enemies) {
+				e.unfreeze();
+			}
+			m_player.unfreeze();
+		}
+
 	}
 
 	// Resetting game
