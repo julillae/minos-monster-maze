@@ -60,6 +60,8 @@ public:
 
 	bool is_invincible()const;
 
+	void set_invincibility(bool setting);
+
 	// Get character's horizontal direction
 	Direction get_h_direction();
 	
