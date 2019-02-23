@@ -13,6 +13,7 @@ void Character::set_properties(vec2 initialPosition, float scaleFactor, float xV
 	m_rotation = 0.f;
 	m_position = initialPosition;
 	m_velocity = {xVel, 0.0f};
+	set_invincibility(false);
 }
 
 void Character::set_dimensions(Texture* texture, float spriteSheetWidth, float spriteSheetHeight, int xTrim, int yTrim)
@@ -102,6 +103,11 @@ void Character::kill() {
 
 bool Character::is_invincible()const {
 	return isInvincible;
+}
+
+void Character::set_invincibility(bool setting)
+{
+	isInvincible = setting;
 }
 
 void Character::initStateTree()
