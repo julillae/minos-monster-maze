@@ -28,7 +28,7 @@ public:
 	void on_key(int key, int action);
 
 	// Sets the correct sprite sheet tile for appropriate animation
-	void set_animation();
+	void set_animation()override;
 
 	// Returns true if the character is in a state that can jump
 	bool can_jump();
