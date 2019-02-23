@@ -35,7 +35,7 @@ void Character::destroy()
 }
 
 void Character::set_acceleration(vec2 acc) {
-	m_acceleration.x = acc.x; m_acceleration.y = acc.y;
+	m_acceleration = acc;
 }
 
 vec2 Character::get_acceleration() {
@@ -43,7 +43,7 @@ vec2 Character::get_acceleration() {
 }
 
 void Character::set_velocity(vec2 vel) {
-	m_velocity.x = vel.x; m_velocity.y = vel.y;
+	m_velocity = vel;
 }
 
 vec2 Character::get_velocity() {
@@ -58,9 +58,21 @@ vec2 Character::get_scale()const {
 	return m_scale;
 }
 
-void Character::move()
-{
-	m_position.x += m_velocity.x; m_position.y += m_velocity.y;
+void Character::freeze() {
+	preFreezeState = characterState->currentState;
+	characterState->changeState(frozen);
+	m_frozen = true;
+}
+
+void Character::unfreeze() {
+	characterState->changeState(thawing);
+	characterState->changeState(preFreezeState);
+	m_frozen = false;
+}
+
+void Character::move() {
+	if (characterState->currentState != frozen)
+		m_position = add(m_position, m_velocity);
 }
 
 void Character::set_direction(Direction d)
@@ -86,6 +98,10 @@ bool Character::is_alive()const {
 
 void Character::kill() {
 	characterState->changeState(dead);
+}
+
+bool Character::is_invincible()const {
+	return isInvincible;
 }
 
 void Character::initStateTree()
@@ -115,6 +131,7 @@ void Character::initStateTree()
 		{landing, idle, 1},
 		{landing, running, 1},
 		{landing, jumping, 1},
+		{landing, frozen, 1},
 		{landing, dead, 1},
 		{frozen, thawing},
 		{thawing, idle, 0},
