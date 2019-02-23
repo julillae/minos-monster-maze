@@ -81,10 +81,11 @@ bool Level::spawn_floor(vec2 position)
 void Level::generate_maze()
 {
 	fprintf(stderr, "Generating maze\n");
-	// Initial tile
-	spawn_floor({0, 0});
 	const float initial_x = 40.0;
 	const float initial_y = 30.0;
+	// Initial tile
+	spawn_floor({initial_x, initial_y});
+
 	float tile_width = 0.f;
 	float tile_height = 0.f;
 	
