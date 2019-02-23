@@ -337,6 +337,8 @@ bool Level::update(float elapsed_ms)
 		enemy.update(elapsed_ms);
 	}
 
+	m_help_menu.set_visibility(show_help_menu);
+
 	// If player is dead or beat the game, restart the game after the fading animation
 	if (!m_player.is_alive() && m_water.get_time_since_death() > 1.5)
 		reset_game();
@@ -459,13 +461,6 @@ void Level::draw()
 	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 
 	m_water.draw(projection_2D);
-
-	if (show_help_menu)
-	{
-		m_help_menu.set_visibility(true);
-	} else {
-		m_help_menu.set_visibility(false);
-	}
 
 	m_help_menu.draw(projection_2D);
 
