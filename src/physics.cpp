@@ -121,6 +121,8 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 				isRightOfAtLeastOnePlatform = true;
 			}
 
+
+			//TODO: doublecheck the logic that pushes player back "up" to see if it still works properly with rotation
 			// get the floor position
 			vec2 floorPos = floor.get_position();
 			vec2 playPos = c->get_position();
@@ -213,9 +215,10 @@ void Physics::characterAccelerationUpdate(Player * c) {
 			horzAcc = { accStep, 0.f };
     }
 
-	//vec2 rotatedHorzAcc = rotateVec(horzAcc, rotation);
-	//vec2 rotatedGravity = rotateVec(gravityAcc, rotation);
-	//vec2 newAcc = add(rotatedHorzAcc, rotatedGravity);
+	//TODO: get angle of the platform player is standing on and apply angle as appropriate
+	//		for player's horizontal acceleration.
+	//		note that the angle should be different depending on whether the player's moving left or right
+	//		as long as the platform is not perfectly horizontal
 	vec2 newAcc = add(horzAcc, gravityAcc);
     c->set_acceleration(newAcc);
 }
