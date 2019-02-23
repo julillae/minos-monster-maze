@@ -92,7 +92,20 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 		collisionNode = collisionWithFixedWalls(c, &floor);
 		if (collisionNode.isCollided) {
 			float collisionAngle = collisionNode.angleOfCollision;
-			collisionAngle = fmod(collisionAngle + rotation, M_PI);
+
+			// logic needed to get new angle (collisionAngle + rotation) within
+			// the needed -pi to pi range
+			collisionAngle = fmod(collisionAngle + rotation, 2 * M_PI);
+			float anglePastPi = 0.f;
+			if (collisionAngle > M_PI) {
+				anglePastPi = collisionAngle - M_PI;
+				collisionAngle = -M_PI + anglePastPi;
+			}
+			else if (collisionAngle < -M_PI) {
+				anglePastPi = collisionAngle + M_PI;
+				collisionAngle = M_PI + anglePastPi;
+			}
+
 			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
 				c->set_on_platform();
 				isOnAtLeastOnePlatform = true;
@@ -135,17 +148,17 @@ void Physics::characterVelocityUpdate(Player* c)
 {
 	if (c->characterState->currentState != frozen) {
 		float platformDrag = 0.75; //eventually make this a property of the platform
-
-		vec2 cAcc = c->get_acceleration();
+		
 		vec2 cVelocity = c->get_velocity();
-		cVelocity = add(cVelocity, cAcc);
 
 		// rotate velocity vector back to normal orientation to reuse existing logic
 		cVelocity = rotateVec(cVelocity, -rotation);
-		//cAcc = rotateVec(cVelocity, -rotation);
+		vec2 cAcc = c->get_acceleration();
+		cVelocity = add(cVelocity, cAcc);
 
 		float maxHorzSpeed = c->maxHorzSpeed;
-		float horzDirection = fabs(cVelocity.x) / cVelocity.x;
+		float horzDirection = 1.f;
+		if (cVelocity.x < 0) horzDirection = -1;
 		float horzSpeed = fabs(cVelocity.x);
 		horzSpeed = min(maxHorzSpeed, horzSpeed) * horzDirection;
 		cVelocity.x = horzSpeed;
@@ -200,9 +213,10 @@ void Physics::characterAccelerationUpdate(Player * c) {
 			horzAcc = { accStep, 0.f };
     }
 
-	vec2 rotatedHorzAcc = rotateVec(horzAcc, rotation);
-	vec2 rotatedGravity = rotateVec(gravityAcc, rotation);
-	vec2 newAcc = add(rotatedHorzAcc, rotatedGravity);
+	//vec2 rotatedHorzAcc = rotateVec(horzAcc, rotation);
+	//vec2 rotatedGravity = rotateVec(gravityAcc, rotation);
+	//vec2 newAcc = add(rotatedHorzAcc, rotatedGravity);
+	vec2 newAcc = add(horzAcc, gravityAcc);
     c->set_acceleration(newAcc);
 }
 
