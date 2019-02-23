@@ -7,7 +7,7 @@
 #include <string.h>
 #include <cassert>
 #include <sstream>
-
+#include <time.h>
 #include <iostream>
 #include <fstream>
 
@@ -246,6 +246,14 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	fprintf(stderr, "Loaded music\n");
 
 	is_player_at_goal = false;
+	int w, h;
+	glfwGetFramebufferSize(m_window, &w, &h);
+	glViewport(0, 0, w, h);
+	float left = 0.f;// *-0.5;
+	float right = (float)w;// *0.5;
+	prev_tx = -700.f;
+	leftbound = initialPosition.x - 100.f;
+	rightbound = initialPosition.x + 100.f;
 
 	current_level = startLevel;
     read_level_data();
@@ -402,12 +410,41 @@ void Level::draw()
 	float sy = 2.f * osScaleFactor / (top - bottom); //this is where you play around with the camera
 	
 	float tx = 0.f;
-	float ty = 0.f;
+	//float ty = 0.f;
 	bool cameraTracking = true;
 	if (cameraTracking){
 		// translation if camera tracks player
-		tx = -p_position.x;
-		ty = -p_position.y;
+		rotateVec(p_position, -rotation);
+		if (m_player.isOnPlatform) {
+			float target = -p_position.y;
+			float difference = target - prev_ty;
+			float delta = difference * 0.1f;
+			ty = prev_ty + delta;
+			prev_ty = ty;
+		}
+		else {
+			ty = prev_ty;
+		}
+
+		float tem_x = -p_position.x;
+		if (tem_x > rightbound) {
+			float range = 100.f;
+			rightbound = tem_x;
+			leftbound = rightbound - range;
+			tx = rightbound - range / 2.f;
+			prev_tx = tx;
+		}
+		else if (tem_x < leftbound) {
+			float range = 100.f;
+			leftbound = tem_x;
+			rightbound = leftbound + range;
+			tx = leftbound + range / 2.f;
+			prev_tx = tx;
+		}
+		else {
+			tx = prev_tx;
+		}
+		rotateVec(p_position, rotation);
 	}
 	else {
 		// translation for fixed camera
