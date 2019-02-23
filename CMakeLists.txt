@@ -52,6 +52,7 @@ set(SOURCE_FILES
     src/physics.cpp
     src/level.cpp
     src/stateTree.cpp
+    src/helpMenu.cpp
     
 
     include/project_path.hpp
@@ -75,6 +76,7 @@ set(SOURCE_FILES
     include/physics.hpp
     include/level.hpp
     include/stateTree.hpp
+    include/helpMenu.hpp
     
 	)
 
