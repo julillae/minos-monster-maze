@@ -2,7 +2,7 @@
 
 bool HelpMenu::init(vec2 position)
 {
-    const char* textureFile = textures_path("test-help-menu.png");
+    const char* textureFile = textures_path("help-menu.png");
 
     if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
 
@@ -48,8 +48,8 @@ bool HelpMenu::init(vec2 position)
     set_position(position);
 
     // Setting initial values, scale is negative to make it face the opposite way
-    m_scale.x = 2.0f;
-    m_scale.y = 2.0f;
+    m_scale.x = 0.5f;
+    m_scale.y = 0.5f;
     m_rotation = 0.f;
 
     return true;
