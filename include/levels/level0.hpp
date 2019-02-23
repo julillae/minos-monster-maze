@@ -106,6 +106,6 @@ private:
 	//store the previous x_position for camera follow
 	float prev_tx = 0.f;
 	float ty = 0.f;
-	float leftbound = -0.2f;
-	float rightbound = 0.2f;
+	float leftbound = -0.1f;
+	float rightbound = 0.1f;
 };

@@ -351,7 +351,7 @@ void Level0::draw()
 	// Clearing backbuffer
 	glViewport(0, 0, w, h);
 	glDepthRange(0.00001, 10);
-	const float clear_color[3] = { 0.5f, 0.5f, 0.5f };
+	const float clear_color[3] = { 0.f, 0.f, 1.f };
 
 	glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
 	glClearDepth(1.f);
@@ -389,18 +389,18 @@ void Level0::draw()
 		}
 		float tem_x = -(2*p_position.x)/(right - left);	
 		if (tem_x>rightbound){
-			float range = 0.4f;
+			float range = 0.2f;
 			rightbound = tem_x;
 			leftbound = rightbound-range;
-			tx = tem_x;
+			tx = rightbound-range/2.f;
 			prev_tx = tx;
 			//tx = -(2*p_position.x)/(right - left);
 			//printf("%f\n", tx);
 		}else if (tem_x<leftbound){
-			float range = 0.4f;
+			float range = 0.2f;
 			leftbound = tem_x;
 			rightbound = leftbound+range;
-			tx=tem_x;
+			tx=leftbound+range/2.f;
 			prev_tx = tx;
 		}else{
 			tx = prev_tx;
