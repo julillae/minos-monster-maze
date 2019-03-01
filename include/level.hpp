@@ -93,7 +93,9 @@ private:
     float m_seed_rng;
 
     Mix_Music* m_background_music;
-	Mix_Chunk* m_salmon_dead_sound;
+	Mix_Chunk* m_player_dead_sound;
+	Mix_Chunk* m_player_jump_sound;
+	Mix_Chunk* level_complete_sound;
 
     // C++ rng
 	std::default_random_engine m_rng;
