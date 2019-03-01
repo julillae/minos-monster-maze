@@ -498,6 +498,10 @@ void Level::draw()
 		ty = -(top + bottom)/2;
 	}
 
+	vec2 rot = rotateVec({tx,ty}, rotation);
+	tx = rot.x;
+	ty = rot.y;
+
 	float c = cosf(-rotation);
 	float s = sinf(-rotation);
 
