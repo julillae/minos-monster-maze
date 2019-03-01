@@ -230,7 +230,9 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	//www.soundimage.org
 
 	m_background_music = Mix_LoadMUS(audio_path("secret_catacombs.wav"));
-	m_salmon_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
+	m_player_dead_sound = Mix_LoadWAV(audio_path("death.wav"));
+	m_player_jump_sound = Mix_LoadWAV(audio_path("jump.wav"));
+	level_complete_sound = Mix_LoadWAV(audio_path("nextLevel.wav"));
 
 	if (m_background_music == nullptr)
 	{
@@ -271,8 +273,12 @@ void Level::destroy()
 
 	if (m_background_music != nullptr)
 		Mix_FreeMusic(m_background_music);
-	if (m_salmon_dead_sound != nullptr)
-		Mix_FreeChunk(m_salmon_dead_sound);
+	if (m_player_dead_sound != nullptr)
+		Mix_FreeChunk(m_player_dead_sound);
+	if (m_player_jump_sound != nullptr)
+		Mix_FreeChunk(m_player_jump_sound);
+	if (level_complete_sound != nullptr)
+		Mix_FreeChunk(level_complete_sound);
 
 	Mix_CloseAudio();
 
@@ -314,7 +320,7 @@ bool Level::update(float elapsed_ms)
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
 		{
 			if (!m_player.is_invincible() && m_player.is_alive()) {
-				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+				Mix_PlayChannel(-1, m_player_dead_sound, 0);
 				m_player.kill();
 				m_water.set_player_dead();
 			}
@@ -324,6 +330,7 @@ bool Level::update(float elapsed_ms)
 //	 Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided && !is_player_at_goal)
 	{
+		Mix_PlayChannel(-1, level_complete_sound, 0);
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
 		m_player.set_invincibility(true);
@@ -338,6 +345,8 @@ bool Level::update(float elapsed_ms)
 		physicsHandler->updateCharacterVelocityRotation(&m_player);
 		m_player.unfreeze();
 	}
+	if (m_player.characterState->currentState == jumping) 
+		Mix_PlayChannel(-1, m_player_jump_sound, 0);
 	m_player.update(elapsed_ms);
 
 	for (auto& enemy : m_enemies) {
@@ -604,6 +613,7 @@ void Level::reset_game()
 		load_new_level();
 	else
 		for (Enemy& enemy : m_enemies) {
+			enemy.freeze();
 			enemy.reset_position();
 			enemy.unfreeze();
 		};
