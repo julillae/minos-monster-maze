@@ -10,10 +10,6 @@ class Enemy : public Character
 
 public:
 
-	// Freeze the enemy and unfreeze
-	void freeze();
-	void unfreeze();
-
 	// Sets the enemy position to its initial position
 	void reset_position();
 
@@ -24,5 +20,4 @@ public:
 protected:
 	float speed = 2.0f;
 	vec2 m_initialPosition;
-	bool m_frozen;
 };

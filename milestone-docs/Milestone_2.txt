@@ -1,0 +1,32 @@
+Milestone 2 Requirements:
+
+1. Sustain progressive, non-repetitive gameplay using all required features for 2 min or more:
+    - Longer levels requiring moving back and forth along the platforms, jumping between platforms, and a rotation of the world to complete
+    - Adding a second level for the player to continue onto after they complete the first
+
+2. State and decision tree:
+    - State tree implemented as a weighted graph to define transitions of characters between states. This is implemented for all characters (its default implementation is set up in the character superclass) and includes the following possible states: falling, jumping, rising, landing, alive, dead, idle, running, frozen, thawing and reviving. The possible states and the cost to transition between them can be overridden in a subclass based on a given character’s abilities.
+    - A* algorithm to determine a path for smart enemies to follow the character (not yet integrated into the enemy classes, but mostly complete implementation)
+
+3. Provide extended sprite and background assets set as well as corresponding actions:
+    - Idle, running, jumping, and death animation for player
+    - Idle, running, and death animation for simple enemies (spiders)
+
+4. Provide basic user tutorial/help:
+    - Help menu details user key inputs for character movement ( “up arrow” for jump, “left arrow” for left, and “right arrow” for right) and rotating the world (“z” for counterclockwise and “x” for clockwise)
+    - Help menu that is visible/hides when the “h” key is pressed
+
+5. Stable game code supporting continuing execution and graceful termination:
+    - Level resets when player dies. 
+    - Player continues onto second level when they complete the first
+    - Game resets to first level when second level is completed
+    - Player no longer sinks to the floor when jumping or moving
+    - Changes to make the display resolution of the game consistent across different operating systems, particularly on macOS’ retina display
+    - Changed update frequency to be a fixed time-step rather than relying on local clock speeds, so that the game runs at a consistent speed on different computers
+    -
+6. Creative:
+    - Background and platform textures have been updated since the skeletal game to match the game’s aesthetic
+    - Animation for sprites with the use of a sprite sheet and cycling through the appropriate tiles of the sprite sheet to mimic movement
+    - Background music has been changed from the clip provided in the assignment 1 structure to a piece that suits the ‘retro’ feel of our game
+    - Camera smoothly follows the player as they move through the (2) levels
+    - World now rotates based on user input (“z” and “x” keys) and player responds to the ‘new’ direction of gravity resulting from the change

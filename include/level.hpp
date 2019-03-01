@@ -13,6 +13,7 @@
 #include "mazeComponents/ice.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
+#include "helpMenu.hpp"
 
 // stlib
 #include <vector>
@@ -32,7 +33,7 @@ public:
 	~Level();
 
     // Creates a window, sets up events and begins the game
-	bool init(vec2 screen, Physics* physicsHandler, std::string levelName);
+	bool init(vec2 screen, Physics* physicsHandler, int startLevel);
 
 	// Releases all associated resource
     void destroy();
@@ -52,7 +53,7 @@ private:
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-    void read_txt_file(std::string levelName);
+    void read_level_data();
 
 	// Generate a spider enemy
 	bool spawn_spider_enemy(vec2 position, float bound);
@@ -60,6 +61,7 @@ private:
 	// Generates a new floor
 	bool spawn_floor(vec2 position);
 
+	void load_new_level();
 	void reset_game();
 
 	// Generates hard-coded maze in each level
@@ -83,6 +85,7 @@ private:
 	Exit m_exit;
 	std::vector<Spider> m_enemies;
     std::vector<Floor> m_floor;
+    HelpMenu m_help_menu;
 
     float m_seed_rng;
 
@@ -105,9 +108,15 @@ private:
 	float ty = 0.f;
 	float leftbound = -0.1f;
 	float rightbound = 0.1f;
+	float acc_rotate=0.f;
+
+	int num_levels = 2;
+	int current_level = 0;
 
     // Variables determined by level data
 	vec2 initialPosition;
+	float m_maze_width;
+    float m_maze_height;
 
 	// Rows of the maze where:
 	// 1 = platform
@@ -115,6 +124,7 @@ private:
 	// 3 = initial position
 	// 4 = spider enemy (and its path)
     std::vector<std::vector <int>> m_maze;
-    float m_maze_width;
-    float m_maze_height;
+
+
+    bool show_help_menu = false;
 };

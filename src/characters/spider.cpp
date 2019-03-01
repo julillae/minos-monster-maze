@@ -24,6 +24,7 @@ bool Spider::init(vec2 initialPosition, Physics * physicsHandler)
 
 	initStateTree();
 	set_properties(initialPosition, 3.0f, speed);
+	m_frozen = false;
 	set_dimensions(&spider_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
 	characterState->changeState(running);
 
