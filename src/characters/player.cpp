@@ -15,23 +15,45 @@
 bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 {
 	this->physicsHandler = physicsHandler;
+	const char* textureFile;
 
-	const char* textureFile = textures_path("player-sprite-sheet.png");
+	// if use_sprite set to true, uses player sprite
+    // else uses coloured box representing size of bounding box
+	use_sprite = true;
+	if (use_sprite)
+	{
+		textureFile = textures_path("player-sprite-sheet.png");
+		if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
 
-	if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
+		float spriteSheetWidth = 8.0f;
+		float spriteSheetHeight = 5.0f;
+		int horizontalTrim = 6;
+		int verticalTrim = 7;
 
-	float spriteSheetWidth = 8.0f;
-	float spriteSheetHeight = 5.0f;
-    int horizontalTrim = 6;
-    int verticalTrim = 7;
+		spriteSheet.init(&m_texture, { spriteSheetWidth, spriteSheetHeight }, this);
 
-	spriteSheet.init(&m_texture, { spriteSheetWidth, spriteSheetHeight }, this);
+		spriteSheet.set_render_data(this, 0);
+		set_properties(initialPosition, 2.0f, 0.f);
+		set_dimensions(&m_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
+	} else
+	{
+		textureFile = textures_path("solid.png");
+		if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
+		if (!RenderManager::set_render_data(&m_texture, this)) return false;
 
-	spriteSheet.set_render_data(this, 0);
+		set_properties(initialPosition, 52.0f, 0.f);
+		m_scale.x = 52.0f / m_texture.width;
+		m_scale.y = 50.0f / m_texture.height;
+		width = m_texture.width * m_scale.x;
+		height = m_texture.height * m_scale.y;
+	}
+
 
     initStateTree();
-	set_properties(initialPosition, 2.0f, 0.f);
-	set_dimensions(&m_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
+
+	// kept in for debugging
+//	fprintf(stderr, "player height: %f\n", height); // 50.00f
+//	fprintf(stderr, "player width: %f\n", width); // 52.00f
 
 	isBelowPlatform = false;
 	isLeftOfPlatform = false;
@@ -50,7 +72,7 @@ void Player::update(float ms)
 
 void Player::draw(const mat3& projection)
 {
-	set_animation();
+	if (use_sprite) set_animation();
 
 	RenderManager::draw(projection, m_position, m_rotation, m_scale, &m_texture, this);
 }
