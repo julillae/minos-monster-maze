@@ -109,6 +109,7 @@ private:
 	float ty = 0.f;
 	float leftbound;
 	float rightbound;
+	float acc_rotate=0.f;
 
 	int num_levels = 2;
 	int current_level = 0;

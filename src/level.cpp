@@ -1,6 +1,7 @@
 // Header
 #include "../include/level.hpp"
 #include "../include/physics.hpp"
+#include "../include/common.hpp"
 
 // stlib
 #include <stdio.h>
@@ -413,6 +414,16 @@ void Level::draw()
 	//float ty = 0.f;
 	bool cameraTracking = true;
 	if (cameraTracking){
+		acc_rotate = acc_rotate-rotation;
+
+	while (abs(acc_rotate)>360.f){
+		if(acc_rotate>0){
+			acc_rotate=acc_rotate-360.f;
+		}else{
+			acc_rotate = acc_rotate+360.f;
+		}
+	}
+
 		// translation if camera tracks player
 		rotateVec(p_position, -rotation);
 		if (m_player.isOnPlatform) {
@@ -440,12 +451,47 @@ void Level::draw()
 			rightbound = leftbound + range;
 			tx = leftbound + range / 2.f;
 			prev_tx = tx;
+			if (abs(acc_rotate)>=45.f && abs(acc_rotate)<=135.f){
+				float tmp = tx;
+				tx = ty;
+			}
 		}
 		else {
 			tx = prev_tx;
 		}
 		rotateVec(p_position, rotation);
-	}
+		if ((abs(acc_rotate)>=45.f && abs(acc_rotate)<=135.f) || (abs(acc_rotate)>=225.f && abs(acc_rotate)<=315.f)){
+			if (m_player.isOnPlatform) {
+				float target = -p_position.x;
+				float difference = target - prev_tx;
+				float delta = difference * 0.1f;
+				tx = prev_tx + delta;
+				prev_tx = tx;
+			}
+			else {
+				tx = prev_tx;
+			}
+
+			float tem_y = -p_position.y;
+			if (tem_y > rightbound) {
+				float range = 100.f;
+				rightbound = tem_y;
+				leftbound = rightbound - range;
+				ty = rightbound - range / 2.f;
+				prev_ty = ty;
+			}
+			else if (tem_y < leftbound) {
+				float range = 100.f;
+				leftbound = tem_y;
+				rightbound = leftbound + range;
+				ty = leftbound + range / 2.f;
+				prev_ty = ty;
+			}else {
+			ty = prev_ty;
+		}
+		}
+		
+		}
 	else {
 		// translation for fixed camera
 		tx = -(right + left)/2;
