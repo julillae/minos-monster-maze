@@ -61,6 +61,8 @@ private:
 	// Generates a new floor
 	bool spawn_floor(vec2 position);
 
+	bool spawn_ice(vec2 position);
+
 	void load_new_level();
 	void reset_game();
 
@@ -85,6 +87,7 @@ private:
 	Exit m_exit;
 	std::vector<Spider> m_enemies;
     std::vector<Floor> m_floor;
+	std::vector<std::unique_ptr<MazeComponent>> m_platforms;
     HelpMenu m_help_menu;
 
     float m_seed_rng;

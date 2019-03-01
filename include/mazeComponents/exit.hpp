@@ -8,7 +8,7 @@ class Exit : public FixedComponent
 
 public:
 
-    bool init(vec2 position);
+    bool init(vec2 position)override;
 
     // Renders the component
 	void draw(const mat3& projection)override;

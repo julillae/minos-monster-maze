@@ -11,6 +11,5 @@ class FixedComponent : public MazeComponent
 
 public:
 
-    vec2 get_bounding_box()const;
 
 };
