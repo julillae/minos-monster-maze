@@ -21,6 +21,7 @@
 #define mesh_path(name) data_path  "/meshes/" name
 
 static float g_tolerance = 0.000001f;
+//float rotate_rad = 0.f;
 
 // Not much math is needed and there are already way too many libraries linked (:
 // If you want to do some overloads..

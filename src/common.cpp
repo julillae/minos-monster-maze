@@ -1,4 +1,5 @@
 #include "../include/common.hpp"
+#include "../include/level.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../ext/stb_image/stb_image.h"
@@ -296,6 +297,7 @@ void Renderable::transform_rotate(float radians)
 {
 	float c = cosf(radians);
 	float s = sinf(radians);
+	//rotate_rad = rotate_rad+radians;
 	mat3 R = { { c, s, 0.f },{ -s, c, 0.f },{ 0.f, 0.f, 1.f } };
 	transform = mul(transform, R);
 }
