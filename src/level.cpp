@@ -77,6 +77,19 @@ bool Level::spawn_floor(vec2 position)
 	return false;
 }
 
+bool Level::spawn_ice(vec2 position)
+{
+	std::unique_ptr<Ice> ice = std::unique_ptr<Ice>(new Ice);
+
+	if (ice->init(position))
+	{
+		m_platforms.emplace_back(std::move(ice));
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn ice");
+	return false;
+}
+
 // Generates maze
 void Level::generate_maze()
 {
@@ -114,7 +127,7 @@ void Level::generate_maze()
 
 			if (cell == 1) {
 				// Spawn platform
-				MazeComponent& new_floor = m_floor.back();	
+				MazeComponent& new_floor = m_floor.back();
 
 				// Assuming all tiles are the same size, we only need to grab these values once
 				if (tile_width == 0.f || tile_height == 0.f) {
@@ -143,6 +156,25 @@ void Level::generate_maze()
 					setting_enemy = true;
 					enemy_start_pos = {x_pos, y_pos};
 				}
+			} else if (cell == 5) {
+                // Spawn platform
+               // MazeComponent* new_ice = m_platforms.back();
+                Ice new_ice;
+				//Ice* new_ice = new Ice();
+
+                // Assuming all tiles are the same size, we only need to grab these values once
+                if (tile_width == 0.f || tile_height == 0.f) {
+                    tile_width = new_ice.get_width();
+                    tile_height = new_ice.get_height();
+
+                    // Fix x and y positions if tile_width was zero
+                    x_pos = (j * tile_width) + initial_x;
+                    y_pos = (i * tile_height) + initial_y;
+                }
+
+                //spawn_platform({x_pos, y_pos}, MazeComponents::ice);
+				spawn_ice({x_pos, y_pos});
+
 			}
 
             j = j + 1.f;
@@ -150,6 +182,7 @@ void Level::generate_maze()
         i = i + 1.f;
 	}
 
+    //fprintf(stderr, "Platforms size %lu\n", m_platforms.size());
     // Set global variables
     m_maze_width = j;
     m_maze_height = i;
@@ -481,6 +514,8 @@ void Level::draw()
 
     for (auto& floor : m_floor)
 		floor.draw(projection_2D);
+    for (auto& platform : m_platforms)
+        platform->draw(projection_2D); //TODO: check dealloc
 	for (auto& enemy : m_enemies)
 		enemy.draw(projection_2D);
 	m_exit.draw(projection_2D);

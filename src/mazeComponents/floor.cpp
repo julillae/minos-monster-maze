@@ -20,7 +20,7 @@ bool Floor::init(vec2 position)
 	m_scale.y = 25.0f / texture.height; //texture.height scale
 	m_rotation = 0.f;
 
-	set_size();
+	set_size(&texture);
 
 	return true;
 }
@@ -33,18 +33,4 @@ void Floor::draw(const mat3& projection)
 vec2 Floor::get_position()const
 {
 	return m_position;
-}
-
-
-// Returns the local bounding coordinates scaled by the current size of the component
-vec2 Floor::get_bounding_box()const
-{
-	// fabs is to avoid negative scale due to the facing direction
-	return { std::fabs(m_scale.x) * texture.width, std::fabs(m_scale.y) * texture.height };
-}
-
-void Floor::set_size()
-{
-	m_width = std::fabs(m_scale.x) * texture.width;
-	m_height = std::fabs(m_scale.y) * texture.height;
 }

@@ -136,6 +136,7 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
 				c->set_on_platform();
 				isOnAtLeastOnePlatform = true;
+//				m_platform = floor;
 			}
 
 			if (collisionAngle > -M_PI / 4 && collisionAngle < M_PI / 4) {
