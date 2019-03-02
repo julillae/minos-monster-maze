@@ -5,6 +5,7 @@
 // Put implementation for Spider enemies here
 
 Texture Spider::spider_texture;
+Texture Spider::b_texture;
 
 bool Spider::init(vec2 initialPosition, Physics * physicsHandler)
 {
@@ -15,33 +16,33 @@ bool Spider::init(vec2 initialPosition, Physics * physicsHandler)
     // if use_sprite set to true, uses player sprite
     // else uses coloured box representing size of bounding box
     use_sprite = false;
+
+    textureFile = textures_path("spider-sprite-sheet.png");
+    if (!RenderManager::load_texture(textureFile, &spider_texture, this)) return false;
+
+    float spriteSheetWidth = 9.0f;
+    float spriteSheetHeight = 3.0f;
+    int horizontalTrim = 16;
+    int verticalTrim = 19;
+
+    set_properties(initialPosition, 3.0f, speed);
+    set_dimensions(&spider_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
+
     if (use_sprite)
     {
-        textureFile = textures_path("spider-sprite-sheet.png");
-        if (!RenderManager::load_texture(textureFile, &spider_texture, this)) return false;
-
-        float spriteSheetWidth = 9.0f;
-        float spriteSheetHeight = 3.0f;
-        int horizontalTrim = 16;
-        int verticalTrim = 19;
 
         spriteSheet.init(&spider_texture, { spriteSheetWidth, spriteSheetHeight }, this);
         spriteSheet.set_render_data(this, 0);
 
-        set_properties(initialPosition, 3.0f, speed);
-        set_dimensions(&spider_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
-
     } else
     {
         textureFile = textures_path("blue.png");
-        if (!RenderManager::load_texture(textureFile, &spider_texture, this)) return false;
-        if (!RenderManager::set_render_data(&spider_texture, this)) return false;
+        if (!RenderManager::load_texture(textureFile, &b_texture, this)) return false;
+        if (!RenderManager::set_render_data(&b_texture, this)) return false;
 
-        set_properties(initialPosition, 48.0f, speed);
-        m_scale.x = 48.0f / spider_texture.width;
-        m_scale.y = 39.0f / spider_texture.height;
-        width = spider_texture.width * m_scale.x;
-        height = spider_texture.height * m_scale.y;
+        m_scale.x = width / b_texture.width;
+        m_scale.y = height / b_texture.height;
+
     }
 
 	initStateTree();
@@ -58,8 +59,16 @@ bool Spider::init(vec2 initialPosition, Physics * physicsHandler)
 
 void Spider::draw(const mat3& projection)
 {
-    if (use_sprite) set_animation();
-	RenderManager::draw(projection, m_position, m_rotation, m_scale, &spider_texture, this);
+    if (use_sprite)
+    {
+        set_animation();
+        RenderManager::draw(projection, m_position, m_rotation, m_scale, &spider_texture, this);
+
+    } else
+    {
+        RenderManager::draw(projection, m_position, m_rotation, m_scale, &b_texture, this);
+
+    }
 
 }
 

@@ -119,5 +119,6 @@ protected:
 
 	// sets texture to sprite or coloured box for debugging collisions
 	bool use_sprite;
+	Texture box_texture;
 
 };
