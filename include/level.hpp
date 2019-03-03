@@ -26,6 +26,8 @@
 
 // Level class
 
+typedef std::vector<std::unique_ptr<FixedComponent>> Platforms;
+
 class Level
 {
 public:
@@ -86,8 +88,7 @@ private:
     Player m_player;
 	Exit m_exit;
 	std::vector<Spider> m_enemies;
-    std::vector<Floor> m_floor;
-	std::vector<std::unique_ptr<MazeComponent>> m_platforms;
+	Platforms m_platforms;
     HelpMenu m_help_menu;
 
     float m_seed_rng;

@@ -67,10 +67,11 @@ bool Level::spawn_spider_enemy(vec2 position, float bound)
 
 bool Level::spawn_floor(vec2 position)
 {
-	Floor floor;
-	if (floor.init(position))
+	std::unique_ptr<Floor> floor = std::unique_ptr<Floor>(new Floor);
+
+	if (floor->init(position))
 	{
-		m_floor.emplace_back(floor);
+		m_platforms.emplace_back(std::move(floor));
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn floor");
@@ -127,12 +128,11 @@ void Level::generate_maze()
 
 			if (cell == 1) {
 				// Spawn platform
-				MazeComponent& new_floor = m_floor.back();
 
 				// Assuming all tiles are the same size, we only need to grab these values once
 				if (tile_width == 0.f || tile_height == 0.f) {
-					tile_width = new_floor.get_width();
-					tile_height = new_floor.get_height();
+					tile_width = m_platforms.back()->get_width();
+					tile_height = m_platforms.back()->get_height();
 
 					// Fix x and y positions if tile_width was zero
 					x_pos = (j * tile_width) + initial_x;
@@ -158,9 +158,7 @@ void Level::generate_maze()
 				}
 			} else if (cell == 5) {
                 // Spawn platform
-               // MazeComponent* new_ice = m_platforms.back();
                 Ice new_ice;
-				//Ice* new_ice = new Ice();
 
                 // Assuming all tiles are the same size, we only need to grab these values once
                 if (tile_width == 0.f || tile_height == 0.f) {
@@ -172,7 +170,6 @@ void Level::generate_maze()
                     y_pos = (i * tile_height) + initial_y;
                 }
 
-                //spawn_platform({x_pos, y_pos}, MazeComponents::ice);
 				spawn_ice({x_pos, y_pos});
 
 			}
@@ -181,8 +178,6 @@ void Level::generate_maze()
 		}
         i = i + 1.f;
 	}
-
-    //fprintf(stderr, "Platforms size %lu\n", m_platforms.size());
     // Set global variables
     m_maze_width = j;
     m_maze_height = i;
@@ -318,10 +313,10 @@ void Level::destroy()
 	m_player.destroy();
 	for (auto& enemy : m_enemies)
 		enemy.destroy();
-	for (auto& floor : m_floor)
-		floor.destroy();
+	for (auto& platform: m_platforms)
+		platform->destroy();
 	m_enemies.clear();
-	m_floor.clear();
+	m_platforms.clear();
 	m_help_menu.destroy();
 
 	glfwDestroyWindow(m_window);
@@ -369,7 +364,7 @@ bool Level::update(float elapsed_ms)
 		m_player.set_invincibility(true);
 	}
 
-	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_floor);
+	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_platforms);
 	m_player.set_rotation(rotation);
 	if (applyFreeze) {
 		m_player.freeze();
@@ -521,10 +516,8 @@ void Level::draw()
 
 	projection_2D = mul(projection_2D, translation_matrix);
 
-    for (auto& floor : m_floor)
-		floor.draw(projection_2D);
     for (auto& platform : m_platforms)
-        platform->draw(projection_2D); //TODO: check dealloc
+        platform->draw(projection_2D);
 	for (auto& enemy : m_enemies)
 		enemy.draw(projection_2D);
 	m_exit.draw(projection_2D);
@@ -620,13 +613,13 @@ void Level::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 
 void Level::load_new_level()
 {
-	for (auto& floor : m_floor)
-		floor.destroy();
+	for (auto& platform: m_platforms)
+		platform->destroy();
 
 	for (auto& enemy : m_enemies)
 		enemy.destroy();
-	
-	m_floor.clear();
+
+	m_platforms.clear();
 	m_enemies.clear();
 	m_maze.clear();
 

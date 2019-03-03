@@ -24,7 +24,7 @@ public:
         float angleOfCollision;
     };
 
-    CollisionNode collisionWithFixedWalls(Player *p, const Floor *m);
+    CollisionNode collisionWithFixedWalls(Player *p, std::unique_ptr<FixedComponent> const &f);
 
     CollisionNode collideWithEnemy(Player *p, const Enemy *t);
 
@@ -34,7 +34,7 @@ public:
 	//      so that we can use the logic for Smart Enemies as well.
 	//      Also will eventually want to make Floor into the more generic FixedComponent
 	//      So that this will work when we have multiple types of platforms
-	void characterCollisionsWithFixedComponents(Player *c, std::vector<Floor> fixedComponents);
+    void characterCollisionsWithFixedComponents(Player *c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents);
 
 	void characterVelocityUpdate(Character *c);
 
