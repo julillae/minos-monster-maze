@@ -35,6 +35,12 @@ Level::~Level()
 
 }
 
+void Level::store_platform_coords(vec2 coords, int platform_key) {
+	std::string platformType = platform_types.find(platform_key)->second;
+	std::pair <float,float> coords_pair (coords.x,coords.y);
+	platforms_by_coords.emplace(coords_pair, platformType);
+}
+
 void Level::read_level_data() {
 	std::string level = std::to_string(current_level);
 	fprintf(stderr, "Loading level %s\n", level.c_str());
@@ -95,32 +101,27 @@ bool Level::spawn_ice(vec2 position)
 void Level::generate_maze()
 {
 	fprintf(stderr, "Generating maze\n");
-	const float initial_x = 40.0;
-	const float initial_y = 30.0;
 	// Initial tile
-	spawn_floor({initial_x, initial_y});
-
-	float tile_width = 0.f;
-	float tile_height = 0.f;
+	spawn_floor({0.0, 0.0});
 	
 	bool setting_enemy = false;
 	vec2 enemy_start_pos;
 
-    float i = 0.f; 
+    float i = 0.f;
 	float j = 0.f;
 
 	for (auto &row : m_maze) {
         j = 0.f;
 		for (int &cell : row) {	
 
-			float x_pos = (j * tile_width) + initial_x;
-			float y_pos = (i * tile_height) + initial_y;
+			float x_pos = (j * m_tile_width);
+			float y_pos = (i * m_tile_height);
 
 			if (setting_enemy && cell != 4) {
 				// If we were setting enemy positions, and we hit a cell with no enemy,
 				// Spawn the enemy we were setting
 
-				float last_x_pos = x_pos - tile_width;
+				float last_x_pos = x_pos - m_tile_width;
 				float distance = abs(last_x_pos - enemy_start_pos.x);
 				spawn_spider_enemy(enemy_start_pos, distance);
 				setting_enemy = false;
@@ -130,23 +131,27 @@ void Level::generate_maze()
 				// Spawn platform
 
 				// Assuming all tiles are the same size, we only need to grab these values once
-				if (tile_width == 0.f || tile_height == 0.f) {
-					tile_width = m_platforms.back()->get_width();
-					tile_height = m_platforms.back()->get_height();
+				if (m_tile_width == 0.f || m_tile_height == 0.f) {
+					m_tile_width = m_platforms.back()->get_width();
+					m_tile_height = m_platforms.back()->get_height();
 
 					// Fix x and y positions if tile_width was zero
-					x_pos = (j * tile_width) + initial_x;
-					y_pos = (i * tile_height) + initial_y;
+					x_pos = (j * m_tile_width);
+					y_pos = (i * m_tile_height);
 				}
 
-				spawn_floor({x_pos, y_pos});
+				if ( spawn_floor({x_pos, y_pos}) ) {
+					store_platform_coords({x_pos, y_pos}, cell);
+				}
 			} else if (cell == 2) {
 				// Add exit
 				Exit new_exit;
 
-				new_exit.init({x_pos, y_pos});
+				if ( new_exit.init({x_pos, y_pos}) ) {
+					store_platform_coords({x_pos, y_pos}, cell);
 
-				m_exit = new_exit;
+					m_exit = new_exit;
+				}
 			} else if (cell == 3) {
 				// Set initial position of player
 				initialPosition = {x_pos, y_pos};
@@ -161,14 +166,14 @@ void Level::generate_maze()
                 Ice new_ice;
 
                 // Assuming all tiles are the same size, we only need to grab these values once
-                if (tile_width == 0.f || tile_height == 0.f) {
-                    tile_width = new_ice.get_width();
-                    tile_height = new_ice.get_height();
+				if (m_tile_width == 0.f || m_tile_height == 0.f) {
+					m_tile_width = m_platforms.back()->get_width();
+					m_tile_height = m_platforms.back()->get_height();
 
-                    // Fix x and y positions if tile_width was zero
-                    x_pos = (j * tile_width) + initial_x;
-                    y_pos = (i * tile_height) + initial_y;
-                }
+					// Fix x and y positions if tile_width was zero
+					x_pos = (j * m_tile_width);
+					y_pos = (i * m_tile_height);
+				}
 
 				spawn_ice({x_pos, y_pos});
 
@@ -178,6 +183,7 @@ void Level::generate_maze()
 		}
         i = i + 1.f;
 	}
+
     // Set global variables
     m_maze_width = j;
     m_maze_height = i;
@@ -654,4 +660,51 @@ void Level::reset_game()
 	increment = 0;
 	rotation = 0.f;
 	previouslyFrozen = false;
+}
+
+// Returns the platform type if there is a platform at these coordinates
+// If no platform exists, returns ""
+std::string Level::get_platform_by_coordinates(std::pair<float, float> coords) {
+	std::pair<float, float> coords_check (coords.first, coords.second);
+	if (platforms_by_coords.find(coords_check) != platforms_by_coords.end()) {
+		return platforms_by_coords.find(coords_check)->second;
+	}
+
+	return "";
+}
+
+// Method for visualizing full maze in console for debugging purposes
+// 1 = platform
+// 2 = exit
+// 3 = initial player position
+// 4 = enemy path
+void Level::print_maze() {
+	for (int i = 0; i < m_maze.size(); i++)
+	{
+		cout << "\n";
+		for (int j = 0; j < m_maze[i].size(); j++)
+		{
+			cout << m_maze[i][j];
+		}
+	}
+}
+
+std::vector<std::vector <int>> Level::get_original_maze() {
+	return m_maze;
+}
+
+float Level::get_maze_width() {
+	return m_maze_width;
+}
+
+float Level::get_maze_height() {
+	return m_maze_height;
+}
+
+float Level::get_tile_width() {
+	return m_tile_width;
+}
+
+float Level::get_tile_height() {
+	return m_tile_height;
 }
