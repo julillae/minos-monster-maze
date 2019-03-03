@@ -13,9 +13,15 @@
 
 namespace
 {
-	int increment = 0;
 	float rotation = 0.f;
+	float rotationDeg = 0.f;
+	float rotationSpeed;
+	float maxRotationSpeed = 3.f;
+	float currentIntervalPos = 0.f;
+	float maxIntervalLength = 20.f;
+	float normalizedIntervalPos;
 	bool isRotating = false;
+	bool rotateCW = false;
 	bool previouslyFrozen = false;
     void glfw_err_cb(int error, const char* desc)
     {
@@ -311,11 +317,21 @@ bool Level::update(float elapsed_ms)
 	physicsHandler->updateWorldRotation(rotation);
 
 	// freezes and unfreezes character for rotation
-	if (isRotating && !previouslyFrozen) {
-		applyFreeze = true;
-		previouslyFrozen = true;
+	if (isRotating && !show_help_menu) {
+		currentIntervalPos++;
+		currentIntervalPos = min(currentIntervalPos, maxIntervalLength);
+		normalizedIntervalPos = currentIntervalPos / maxIntervalLength;
+		rotationSpeed = (0.f, maxRotationSpeed, 0.f, 0.f, normalizedIntervalPos);
+		if (rotateCW) rotationSpeed *= -1;
+		rotationDeg = fmod(rotationDeg + rotationSpeed, 360.f);
+
+		rotation = static_cast<float>((rotationDeg * M_PI) / 180);
+		if (!previouslyFrozen) {
+			applyFreeze = true;
+			previouslyFrozen = true;
+		}
 	}
-	else if (!isRotating && previouslyFrozen) {
+	else if (previouslyFrozen) {
 		applyThaw = true;
 		previouslyFrozen = false;
 	}
@@ -542,19 +558,23 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	if (!show_help_menu)
 	{
-		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+		if (action == GLFW_PRESS) {
 			if (key == GLFW_KEY_Z) {
 				isRotating = true;
-				increment = (increment + 1) % 360;
+				rotateCW = false;
+				currentIntervalPos = 0;
 			}
 			if (key == GLFW_KEY_X) {
 				isRotating = true;
-				increment = (increment - 1) % 360;
+				rotateCW = true;
+				currentIntervalPos = 0;
 			}
-			rotation = static_cast<float>((increment * M_PI) / 180);
 		}
-		else if (action == GLFW_RELEASE && (key == GLFW_KEY_Z || key == GLFW_KEY_X)) {
-			isRotating = false;
+		else if (action == GLFW_RELEASE) {
+			if ((key == GLFW_KEY_Z && !rotateCW) || (key == GLFW_KEY_X && rotateCW)) {
+				isRotating = false;
+				currentIntervalPos = 0;
+			}
 		}
 	}
 
@@ -628,7 +648,7 @@ void Level::reset_game()
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
 	is_player_at_goal = false;
-	increment = 0;
+	rotationDeg = 0;
 	rotation = 0.f;
 	previouslyFrozen = false;
 }

@@ -38,6 +38,9 @@ vec2  negateVec(vec2 v);
 float vecLength(vec2 v);
 vec2 rotateVec(vec2 v, float rotation);
 
+//implemented according to Unit interval(0,1) https://en.wikipedia.org/wiki/Cubic_Hermite_spline
+float hermiteSplineVal(float startPos, float destPos, float startSlope, float endSlope, float intervalPos);
+
 // OpenGL utilities
 // cleans error buffer
 void gl_flush_errors();
