@@ -35,6 +35,7 @@ bool Harpy::init(vec2 initialPosition, Physics * physicsHandler)
 
     path_to_follow = stack<vec2>();
     cycle_start = Clock::now();
+    next_node = initialPosition;
 
 	return true;
 }
@@ -47,14 +48,93 @@ void Harpy::update(float ms)
         if (path_to_follow.empty() || update_path)
         {
          // call AI to get a path to the player   
-        } else {
-            moveAlongPath();
+        } 
+        moveAlongPath();
 	}
 
 }
 
 void Harpy::moveAlongPath(){
-    // pop off the next node to visit in the path
+    // check to see if already reached the next node in the path. If not, continue to move there
+    switch (direction)
+    {
+        case Direction::up:
+            if (m_position.y > next_node.y) {
+                move();
+                return;
+            }
+            break;
+        case Direction::down:
+            if (m_position.y < next_node.y) {
+                move();
+                return;
+            }
+            break;
+        case Direction::left:
+            if (m_position.x > next_node.x) {
+                move();
+                return;
+            }
+            break;
+        case Direction::right:
+            if (m_position.x < next_node.x) {
+                move();
+                return;
+            }
+            break;
+        default:
+            break;
+    }
+    // if we've reached the next node in the path, get a new next node and move towards it
+    next_node = path_to_follow.pop();
+    if (next_node.y < m_position.y) {
+        set_direction(Direction::up);
+        characterState->changeState(rising);
+    } else if (next_node.y > m_position.y) {
+        set_direction(Direction::down);
+        characterState->changeState(falling);
+    } else if (next_node.x < m_position.x) {
+        set_direction(Direction::left);
+        characterState->changeState(running);
+    } else if (next_node.x > m_position.x) {
+        set_direction(Direction::right);
+        characterState->changeState(running);
+    }
+    updateVelocity();
+    move();
+
+}
+
+void Harpy::updateVelocity() {
+    // if the character is idle, then the velocity is 0
+    if (characterState->currentState == idle) {
+        m_velocity.x = 0.f;
+        m_velocity.y = 0.f;
+        return;
+    }
+
+    // otherwise, we move update the velocity based on the direction the character is going
+    switch (direction)
+    {
+        case Direction::up:
+            m_velocity.x = 0.f;
+            m_velocity.y = - maxVerticalSpeed;
+            break;
+        case Direction::down:
+            m_velocity.x = 0.f;
+            m_velocity.y = maxVerticalSpeed;
+            break;
+        case Direction::left:
+            m_velocity.x = - maxHorzSpeed;
+            m_velocity.y = 0.f;
+            break;
+        case Direction::right:
+            m_velocity.x = maxHorzSpeed;
+            m_velocity.y = 0.f;
+            break;
+        default:
+            break;
+    }
 }
 
 bool Harpy::checkTimeElapsed() {
