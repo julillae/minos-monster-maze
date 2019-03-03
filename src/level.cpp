@@ -16,9 +16,9 @@ namespace
 	float rotation = 0.f;
 	float rotationDeg = 0.f;
 	float rotationSpeed;
-	float maxRotationSpeed = 3.f;
+	float maxRotationSpeed = 1.5f;
 	float currentIntervalPos = 0.f;
-	float maxIntervalLength = 20.f;
+	float maxIntervalLength = 50.f;
 	float normalizedIntervalPos;
 	bool isRotating = false;
 	bool rotateCW = false;
@@ -321,7 +321,7 @@ bool Level::update(float elapsed_ms)
 		currentIntervalPos++;
 		currentIntervalPos = min(currentIntervalPos, maxIntervalLength);
 		normalizedIntervalPos = currentIntervalPos / maxIntervalLength;
-		rotationSpeed = (0.f, maxRotationSpeed, 0.f, 0.f, normalizedIntervalPos);
+		rotationSpeed = hermiteSplineVal(0.f, maxRotationSpeed, 0.f, 0.f, normalizedIntervalPos);
 		if (rotateCW) rotationSpeed *= -1;
 		rotationDeg = fmod(rotationDeg + rotationSpeed, 360.f);
 
