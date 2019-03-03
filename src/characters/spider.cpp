@@ -15,7 +15,7 @@ bool Spider::init(vec2 initialPosition, Physics * physicsHandler)
 
     // if use_sprite set to true, uses player sprite
     // else uses coloured box representing size of bounding box
-    use_sprite = false;
+    use_sprite = true;
 
     textureFile = textures_path("spider-sprite-sheet.png");
     if (!RenderManager::load_texture(textureFile, &spider_texture, this)) return false;
