@@ -75,25 +75,25 @@ Physics::CollisionNode Physics::collideWithEnemy (Player *p, const Enemy *e) {
     return collisionNode;
 }
 
-Physics::CollisionNode Physics::collisionWithFixedWalls(Player *p, const Floor *f) {
-    float other_r = std::max(p->get_bounding_box().x, f->get_bounding_box().y);
-    float my_r = std::max(p->width, p->height);
+Physics::CollisionNode Physics::collisionWithFixedWalls(Player *p, std::unique_ptr<FixedComponent> const &f) {
+	float other_r = std::max(p->get_bounding_box().x, f->get_bounding_box().y);
+	float my_r = std::max(p->width, p->height);
 
-    bool isCollided = circleToCircleIntersection(p->get_position(), f->get_position(), other_r, my_r);
+	bool isCollided = circleToCircleIntersection(p->get_position(), f->get_position(), other_r, my_r);
 
-    CollisionNode collisionNode{};
-    collisionNode.isCollided = isCollided;
+	CollisionNode collisionNode{};
+	collisionNode.isCollided = isCollided;
 
 	if (isCollided) {
 		float dy = p->get_position().y - f->get_position().y;
 		float dx = f->get_position().x - p->get_position().x;
 		float collisionAngle = atan2(dy, dx);
-        collisionNode.angleOfCollision = collisionAngle;
+		collisionNode.angleOfCollision = collisionAngle;
 
-    } else {
-        collisionNode.angleOfCollision = 0;
-    }
-    return collisionNode;
+	} else {
+		collisionNode.angleOfCollision = 0;
+	}
+	return collisionNode;
 }
 
 Physics::CollisionNode Physics::collideWithExit (Player *p, const Exit *e) {
@@ -108,15 +108,15 @@ Physics::CollisionNode Physics::collideWithExit (Player *p, const Exit *e) {
     return collisionNode;
 }
 
-void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floor> fixedComponents) {
+void Physics::characterCollisionsWithFixedComponents(Player* c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents) {
 	bool isOnAtLeastOnePlatform = false;
 	bool isLeftOfAtLeastOnePlatform = false;
 	bool isRightOfAtLeastOnePlatform = false;
 	bool isBelowAtLeastOnePlatform = false;
 
 	Physics::CollisionNode collisionNode;
-	for (const auto &floor : fixedComponents) {
-		collisionNode = collisionWithFixedWalls(c, &floor);
+	for (const auto& fc : fixedComponents) {
+		collisionNode = collisionWithFixedWalls(c, std::move(fc));
 		if (collisionNode.isCollided) {
 			float collisionAngle = collisionNode.angleOfCollision;
 
@@ -152,7 +152,7 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 
 			//TODO: doublecheck the logic that pushes player back "up" to see if it still works properly with rotation
 			// get the floor position
-			vec2 floorPos = floor.get_position();
+			vec2 floorPos = fc->get_position();
 			vec2 playPos = c->get_position();
 			int floor_tolerance = 40;
 
