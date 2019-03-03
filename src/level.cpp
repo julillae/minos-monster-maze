@@ -17,6 +17,8 @@ namespace
 	float rotation = 0.f;
 	bool isRotating = false;
 	bool previouslyFrozen = false;
+	vec2 cameraCenter;
+	vec2 prevCameraCenter;
     void glfw_err_cb(int error, const char* desc)
     {
         fprintf(stderr, "%d: %s", error, desc);
@@ -249,6 +251,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 
 	// Playing background music undefinitely
 	Mix_PlayMusic(m_background_music, -1);
+	Mix_VolumeMusic(50);
 	
 	fprintf(stderr, "Loaded music\n");
 
@@ -258,15 +261,14 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	glViewport(0, 0, w, h);
 	float left = 0.f;// *-0.5;
 	float right = (float)w;// *0.5;
-	prev_tx = -700.f;
-	leftbound = initialPosition.x - 100.f;
-	rightbound = initialPosition.x + 100.f;
 
 	current_level = startLevel;
     read_level_data();
 	generate_maze();
 
 	m_help_menu.init(initialPosition);
+	cameraCenter = (initialPosition);
+	prevCameraCenter = cameraCenter;
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -423,42 +425,17 @@ void Level::draw()
 	float sx = 2.f * osScaleFactor / (right - left);
 	float sy = 2.f * osScaleFactor / (top - bottom); //this is where you play around with the camera
 	
-	float tx = 0.f;
-	//float ty = 0.f;
 	bool cameraTracking = true;
 	if (cameraTracking){
-		// translation if camera tracks player
-		rotateVec(p_position, -rotation);
-		if (m_player.isOnPlatform) {
-			float target = -p_position.y;
-			float difference = target - prev_ty;
-			float delta = difference * 0.1f;
-			ty = prev_ty + delta;
-			prev_ty = ty;
+		vec2 deviationVector = add(p_position, negateVec(prevCameraCenter));
+		vec2 shrinkingTetherVector = { 0.f,0.f };
+		if (vecLength(deviationVector) > g_tolerance) {
+			shrinkingTetherVector = scalarMultiply(deviationVector, 0.1f);
 		}
-		else {
-			ty = prev_ty;
-		}
-
-		float tem_x = -p_position.x;
-		if (tem_x > rightbound) {
-			float range = 100.f;
-			rightbound = tem_x;
-			leftbound = rightbound - range;
-			tx = rightbound - range / 2.f;
-			prev_tx = tx;
-		}
-		else if (tem_x < leftbound) {
-			float range = 100.f;
-			leftbound = tem_x;
-			rightbound = leftbound + range;
-			tx = leftbound + range / 2.f;
-			prev_tx = tx;
-		}
-		else {
-			tx = prev_tx;
-		}
-		rotateVec(p_position, rotation);
+		cameraCenter = add(prevCameraCenter, shrinkingTetherVector);
+		prevCameraCenter = cameraCenter;
+		tx = -cameraCenter.x;
+		ty = -cameraCenter.y;
 	}
 	else {
 		// translation for fixed camera

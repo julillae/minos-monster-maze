@@ -109,6 +109,11 @@ vec2 rotateVec(vec2 v, float rotation)
 	return {newX, newY};
 }
 
+vec2 scalarMultiply(vec2 v, float s)
+{
+	return vec2({v.x * s, v.y * s});
+}
+
 Texture::Texture()
 {
 
