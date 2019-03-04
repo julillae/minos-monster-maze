@@ -115,13 +115,8 @@ private:
 	// Part of hack needed to deal with the MacOs Retina Display issue where it doubles the pixels rendered
 	float osScaleFactor = 1.f;
 
-	//store the previous y_position for camera follow
-	float prev_ty = 0.f;
-	//store the previous x_position for camera follow
-	float prev_tx = 0.f;
-	float ty = 0.f;
-	float leftbound;
-	float rightbound;
+	float tx;
+	float ty;
 
 	int num_levels = 2;
 	int current_level = 0;
