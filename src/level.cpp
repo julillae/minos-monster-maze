@@ -430,7 +430,7 @@ void Level::draw()
 		vec2 deviationVector = add(p_position, negateVec(prevCameraCenter));
 		vec2 shrinkingTetherVector = { 0.f,0.f };
 		if (vecLength(deviationVector) > g_tolerance) {
-			shrinkingTetherVector = scalarMultiply(deviationVector, 0.1f);
+			shrinkingTetherVector = scalarMultiply(deviationVector, 0.05f);
 		}
 		cameraCenter = add(prevCameraCenter, shrinkingTetherVector);
 		prevCameraCenter = cameraCenter;
