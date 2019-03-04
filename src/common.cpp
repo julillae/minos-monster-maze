@@ -109,6 +109,22 @@ vec2 rotateVec(vec2 v, float rotation)
 	return {newX, newY};
 }
 
+// Given, a starting and ending position, and a starting and ending slope,
+// and a point (a float between 0 and 1) on a [0,1] interval
+// gives the interpolated position at that point on the interval
+float hermiteSplineVal(float startPos, float endPos, float startSlope, float endSlope, float intervalPos)
+{
+	float t = intervalPos;
+	float t2 = t * t;
+	float t3 = pow(t, 3);
+	float c1 = 2 * t3 - 3 * t2 + 1;
+	float c2 = t3 - 2 * t2 + t;
+	float c3 = -2 * t3 + 3 * t2;
+	float c4 = t3 - t2;
+
+	return c1 * startPos + c2 * startSlope + c3 * endPos + c4 * endSlope;
+}
+
 Texture::Texture()
 {
 
