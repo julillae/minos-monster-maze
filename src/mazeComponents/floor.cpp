@@ -19,6 +19,7 @@ bool Floor::init(vec2 position)
     m_scale.x = 25.0f / texture.width;  //texture.width scale
 	m_scale.y = 25.0f / texture.height; //texture.height scale
 	m_rotation = 0.f;
+	drag = 0.7;
 
 	set_size(&texture);
 

@@ -70,3 +70,8 @@ vec2 MazeComponent::get_bounding_box() const
 
 }
 
+float MazeComponent::get_drag()
+{
+    return drag;
+}
+
