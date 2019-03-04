@@ -2,20 +2,11 @@
 
 // Put shared implementation for smart enemies here
 
-Texture Smart::smart_texture;
-
 bool Smart::init(vec2 initialPosition, Physics * physicsHandler)
 {
 	this->physicsHandler = physicsHandler;
-    
-    const char* textureFile = textures_path("minotaur_right.png");
-	if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
-
-    RenderManager::set_render_data(&m_texture, this);
 
 	set_properties(initialPosition, 0.4f, speed);
-	width = smart_texture.width * m_scale.x;
-	height = smart_texture.height * m_scale.y;
 	direction = Direction::right;
 	m_initialPosition = initialPosition;
 
