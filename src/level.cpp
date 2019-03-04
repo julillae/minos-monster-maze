@@ -26,6 +26,7 @@ namespace
 	bool previouslyFrozen = false;
 	vec2 cameraCenter;
 	vec2 prevCameraCenter;
+	bool cameraTracking = true;
     void glfw_err_cb(int error, const char* desc)
     {
         fprintf(stderr, "%d: %s", error, desc);
@@ -274,8 +275,15 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	generate_maze();
 
 	m_help_menu.init(initialPosition);
-	cameraCenter = (initialPosition);
-	prevCameraCenter = cameraCenter;
+	if (cameraTracking) {
+		cameraCenter = (initialPosition);
+		prevCameraCenter = cameraCenter;
+	}
+	else {
+		float txOffset = w / 2;
+		float tyOffset = h / 2;
+		cameraCenter = vec2({ txOffset, tyOffset});
+	}
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -445,8 +453,7 @@ void Level::draw()
 	float sx = 2.f * osScaleFactor / (right - left);
 	float sy = 2.f * osScaleFactor / (top - bottom); //this is where you play around with the camera
 	
-	bool cameraTracking = true;
-	if (cameraTracking){
+	if (cameraTracking && !show_help_menu){
 		vec2 deviationVector = add(p_position, negateVec(prevCameraCenter));
 		vec2 shrinkingTetherVector = { 0.f,0.f };
 		if (vecLength(deviationVector) > g_tolerance) {
@@ -454,14 +461,9 @@ void Level::draw()
 		}
 		cameraCenter = add(prevCameraCenter, shrinkingTetherVector);
 		prevCameraCenter = cameraCenter;
-		tx = -cameraCenter.x;
-		ty = -cameraCenter.y;
 	}
-	else {
-		// translation for fixed camera
-		tx = -(right + left)/2;
-		ty = -(top + bottom)/2;
-	}
+	tx = -cameraCenter.x;
+	ty = -cameraCenter.y;
 
 	float c = cosf(-rotation);
 	float s = sinf(-rotation);
@@ -559,7 +561,7 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 	if (action == GLFW_PRESS && key == GLFW_KEY_H) {
 		show_help_menu = !show_help_menu;
 		if (show_help_menu) {
-			m_help_menu.set_position(m_player.get_position());
+			m_help_menu.set_position(cameraCenter);
 		}
 
 	}
