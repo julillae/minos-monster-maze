@@ -16,7 +16,7 @@ namespace
 	float rotation = 0.f;
 	float rotationDeg = 0.f;
 	float rotationSpeed;
-	float maxRotationSpeed = 1.5f;
+	float maxRotationSpeed = 1.0f;
 	float currentIntervalPos = 0.f;
 	float maxIntervalLength = 50.f;
 	float normalizedIntervalPos;
