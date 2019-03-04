@@ -109,6 +109,11 @@ vec2 rotateVec(vec2 v, float rotation)
 	return {newX, newY};
 }
 
+vec2 scalarMultiply(vec2 v, float s)
+{
+	return vec2({v.x * s, v.y * s});
+}
+
 // Given, a starting and ending position, and a starting and ending slope,
 // and a point (a float between 0 and 1) on a [0,1] interval
 // gives the interpolated position at that point on the interval
