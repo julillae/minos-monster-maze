@@ -17,7 +17,7 @@ public:
     ~Physics();
 
 	float rotation = 0.f;	// world rotation in radians
-	vec2 gravityAcc = {0.f,  9.81f * 0.12f };
+	vec2 gravityAcc = {0.f,  9.81f * 0.07f };
 
     struct CollisionNode {
         bool isCollided;
@@ -42,7 +42,7 @@ public:
 
 	void updateWorldRotation(float currentRotation);
 
-	void updateCharacterVelocityRotation(Character * c);
+	void updateCharacterVelocityRotation(Character * c, float vecRotation);
 
 	vec2 calculateDimensionsAfterRotation(vec2 c1, vec2 bound);
 
