@@ -70,14 +70,16 @@ private:
 
 	void load_new_level();
 	void reset_game();
+	void freeze_all_enemies();
+	void unfreeze_all_enemies();
+	void update_all_enemies(float elapsed_ms);
+
 
 	// Generates hard-coded maze in each level
 	void generate_maze();
 	void print_maze();
 	void store_platform_coords(vec2 coords, int platform_key);
 
-	//create delay experience for platform-snapping
-	void delay(float secs);
 private:
 	// Window handle
 	GLFWwindow* m_window;

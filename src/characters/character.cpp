@@ -60,7 +60,8 @@ vec2 Character::get_scale()const {
 }
 
 void Character::freeze() {
-	preFreezeState = characterState->currentState;
+	if (characterState->currentState != frozen)
+		preFreezeState = characterState->currentState;
 	characterState->changeState(frozen);
 	m_frozen = true;
 }

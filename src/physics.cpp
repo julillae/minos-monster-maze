@@ -268,10 +268,10 @@ void Physics::updateWorldRotation(float currentRotation)
 	rotation = currentRotation;
 }
 
-void Physics::updateCharacterVelocityRotation(Character *c)
+void Physics::updateCharacterVelocityRotation(Character *c, float vecRotation)
 {
 	vec2 currentVelocityVector = c->get_velocity();
-	vec2 rotatedVelocityVector = rotateVec(currentVelocityVector, rotation);
+	vec2 rotatedVelocityVector = rotateVec(currentVelocityVector, vecRotation);
 	c->set_velocity(rotatedVelocityVector);
 }
 

@@ -13,6 +13,7 @@
 
 namespace
 {
+	float rotationStart = 0.f;
 	float rotation = 0.f;
 	float rotationDeg = 0.f;
 	float rotationSpeed;
@@ -25,6 +26,7 @@ namespace
 	bool previouslyFrozen = false;
 	vec2 cameraCenter;
 	vec2 prevCameraCenter;
+	bool cameraTracking = true;
     void glfw_err_cb(int error, const char* desc)
     {
         fprintf(stderr, "%d: %s", error, desc);
@@ -273,8 +275,15 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	generate_maze();
 
 	m_help_menu.init(initialPosition);
-	cameraCenter = (initialPosition);
-	prevCameraCenter = cameraCenter;
+	if (cameraTracking) {
+		cameraCenter = (initialPosition);
+		prevCameraCenter = cameraCenter;
+	}
+	else {
+		float txOffset = w / 2;
+		float tyOffset = h / 2;
+		cameraCenter = vec2({ txOffset, tyOffset});
+	}
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -319,7 +328,13 @@ bool Level::update(float elapsed_ms)
 	physicsHandler->updateWorldRotation(rotation);
 
 	// freezes and unfreezes character for rotation
-	if (isRotating && !show_help_menu) {
+	if (show_help_menu) {
+		if (!previouslyFrozen) {
+			applyFreeze = true;
+			previouslyFrozen = true;
+		}
+	}
+	else if (isRotating) {
 		currentIntervalPos++;
 		currentIntervalPos = min(currentIntervalPos, maxIntervalLength);
 		normalizedIntervalPos = currentIntervalPos / maxIntervalLength;
@@ -363,23 +378,20 @@ bool Level::update(float elapsed_ms)
 	m_player.set_rotation(rotation);
 	if (applyFreeze) {
 		m_player.freeze();
+		freeze_all_enemies();
+		rotationStart = rotation;
 	}
 	else if (applyThaw) {
-		physicsHandler->updateCharacterVelocityRotation(&m_player);
+		float rotateVelVec = rotation - rotationStart;
+		physicsHandler->updateCharacterVelocityRotation(&m_player, rotateVelVec);
 		m_player.unfreeze();
+		unfreeze_all_enemies();
 	}
 	if (m_player.characterState->currentState == jumping) 
 		Mix_PlayChannel(-1, m_player_jump_sound, 0);
 	m_player.update(elapsed_ms);
 
-	for (auto& enemy : m_enemies) {
-		if (applyFreeze) {
-			enemy.freeze();
-		} else if (applyThaw) {
-			enemy.unfreeze();
-		}
-		enemy.update(elapsed_ms);
-	}
+	update_all_enemies(elapsed_ms);
 
 	m_help_menu.set_visibility(show_help_menu);
 
@@ -441,8 +453,7 @@ void Level::draw()
 	float sx = 2.f * osScaleFactor / (right - left);
 	float sy = 2.f * osScaleFactor / (top - bottom); //this is where you play around with the camera
 	
-	bool cameraTracking = true;
-	if (cameraTracking){
+	if (cameraTracking && !show_help_menu){
 		vec2 deviationVector = add(p_position, negateVec(prevCameraCenter));
 		vec2 shrinkingTetherVector = { 0.f,0.f };
 		if (vecLength(deviationVector) > g_tolerance) {
@@ -450,14 +461,9 @@ void Level::draw()
 		}
 		cameraCenter = add(prevCameraCenter, shrinkingTetherVector);
 		prevCameraCenter = cameraCenter;
-		tx = -cameraCenter.x;
-		ty = -cameraCenter.y;
 	}
-	else {
-		// translation for fixed camera
-		tx = -(right + left)/2;
-		ty = -(top + bottom)/2;
-	}
+	tx = -cameraCenter.x;
+	ty = -cameraCenter.y;
 
 	float c = cosf(-rotation);
 	float s = sinf(-rotation);
@@ -533,41 +539,29 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	m_player.on_key(key, action);
 
-	if (!show_help_menu)
-	{
-		if (action == GLFW_PRESS) {
-			if (key == GLFW_KEY_Z) {
-				isRotating = true;
-				rotateCW = false;
-				currentIntervalPos = 0;
-			}
-			if (key == GLFW_KEY_X) {
-				isRotating = true;
-				rotateCW = true;
-				currentIntervalPos = 0;
-			}
+	if (action == GLFW_PRESS) {
+		if (key == GLFW_KEY_Z) {
+			isRotating = true;
+			rotateCW = false;
+			currentIntervalPos = 0;
 		}
-		else if (action == GLFW_RELEASE) {
-			if ((key == GLFW_KEY_Z && !rotateCW) || (key == GLFW_KEY_X && rotateCW)) {
-				isRotating = false;
-				currentIntervalPos = 0;
-			}
+		if (key == GLFW_KEY_X) {
+			isRotating = true;
+			rotateCW = true;
+			currentIntervalPos = 0;
+		}
+	}
+	else if (action == GLFW_RELEASE) {
+		if ((key == GLFW_KEY_Z && !rotateCW) || (key == GLFW_KEY_X && rotateCW)) {
+			isRotating = false;
+			currentIntervalPos = 0;
 		}
 	}
 
 	if (action == GLFW_PRESS && key == GLFW_KEY_H) {
 		show_help_menu = !show_help_menu;
 		if (show_help_menu) {
-			for(Enemy& e : m_enemies) {
-				e.freeze();
-			}
-			m_help_menu.set_position(m_player.get_position());
-			m_player.freeze();
-		} else {
-			for(Enemy& e : m_enemies) {
-				e.unfreeze();
-			}
-			m_player.unfreeze();
+			m_help_menu.set_position(cameraCenter);
 		}
 
 	}
@@ -628,6 +622,21 @@ void Level::reset_game()
 	rotationDeg = 0;
 	rotation = 0.f;
 	previouslyFrozen = false;
+}
+
+void Level::freeze_all_enemies()
+{
+	for (Enemy& e : m_enemies) e.freeze();
+}
+
+void Level::unfreeze_all_enemies()
+{
+	for (Enemy& e : m_enemies) e.unfreeze();
+}
+
+void Level::update_all_enemies(float elapsed_ms)
+{
+	for (Enemy& e : m_enemies) e.update(elapsed_ms);
 }
 
 // Returns the platform type if there is a platform at these coordinates
