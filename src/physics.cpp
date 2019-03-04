@@ -136,7 +136,7 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, const std::vecto
 			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
 				c->set_on_platform();
 				isOnAtLeastOnePlatform = true;
-//				m_platform = floor;
+				c->m_platform_drag = fc->get_drag();
 			}
 
 			if (collisionAngle > -M_PI / 4 && collisionAngle < M_PI / 4) {
@@ -186,7 +186,7 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, const std::vecto
 void Physics::characterVelocityUpdate(Character* c)
 {
 	if (c->characterState->currentState != frozen) {
-		float platformDrag = 0.75; //eventually make this a property of the platform
+		float platformDrag = c->m_platform_drag;
 		
 		vec2 cVelocity = c->get_velocity();
 
