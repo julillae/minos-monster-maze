@@ -41,27 +41,14 @@ vec2 calculateNewPosition(vec2 c1, vec2 c2) {
     return newPos;
 }
 
-vec2 Physics::calculateDimensionsAfterRotation(vec2 c1, vec2 bound) {
-	float midX = c1.x + bound.x/2;
-	float midY = c1.y + bound.y/2;
+vec2 calculateMinkowskiSum(vec2 rectA, vec2 rectB, vec2 boundA, vec2 boundB)
+{
+    float wy = ((boundA.x + boundB.x) * (rectA.y - rectB.y));
+    float hx = ((boundA.y + boundB.y) * (rectA.x - rectB.x));
 
-	float cornersX[4] = {c1.x - midX, c1.x - midX, c1.x + bound.x - midX, c1.x + bound.x - midX};
-	float cornersY[4] = {c1.y - midY, c1.y - midY, c1.y + bound.y - midY, c1.y + bound.y - midY};
+    vec2 sum = {wy, hx};
 
-	float newX = 1e10;
-	float newY = 1e10;
-
-	for (int i=0; i<4; i=i+1) {
-		newX = min(newX, cornersX[i]*cosf(rotation) - cornersY[i]*sin(rotation) + midX);
-		newY = min(newY, cornersX[i]*sinf(rotation) - cornersY[i]*cos(rotation) + midY);
-	}
-
-	float newWidth = midX - newX;
-	float newHeight = midY - newY;
-
-	vec2 newDimensions = {newWidth, newHeight};
-
-	return newDimensions;
+    return sum;
 }
 
 Physics::CollisionNode Physics::collideWithEnemy (Player *p, const Enemy *e) {
@@ -118,60 +105,77 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 	for (const auto &floor : fixedComponents) {
 		collisionNode = collisionWithFixedWalls(c, &floor);
 		if (collisionNode.isCollided) {
-			float collisionAngle = collisionNode.angleOfCollision;
 
-			// logic needed to get new angle (collisionAngle + rotation) within
-			// the needed -pi to pi range
-			collisionAngle = fmod(collisionAngle + rotation, 2 * M_PI);
-			float anglePastPi = 0.f;
-			if (collisionAngle > M_PI) {
-				anglePastPi = collisionAngle - M_PI;
-				collisionAngle = -M_PI + anglePastPi;
-			}
-			else if (collisionAngle < -M_PI) {
-				anglePastPi = collisionAngle + M_PI;
-				collisionAngle = M_PI + anglePastPi;
-			}
+		    vec2 floorPos = floor.get_position();
+		    vec2 cPos = c->get_position();
+		    vec2 floorBound = floor.get_bounding_box();
+		    vec2 cBound = c->get_bounding_box();
 
-			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
-				c->set_on_platform();
-				isOnAtLeastOnePlatform = true;
-			}
+		    vec2 collisionVector = calculateMinkowskiSum
+                    (floorPos, cPos, floorBound, cBound);
 
-			if (collisionAngle > -M_PI / 4 && collisionAngle < M_PI / 4) {
-				isLeftOfAtLeastOnePlatform = true;
-			}
-			if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
-				isBelowAtLeastOnePlatform = true;
-			}
-			if (collisionAngle > 3 * M_PI / 4 || collisionAngle < -3 * M_PI / 4) {
-				isRightOfAtLeastOnePlatform = true;
-			}
+		    collisionVector = rotateVec(collisionVector, rotation);
 
+		    float wy = collisionVector.x;
+		    float hx = collisionVector.y;
 
-			//TODO: doublecheck the logic that pushes player back "up" to see if it still works properly with rotation
-			// get the floor position
-			vec2 floorPos = floor.get_position();
-			vec2 playPos = c->get_position();
-			int floor_tolerance = 40;
-
-			// get character's direction
-            Direction h_direction = c->get_h_direction();
-
-			// get the normalized vector
-			vec2 newPos = calculateNewPosition(playPos, floorPos);
-
-//			if (rotation > 0 && rotation < M_PI/2 && h_direction == Direction::right) {
-//			   // calculate new dimensions
-//
-//            } else if (rotation > 0 && rotation < M_PI/2 && h_direction == Direction::left) {
-//				// calculate new dimensions
-//            }
-
-            // if the player position deviates too much from the floor position, push the player back up
-			if (floorPos.y - playPos.y < floor_tolerance) {
-                c->set_position(newPos);
+            if (wy > hx) {
+                if (wy > -hx) {
+                    c->set_on_platform();
+                    isOnAtLeastOnePlatform = true;
+                } else {
+                    isRightOfAtLeastOnePlatform = true;
+                }
+            } else {
+                if (wy > -hx) {
+                    isLeftOfAtLeastOnePlatform = true;
+                } else {
+                    isBelowAtLeastOnePlatform = true;
+                }
             }
+
+//			float collisionAngle = collisionNode.angleOfCollision;
+//
+//			// logic needed to get new angle (collisionAngle + rotation) within
+//			// the needed -pi to pi range
+//			collisionAngle = static_cast<float>(fmod(collisionAngle + rotation, 2 * M_PI));
+//			float anglePastPi = 0.f;
+//			if (collisionAngle > M_PI) {
+//				anglePastPi = static_cast<float>(collisionAngle - M_PI);
+//				collisionAngle = static_cast<float>(-M_PI + anglePastPi);
+//			}
+//			else if (collisionAngle < -M_PI) {
+//				anglePastPi = static_cast<float>(collisionAngle + M_PI);
+//				collisionAngle = static_cast<float>(M_PI + anglePastPi);
+//			}
+//
+//			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
+//				c->set_on_platform();
+//				isOnAtLeastOnePlatform = true;
+//			}
+//
+//			if (collisionAngle > -M_PI / 4 && collisionAngle < M_PI / 4) {
+//				isLeftOfAtLeastOnePlatform = true;
+//			}
+//			if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
+//				isBelowAtLeastOnePlatform = true;
+//			}
+//			if (collisionAngle > 3 * M_PI / 4 || collisionAngle < -3 * M_PI / 4) {
+//				isRightOfAtLeastOnePlatform = true;
+//			}
+
+
+
+//			vec2 playPos = c->get_position();
+//			int floor_tolerance = 40;
+//
+//            Direction h_direction = c->get_h_direction();
+//
+//			vec2 newPos = calculateNewPosition(playPos, floorPos);
+//
+//			if (floorPos.y - playPos.y < floor_tolerance) {
+//                c->set_position(newPos);
+//            }
 		}
 	}
 
