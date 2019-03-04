@@ -117,4 +117,8 @@ protected:
 	SpriteSheet spriteSheet;
 	bool is_anim_once = false;
 
+	// sets texture to sprite or coloured box for debugging collisions
+	bool use_sprite;
+	Texture box_texture;
+
 };
