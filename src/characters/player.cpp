@@ -19,7 +19,7 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 
 	// if use_sprite set to true, uses player sprite
     // else uses coloured box representing size of bounding box
-	use_sprite = true;
+	use_sprite = false;
 
 	textureFile = textures_path("player-sprite-sheet.png");
 	if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
