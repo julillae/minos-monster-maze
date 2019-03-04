@@ -1,14 +1,14 @@
 #include <stack>
 #include <chrono>
 
-using Clock = std::chrono::high_resolution_clock;
-
 #include "../include/characters/harpy.hpp"
 #include "../include/common.hpp"
 #include "../include/physics.hpp"
+#include "../include/gameAI.hpp"
 
 // Put implementation for Harpy enemies here
 
+using Clock = std::chrono::high_resolution_clock;
 Texture Harpy::harpy_texture;
 
 bool Harpy::init(vec2 initialPosition, Physics * physicsHandler)
@@ -47,7 +47,8 @@ void Harpy::update(float ms)
         bool update_path = checkTimeElapsed();
         if (path_to_follow.empty() || update_path)
         {
-         // call AI to get a path to the player   
+            // call AI to get a path to the player   
+            path_to_follow = GameAI::aStarSearch(m_position, m_position);
         } 
         moveAlongPath();
 	}
@@ -86,7 +87,8 @@ void Harpy::moveAlongPath(){
             break;
     }
     // if we've reached the next node in the path, get a new next node and move towards it
-    next_node = path_to_follow.pop();
+    next_node = path_to_follow.top();
+    path_to_follow.pop();
     if (next_node.y < m_position.y) {
         set_direction(Direction::up);
         characterState->changeState(rising);
