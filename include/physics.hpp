@@ -19,6 +19,9 @@ public:
 	float rotation = 0.f;	// world rotation in radians
 	vec2 gravityAcc = {0.f,  9.81f * 0.07f };
 
+    std::pair<vec2, float> MTV;
+
+
     struct CollisionNode {
         bool isCollided;
         float angleOfCollision;
@@ -44,9 +47,18 @@ public:
 
 	void updateCharacterVelocityRotation(Character * c, float vecRotation);
 
-	vec2 calculateDimensionsAfterRotation(vec2 c1, vec2 bound);
-
 	bool isZero(float f);
   
 	bool notZero(float f);
+
+    std::vector<vec2> getVertices(vec2 object, vec2 bounds)const;
+
+    std::vector<vec2> getAxes(std::vector<vec2> vertices)const;
+
+    vec2 getProjection(vec2 axis, std::vector<vec2> vertices)const;
+
+    bool checkForCollision(Player* p, const Floor *f);
+
+
+
 };
