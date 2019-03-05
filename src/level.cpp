@@ -13,7 +13,6 @@
 
 namespace
 {
-	const float pi = 3.14159265359;
 	float rotationStart = 0.f;
 	float rotation = 0.f;
 	float rotationDeg = 0.f;
@@ -82,8 +81,11 @@ bool Level::spawn_spider_enemy(vec2 position, float bound, bool upsideDown)
 	Spider enemy;
 	if (enemy.init(position, physicsHandler))
 	{
-		if (upsideDown)
-			enemy.set_rotation(pi);
+		if (upsideDown) {
+			enemy.set_rotation(M_PI);
+			vec2 enemy_scale = enemy.get_scale();
+			enemy.set_scale({enemy_scale.x * -1.f, enemy_scale.y});
+		}
 
 		enemy.set_bound(bound);
 		m_enemies.emplace_back(enemy);
