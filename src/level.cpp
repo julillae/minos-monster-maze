@@ -13,6 +13,7 @@
 
 namespace
 {
+	const float pi = 3.14159265359;
 	float rotationStart = 0.f;
 	float rotation = 0.f;
 	float rotationDeg = 0.f;
@@ -57,6 +58,14 @@ void Level::read_level_data() {
 	std::string fileName = "levels/level" + level + ".txt";
     std::ifstream filein(fileName);
 
+	std::string firstLine;
+	std::getline(filein, firstLine);
+	canRotate = firstLine.compare("1") == 0 ? true : false;
+
+	std::string secondLine;
+	std::getline(filein, secondLine);
+	cameraTracking = secondLine.compare("1") == 0 ? true : false;
+
     for (std::string line; std::getline(filein, line);) {
         std::vector <int> row;
         for(char& c : line) {
@@ -68,13 +77,17 @@ void Level::read_level_data() {
     }
 }
 
-bool Level::spawn_spider_enemy(vec2 position, float bound)
+bool Level::spawn_spider_enemy(vec2 position, float bound, bool upsideDown)
 {
 	Spider enemy;
 	if (enemy.init(position, physicsHandler))
 	{
+		if (upsideDown)
+			enemy.set_rotation(pi);
+
 		enemy.set_bound(bound);
 		m_enemies.emplace_back(enemy);
+
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn enemy");
@@ -101,6 +114,7 @@ void Level::generate_maze()
 	spawn_floor({0.0, 0.0});
 	
 	bool setting_enemy = false;
+	bool setting_rotated_enemy = false;
 	vec2 enemy_start_pos;
 
     float i = 0.f;
@@ -113,14 +127,15 @@ void Level::generate_maze()
 			float x_pos = (j * m_tile_width);
 			float y_pos = (i * m_tile_height);
 
-			if (setting_enemy && cell != 4) {
+			if ((setting_enemy && cell != 4) || (setting_rotated_enemy && cell != 5)) {
 				// If we were setting enemy positions, and we hit a cell with no enemy,
 				// Spawn the enemy we were setting
 
 				float last_x_pos = x_pos - m_tile_width;
 				float distance = abs(last_x_pos - enemy_start_pos.x);
-				spawn_spider_enemy(enemy_start_pos, distance);
+				spawn_spider_enemy(enemy_start_pos, distance, setting_rotated_enemy);
 				setting_enemy = false;
+				setting_rotated_enemy = false;
 			}
 
 			if (cell == 1) {
@@ -156,6 +171,12 @@ void Level::generate_maze()
 				// Begin setting enemy path
 				if (!setting_enemy) {
 					setting_enemy = true;
+					enemy_start_pos = {x_pos, y_pos};
+				}
+			} else if (cell == 5) {
+				// Begin setting enemy path
+				if (!setting_rotated_enemy) {
+					setting_rotated_enemy = true;
 					enemy_start_pos = {x_pos, y_pos};
 				}
 			}
@@ -539,7 +560,7 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	m_player.on_key(key, action);
 
-	if (action == GLFW_PRESS) {
+	if (action == GLFW_PRESS && canRotate) {
 		if (key == GLFW_KEY_Z) {
 			isRotating = true;
 			rotateCW = false;
@@ -551,7 +572,7 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 			currentIntervalPos = 0;
 		}
 	}
-	else if (action == GLFW_RELEASE) {
+	else if (action == GLFW_RELEASE && canRotate) {
 		if ((key == GLFW_KEY_Z && !rotateCW) || (key == GLFW_KEY_X && rotateCW)) {
 			isRotating = false;
 			currentIntervalPos = 0;
