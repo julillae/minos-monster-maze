@@ -2,6 +2,7 @@
 #include "../include/characters/player.hpp"
 #include "../include/common.hpp"
 #include "../include/physics.hpp"
+#include "../include/level.hpp"
 
 // internal
 
@@ -103,10 +104,14 @@ void Player::on_key(int key, int action)
 	if (action == GLFW_PRESS) {
 		switch (key) {
 		case GLFW_KEY_UP:
-			if (can_jump()) characterState->changeState(jumping);
+			if (keyMappingSetA ==true){
+				if (can_jump()) characterState->changeState(jumping);
+			}
 			break;
 		case GLFW_KEY_SPACE:
-			if (can_jump()) characterState->changeState(jumping);
+			if (keyMappingSetA ==false){
+				if (can_jump()) characterState->changeState(jumping);
+			}
 			break;
 		case GLFW_KEY_LEFT:
 			direction = Direction::left;

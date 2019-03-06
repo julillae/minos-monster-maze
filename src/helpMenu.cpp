@@ -99,7 +99,7 @@ void HelpMenu::draw(const mat3 &projection)
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
-    float color[] = { 1.f, 1.f, 1.f };
+    float color[] = { 1.f, 1.f, 1.f};
     glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
