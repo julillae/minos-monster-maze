@@ -586,6 +586,7 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 				currentIntervalPos = 0;
 		}
 	}
+	}
 
 	if (action == GLFW_PRESS && key == GLFW_KEY_H) {
 		show_help_menu = !show_help_menu;

@@ -105,6 +105,9 @@ void Player::on_key(int key, int action)
 		case GLFW_KEY_UP:
 			if (can_jump()) characterState->changeState(jumping);
 			break;
+		case GLFW_KEY_SPACE:
+			if (can_jump()) characterState->changeState(jumping);
+			break;
 		case GLFW_KEY_LEFT:
 			direction = Direction::left;
 			m_scale.x = -std::fabs(m_scale.x);
