@@ -59,6 +59,10 @@ vec2 Character::get_scale()const {
 	return m_scale;
 }
 
+void Character::set_scale(vec2 scale) {
+	m_scale = scale;
+}
+
 void Character::freeze() {
 	if (characterState->currentState != frozen)
 		preFreezeState = characterState->currentState;
