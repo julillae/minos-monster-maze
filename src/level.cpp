@@ -301,15 +301,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	generate_maze();
 
 	m_help_menu.init(initialPosition);
-	if (cameraTracking) {
-		cameraCenter = (initialPosition);
-		prevCameraCenter = cameraCenter;
-	}
-	else {
-		float txOffset = w / 2;
-		float tyOffset = h / 2;
-		cameraCenter = vec2({ txOffset, tyOffset});
-	}
+	initialize_camera_position(w, h);
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -605,6 +597,19 @@ void Level::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 
 }
 
+void Level::initialize_camera_position(int w, int h)
+{
+	if (cameraTracking) {
+		cameraCenter = (initialPosition);
+		prevCameraCenter = cameraCenter;
+	}
+	else {
+		float txOffset = w / 2;
+		float tyOffset = h / 2;
+		cameraCenter = vec2({ txOffset, tyOffset});
+	}
+}
+
 void Level::load_new_level()
 {
 	for (auto& floor : m_floor)
@@ -631,14 +636,16 @@ void Level::reset_game()
 	glfwGetWindowSize(m_window, &w, &h);
 	m_player.destroy();
 	
-	if (is_player_at_goal)
+	if (is_player_at_goal) {
 		load_new_level();
-	else
+		initialize_camera_position(w, h);
+	} else {
 		for (Enemy& enemy : m_enemies) {
 			enemy.freeze();
 			enemy.reset_position();
 			enemy.unfreeze();
 		};
+	}
 
 	m_player.init(initialPosition, physicsHandler);
 
