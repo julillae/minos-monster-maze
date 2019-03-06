@@ -142,10 +142,10 @@ void Level::generate_maze()
 
 			if (cell == 1) {
 				// Spawn platform
-				MazeComponent& new_floor = m_floor.back();	
+				MazeComponent& new_floor = m_floor.back();
 
 				// Assuming all tiles are the same size, we only need to grab these values once
-				if (m_tile_width == 0.f || m_tile_height == 0.f) {
+				if (m_tile_width == 0.f || m_tile_height == 0.f) {	
 					m_tile_width = new_floor.get_width();
 					m_tile_height = new_floor.get_height();
 
@@ -187,6 +187,9 @@ void Level::generate_maze()
 		}
         i = i + 1.f;
 	}
+
+	// Note: A hack to remove the initial tile added to m_floor - shanice
+	m_floor.erase(m_floor.begin());
 
     // Set global variables
     m_maze_width = j;
