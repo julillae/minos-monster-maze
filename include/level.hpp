@@ -132,7 +132,9 @@ private:
 
 	const map<int, std::string> platform_types = {
 		{1, "FLOOR"},
-		{2, "EXIT"}
+		{2, "EXIT"},
+        {6, "SPIKE"},
+        {7, "SPIKE"}
 	};
 
     // Variables determined by level data
