@@ -6,6 +6,7 @@
 #include "characters/enemy.hpp"
 #include "characters/simple.hpp"
 #include "characters/spider.hpp"
+#include "characters/harpy.hpp"
 #include "mazeComponents/mazeComponent.hpp"
 #include "mazeComponents/fixedComponent.hpp"
 #include "mazeComponents/floor.hpp"
@@ -30,6 +31,8 @@
 class Level
 {
 public:
+	Player m_player;
+	
 	Level();
 	~Level();
 
@@ -93,7 +96,6 @@ private:
 	// Water effect
 	RenderEffects m_water;
 
-    Player m_player;
 	Exit m_exit;
 	std::vector<Spider> m_enemies;
     std::vector<Floor> m_floor;
