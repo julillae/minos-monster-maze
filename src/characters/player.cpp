@@ -74,10 +74,10 @@ void Player::draw(const mat3& projection)
 	if (use_sprite)
 	{
 		set_animation();
-		RenderManager::draw(projection, m_position, m_rotation, m_scale, &m_texture, this);
+		RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &m_texture, this);
 	} else
 	{
-		RenderManager::draw(projection, m_position, m_rotation, m_scale, &box_texture, this);
+		RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &box_texture, this);
 
 	}
 

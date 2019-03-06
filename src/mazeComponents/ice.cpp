@@ -23,13 +23,11 @@ bool Ice::init(vec2 position)
 
 	set_size(&texture);
 
-    //fprintf(stderr, "hello1\n");
-
     return true;
 }
 
 
 void Ice::draw(const mat3& projection)
 {
-	RenderManager::draw(projection, m_position, m_rotation, m_scale, &texture, this);
+	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
 }

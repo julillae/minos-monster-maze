@@ -80,70 +80,35 @@ bool Spikes::init(vec2 position)
 
 void Spikes::draw(const mat3& projection)
 {
-	//RenderManager::draw(projection, m_position, m_rotation, m_scale, &texture, this);
-
-    transform_begin();
-
-    transform_translate(m_position);
-    transform_rotate(m_rotation);
-    transform_scale(m_scale);
-
-    transform_end();
-
-    // Setting shaders
-    glUseProgram(effect.program);
-
-    // Enabling alpha channel for textures
-    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_DEPTH_TEST);
-
-    // Getting uniform locations
-    GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
-    GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
-    GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
-
-    // Setting vertices and indices
-    glBindVertexArray(mesh.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-    // Input data location as in the vertex buffer
-    GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-    GLint in_color_loc = glGetAttribLocation(effect.program, "in_color");
-    glEnableVertexAttribArray(in_position_loc);
-    glEnableVertexAttribArray(in_color_loc);
-    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-    glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)sizeof(vec3));
-
-    // Setting uniform values to the currently bound program
-    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
-
     float color[] = { 0.8, 0.15, 0.15 };
-    glUniform3fv(color_uloc, 1, color);
-
-    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
-
-
-    // Drawing!
-    glDrawElements(GL_TRIANGLES,(GLsizei)m_num_indices, GL_UNSIGNED_SHORT, nullptr);
+    RenderManager::draw_mesh(projection, m_position, m_rotation, m_scale, this,
+                             color, m_num_indices);
 
 }
 
 void Spikes::set_dimensions()
 {
-    float min_x = 0.f;
-    float max_x = 0.f;
-    float min_y = 0.f;
-    float max_y = 0.f;
-    for (auto vert : vertices)
-    {
-        float vert_x = vert.position.x;
-        if (min_x == 0.f || vert_x < min_x) min_x = vert_x;
-        if (max_x == 0.f || vert_x > max_x) max_x = vert_x;
+    float min_x ;
+    float max_x;
+    float min_y;
+    float max_y;
 
-        float vert_y = vert.position.y;
-        if (min_y == 0.f || vert_y < min_y) min_y = vert_y;
-        if (max_y == 0.f || vert_y > max_y) max_y = vert_y;
+    for (int i = 0; i < vertices.size(); i++) {
+        float vert_x = vertices[i].position.x;
+        float vert_y = vertices[i].position.y;
+
+        if (i == 0)
+        {
+            min_x = vert_x;
+            max_x = vert_x;
+            min_y = vert_y;
+            max_y = vert_y;
+        }
+
+        if (vert_x < min_x) min_x = vert_x;
+        if (vert_x > max_x) max_x = vert_x;
+        if (vert_y < min_y) min_y = vert_y;
+        if (vert_y > max_y) max_y = vert_y;
 
     }
 
