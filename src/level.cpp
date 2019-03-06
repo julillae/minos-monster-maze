@@ -57,6 +57,14 @@ void Level::read_level_data() {
 	std::string fileName = "levels/level" + level + ".txt";
     std::ifstream filein(fileName);
 
+	std::string firstLine;
+	std::getline(filein, firstLine);
+	canRotate = firstLine.compare("1") == 0 ? true : false;
+
+	std::string secondLine;
+	std::getline(filein, secondLine);
+	cameraTracking = secondLine.compare("1") == 0 ? true : false;
+
     for (std::string line; std::getline(filein, line);) {
         std::vector <int> row;
         for(char& c : line) {
@@ -68,13 +76,20 @@ void Level::read_level_data() {
     }
 }
 
-bool Level::spawn_spider_enemy(vec2 position, float bound)
+bool Level::spawn_spider_enemy(vec2 position, float bound, bool upsideDown)
 {
 	Spider enemy;
 	if (enemy.init(position, physicsHandler))
 	{
+		if (upsideDown) {
+			enemy.set_rotation(M_PI);
+			vec2 enemy_scale = enemy.get_scale();
+			enemy.set_scale({enemy_scale.x * -1.f, enemy_scale.y});
+		}
+
 		enemy.set_bound(bound);
 		m_enemies.emplace_back(enemy);
+
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn enemy");
@@ -101,6 +116,7 @@ void Level::generate_maze()
 	spawn_floor({0.0, 0.0});
 	
 	bool setting_enemy = false;
+	bool setting_rotated_enemy = false;
 	vec2 enemy_start_pos;
 
     float i = 0.f;
@@ -113,22 +129,23 @@ void Level::generate_maze()
 			float x_pos = (j * m_tile_width);
 			float y_pos = (i * m_tile_height);
 
-			if (setting_enemy && cell != 4) {
+			if ((setting_enemy && cell != 4) || (setting_rotated_enemy && cell != 5)) {
 				// If we were setting enemy positions, and we hit a cell with no enemy,
 				// Spawn the enemy we were setting
 
 				float last_x_pos = x_pos - m_tile_width;
 				float distance = abs(last_x_pos - enemy_start_pos.x);
-				spawn_spider_enemy(enemy_start_pos, distance);
+				spawn_spider_enemy(enemy_start_pos, distance, setting_rotated_enemy);
 				setting_enemy = false;
+				setting_rotated_enemy = false;
 			}
 
 			if (cell == 1) {
 				// Spawn platform
-				MazeComponent& new_floor = m_floor.back();	
+				MazeComponent& new_floor = m_floor.back();
 
 				// Assuming all tiles are the same size, we only need to grab these values once
-				if (m_tile_width == 0.f || m_tile_height == 0.f) {
+				if (m_tile_width == 0.f || m_tile_height == 0.f) {	
 					m_tile_width = new_floor.get_width();
 					m_tile_height = new_floor.get_height();
 
@@ -158,12 +175,21 @@ void Level::generate_maze()
 					setting_enemy = true;
 					enemy_start_pos = {x_pos, y_pos};
 				}
+			} else if (cell == 5) {
+				// Begin setting enemy path
+				if (!setting_rotated_enemy) {
+					setting_rotated_enemy = true;
+					enemy_start_pos = {x_pos, y_pos};
+				}
 			}
 
             j = j + 1.f;
 		}
         i = i + 1.f;
 	}
+
+	// Note: A hack to remove the initial tile added to m_floor - shanice
+	m_floor.erase(m_floor.begin());
 
     // Set global variables
     m_maze_width = j;
@@ -275,15 +301,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	generate_maze();
 
 	m_help_menu.init(initialPosition);
-	if (cameraTracking) {
-		cameraCenter = (initialPosition);
-		prevCameraCenter = cameraCenter;
-	}
-	else {
-		float txOffset = w / 2;
-		float tyOffset = h / 2;
-		cameraCenter = vec2({ txOffset, tyOffset});
-	}
+	initialize_camera_position(w, h);
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -539,7 +557,7 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	m_player.on_key(key, action);
 
-	if (action == GLFW_PRESS) {
+	if (action == GLFW_PRESS && canRotate) {
 		if (key == GLFW_KEY_Z) {
 			isRotating = true;
 			rotateCW = false;
@@ -551,7 +569,7 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 			currentIntervalPos = 0;
 		}
 	}
-	else if (action == GLFW_RELEASE) {
+	else if (action == GLFW_RELEASE && canRotate) {
 		if ((key == GLFW_KEY_Z && !rotateCW) || (key == GLFW_KEY_X && rotateCW)) {
 			isRotating = false;
 			currentIntervalPos = 0;
@@ -577,6 +595,19 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 void Level::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
 
+}
+
+void Level::initialize_camera_position(int w, int h)
+{
+	if (cameraTracking) {
+		cameraCenter = (initialPosition);
+		prevCameraCenter = cameraCenter;
+	}
+	else {
+		float txOffset = w / 2;
+		float tyOffset = h / 2;
+		cameraCenter = vec2({ txOffset, tyOffset});
+	}
 }
 
 void Level::load_new_level()
@@ -605,14 +636,16 @@ void Level::reset_game()
 	glfwGetWindowSize(m_window, &w, &h);
 	m_player.destroy();
 	
-	if (is_player_at_goal)
+	if (is_player_at_goal) {
 		load_new_level();
-	else
+		initialize_camera_position(w, h);
+	} else {
 		for (Enemy& enemy : m_enemies) {
 			enemy.freeze();
 			enemy.reset_position();
 			enemy.unfreeze();
 		};
+	}
 
 	m_player.init(initialPosition, physicsHandler);
 
@@ -655,6 +688,7 @@ std::string Level::get_platform_by_coordinates(std::pair<float, float> coords) {
 // 2 = exit
 // 3 = initial player position
 // 4 = enemy path
+// 5 = upside down enemy path
 void Level::print_maze() {
 	for (int i = 0; i < m_maze.size(); i++)
 	{
