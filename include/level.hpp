@@ -118,6 +118,8 @@ private:
 
 	float tx;
 	float ty;
+	int rotateCWKey = GLFW_KEY_X;
+	int rotateCCWKey = GLFW_KEY_Z;
 
 	int num_levels = 9;
 	int current_level = 0;

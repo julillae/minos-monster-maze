@@ -33,4 +33,7 @@ public:
 	// Returns true if the character is in a state that can jump
 	bool can_jump();
 
+	bool keyMappingSetA=true;
+	int jumpKey = GLFW_KEY_UP;
+
 };
