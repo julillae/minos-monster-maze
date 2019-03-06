@@ -68,6 +68,7 @@ private:
 	// Generates a new floor
 	bool spawn_floor(vec2 position);
 
+	void initialize_camera_position(int w, int h);
 	void load_new_level();
 	void reset_game();
 	void freeze_all_enemies();
