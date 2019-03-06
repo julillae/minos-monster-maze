@@ -102,25 +102,16 @@ void Player::set_in_free_fall() {
 void Player::on_key(int key, int action)
 {
 	if (action == GLFW_PRESS) {
-		switch (key) {
-		case GLFW_KEY_UP:
-			if (keyMappingSetA ==true){
-				if (can_jump()) characterState->changeState(jumping);
-			}
-			break;
-		case GLFW_KEY_SPACE:
-			if (keyMappingSetA ==false){
-				if (can_jump()) characterState->changeState(jumping);
-			}
-			break;
-		case GLFW_KEY_LEFT:
+		if (key == jumpKey) {
+			if (can_jump()) characterState->changeState(jumping);
+		}
+		else if (key == GLFW_KEY_LEFT) {
 			direction = Direction::left;
 			m_scale.x = -std::fabs(m_scale.x);
-			break;
-		case GLFW_KEY_RIGHT:
+		}
+		else if (key == GLFW_KEY_RIGHT) {
 			direction = Direction::right;
 			m_scale.x = std::fabs(m_scale.x);
-			break;
 		}
 	}
 	else if (action == GLFW_RELEASE) {

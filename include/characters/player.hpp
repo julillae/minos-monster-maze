@@ -34,5 +34,6 @@ public:
 	bool can_jump();
 
 	bool keyMappingSetA=true;
+	int jumpKey = GLFW_KEY_UP;
 
 };
