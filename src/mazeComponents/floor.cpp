@@ -28,7 +28,7 @@ bool Floor::init(vec2 position)
 
 void Floor::draw(const mat3& projection)
 {
-	RenderManager::draw(projection, m_position, m_rotation, m_scale, &texture, this);
+	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
 }
 
 vec2 Floor::get_position()const
