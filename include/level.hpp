@@ -11,6 +11,7 @@
 #include "mazeComponents/floor.hpp"
 #include "mazeComponents/exit.hpp"
 #include "mazeComponents/ice.hpp"
+#include "mazeComponents/spikes.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
 #include "helpMenu.hpp"
@@ -28,6 +29,7 @@
 // Level class
 
 typedef std::vector<std::unique_ptr<FixedComponent>> Platforms;
+enum SpikeDir { UP, DOWN, LEFT, RIGHT};
 
 class Level
 {
@@ -72,6 +74,8 @@ private:
 
 	bool spawn_ice(vec2 position);
 
+	bool spawn_spikes(vec2 position, SpikeDir dir);
+
 	void load_new_level();
 	void reset_game();
 
@@ -79,6 +83,8 @@ private:
 	void generate_maze();
 	void print_maze();
 	void store_platform_coords(vec2 coords, int platform_key);
+
+	void set_player_death();
 
 	//create delay experience for platform-snapping
 	void delay(float secs);

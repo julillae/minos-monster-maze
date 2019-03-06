@@ -108,7 +108,7 @@ Physics::CollisionNode Physics::collideWithExit (Player *p, const Exit *e) {
     return collisionNode;
 }
 
-void Physics::characterCollisionsWithFixedComponents(Player* c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents) {
+bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents) {
 	bool isOnAtLeastOnePlatform = false;
 	bool isLeftOfAtLeastOnePlatform = false;
 	bool isRightOfAtLeastOnePlatform = false;
@@ -118,6 +118,8 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, const std::vecto
 	for (const auto& fc : fixedComponents) {
 		collisionNode = collisionWithFixedWalls(c, std::move(fc));
 		if (collisionNode.isCollided) {
+			if (fc->can_kill) return true;
+
 			float collisionAngle = collisionNode.angleOfCollision;
 
 			// logic needed to get new angle (collisionAngle + rotation) within
@@ -180,6 +182,8 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, const std::vecto
 	c->isLeftOfPlatform = isLeftOfAtLeastOnePlatform;
 	c->isRightOfPlatform = isRightOfAtLeastOnePlatform;
 	c->isBelowPlatform = isBelowAtLeastOnePlatform;
+
+	return false;
 
 }
 

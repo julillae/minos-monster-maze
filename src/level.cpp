@@ -97,18 +97,51 @@ bool Level::spawn_ice(vec2 position)
 	return false;
 }
 
+bool Level::spawn_spikes(vec2 position, SpikeDir dir)
+{
+    std::unique_ptr<Spikes> spikes = std::unique_ptr<Spikes>(new Spikes);
+
+    if (spikes->init(position))
+    {
+    	switch (dir)
+		{
+			case DOWN:
+				spikes->set_down();
+				break;
+			case LEFT:
+				spikes->set_left();
+				break;
+			case RIGHT:
+				spikes->set_right();
+				break;
+			default:
+				break;
+		}
+
+        m_platforms.emplace_back(std::move(spikes));
+        return true;
+    }
+    fprintf(stderr, "Failed to spawn spikes");
+    return false;
+}
+
 // Generates maze
 void Level::generate_maze()
 {
 	fprintf(stderr, "Generating maze\n");
-	// Initial tile
+	// Initial tile. Assumes all tiles are same width and height
 	spawn_floor({0.0, 0.0});
+	m_tile_width = m_platforms.back()->get_width();
+	m_tile_height = m_platforms.back()->get_height();
 	
 	bool setting_enemy = false;
 	vec2 enemy_start_pos;
 
     float i = 0.f;
 	float j = 0.f;
+
+	m_tile_width = m_platforms.back()->get_width();
+	m_tile_height = m_platforms.back()->get_height();
 
 	for (auto &row : m_maze) {
         j = 0.f;
@@ -129,17 +162,6 @@ void Level::generate_maze()
 
 			if (cell == 1) {
 				// Spawn platform
-
-				// Assuming all tiles are the same size, we only need to grab these values once
-				if (m_tile_width == 0.f || m_tile_height == 0.f) {
-					m_tile_width = m_platforms.back()->get_width();
-					m_tile_height = m_platforms.back()->get_height();
-
-					// Fix x and y positions if tile_width was zero
-					x_pos = (j * m_tile_width);
-					y_pos = (i * m_tile_height);
-				}
-
 				if ( spawn_floor({x_pos, y_pos}) ) {
 					store_platform_coords({x_pos, y_pos}, cell);
 				}
@@ -162,21 +184,21 @@ void Level::generate_maze()
 					enemy_start_pos = {x_pos, y_pos};
 				}
 			} else if (cell == 5) {
-                // Spawn platform
-                Ice new_ice;
 
-                // Assuming all tiles are the same size, we only need to grab these values once
-				if (m_tile_width == 0.f || m_tile_height == 0.f) {
-					m_tile_width = m_platforms.back()->get_width();
-					m_tile_height = m_platforms.back()->get_height();
+                if (spawn_ice({x_pos, y_pos}))
+                	store_platform_coords({x_pos, y_pos}, cell);
 
-					// Fix x and y positions if tile_width was zero
-					x_pos = (j * m_tile_width);
-					y_pos = (i * m_tile_height);
-				}
+            } else if (cell == 6) {
+			    float spike_x = x_pos - m_tile_width / 2;
 
-				spawn_ice({x_pos, y_pos});
+				if (spawn_spikes({spike_x, y_pos}, LEFT))
 
+					store_platform_coords({spike_x, y_pos}, cell);
+
+			} else if (cell == 7) {
+				float spike_y = y_pos - m_tile_height / 2;
+			    if (spawn_spikes({x_pos, spike_y}, UP))
+			        store_platform_coords({x_pos, spike_y}, cell);
 			}
 
             j = j + 1.f;
@@ -353,11 +375,7 @@ bool Level::update(float elapsed_ms)
 	for (Enemy& enemy : m_enemies) {
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
 		{
-			if (!m_player.is_invincible() && m_player.is_alive()) {
-				Mix_PlayChannel(-1, m_player_dead_sound, 0);
-				m_player.kill();
-				m_water.set_player_dead();
-			}
+			set_player_death();
 		}
 	}
 
@@ -370,7 +388,12 @@ bool Level::update(float elapsed_ms)
 		m_player.set_invincibility(true);
 	}
 
-	physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_platforms);
+	// checking player - platform collision
+	if (physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_platforms))
+	{
+		set_player_death();
+	}
+
 	m_player.set_rotation(rotation);
 	if (applyFreeze) {
 		m_player.freeze();
@@ -707,4 +730,13 @@ float Level::get_tile_width() {
 
 float Level::get_tile_height() {
 	return m_tile_height;
+}
+
+void Level::set_player_death()
+{
+	if (!m_player.is_invincible() && m_player.is_alive()) {
+		Mix_PlayChannel(-1, m_player_dead_sound, 0);
+		m_player.kill();
+		m_water.set_player_dead();
+	}
 }
