@@ -681,6 +681,7 @@ std::string Level::get_platform_by_coordinates(std::pair<float, float> coords) {
 // 2 = exit
 // 3 = initial player position
 // 4 = enemy path
+// 5 = upside down enemy path
 void Level::print_maze() {
 	for (int i = 0; i < m_maze.size(); i++)
 	{
