@@ -117,7 +117,8 @@ private:
 
 	float tx;
 	float ty;
-	bool is_keyMappingSetA = true;
+	int rotateCWKey = GLFW_KEY_X;
+	int rotateCCWKey = GLFW_KEY_Z;
 
 	int num_levels = 2;
 	int current_level = 0;
