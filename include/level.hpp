@@ -133,6 +133,7 @@ private:
 	const map<int, std::string> platform_types = {
 		{1, "FLOOR"},
 		{2, "EXIT"},
+        {5, "ICE"},
         {6, "SPIKE"},
         {7, "SPIKE"}
 	};
