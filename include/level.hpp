@@ -78,6 +78,10 @@ private:
 
 	void load_new_level();
 	void reset_game();
+	void freeze_all_enemies();
+	void unfreeze_all_enemies();
+	void update_all_enemies(float elapsed_ms);
+
 
 	// Generates hard-coded maze in each level
 	void generate_maze();
@@ -85,9 +89,6 @@ private:
 	void store_platform_coords(vec2 coords, int platform_key);
 
 	void set_player_death();
-
-	//create delay experience for platform-snapping
-	void delay(float secs);
 private:
 	// Window handle
 	GLFWwindow* m_window;
@@ -123,13 +124,8 @@ private:
 	// Part of hack needed to deal with the MacOs Retina Display issue where it doubles the pixels rendered
 	float osScaleFactor = 1.f;
 
-	//store the previous y_position for camera follow
-	float prev_ty = 0.f;
-	//store the previous x_position for camera follow
-	float prev_tx = 0.f;
-	float ty = 0.f;
-	float leftbound;
-	float rightbound;
+	float tx;
+	float ty;
 
 	int num_levels = 2;
 	int current_level = 0;
