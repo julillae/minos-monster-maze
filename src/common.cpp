@@ -1,4 +1,5 @@
 #include "../include/common.hpp"
+#include "../include/level.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../ext/stb_image/stb_image.h"

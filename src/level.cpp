@@ -1,6 +1,7 @@
 // Header
 #include "../include/level.hpp"
 #include "../include/physics.hpp"
+#include "../include/common.hpp"
 
 // stlib
 #include <stdio.h>
@@ -557,23 +558,36 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	m_player.on_key(key, action);
 
-	if (action == GLFW_PRESS && canRotate) {
-		if (key == GLFW_KEY_Z) {
-			isRotating = true;
-			rotateCW = false;
-			currentIntervalPos = 0;
+	if (action == GLFW_PRESS){
+		if(key == GLFW_KEY_1){
+			rotateCWKey = GLFW_KEY_X;
+			rotateCCWKey = GLFW_KEY_Z;
+			m_player.jumpKey = GLFW_KEY_UP;
 		}
-		if (key == GLFW_KEY_X) {
-			isRotating = true;
-			rotateCW = true;
-			currentIntervalPos = 0;
+		if(key == GLFW_KEY_2){
+			rotateCWKey = GLFW_KEY_S;
+			rotateCCWKey = GLFW_KEY_A;
+			m_player.jumpKey = GLFW_KEY_SPACE;
 		}
 	}
-	else if (action == GLFW_RELEASE && canRotate) {
-		if ((key == GLFW_KEY_Z && !rotateCW) || (key == GLFW_KEY_X && rotateCW)) {
-			isRotating = false;
-			currentIntervalPos = 0;
+
+	if (action == GLFW_PRESS) {
+		currentIntervalPos = 0;
+		if (key == rotateCCWKey) {
+			isRotating = true;
+			rotateCW = false;
 		}
+		if (key == rotateCWKey) {
+			isRotating = true;
+			rotateCW = true;
+		}
+	}
+
+	else if (action == GLFW_RELEASE) {
+		currentIntervalPos = 0;
+		if (((key == rotateCCWKey && !rotateCW) || (key == rotateCWKey && rotateCW))) {
+				isRotating = false;
+			}
 	}
 
 	if (action == GLFW_PRESS && key == GLFW_KEY_H) {
