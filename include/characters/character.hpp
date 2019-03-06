@@ -90,9 +90,9 @@ public:
 	bool isRightOfPlatform;
 
 	// constants
-	float jumpVel = -18.f;
-	float maxHorzSpeed = 10;
-	float accStep = 1.f;
+	float jumpVel = -13.f;
+	float maxHorzSpeed = 8;
+	float accStep = 0.8f;
 	float m_animTime = 0.f;
 
 protected:
@@ -116,5 +116,9 @@ protected:
 	Texture m_texture;
 	SpriteSheet spriteSheet;
 	bool is_anim_once = false;
+
+	// sets texture to sprite or coloured box for debugging collisions
+	bool use_sprite;
+	Texture box_texture;
 
 };

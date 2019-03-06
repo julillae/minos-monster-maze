@@ -14,10 +14,20 @@
 
 namespace
 {
-	int increment = 0;
+	float rotationStart = 0.f;
 	float rotation = 0.f;
+	float rotationDeg = 0.f;
+	float rotationSpeed;
+	float maxRotationSpeed = 1.0f;
+	float currentIntervalPos = 0.f;
+	float maxIntervalLength = 50.f;
+	float normalizedIntervalPos;
 	bool isRotating = false;
+	bool rotateCW = false;
 	bool previouslyFrozen = false;
+	vec2 cameraCenter;
+	vec2 prevCameraCenter;
+	bool cameraTracking = true;
     void glfw_err_cb(int error, const char* desc)
     {
         fprintf(stderr, "%d: %s", error, desc);
@@ -34,6 +44,12 @@ Level::Level() : m_seed_rng(0.f)
 Level::~Level()
 {
 
+}
+
+void Level::store_platform_coords(vec2 coords, int platform_key) {
+	std::string platformType = platform_types.find(platform_key)->second;
+	std::pair <float,float> coords_pair (coords.x,coords.y);
+	platforms_by_coords.emplace(coords_pair, platformType);
 }
 
 void Level::read_level_data() {
@@ -82,32 +98,27 @@ bool Level::spawn_floor(vec2 position)
 void Level::generate_maze()
 {
 	fprintf(stderr, "Generating maze\n");
-	const float initial_x = 40.0;
-	const float initial_y = 30.0;
 	// Initial tile
-	spawn_floor({initial_x, initial_y});
-
-	float tile_width = 0.f;
-	float tile_height = 0.f;
+	spawn_floor({0.0, 0.0});
 	
 	bool setting_enemy = false;
 	vec2 enemy_start_pos;
 
-    float i = 0.f; 
+    float i = 0.f;
 	float j = 0.f;
 
 	for (auto &row : m_maze) {
         j = 0.f;
 		for (int &cell : row) {	
 
-			float x_pos = (j * tile_width) + initial_x;
-			float y_pos = (i * tile_height) + initial_y;
+			float x_pos = (j * m_tile_width);
+			float y_pos = (i * m_tile_height);
 
 			if (setting_enemy && cell != 4) {
 				// If we were setting enemy positions, and we hit a cell with no enemy,
 				// Spawn the enemy we were setting
 
-				float last_x_pos = x_pos - tile_width;
+				float last_x_pos = x_pos - m_tile_width;
 				float distance = abs(last_x_pos - enemy_start_pos.x);
 				spawn_spider_enemy(enemy_start_pos, distance);
 				setting_enemy = false;
@@ -118,23 +129,27 @@ void Level::generate_maze()
 				MazeComponent& new_floor = m_floor.back();	
 
 				// Assuming all tiles are the same size, we only need to grab these values once
-				if (tile_width == 0.f || tile_height == 0.f) {
-					tile_width = new_floor.get_width();
-					tile_height = new_floor.get_height();
+				if (m_tile_width == 0.f || m_tile_height == 0.f) {
+					m_tile_width = new_floor.get_width();
+					m_tile_height = new_floor.get_height();
 
 					// Fix x and y positions if tile_width was zero
-					x_pos = (j * tile_width) + initial_x;
-					y_pos = (i * tile_height) + initial_y;
+					x_pos = (j * m_tile_width);
+					y_pos = (i * m_tile_height);
 				}
 
-				spawn_floor({x_pos, y_pos});
+				if ( spawn_floor({x_pos, y_pos}) ) {
+					store_platform_coords({x_pos, y_pos}, cell);
+				}
 			} else if (cell == 2) {
 				// Add exit
 				Exit new_exit;
 
-				new_exit.init({x_pos, y_pos});
+				if ( new_exit.init({x_pos, y_pos}) ) {
+					store_platform_coords({x_pos, y_pos}, cell);
 
-				m_exit = new_exit;
+					m_exit = new_exit;
+				}
 			} else if (cell == 3) {
 				// Set initial position of player
 				initialPosition = {x_pos, y_pos};
@@ -231,7 +246,9 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	//www.soundimage.org
 
 	m_background_music = Mix_LoadMUS(audio_path("secret_catacombs.wav"));
-	m_salmon_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav"));
+	m_player_dead_sound = Mix_LoadWAV(audio_path("death.wav"));
+	m_player_jump_sound = Mix_LoadWAV(audio_path("jump.wav"));
+	level_complete_sound = Mix_LoadWAV(audio_path("nextLevel.wav"));
 
 	if (m_background_music == nullptr)
 	{
@@ -243,6 +260,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 
 	// Playing background music undefinitely
 	Mix_PlayMusic(m_background_music, -1);
+	Mix_VolumeMusic(50);
 	
 	fprintf(stderr, "Loaded music\n");
 
@@ -252,15 +270,21 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	glViewport(0, 0, w, h);
 	float left = 0.f;// *-0.5;
 	float right = (float)w;// *0.5;
-	prev_tx = -700.f;
-	leftbound = initialPosition.x - 100.f;
-	rightbound = initialPosition.x + 100.f;
 
 	current_level = startLevel;
     read_level_data();
 	generate_maze();
 
 	m_help_menu.init(initialPosition);
+	if (cameraTracking) {
+		cameraCenter = (initialPosition);
+		prevCameraCenter = cameraCenter;
+	}
+	else {
+		float txOffset = w / 2;
+		float tyOffset = h / 2;
+		cameraCenter = vec2({ txOffset, tyOffset});
+	}
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -272,8 +296,12 @@ void Level::destroy()
 
 	if (m_background_music != nullptr)
 		Mix_FreeMusic(m_background_music);
-	if (m_salmon_dead_sound != nullptr)
-		Mix_FreeChunk(m_salmon_dead_sound);
+	if (m_player_dead_sound != nullptr)
+		Mix_FreeChunk(m_player_dead_sound);
+	if (m_player_jump_sound != nullptr)
+		Mix_FreeChunk(m_player_jump_sound);
+	if (level_complete_sound != nullptr)
+		Mix_FreeChunk(level_complete_sound);
 
 	Mix_CloseAudio();
 
@@ -301,11 +329,27 @@ bool Level::update(float elapsed_ms)
 	physicsHandler->updateWorldRotation(rotation);
 
 	// freezes and unfreezes character for rotation
-	if (isRotating && !previouslyFrozen) {
-		applyFreeze = true;
-		previouslyFrozen = true;
+	if (show_help_menu) {
+		if (!previouslyFrozen) {
+			applyFreeze = true;
+			previouslyFrozen = true;
+		}
 	}
-	else if (!isRotating && previouslyFrozen) {
+	else if (isRotating) {
+		currentIntervalPos++;
+		currentIntervalPos = min(currentIntervalPos, maxIntervalLength);
+		normalizedIntervalPos = currentIntervalPos / maxIntervalLength;
+		rotationSpeed = hermiteSplineVal(0.f, maxRotationSpeed, 0.f, 0.f, normalizedIntervalPos);
+		if (rotateCW) rotationSpeed *= -1;
+		rotationDeg = fmod(rotationDeg + rotationSpeed, 360.f);
+
+		rotation = static_cast<float>((rotationDeg * M_PI) / 180);
+		if (!previouslyFrozen) {
+			applyFreeze = true;
+			previouslyFrozen = true;
+		}
+	}
+	else if (previouslyFrozen) {
 		applyThaw = true;
 		previouslyFrozen = false;
 	}
@@ -315,7 +359,7 @@ bool Level::update(float elapsed_ms)
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
 		{
 			if (!m_player.is_invincible() && m_player.is_alive()) {
-				Mix_PlayChannel(-1, m_salmon_dead_sound, 0);
+				Mix_PlayChannel(-1, m_player_dead_sound, 0);
 				m_player.kill();
 				m_water.set_player_dead();
 			}
@@ -325,6 +369,7 @@ bool Level::update(float elapsed_ms)
 //	 Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided && !is_player_at_goal)
 	{
+		Mix_PlayChannel(-1, level_complete_sound, 0);
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
 		m_player.set_invincibility(true);
@@ -334,21 +379,20 @@ bool Level::update(float elapsed_ms)
 	m_player.set_rotation(rotation);
 	if (applyFreeze) {
 		m_player.freeze();
+		freeze_all_enemies();
+		rotationStart = rotation;
 	}
 	else if (applyThaw) {
-		physicsHandler->updateCharacterVelocityRotation(&m_player);
+		float rotateVelVec = rotation - rotationStart;
+		physicsHandler->updateCharacterVelocityRotation(&m_player, rotateVelVec);
 		m_player.unfreeze();
+		unfreeze_all_enemies();
 	}
+	if (m_player.characterState->currentState == jumping) 
+		Mix_PlayChannel(-1, m_player_jump_sound, 0);
 	m_player.update(elapsed_ms);
 
-	for (auto& enemy : m_enemies) {
-		if (applyFreeze) {
-			enemy.freeze();
-		} else if (applyThaw) {
-			enemy.unfreeze();
-		}
-		enemy.update(elapsed_ms);
-	}
+	update_all_enemies(elapsed_ms);
 
 	m_help_menu.set_visibility(show_help_menu);
 
@@ -410,93 +454,17 @@ void Level::draw()
 	float sx = 2.f * osScaleFactor / (right - left);
 	float sy = 2.f * osScaleFactor / (top - bottom); //this is where you play around with the camera
 	
-	float tx = 0.f;
-	//float ty = 0.f;
-	bool cameraTracking = true;
-	if (cameraTracking){
-		acc_rotate = acc_rotate-rotation;
-
-	while (abs(acc_rotate)>360.f){
-		if(acc_rotate>0){
-			acc_rotate=acc_rotate-360.f;
-		}else{
-			acc_rotate = acc_rotate+360.f;
+	if (cameraTracking && !show_help_menu){
+		vec2 deviationVector = add(p_position, negateVec(prevCameraCenter));
+		vec2 shrinkingTetherVector = { 0.f,0.f };
+		if (vecLength(deviationVector) > g_tolerance) {
+			shrinkingTetherVector = scalarMultiply(deviationVector, 0.05f);
 		}
+		cameraCenter = add(prevCameraCenter, shrinkingTetherVector);
+		prevCameraCenter = cameraCenter;
 	}
-
-		// translation if camera tracks player
-		rotateVec(p_position, -rotation);
-		if (m_player.isOnPlatform) {
-			float target = -p_position.y;
-			float difference = target - prev_ty;
-			float delta = difference * 0.1f;
-			ty = prev_ty + delta;
-			prev_ty = ty;
-		}
-		else {
-			ty = prev_ty;
-		}
-
-		float tem_x = -p_position.x;
-		if (tem_x > rightbound) {
-			float range = 100.f;
-			rightbound = tem_x;
-			leftbound = rightbound - range;
-			tx = rightbound - range / 2.f;
-			prev_tx = tx;
-		}
-		else if (tem_x < leftbound) {
-			float range = 100.f;
-			leftbound = tem_x;
-			rightbound = leftbound + range;
-			tx = leftbound + range / 2.f;
-			prev_tx = tx;
-			if (abs(acc_rotate)>=45.f && abs(acc_rotate)<=135.f){
-				float tmp = tx;
-				tx = ty;
-			}
-		}
-		else {
-			tx = prev_tx;
-		}
-		rotateVec(p_position, rotation);
-		if ((abs(acc_rotate)>=45.f && abs(acc_rotate)<=135.f) || (abs(acc_rotate)>=225.f && abs(acc_rotate)<=315.f)){
-			if (m_player.isOnPlatform) {
-				float target = -p_position.x;
-				float difference = target - prev_tx;
-				float delta = difference * 0.1f;
-				tx = prev_tx + delta;
-				prev_tx = tx;
-			}
-			else {
-				tx = prev_tx;
-			}
-
-			float tem_y = -p_position.y;
-			if (tem_y > rightbound) {
-				float range = 100.f;
-				rightbound = tem_y;
-				leftbound = rightbound - range;
-				ty = rightbound - range / 2.f;
-				prev_ty = ty;
-			}
-			else if (tem_y < leftbound) {
-				float range = 100.f;
-				leftbound = tem_y;
-				rightbound = leftbound + range;
-				ty = leftbound + range / 2.f;
-				prev_ty = ty;
-			}else {
-			ty = prev_ty;
-		}
-		}
-		
-		}
-	else {
-		// translation for fixed camera
-		tx = -(right + left)/2;
-		ty = -(top + bottom)/2;
-	}
+	tx = -cameraCenter.x;
+	ty = -cameraCenter.y;
 
 	float c = cosf(-rotation);
 	float s = sinf(-rotation);
@@ -572,37 +540,57 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	m_player.on_key(key, action);
 
-	if (!show_help_menu)
-	{
-		if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+	if (action == GLFW_PRESS){
+		if(key == GLFW_KEY_1){
+			isSetOne = true;
+		}
+		if(key == GLFW_KEY_2){
+			isSetOne = false;
+		}
+	}
+
+	if (action == GLFW_PRESS) {
+		if (isSetOne == true){
 			if (key == GLFW_KEY_Z) {
 				isRotating = true;
-				increment = (increment + 1) % 360;
+				rotateCW = false;
+				currentIntervalPos = 0;
 			}
 			if (key == GLFW_KEY_X) {
 				isRotating = true;
-				increment = (increment - 1) % 360;
+				rotateCW = true;
+				currentIntervalPos = 0;
 			}
-			rotation = static_cast<float>((increment * M_PI) / 180);
+		}else{
+			if (key == GLFW_KEY_A) {
+				isRotating = true;
+				rotateCW = false;
+				currentIntervalPos = 0;
+			}
+			if (key == GLFW_KEY_S) {
+				isRotating = true;
+				rotateCW = true;
+				currentIntervalPos = 0;
+			}
 		}
-		else if (action == GLFW_RELEASE && (key == GLFW_KEY_Z || key == GLFW_KEY_X)) {
-			isRotating = false;
+	}
+	else if (action == GLFW_RELEASE) {
+		if (isSetOne == true){
+			if ((key == GLFW_KEY_Z && !rotateCW) || (key == GLFW_KEY_X && rotateCW)) {
+				isRotating = false;
+				currentIntervalPos = 0;
+			}
+		}else{
+			if ((key == GLFW_KEY_A && !rotateCW) || (key == GLFW_KEY_S && rotateCW)) {
+				isRotating = false;
+				currentIntervalPos = 0;
 		}
 	}
 
 	if (action == GLFW_PRESS && key == GLFW_KEY_H) {
 		show_help_menu = !show_help_menu;
 		if (show_help_menu) {
-			for(Enemy& e : m_enemies) {
-				e.freeze();
-			}
-			m_help_menu.set_position(m_player.get_position());
-			m_player.freeze();
-		} else {
-			for(Enemy& e : m_enemies) {
-				e.unfreeze();
-			}
-			m_player.unfreeze();
+			m_help_menu.set_position(cameraCenter);
 		}
 
 	}
@@ -650,6 +638,7 @@ void Level::reset_game()
 		load_new_level();
 	else
 		for (Enemy& enemy : m_enemies) {
+			enemy.freeze();
 			enemy.reset_position();
 			enemy.unfreeze();
 		};
@@ -659,7 +648,69 @@ void Level::reset_game()
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
 	is_player_at_goal = false;
-	increment = 0;
+	rotationDeg = 0;
 	rotation = 0.f;
 	previouslyFrozen = false;
+}
+
+void Level::freeze_all_enemies()
+{
+	for (Enemy& e : m_enemies) e.freeze();
+}
+
+void Level::unfreeze_all_enemies()
+{
+	for (Enemy& e : m_enemies) e.unfreeze();
+}
+
+void Level::update_all_enemies(float elapsed_ms)
+{
+	for (Enemy& e : m_enemies) e.update(elapsed_ms);
+}
+
+// Returns the platform type if there is a platform at these coordinates
+// If no platform exists, returns ""
+std::string Level::get_platform_by_coordinates(std::pair<float, float> coords) {
+	std::pair<float, float> coords_check (coords.first, coords.second);
+	if (platforms_by_coords.find(coords_check) != platforms_by_coords.end()) {
+		return platforms_by_coords.find(coords_check)->second;
+	}
+
+	return "";
+}
+
+// Method for visualizing full maze in console for debugging purposes
+// 1 = platform
+// 2 = exit
+// 3 = initial player position
+// 4 = enemy path
+void Level::print_maze() {
+	for (int i = 0; i < m_maze.size(); i++)
+	{
+		cout << "\n";
+		for (int j = 0; j < m_maze[i].size(); j++)
+		{
+			cout << m_maze[i][j];
+		}
+	}
+}
+
+std::vector<std::vector <int>> Level::get_original_maze() {
+	return m_maze;
+}
+
+float Level::get_maze_width() {
+	return m_maze_width;
+}
+
+float Level::get_maze_height() {
+	return m_maze_height;
+}
+
+float Level::get_tile_width() {
+	return m_tile_width;
+}
+
+float Level::get_tile_height() {
+	return m_tile_height;
 }

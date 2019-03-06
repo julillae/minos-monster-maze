@@ -18,6 +18,7 @@
 // stlib
 #include <vector>
 #include <random>
+#include <map>
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -47,7 +48,13 @@ public:
 	// Should the game be over ?
 	bool is_over()const;
 
-    int get_maze();
+	std::string get_platform_by_coordinates(std::pair<float, float> coords);
+	std::vector<std::vector <int>> get_original_maze();
+
+	float get_maze_width();
+	float get_maze_height();
+	float get_tile_width();
+	float get_tile_height();
 private:
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
@@ -63,12 +70,16 @@ private:
 
 	void load_new_level();
 	void reset_game();
+	void freeze_all_enemies();
+	void unfreeze_all_enemies();
+	void update_all_enemies(float elapsed_ms);
+
 
 	// Generates hard-coded maze in each level
 	void generate_maze();
+	void print_maze();
+	void store_platform_coords(vec2 coords, int platform_key);
 
-	//create delay experience for platform-snapping
-	void delay(float secs);
 private:
 	// Window handle
 	GLFWwindow* m_window;
@@ -90,7 +101,9 @@ private:
     float m_seed_rng;
 
     Mix_Music* m_background_music;
-	Mix_Chunk* m_salmon_dead_sound;
+	Mix_Chunk* m_player_dead_sound;
+	Mix_Chunk* m_player_jump_sound;
+	Mix_Chunk* level_complete_sound;
 
     // C++ rng
 	std::default_random_engine m_rng;
@@ -102,22 +115,25 @@ private:
 	// Part of hack needed to deal with the MacOs Retina Display issue where it doubles the pixels rendered
 	float osScaleFactor = 1.f;
 
-	//store the previous y_position for camera follow
-	float prev_ty = 0.f;
-	//store the previous x_position for camera follow
-	float prev_tx = 0.f;
-	float ty = 0.f;
-	float leftbound;
-	float rightbound;
-	float acc_rotate=0.f;
+	float tx;
+	float ty;
+	bool isSetOne = true;
 
 	int num_levels = 2;
 	int current_level = 0;
+
+	const map<int, std::string> platform_types = {
+		{1, "FLOOR"},
+		{2, "EXIT"}
+	};
 
     // Variables determined by level data
 	vec2 initialPosition;
 	float m_maze_width;
     float m_maze_height;
+
+	float m_tile_width = 0.f;
+	float m_tile_height = 0.f;
 
 	// Rows of the maze where:
 	// 1 = platform
@@ -125,7 +141,7 @@ private:
 	// 3 = initial position
 	// 4 = spider enemy (and its path)
     std::vector<std::vector <int>> m_maze;
-
+	std::map<std::pair<float, float>, std::string> platforms_by_coords;
 
     bool show_help_menu = false;
 };
