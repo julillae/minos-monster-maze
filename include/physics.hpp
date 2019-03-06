@@ -20,6 +20,26 @@ public:
 	vec2 gravityAcc = {0.f,  9.81f * 0.07f };
 
     std::pair<vec2, float> MTV;
+    // MTV.first = direction
+    // MTV.second = magnitude
+
+    struct Projection
+    {
+        Projection(float mi, float ma)
+        {
+            min = mi;
+            max = ma;
+        }
+        float min;
+        float max;
+
+        bool overlap(Projection p)
+        {
+            bool isSeparated = (p.max < min || max < p.min);
+            return !isSeparated;
+        }
+    };
+
 
 
     struct CollisionNode {
@@ -37,7 +57,7 @@ public:
 	//      so that we can use the logic for Smart Enemies as well.
 	//      Also will eventually want to make Floor into the more generic FixedComponent
 	//      So that this will work when we have multiple types of platforms
-	void characterCollisionsWithFixedComponents(Player *c, std::vector<Floor> fixedComponents);
+	void characterCollisionsWithFixedComponents(Player *p, std::vector<Floor> fixedComponents);
 
 	void characterVelocityUpdate(Character *c);
 
@@ -51,14 +71,15 @@ public:
   
 	bool notZero(float f);
 
-    std::vector<vec2> getVertices(vec2 object, vec2 bounds)const;
+    std::vector<vec2> getVertices(vec2 object, vec2 bounds, float rotation)const;
 
     std::vector<vec2> getAxes(std::vector<vec2> vertices)const;
 
-    vec2 getProjection(vec2 axis, std::vector<vec2> vertices)const;
+    Projection getProjection(vec2 axis, std::vector<vec2> vertices)const;
 
-    bool checkForCollision(Player* p, const Floor *f);
+    bool collisionWithGeometry(vec2 pos1, vec2 pos2, vec2 bb1, vec2 bb2);
 
+    float getOverlap(Projection p1, Projection p2);
 
 
 };
