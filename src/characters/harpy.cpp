@@ -13,10 +13,12 @@ Texture Harpy::harpy_texture;
 
 bool Harpy::init(vec2 initialPosition, Physics * physicsHandler)
 {
-	Smart::init(initialPosition, physicsHandler);
+    Smart::init(initialPosition, physicsHandler);
 
     const char* textureFile = textures_path("spider-sprite-sheet.png");
-	if (!RenderManager::load_texture(textureFile, &harpy_texture, this)) return false;
+	if (!RenderManager::load_texture(textureFile, &harpy_texture, this)) {
+        return false;
+    }
 
 	float spriteSheetWidth = 9.0f;
 	float spriteSheetHeight = 3.0f;
@@ -30,13 +32,12 @@ bool Harpy::init(vec2 initialPosition, Physics * physicsHandler)
 	initStateTree();
 	set_properties(initialPosition, 3.0f, speed);
 	m_frozen = false;
-	set_dimensions(&harpy_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
+	// set_dimensions(&harpy_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
 	characterState->changeState(idle);
 
     path_to_follow = stack<vec2>();
     cycle_start = Clock::now();
     next_node = initialPosition;
-
 	return true;
 }
 
@@ -48,7 +49,16 @@ void Harpy::update(float ms)
         if (path_to_follow.empty() || update_path)
         {
             // call AI to get a path to the player   
-            path_to_follow = GameAI::aStarSearch(m_position, m_position);
+            path_to_follow = GameAI::followPlayer(m_position, SearchMethod::aStar);
+            if (path_to_follow.empty()) {
+                printf("No path to follow to the player\n");
+                characterState->changeState(idle);
+                return;
+            } else {
+                vec2 first = path_to_follow.top();
+                printf("My path to follow starts at x %f and y %f and is length %ld\n", first.x, first.y, path_to_follow.size());
+                next_node = first;
+            }
         } 
         moveAlongPath();
 	}
@@ -155,7 +165,7 @@ void Harpy::resetCycleStart() {
 
 void Harpy::draw(const mat3& projection)
 {
-    set_animation();
+    // set_animation();
 	RenderManager::draw(projection, m_position, m_rotation, m_scale, &harpy_texture, this);
 
 }
