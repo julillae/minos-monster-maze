@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stack>
+#include <chrono>
 
 // Simple interface for the harpy enemies. These are 'smart' enemies that use AI to follow the player
 // harpies can fly, so they should be able to follow the player in any direction (without worrying about
@@ -34,8 +35,9 @@ class Harpy: public Smart
     private:
         std::stack<vec2> path_to_follow;
         std::chrono::_V2::system_clock::time_point cycle_start;
-        const float path_cycle_time = 60.f;
+        const float path_cycle_time = 1000.f;
         vec2 next_node;
-        float maxVerticalSpeed = 10.f;
+        float maxVerticalSpeed = 2.f;
+        float maxHorzSpeed = 2.f;
 	
 };
