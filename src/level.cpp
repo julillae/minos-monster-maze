@@ -542,50 +542,32 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 	if (action == GLFW_PRESS){
 		if(key == GLFW_KEY_1){
-			isSetOne = true;
+			is_keyMappingSetA = true;
+			m_player.keyMappingSetA = true;
 		}
 		if(key == GLFW_KEY_2){
-			isSetOne = false;
+			is_keyMappingSetA = false;
+			m_player.keyMappingSetA = false;
 		}
 	}
 
 	if (action == GLFW_PRESS) {
-		if (isSetOne == true){
-			if (key == GLFW_KEY_Z) {
-				isRotating = true;
-				rotateCW = false;
-				currentIntervalPos = 0;
-			}
-			if (key == GLFW_KEY_X) {
-				isRotating = true;
-				rotateCW = true;
-				currentIntervalPos = 0;
-			}
-		}else{
-			if (key == GLFW_KEY_A) {
-				isRotating = true;
-				rotateCW = false;
-				currentIntervalPos = 0;
-			}
-			if (key == GLFW_KEY_S) {
-				isRotating = true;
-				rotateCW = true;
-				currentIntervalPos = 0;
-			}
+		currentIntervalPos = 0;
+		if ((is_keyMappingSetA == true && (key == GLFW_KEY_Z)) || (is_keyMappingSetA == false && (key == GLFW_KEY_A))){
+			isRotating = true;
+			rotateCW = false;
+		}
+		if ((is_keyMappingSetA == true && (key == GLFW_KEY_X)) || (is_keyMappingSetA == false && (key == GLFW_KEY_S))){
+			isRotating = true;
+			rotateCW = true;
 		}
 	}
 	else if (action == GLFW_RELEASE) {
-		if (isSetOne == true){
-			if ((key == GLFW_KEY_Z && !rotateCW) || (key == GLFW_KEY_X && rotateCW)) {
+		currentIntervalPos = 0;
+		if (((is_keyMappingSetA == true)&&((key == GLFW_KEY_Z && !rotateCW) || (key == GLFW_KEY_X && rotateCW)))
+			|| ((is_keyMappingSetA == false)&&((key == GLFW_KEY_A && !rotateCW) || (key == GLFW_KEY_S && rotateCW)))) {
 				isRotating = false;
-				currentIntervalPos = 0;
 			}
-		}else{
-			if ((key == GLFW_KEY_A && !rotateCW) || (key == GLFW_KEY_S && rotateCW)) {
-				isRotating = false;
-				currentIntervalPos = 0;
-		}
-	}
 	}
 
 	if (action == GLFW_PRESS && key == GLFW_KEY_H) {

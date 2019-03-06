@@ -117,7 +117,7 @@ private:
 
 	float tx;
 	float ty;
-	bool isSetOne = true;
+	bool is_keyMappingSetA = true;
 
 	int num_levels = 2;
 	int current_level = 0;
