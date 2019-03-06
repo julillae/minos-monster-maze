@@ -63,11 +63,12 @@ private:
     void read_level_data();
 
 	// Generate a spider enemy
-	bool spawn_spider_enemy(vec2 position, float bound);
+	bool spawn_spider_enemy(vec2 position, float bound, bool upsideDown);
 
 	// Generates a new floor
 	bool spawn_floor(vec2 position);
 
+	void initialize_camera_position(int w, int h);
 	void load_new_level();
 	void reset_game();
 	void freeze_all_enemies();
@@ -120,7 +121,7 @@ private:
 	int rotateCWKey = GLFW_KEY_X;
 	int rotateCCWKey = GLFW_KEY_Z;
 
-	int num_levels = 2;
+	int num_levels = 9;
 	int current_level = 0;
 
 	const map<int, std::string> platform_types = {
@@ -145,4 +146,6 @@ private:
 	std::map<std::pair<float, float>, std::string> platforms_by_coords;
 
     bool show_help_menu = false;
+	bool cameraTracking = true;
+	bool canRotate = true;
 };
