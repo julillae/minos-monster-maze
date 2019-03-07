@@ -20,6 +20,7 @@
 #include <vector>
 #include <random>
 #include <map>
+#include <memory>
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -27,6 +28,8 @@
 #include <time.h>
 
 // Level class
+
+typedef std::vector<std::unique_ptr<Enemy>> Enemies;
 
 class Level
 {
@@ -100,10 +103,9 @@ private:
 	RenderEffects m_water;
 
 	Exit m_exit;
-	std::vector<Spider> m_enemies;
+	Enemies m_enemies;
     std::vector<Floor> m_floor;
     HelpMenu m_help_menu;
-	Harpy m_harpy;
 
     float m_seed_rng;
 
@@ -146,6 +148,8 @@ private:
 	// 2 = exit
 	// 3 = initial position
 	// 4 = spider enemy (and its path)
+	// 5 = upside-down enemy
+	// 6 = harpy enemy
     std::vector<std::vector <int>> m_maze;
 	std::map<std::pair<float, float>, std::string> platforms_by_coords;
 

@@ -6,6 +6,7 @@
 #include "../include/mazeComponents/exit.hpp"
 
 #include <vector>
+#include <memory>
 
 class Physics
 {
@@ -26,7 +27,7 @@ public:
 
     CollisionNode collisionWithFixedWalls(Player *p, const Floor *m);
 
-    CollisionNode collideWithEnemy(Player *p, const Enemy *t);
+    CollisionNode collideWithEnemy(Player *p, std::unique_ptr<Enemy> const &t);
 
     CollisionNode collideWithExit (Player *p, const Exit *e);
 
