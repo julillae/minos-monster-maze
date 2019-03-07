@@ -11,6 +11,7 @@
 #include "mazeComponents/floor.hpp"
 #include "mazeComponents/exit.hpp"
 #include "mazeComponents/ice.hpp"
+#include "mazeComponents/spikes.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
 #include "helpMenu.hpp"
@@ -26,6 +27,9 @@
 #include <time.h>
 
 // Level class
+
+typedef std::vector<std::unique_ptr<FixedComponent>> Platforms;
+enum SpikeDir { UP, DOWN, LEFT, RIGHT};
 
 class Level
 {
@@ -63,11 +67,14 @@ private:
     void read_level_data();
 
 	// Generate a spider enemy
-	bool spawn_spider_enemy(vec2 position, float bound);
+	bool spawn_spider_enemy(vec2 position, float bound, bool upsideDown);
 
 	// Generates a new floor
 	bool spawn_floor(vec2 position);
+    bool spawn_ice(vec2 position);
+    bool spawn_spikes(vec2 position, SpikeDir dir);
 
+	void initialize_camera_position(int w, int h);
 	void load_new_level();
 	void reset_game();
 	void freeze_all_enemies();
@@ -80,6 +87,7 @@ private:
 	void print_maze();
 	void store_platform_coords(vec2 coords, int platform_key);
 
+	void set_player_death();
 private:
 	// Window handle
 	GLFWwindow* m_window;
@@ -95,7 +103,7 @@ private:
     Player m_player;
 	Exit m_exit;
 	std::vector<Spider> m_enemies;
-    std::vector<Floor> m_floor;
+	Platforms m_platforms;
     HelpMenu m_help_menu;
 
     float m_seed_rng;
@@ -117,13 +125,18 @@ private:
 
 	float tx;
 	float ty;
+	int rotateCWKey = GLFW_KEY_X;
+	int rotateCCWKey = GLFW_KEY_Z;
 
-	int num_levels = 2;
+	int num_levels = 9;
 	int current_level = 0;
 
 	const map<int, std::string> platform_types = {
 		{1, "FLOOR"},
-		{2, "EXIT"}
+		{2, "EXIT"},
+        {6, "ICE"},
+        {7, "SPIKE LEFT"},
+        {8, "SPIKE UP"}
 	};
 
     // Variables determined by level data
@@ -143,4 +156,6 @@ private:
 	std::map<std::pair<float, float>, std::string> platforms_by_coords;
 
     bool show_help_menu = false;
+	bool cameraTracking = true;
+	bool canRotate = true;
 };
