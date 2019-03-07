@@ -480,7 +480,6 @@ bool Level::update(float elapsed_ms)
 	m_player.update(elapsed_ms);
 
 	update_all_enemies(elapsed_ms);
-	//m_harpy.update(elapsed_ms);
 
 	m_help_menu.set_visibility(show_help_menu);
 
@@ -587,7 +586,6 @@ void Level::draw()
 		enemy->draw(projection_2D);
 	m_exit.draw(projection_2D);
 	m_player.draw(projection_2D);
-	//m_harpy.draw(projection_2D);
 
 	/////////////////////
 	// Truely render to the screen
@@ -730,9 +728,6 @@ void Level::reset_game()
 			enemy->reset_position();
 			enemy->unfreeze();
 		};
-		// m_harpy.freeze();
-		// m_harpy.reset_position();
-		// m_harpy.unfreeze();
 	}
 	
 
