@@ -98,19 +98,22 @@ void Harpy::moveAlongPath(){
     // if we've reached the next node in the path, get a new next node and move towards it
     next_node = path_to_follow.top();
     path_to_follow.pop();
-    if (next_node.y < m_position.y) {
-        set_direction(Direction::up);
-        characterState->changeState(rising);
-    } else if (next_node.y > m_position.y) {
-        set_direction(Direction::down);
-        characterState->changeState(falling);
-    } else if (next_node.x < m_position.x) {
-        set_direction(Direction::left);
+    if (abs(next_node.y - m_position.y) >= maxVerticalSpeed) {
+        if (next_node.y < m_position.y) {
+            set_direction(Direction::up);
+            characterState->changeState(rising);
+        } else {
+            set_direction(Direction::down);
+            characterState->changeState(falling);
+        }
+    } else if (abs(next_node.x - m_position.x) >= maxHorzSpeed) {
+        if (next_node.x < m_position.x) {
+            set_direction(Direction::left);
+        } else {
+            set_direction(Direction::right);
+        }
         characterState->changeState(running);
-    } else if (next_node.x > m_position.x) {
-        set_direction(Direction::right);
-        characterState->changeState(running);
-    }
+    } 
     updateVelocity();
     move();
 
