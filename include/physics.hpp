@@ -77,7 +77,7 @@ public:
 
     Projection getProjection(vec2 axis, std::vector<vec2> vertices)const;
 
-    bool collisionWithGeometry(vec2 pos1, vec2 pos2, vec2 bb1, vec2 bb2);
+    bool collisionWithGeometry(const std::vector<vec2> &vertArr1, const std::vector<vec2> &vertArr2, vec2 pos1, vec2 pos2);
 
     float getOverlap(Projection p1, Projection p2);
 
