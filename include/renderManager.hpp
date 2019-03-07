@@ -11,6 +11,13 @@ public:
 
     bool static set_render_data(Texture* texture, Renderable* renderable);
 
-    void static draw(const mat3& projection, vec2 position, float rotation, vec2 scale, Texture* texture, Renderable* renderable);
+    void static draw_texture(const mat3& projection, vec2 position, float rotation, vec2 scale, Texture* texture, Renderable* renderable);
+
+    void static draw_mesh(const mat3& projection, vec2 position, float rotation, vec2 scale, Renderable* renderable,
+                          float* color, size_t num_indices);
+
+private:
+    void static init_drawing_data(const mat3& projection, vec2 position, float rotation, vec2 scale, Renderable* renderable);
+
 
 };

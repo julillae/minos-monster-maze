@@ -48,6 +48,12 @@ void MazeComponent::set_rotation(float radians)
 	m_rotation = radians;
 }
 
+void MazeComponent::set_size(Texture* texture)
+{
+	m_width = std::fabs(m_scale.x) * texture->width;
+	m_height = std::fabs(m_scale.y) * texture->height;
+}
+
 float MazeComponent::get_width()
 {
 	return m_width;
@@ -56,5 +62,16 @@ float MazeComponent::get_width()
 float MazeComponent::get_height()
 {
 	return m_height;
+}
+
+vec2 MazeComponent::get_bounding_box() const
+{
+	return { m_width, m_height };
+
+}
+
+float MazeComponent::get_drag()
+{
+    return drag;
 }
 
