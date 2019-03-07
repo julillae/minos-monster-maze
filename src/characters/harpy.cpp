@@ -32,7 +32,7 @@ bool Harpy::init(vec2 initialPosition, Physics * physicsHandler)
 	initStateTree();
 	set_properties(initialPosition, 3.0f, speed);
 	m_frozen = false;
-	// set_dimensions(&harpy_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
+	set_dimensions(&harpy_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
 	characterState->changeState(idle);
 
     path_to_follow = stack<vec2>();
@@ -56,7 +56,6 @@ void Harpy::update(float ms)
                 return;
             } else {
                 vec2 first = path_to_follow.top();
-                printf("My path to follow starts at x %f and y %f and is length %ld\n", first.x, first.y, path_to_follow.size());
                 next_node = first;
             }
         } 
