@@ -68,6 +68,9 @@ private:
 	// Generate a spider enemy
 	bool spawn_spider_enemy(vec2 position, float bound, bool upsideDown);
 
+	// Generate harpy enemy
+	bool spawn_harpy_enemy(vec2 position);
+
 	// Generates a new floor
 	bool spawn_floor(vec2 position);
 
@@ -100,6 +103,7 @@ private:
 	std::vector<Spider> m_enemies;
     std::vector<Floor> m_floor;
     HelpMenu m_help_menu;
+	Harpy m_harpy;
 
     float m_seed_rng;
 
