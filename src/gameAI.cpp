@@ -139,19 +139,18 @@ bool GameAI::compare(cTileCoord left, cTileCoord right)
 // Find the shortest path using A*
 stack<vec2> GameAI::aStarSearch(vec2 source, vec2 destination)
 {
-    printf("in aStarSearch\n");
     ROW = world.get_maze_height();
     COL = world.get_maze_width();
     maze = world.get_original_maze();
     TileCoord src = findTileFromLocation(source);
     TileCoord dest = findTileFromLocation(destination);
 
-    // Check src is valid and we can be at that location
-    // if (!(isValid(src.first, src.second) && canMoveHere(src.first, src.second)))
-    // {
-    //     printf("Source is invalid or is a wall/floor component \n");
-    //     return stack<vec2>();
-    // }
+    // Check dest is valid and we can move to that location
+    if (!(isValid(src.first, src.second) && canMoveHere(src.first, src.second)))
+    {
+        printf("Source is invalid or is a wall/floor component\n");
+        return stack<vec2>();
+    }
 
     // Check dest is valid and we can move to that location
     if (!(isValid(dest.first, dest.second) && canMoveHere(dest.first, dest.second)))
@@ -221,31 +220,31 @@ stack<vec2> GameAI::aStarSearch(vec2 source, vec2 destination)
 
         // Go through children of current tile and determine whether they should be added to the frontier/if are destination
 
-        if (isValid(i - 1, j) == true)
+        if (isValid(i - 1, j))
         {
             // If child hasn't been visited and it is not a fixed component, process it
-            if ((visited[i - 1][j] == false) && (canMoveHere(i - 1.f, j) == true))
+            if ((visited[i - 1][j] == false) && canMoveHere(i - 1.f, j))
             {
                 processChildAStar({i, j}, {i - 1, j}, dest, frontier, tileDetails);
             }
         }
-        if (isValid(i + 1, j) == true)
+        if (isValid(i + 1, j))
         {
-            if ((visited[i + 1][j] == false) && (canMoveHere(i + 1.f, j) == true))
+            if ((visited[i + 1][j] == false) && canMoveHere(i + 1.f, j))
             {
                 processChildAStar({i, j}, {i + 1, j}, dest, frontier, tileDetails);
             }
         }
-        if (isValid(i, j + 1) == true)
+        if (isValid(i, j + 1))
         {
-            if ((visited[i][j + 1] == false) && (canMoveHere(i, j + 1.f) == true))
+            if ((visited[i][j + 1] == false) && canMoveHere(i, j + 1.f))
             {
                 processChildAStar({i, j}, {i, j + 1}, dest, frontier, tileDetails);
             }
         }
-        if (isValid(i, j - 1) == true)
+        if (isValid(i, j - 1))
         {
-            if ((visited[i][j - 1] == false) && (canMoveHere(i, j - 1.f) == true))
+            if ((visited[i][j - 1] == false) && canMoveHere(i, j - 1.f))
             {
                 processChildAStar({i, j}, {i, j - 1}, dest, frontier, tileDetails);
             }
