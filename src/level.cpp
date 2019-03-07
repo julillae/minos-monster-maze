@@ -96,6 +96,16 @@ bool Level::spawn_spider_enemy(vec2 position, float bound, bool upsideDown)
 	return false;
 }
 
+bool Level::spawn_harpy_enemy(vec2 position)
+{
+	if (m_harpy.init(position, physicsHandler))
+	{	
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn harpy");
+	return false;
+}
+
 bool Level::spawn_floor(vec2 position)
 {
 	Floor floor;
@@ -122,6 +132,8 @@ void Level::generate_maze()
     float i = 0.f;
 	float j = 0.f;
 
+	bool spawn_harpy = true;
+
 	for (auto &row : m_maze) {
         j = 0.f;
 		for (int &cell : row) {	
@@ -138,6 +150,13 @@ void Level::generate_maze()
 				spawn_spider_enemy(enemy_start_pos, distance, setting_rotated_enemy);
 				setting_enemy = false;
 				setting_rotated_enemy = false;
+			}
+
+			if (spawn_harpy && cell == 0)
+			{
+				
+				spawn_harpy_enemy({200.f, 200.f});
+				spawn_harpy = false;
 			}
 
 			if (cell == 1) {
@@ -410,6 +429,7 @@ bool Level::update(float elapsed_ms)
 	m_player.update(elapsed_ms);
 
 	update_all_enemies(elapsed_ms);
+	m_harpy.update(elapsed_ms);
 
 	m_help_menu.set_visibility(show_help_menu);
 
@@ -516,6 +536,7 @@ void Level::draw()
 		enemy.draw(projection_2D);
 	m_exit.draw(projection_2D);
 	m_player.draw(projection_2D);
+	m_harpy.draw(projection_2D);
 
 	/////////////////////
 	// Truely render to the screen
@@ -645,7 +666,11 @@ void Level::reset_game()
 			enemy.reset_position();
 			enemy.unfreeze();
 		};
+		m_harpy.freeze();
+		m_harpy.reset_position();
+		m_harpy.unfreeze();
 	}
+	
 
 	m_player.init(initialPosition, physicsHandler);
 
