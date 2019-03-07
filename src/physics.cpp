@@ -188,25 +188,25 @@ Physics::CollisionNode Physics::collideWithEnemy (Player *p, const Enemy *e) {
     return collisionNode;
 }
 
-Physics::CollisionNode Physics::collisionWithFixedWalls(Player *p, const Floor *f) {
-    float other_r = std::max(p->get_bounding_box().x, f->get_bounding_box().y);
-    float my_r = std::max(p->width, p->height);
+Physics::CollisionNode Physics::collisionWithFixedWalls(Player *p, std::unique_ptr<FixedComponent> const &f) {
+	float other_r = std::max(p->get_bounding_box().x, f->get_bounding_box().y);
+	float my_r = std::max(p->width, p->height);
 
-    bool isCollided = circleToCircleIntersection(p->get_position(), f->get_position(), other_r, my_r);
+	bool isCollided = circleToCircleIntersection(p->get_position(), f->get_position(), other_r, my_r);
 
-    CollisionNode collisionNode{};
-    collisionNode.isCollided = isCollided;
+	CollisionNode collisionNode{};
+	collisionNode.isCollided = isCollided;
 
 	if (isCollided) {
 		float dy = p->get_position().y - f->get_position().y;
 		float dx = f->get_position().x - p->get_position().x;
 		float collisionAngle = atan2(dy, dx);
-        collisionNode.angleOfCollision = collisionAngle;
+		collisionNode.angleOfCollision = collisionAngle;
 
-    } else {
-        collisionNode.angleOfCollision = 0;
-    }
-    return collisionNode;
+	} else {
+		collisionNode.angleOfCollision = 0;
+	}
+	return collisionNode;
 }
 
 Physics::CollisionNode Physics::collideWithExit (Player *p, const Exit *e) {
@@ -221,43 +221,68 @@ Physics::CollisionNode Physics::collideWithExit (Player *p, const Exit *e) {
     return collisionNode;
 }
 
-void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floor> fixedComponents) {
-    bool isOnAtLeastOnePlatform = false;
-    bool isLeftOfAtLeastOnePlatform = false;
+
+bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents) {
+	bool isOnAtLeastOnePlatform = false;
+	bool isLeftOfAtLeastOnePlatform = false;
 	bool isRightOfAtLeastOnePlatform = false;
 	bool isBelowAtLeastOnePlatform = false;
 
-    Physics::CollisionNode collisionNode;
-	for (const auto &floor : fixedComponents) {
+	Physics::CollisionNode collisionNode;
+	for (const auto& fc : fixedComponents) {
+		collisionNode = collisionWithFixedWalls(c, std::move(fc));
+		if (collisionNode.isCollided) {
+			if (fc->can_kill) return true;
 
-	    collisionNode = collisionWithFixedWalls(c, &floor);
+			float collisionAngle = collisionNode.angleOfCollision;
 
-        vec2 cPos = c->get_position();
-        vec2 cBound = c->get_bounding_box();
-        vec2 fPos = floor.get_position();
-        vec2 fBound = floor.get_bounding_box();
+			// logic needed to get new angle (collisionAngle + rotation) within
+			// the needed -pi to pi range
+			collisionAngle = fmod(collisionAngle + rotation, 2 * M_PI);
+			float anglePastPi = 0.f;
+			if (collisionAngle > M_PI) {
+				anglePastPi = collisionAngle - M_PI;
+				collisionAngle = -M_PI + anglePastPi;
+			}
+			else if (collisionAngle < -M_PI) {
+				anglePastPi = collisionAngle + M_PI;
+				collisionAngle = M_PI + anglePastPi;
+			}
 
-        std::vector<vec2> playVert = getVertices(cPos, cBound, rotation);
-        // unrotated floor
-        std::vector<vec2> floorVert = getVertices(fPos, fBound, 0);
-//        bool isCollided = collisionWithGeometry(playVert, floorVert, cPos, fPos);
-        bool isCollided = collisionNode.isCollided;
+			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
+				c->set_on_platform();
+				isOnAtLeastOnePlatform = true;
+				c->m_platform_drag = fc->get_drag();
+			}
 
-        if (isCollided) {
+			if (collisionAngle > -M_PI / 4 && collisionAngle < M_PI / 4) {
+				isLeftOfAtLeastOnePlatform = true;
+			}
+			if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
+				isBelowAtLeastOnePlatform = true;
+			}
+			if (collisionAngle > 3 * M_PI / 4 || collisionAngle < -3 * M_PI / 4) {
+				isRightOfAtLeastOnePlatform = true;
+			}
 
-            // test
-            vec2 newPos = subtract(cPos, MTV.first);
 
-            float dy = cPos.y - fPos.y;
-            float dx = fPos.x - cPos.x;
-            float collisionAngle = atan2(dy, dx);
+			// get the floor position
+			vec2 floorPos = fc->get_position();
+			vec2 playPos = c->get_position();
+			float floor_tolerance = 40;
 
-            // set on platform
+			// get character's direction
+            Direction h_direction = c->get_h_direction();
 
-//            cPos = subtract(cPos, MTV.first);
-//            if (rotation > 0) {
-//                MTV.first = rotateVec(MTV.first, rotation);
-//            }
+			// get the normalized vector
+			vec2 newPos = calculateNewPosition(playPos, floorPos);
+
+            if (floorPos.y - newPos.y < floor_tolerance) {
+                c->set_position(newPos);
+            }
+
+//			if (rotation > 0 && rotation < M_PI/2 && h_direction == Direction::right) {
+//			   // calculate new dimensions
 //
 //            if (MTV.first.y < 0) {
 //                isBelowAtLeastOnePlatform = true;
@@ -271,42 +296,6 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
 //            }
 
 
-//            float collisionAngle = collisionNode.angleOfCollision;
-            // logic needed to get new angle (collisionAngle + rotation) within
-            // the needed -pi to pi range
-            collisionAngle = static_cast<float>(fmod(collisionAngle + rotation, 2 * M_PI));
-            float anglePastPi = 0.f;
-            if (collisionAngle > M_PI) {
-                anglePastPi = static_cast<float>(collisionAngle - M_PI);
-                collisionAngle = static_cast<float>(-M_PI + anglePastPi);
-            }
-            else if (collisionAngle < -M_PI) {
-                anglePastPi = static_cast<float>(collisionAngle + M_PI);
-                collisionAngle = static_cast<float>(M_PI + anglePastPi);
-            }
-
-            if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
-                c->set_on_platform();
-                isOnAtLeastOnePlatform = true;
-            }
-
-            if (collisionAngle > -M_PI / 4 && collisionAngle < M_PI / 4) {
-                isLeftOfAtLeastOnePlatform = true;
-            }
-            if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
-                isBelowAtLeastOnePlatform = true;
-            }
-            if (collisionAngle > 3 * M_PI / 4 || collisionAngle < -3 * M_PI / 4) {
-                isRightOfAtLeastOnePlatform = true;
-            }
-//
-            float floor_tolerance = 40;
-
-//            vec2 newPos = calculateNewPosition(c->get_position(), floor.get_position());
-
-//			if (fPos.y - newPos.y > 39) {
-//                c->set_position(newPos);
-//            }
         }
     }
 
@@ -317,12 +306,14 @@ void Physics::characterCollisionsWithFixedComponents(Player* c, std::vector<Floo
     c->isRightOfPlatform = isRightOfAtLeastOnePlatform;
 
 
+	return false;
+
 }
 
 void Physics::characterVelocityUpdate(Character* c)
 {
 	if (c->characterState->currentState != frozen) {
-		float platformDrag = 0.75; //eventually make this a property of the platform
+		float platformDrag = c->m_platform_drag;
 		
 		vec2 cVelocity = c->get_velocity();
 		// rotate velocity vector back to normal orientation to reuse existing logic

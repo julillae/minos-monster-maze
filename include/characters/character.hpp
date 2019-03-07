@@ -47,6 +47,8 @@ public:
 	// Returns the current scale of the character
 	vec2 get_scale()const;
 
+	void set_scale(vec2 scale);
+
 	// Freeze and unfreeze the character
 	void freeze();
 
@@ -94,6 +96,7 @@ public:
 	float maxHorzSpeed = 8;
 	float accStep = 0.8f;
 	float m_animTime = 0.f;
+	float m_platform_drag;
 
 protected:
 	Physics* physicsHandler;
