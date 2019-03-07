@@ -1,6 +1,7 @@
 #pragma once
 
 #include "character.hpp"
+#include "../mazeComponents/fixedComponent.hpp"
 
 class Player : public Character
 {

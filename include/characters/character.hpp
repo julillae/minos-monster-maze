@@ -96,6 +96,7 @@ public:
 	float maxHorzSpeed = 8;
 	float accStep = 0.8f;
 	float m_animTime = 0.f;
+	float m_platform_drag;
 
 protected:
 	Physics* physicsHandler;
