@@ -165,7 +165,7 @@ void Harpy::resetCycleStart() {
 void Harpy::draw(const mat3& projection)
 {
     // set_animation();
-	RenderManager::draw(projection, m_position, m_rotation, m_scale, &harpy_texture, this);
+	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &harpy_texture, this);
 
 }
 
