@@ -35,7 +35,7 @@ class Harpy: public Smart
     private:
         std::stack<vec2> path_to_follow;
         std::chrono::_V2::system_clock::time_point cycle_start;
-        const float path_cycle_time = 1000.f;
+        const float path_cycle_time = 100.f;
         vec2 next_node;
         float maxVerticalSpeed = 2.f;
         float maxHorzSpeed = 2.f;

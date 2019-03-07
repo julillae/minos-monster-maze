@@ -27,7 +27,7 @@ TileCoord GameAI::findTileFromLocation(vec2 location)
     float tile_width = world.get_tile_width();
     float tile_height = world.get_tile_height();
 
-    return {location.x / tile_width, location.y / tile_height};
+    return {location.y / tile_width, location.x / tile_height};
 }
 
 // Function to determine location, given the tile
@@ -35,7 +35,7 @@ vec2 GameAI::findLocationFromTile(TileCoord cell)
 {
     float tile_width = world.get_tile_width();
     float tile_height = world.get_tile_height();
-    vec2 result = vec2({cell.first * tile_width, cell.second * tile_height});
+    vec2 result = vec2({cell.second * tile_width, cell.first * tile_height});
 
     return result;
 }
@@ -50,19 +50,21 @@ bool GameAI::isValid(int row, int col)
 bool GameAI::canMoveHere(int row, int col)
 {
     // Returns true if the tile isn't a fixed component
-    if (maze[col][row] == 1)
+    if (maze[row][col] == 1) {
         return (false);
-    else
+    } else { 
         return (true);
+    }
 }
 
 // Helper function to see if current tile is destination tile
 bool GameAI::isDestination(int row, int col, TileCoord dest)
 {
-    if (row == dest.first && col == dest.second)
+    if (row == dest.first && col == dest.second) {
         return (true);
-    else
+    } else {
         return (false);
+    }
 }
 
 // Helper function to calculate 'h' (i.e. heuristic of tile).
@@ -168,10 +170,8 @@ stack<vec2> GameAI::aStarSearch(vec2 source, vec2 destination)
     // Create a grid of 'visited' tiles and initialize them all to false
     // will update to true once a given tile is visited
     std::vector<std::vector<bool>> visited(ROW, std::vector<bool>(COL, false));
-
     // Declare a grid to hold the default details of each tile
     std::vector<std::vector<tile>> tileDetails(ROW, std::vector<tile>(COL));
-    //printf("About to populate tileDetails\n");
     int i;
     int j;
 
@@ -199,7 +199,6 @@ stack<vec2> GameAI::aStarSearch(vec2 source, vec2 destination)
 
     // Create an frontier of cTileCoords to explore, where each has the totalCost and i,j coordinates
     priority_queue<cTileCoord, std::vector<cTileCoord>, std::function<bool(cTileCoord, cTileCoord)>> frontier(compare);
-;
     // Put the starting tile on the frontier and initialize the totalCost to zero
     frontier.push(make_pair(0.0, make_pair(i, j)));
 
