@@ -159,8 +159,7 @@ private:
 	// 2 = exit
 	// 3 = initial position
 	// 4 = spider enemy (and its path)
-	// 5 = upside-down enemy
-	// 6 = harpy enemy
+	// 9 = harpy enemy
     std::vector<std::vector <int>> m_maze;
 	std::map<std::pair<float, float>, std::string> platforms_by_coords;
 
