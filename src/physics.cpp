@@ -51,9 +51,9 @@ std::vector <vec2> Physics::getVertices(vec2 object, vec2 bounds, float rotation
     float y_pos = object.y;
 
     vec2 vert1 = {x_pos + offset * cosf(rotation + offsetAngle), y_pos + offset * sinf(rotation + offsetAngle)};
-    vec2 vert2 = {static_cast<float>(x_pos + offset * cos(rotation + M_PI - offsetAngle)),
-                  static_cast<float>(y_pos + offset * sin(rotation + M_PI - offsetAngle))};
-    vec2 vert3 = {static_cast<float>(x_pos + offset * cos(rotation - M_PI + offsetAngle)),
+    vec2 vert2 = {(x_pos + offset * cosf(static_cast<float>(rotation + M_PI - offsetAngle))),
+                  (y_pos + offset * sinf(static_cast<float>(rotation + M_PI - offsetAngle)))};
+    vec2 vert3 = {(x_pos + offset * cosf(static_cast<float>(rotation - M_PI + offsetAngle))),
                   static_cast<float>(y_pos + offset * sin(rotation - M_PI + offsetAngle))};
     vec2 vert4 = {x_pos + offset * cos(rotation - offsetAngle), y_pos + offset * sin(rotation - offsetAngle)};
 
@@ -271,15 +271,6 @@ bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vecto
             // the needed -pi to pi range
             collisionAngle = static_cast<float>(fmod(collisionAngle + rotation, 2 * M_PI));
             float anglePastPi = 0.f;
-            if (collisionAngle > M_PI) {
-                anglePastPi = static_cast<float>(collisionAngle - M_PI);
-                collisionAngle = static_cast<float>(-M_PI + anglePastPi);
-            }
-            else if (collisionAngle < -M_PI) {
-                anglePastPi = static_cast<float>(collisionAngle + M_PI);
-                collisionAngle = static_cast<float>(M_PI + anglePastPi);
-            }
-
             if (collisionAngle > M_PI) {
                 anglePastPi = static_cast<float>(collisionAngle - M_PI);
                 collisionAngle = static_cast<float>(-M_PI + anglePastPi);
