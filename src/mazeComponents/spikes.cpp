@@ -73,6 +73,7 @@ bool Spikes::init(vec2 position)
     can_kill = true;
 	drag = 0.75f;
     set_dimensions();
+    set_vertex_coord();
 
     return true;
 }
@@ -88,7 +89,7 @@ void Spikes::draw(const mat3& projection)
 
 void Spikes::set_dimensions()
 {
-    float min_x ;
+    float min_x;
     float max_x;
     float min_y;
     float max_y;

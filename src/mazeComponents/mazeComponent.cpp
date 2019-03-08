@@ -75,3 +75,22 @@ float MazeComponent::get_drag()
     return drag;
 }
 
+void MazeComponent::set_vertex_coord()
+{
+	RenderManager::init_drawing_data(m_position, m_rotation, m_scale, this);
+
+	for (auto vert : vertices)
+	{
+		mat3 max_mat{ {vert.position.x, vert.position.y, 1},
+					  {m_width / m_scale.x, 0, 1},
+					  { 0, m_height / m_scale.y, 1 } };
+		mat3 transformed = mul(transform, max_mat);
+
+		vertex_coords.push_back(vec2({transformed.c0.x, transformed.c0.y}));
+	}
+}
+
+std::vector<vec2> MazeComponent::get_vertex_coord()
+{
+	return vertex_coords;
+}
