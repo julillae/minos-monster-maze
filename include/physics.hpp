@@ -47,7 +47,7 @@ public:
         float angleOfCollision;
     };
 
-    CollisionNode collisionWithFixedWalls(Player *p, std::unique_ptr<FixedComponent> const &f);
+    CollisionNode fastCollisionWithFixedComponents(Player *p, std::unique_ptr<FixedComponent> const &f);
 
     CollisionNode collideWithEnemy(Player *p, const Enemy *t);
 
