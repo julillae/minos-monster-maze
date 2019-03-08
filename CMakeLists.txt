@@ -40,6 +40,7 @@ set(SOURCE_FILES
     src/characters/player.cpp
     src/characters/enemy.cpp
     src/characters/smart.cpp
+    src/characters/harpy.cpp
     src/characters/simple.cpp
     src/characters/spider.cpp
     src/mazeComponents/mazeComponent.cpp
@@ -65,6 +66,7 @@ set(SOURCE_FILES
     include/characters/player.hpp
     include/characters/enemy.hpp
     include/characters/smart.hpp
+    include/characters/harpy.hpp
     include/characters/simple.hpp
     include/characters/spider.hpp
     include/mazeComponents/mazeComponent.hpp

@@ -11,6 +11,7 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
+#include <memory>
 
 namespace
 {
@@ -79,21 +80,34 @@ void Level::read_level_data() {
 
 bool Level::spawn_spider_enemy(vec2 position, float bound, bool upsideDown)
 {
-	Spider enemy;
-	if (enemy.init(position, physicsHandler))
+	std::unique_ptr<Spider> enemy = std::unique_ptr<Spider>(new Spider);
+
+	if (enemy->init(position, physicsHandler))
 	{
 		if (upsideDown) {
-			enemy.set_rotation(M_PI);
-			vec2 enemy_scale = enemy.get_scale();
-			enemy.set_scale({enemy_scale.x * -1.f, enemy_scale.y});
+			enemy->set_rotation(M_PI);
+			vec2 enemy_scale = enemy->get_scale();
+			enemy->set_scale({enemy_scale.x * -1.f, enemy_scale.y});
 		}
 
-		enemy.set_bound(bound);
-		m_enemies.emplace_back(enemy);
+		enemy->set_bound(bound);
+		m_enemies.emplace_back(std::move(enemy));
 
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn enemy");
+	return false;
+}
+
+bool Level::spawn_harpy_enemy(vec2 position)
+{
+	std::unique_ptr<Harpy> enemy = std::unique_ptr<Harpy>(new Harpy);
+	if (enemy->init(position, physicsHandler))
+	{	
+		m_enemies.emplace_back(std::move(enemy));
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn harpy");
 	return false;
 }
 
@@ -233,6 +247,9 @@ void Level::generate_maze()
 				float spike_y = y_pos - m_tile_height / 2;
 			    if (spawn_spikes({x_pos, spike_y}, UP))
 			        store_platform_coords({x_pos, spike_y}, cell);
+			} else if (cell == 9) {
+
+				spawn_harpy_enemy(vec2({x_pos, y_pos}));
 			}
 
             j = j + 1.f;
@@ -376,7 +393,7 @@ void Level::destroy()
 
 	m_player.destroy();
 	for (auto& enemy : m_enemies)
-		enemy.destroy();
+		enemy->destroy();
 	for (auto& platform: m_platforms)
 		platform->destroy();
 	m_enemies.clear();
@@ -424,8 +441,8 @@ bool Level::update(float elapsed_ms)
 	}
 
 	// Checking Player - Enemy Collision
-	for (Enemy& enemy : m_enemies) {
-		if (physicsHandler->collideWithEnemy(&m_player, &enemy).isCollided)
+	for (auto& enemy : m_enemies) {
+		if (physicsHandler->collideWithEnemy(&m_player, enemy).isCollided)
 		{
 			set_player_death();
 		}
@@ -566,7 +583,7 @@ void Level::draw()
     for (auto& platform : m_platforms)
         platform->draw(projection_2D);
 	for (auto& enemy : m_enemies)
-		enemy.draw(projection_2D);
+		enemy->draw(projection_2D);
 	m_exit.draw(projection_2D);
 	m_player.draw(projection_2D);
 
@@ -682,8 +699,8 @@ void Level::load_new_level()
 		platform->destroy();
 
 	for (auto& enemy : m_enemies)
-		enemy.destroy();
-
+		enemy->destroy();
+	
 	m_platforms.clear();
 	m_enemies.clear();
 	m_maze.clear();
@@ -706,12 +723,13 @@ void Level::reset_game()
 		load_new_level();
 		initialize_camera_position(w, h);
 	} else {
-		for (Enemy& enemy : m_enemies) {
-			enemy.freeze();
-			enemy.reset_position();
-			enemy.unfreeze();
+		for (auto& enemy : m_enemies) {
+			enemy->freeze();
+			enemy->reset_position();
+			enemy->unfreeze();
 		};
 	}
+	
 
 	m_player.init(initialPosition, physicsHandler);
 
@@ -725,17 +743,17 @@ void Level::reset_game()
 
 void Level::freeze_all_enemies()
 {
-	for (Enemy& e : m_enemies) e.freeze();
+	for (auto& e : m_enemies) e->freeze();
 }
 
 void Level::unfreeze_all_enemies()
 {
-	for (Enemy& e : m_enemies) e.unfreeze();
+	for (auto& e : m_enemies) e->unfreeze();
 }
 
 void Level::update_all_enemies(float elapsed_ms)
 {
-	for (Enemy& e : m_enemies) e.update(elapsed_ms);
+	for (auto& e : m_enemies) e->update(elapsed_ms);
 }
 
 // Returns the platform type if there is a platform at these coordinates
@@ -747,6 +765,16 @@ std::string Level::get_platform_by_coordinates(std::pair<float, float> coords) {
 	}
 
 	return "";
+}
+
+bool Level::maze_is_platform(std::pair<int,int> coords){
+	int val_at_coords = m_maze[coords.first][coords.second];
+	for (auto& p : platform_types) {
+		if (val_at_coords == p.first){
+			return true;
+		}
+	}
+	return false;
 }
 
 // Method for visualizing full maze in console for debugging purposes
