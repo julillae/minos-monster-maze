@@ -2,6 +2,8 @@
 
 #include <string>
 #include <algorithm>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 bool Spikes::init(vec2 position)
 {
@@ -66,14 +68,14 @@ bool Spikes::init(vec2 position)
 
     // Setting initial values
     m_scale.x = 10.f;
-    m_scale.y = 25.f;
+	m_scale.y = 25.f;
     m_rotation = 0.f;
     m_num_indices = indices.size();
     m_position = position;
     can_kill = true;
 	drag = 0.75f;
     set_dimensions();
-    set_vertex_coord();
+    //set_vertex_coord();
 
     return true;
 }
@@ -119,15 +121,24 @@ void Spikes::set_dimensions()
 
 void Spikes::set_left()
 {
-    set_rotation(67.5);
+	set_rotation(-M_PI/2);
+	set_vertex_coord();
 }
 
 void Spikes::set_right()
 {
-    set_rotation(-67.5);
+    set_rotation(M_PI / 2);
+	set_vertex_coord();
 }
 
 void Spikes::set_down()
 {
-    set_rotation(180.f);
+    set_rotation(M_PI);
+	set_vertex_coord();
+}
+
+void Spikes::set_up()
+{
+	set_rotation(0);
+	set_vertex_coord();
 }

@@ -56,6 +56,10 @@ std::vector <vec2> Physics::getVertices(vec2 object, vec2 bounds, float rotation
     vec2 vert3 = {(x_pos + offset * cosf(static_cast<float>(rotation - M_PI + offsetAngle))),
                   static_cast<float>(y_pos + offset * sin(rotation - M_PI + offsetAngle))};
     vec2 vert4 = {x_pos + offset * cos(rotation - offsetAngle), y_pos + offset * sin(rotation - offsetAngle)};
+	//vec2 vert1 = { x_pos + bounds.x / 2, y_pos - bounds.y / 2 };
+	//vec2 vert2 = { x_pos + bounds.x / 2, y_pos + bounds.y / 2 };
+	//vec2 vert3 = { x_pos - bounds.x / 2, y_pos + bounds.y / 2 };
+	//vec2 vert4 = { x_pos - bounds.x / 2, y_pos - bounds.y / 2 };
 
     verticesArr.push_back(vert1);
     verticesArr.push_back(vert2);
@@ -78,12 +82,7 @@ std::vector<vec2> Physics::getAxes(std::vector<vec2> vertices)const
         vec2 edge = subtract(v1, v2); // Get vector representing edge of shape
         vec2 normal = {edge.y, -edge.x}; // Get the normal (a vector perpendicular to the edge)
 
-        // Normalize the normal vector
-        auto length = static_cast<float>(sqrt(pow(normal.x, 2) + pow(normal.y, 2)));
-        normal.x /= length;
-        normal.y /= length;
-
-        axisVector.push_back(normal);
+        axisVector.push_back(normalize(normal));
     }
     return axisVector;
 
@@ -233,6 +232,7 @@ Physics::CollisionNode Physics::collideWithExit (Player *p, const Exit *e) {
 
 
 bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents) {
+
     bool isOnAtLeastOnePlatform = false;
     bool isRightOfAtLeastOnePlatform = false;
     bool isLeftOfAtLeastOnePlatform = false;
@@ -287,7 +287,6 @@ bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vecto
 					isOnAtLeastOnePlatform = true;
 					c->m_platform_drag = fc->get_drag();
 				}
-
 				if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
 					isBelowAtLeastOnePlatform = true;
 				}
@@ -297,10 +296,7 @@ bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vecto
 
     if (!isOnAtLeastOnePlatform) c->set_in_free_fall();
     c->isBelowPlatform = isBelowAtLeastOnePlatform;
-
-
     return false;
-
 }
 
 void Physics::characterVelocityUpdate(Character* c)
