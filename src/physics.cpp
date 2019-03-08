@@ -198,7 +198,7 @@ Physics::CollisionNode Physics::collideWithEnemy (Player *p, const Enemy *e) {
     return collisionNode;
 }
 
-Physics::CollisionNode Physics::collisionWithFixedWalls(Player *p, std::unique_ptr<FixedComponent> const &f) {
+Physics::CollisionNode Physics::fastCollisionWithFixedComponents(Player *p, std::unique_ptr<FixedComponent> const &f) {
 	float other_r = std::max(p->get_bounding_box().x, f->get_bounding_box().y);
 	float my_r = std::max(p->width, p->height);
 
@@ -246,51 +246,53 @@ bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vecto
         vec2 cBound = c->get_bounding_box();
         vec2 fBound = fc->get_bounding_box();
 
-        std::vector<vec2> playArray = getVertices(cPos, cBound, rotation);
-        std::vector<vec2> floorArray = getVertices(fPos, fBound, 0);
+		if (fastCollisionWithFixedComponents(c, fc).isCollided) {
+			std::vector<vec2> playArray = getVertices(cPos, cBound, rotation);
+			std::vector<vec2> floorArray = getVertices(fPos, fBound, 0);
 
 
-        bool isCollided = collisionWithGeometry(playArray, floorArray, cPos, fPos);
+			bool isCollided = collisionWithGeometry(playArray, floorArray, cPos, fPos);
 
-        if (isCollided) {
+			if (isCollided) {
 
-            if (fc->can_kill) return true;
-            // grab the vector that pushes the player to the tangent of the platform
-            vec2 translation = {MTV.first.x * MTV.second, MTV.first.y * MTV.second};
+				if (fc->can_kill) return true;
+				// grab the vector that pushes the player to the tangent of the platform
+				vec2 translation = { MTV.first.x * MTV.second, MTV.first.y * MTV.second };
 
-            vec2 currentPos = c->get_position();
-            // translate the player
-            vec2 newPos = subtract(currentPos, translation);
+				vec2 currentPos = c->get_position();
+				// translate the player
+				vec2 newPos = subtract(currentPos, translation);
 
-            c->set_position(newPos);
+				c->set_position(newPos);
 
-            float dy = newPos.y - fPos.y;
-            float dx = fPos.x - newPos.x;
-            float collisionAngle = atan2(dy, dx);
-            // logic needed to get new angle (collisionAngle + rotation) within
-            // the needed -pi to pi range
-            collisionAngle = static_cast<float>(fmod(collisionAngle + rotation, 2 * M_PI));
-            float anglePastPi = 0.f;
-            if (collisionAngle > M_PI) {
-                anglePastPi = static_cast<float>(collisionAngle - M_PI);
-                collisionAngle = static_cast<float>(-M_PI + anglePastPi);
-            }
-            else if (collisionAngle < -M_PI) {
-                anglePastPi = static_cast<float>(collisionAngle + M_PI);
-                collisionAngle = static_cast<float>(M_PI + anglePastPi);
-            }
+				float dy = newPos.y - fPos.y;
+				float dx = fPos.x - newPos.x;
+				float collisionAngle = atan2(dy, dx);
+				// logic needed to get new angle (collisionAngle + rotation) within
+				// the needed -pi to pi range
+				collisionAngle = static_cast<float>(fmod(collisionAngle + rotation, 2 * M_PI));
+				float anglePastPi = 0.f;
+				if (collisionAngle > M_PI) {
+					anglePastPi = static_cast<float>(collisionAngle - M_PI);
+					collisionAngle = static_cast<float>(-M_PI + anglePastPi);
+				}
+				else if (collisionAngle < -M_PI) {
+					anglePastPi = static_cast<float>(collisionAngle + M_PI);
+					collisionAngle = static_cast<float>(M_PI + anglePastPi);
+				}
 
-            // place player on platform
-            if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
-                c->set_on_platform();
-                isOnAtLeastOnePlatform = true;
-                c->m_platform_drag = fc->get_drag();
-            }
+				// place player on platform
+				if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
+					c->set_on_platform();
+					isOnAtLeastOnePlatform = true;
+					c->m_platform_drag = fc->get_drag();
+				}
 
-            if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
-                isBelowAtLeastOnePlatform = true;
-            }
-        }
+				if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
+					isBelowAtLeastOnePlatform = true;
+				}
+			}
+		}
     }
 
     if (!isOnAtLeastOnePlatform) c->set_in_free_fall();
