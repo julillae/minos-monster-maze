@@ -4,6 +4,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cmath>
+#include <memory>
 
 // logic for gravity and potentially friction calculations go here
 
@@ -64,7 +65,7 @@ vec2 Physics::calculateDimensionsAfterRotation(vec2 c1, vec2 bound) {
 	return newDimensions;
 }
 
-Physics::CollisionNode Physics::collideWithEnemy (Player *p, const Enemy *e) {
+Physics::CollisionNode Physics::collideWithEnemy (Player *p, std::unique_ptr<Enemy> const &e) {
 
     bool isCollided = rectToRectIntersection
             (p->get_position(), e->get_position(), p->get_bounding_box(), e->get_bounding_box());
