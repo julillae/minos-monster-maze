@@ -49,12 +49,7 @@ bool GameAI::isValid(int row, int col)
 // Helper function to check if character can move to given tile (i.e. is it occupied by a fixed component)
 bool GameAI::canMoveHere(int row, int col)
 {
-    // Returns true if the tile isn't a fixed component
-    if (maze[row][col] == 1) {
-        return (false);
-    } else { 
-        return (true);
-    }
+    return !world.maze_is_platform(make_pair(row, col));
 }
 
 // Helper function to see if current tile is destination tile
