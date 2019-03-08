@@ -143,21 +143,18 @@ stack<vec2> GameAI::aStarSearch(vec2 source, vec2 destination)
     // Check dest is valid and we can move to that location
     if (!(isValid(src.first, src.second) && canMoveHere(src.first, src.second)))
     {
-        printf("Source is invalid or is a wall/floor component\n");
         return stack<vec2>();
     }
 
     // Check dest is valid and we can move to that location
     if (!(isValid(dest.first, dest.second) && canMoveHere(dest.first, dest.second)))
     {
-        printf("Destination is invalid or is a wall/floor component\n");
         return stack<vec2>();
     }
 
     // If the destination tile is the same as source tile
     if (isDestination(src.first, src.second, dest) == true)
     {
-        printf("We are already at the destination\n");
         return stack<vec2>();
     }
 

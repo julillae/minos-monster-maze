@@ -15,14 +15,14 @@ bool Harpy::init(vec2 initialPosition, Physics * physicsHandler)
 {
     Smart::init(initialPosition, physicsHandler);
 
-    const char* textureFile = textures_path("spider-sprite-sheet.png");
+    const char* textureFile = textures_path("bat-sprite-sheet.png");
 	if (!RenderManager::load_texture(textureFile, &harpy_texture, this)) {
         return false;
     }
 
-	float spriteSheetWidth = 9.0f;
+	float spriteSheetWidth = 5.0f;
 	float spriteSheetHeight = 3.0f;
-    int horizontalTrim = 16;
+    int horizontalTrim = 12;
     int verticalTrim = 19;
 
 	spriteSheet.init(&harpy_texture, { spriteSheetWidth, spriteSheetHeight }, this);
@@ -51,7 +51,6 @@ void Harpy::update(float ms)
             // call AI to get a path to the player   
             path_to_follow = GameAI::followPlayer(m_position, SearchMethod::aStar);
             if (path_to_follow.empty()) {
-                printf("No path to follow to the player\n");
                 characterState->changeState(idle);
                 return;
             } else {
@@ -109,8 +108,10 @@ void Harpy::moveAlongPath(){
     } else if (abs(next_node.x - m_position.x) >= maxHorzSpeed) {
         if (next_node.x < m_position.x) {
             set_direction(Direction::left);
+            m_scale.x = -std::fabs(m_scale.x);
         } else {
             set_direction(Direction::right);
+            m_scale.x = std::fabs(m_scale.x);
         }
         characterState->changeState(running);
     } 
@@ -167,7 +168,7 @@ void Harpy::resetCycleStart() {
 
 void Harpy::draw(const mat3& projection)
 {
-    // set_animation();
+    set_animation();
 	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &harpy_texture, this);
 
 }
@@ -185,12 +186,11 @@ void Harpy::set_animation()
         is_anim_once = false;
         switch (characterState->currentState) {
             case idle:
+            case running:
+            case rising:
+            case falling:
                 numTiles = 5;
                 tileIndex = 0;
-                break;
-            case running:
-                numTiles = 6;
-                tileIndex = 5;
                 break;
             default:
                 numTiles = 1;
@@ -203,11 +203,11 @@ void Harpy::set_animation()
         if (is_anim_once)
         {
             numTiles = 1;
-            tileIndex = 19;
+            tileIndex = 14;
         } else
         {
-            numTiles = 9;
-            tileIndex = 11;
+            numTiles = 5;
+            tileIndex = 10;
         }
     }
 
@@ -218,7 +218,7 @@ void Harpy::set_animation()
     tileIndex = tileIndex + (int)m_animTime % numTiles;
 
     // do not repeat death animation
-    if (!isRepeat && tileIndex == 19) is_anim_once = true;
+    if (!isRepeat && tileIndex == 14) is_anim_once = true;
 
     spriteSheet.update_render_data(this, tileIndex);
 }
