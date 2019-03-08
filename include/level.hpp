@@ -58,6 +58,7 @@ public:
 	bool is_over()const;
 
 	std::string get_platform_by_coordinates(std::pair<float, float> coords);
+	bool maze_is_platform(std::pair<int,int> coords);
 	std::vector<std::vector <int>> get_original_maze();
 
 	float get_maze_width();

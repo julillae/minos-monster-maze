@@ -767,6 +767,16 @@ std::string Level::get_platform_by_coordinates(std::pair<float, float> coords) {
 	return "";
 }
 
+bool Level::maze_is_platform(std::pair<int,int> coords){
+	int val_at_coords = m_maze[coords.first][coords.second];
+	for (auto& p : platform_types) {
+		if (val_at_coords == p.first){
+			return true;
+		}
+	}
+	return false;
+}
+
 // Method for visualizing full maze in console for debugging purposes
 // 1 = platform
 // 2 = exit
