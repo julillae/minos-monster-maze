@@ -5,6 +5,7 @@
 bool RenderEffects::init() {
 	m_dead_time = -1;
 	m_win_time = -1;
+	m_rotation_end_time = -1;
 
 	// Since we are not going to apply transformation to this screen geometry
 	// The coordinates are set to fill the standard openGL window [-1, -1 .. 1, 1]
@@ -52,6 +53,10 @@ void RenderEffects::set_level_complete_time() {
 	m_win_time = glfwGetTime();
 }
 
+void RenderEffects::set_rotation_end_time() {
+	m_rotation_end_time = glfwGetTime();
+}
+
 void RenderEffects::reset_player_dead_time() {
 	m_dead_time = -1;
 }
@@ -60,12 +65,22 @@ void RenderEffects::reset_player_win_time() {
 	m_win_time = -1;
 }
 
+void RenderEffects::reset_rotation_end_time() {
+	m_rotation_end_time = -1;
+}
+
 float RenderEffects::get_time_since_death() const {
 	return glfwGetTime() - m_dead_time;
 }
 
 float RenderEffects::get_time_since_level_complete() const {
 	return glfwGetTime() - m_win_time;
+}
+
+float RenderEffects::get_time_since_rotation_end() const {
+	if (m_rotation_end_time > 0)
+		return glfwGetTime() - m_rotation_end_time;
+	else return m_rotation_end_time;
 }
 
 void RenderEffects::draw(const mat3& projection) {

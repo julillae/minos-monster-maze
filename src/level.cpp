@@ -421,7 +421,7 @@ bool Level::update(float elapsed_ms)
 			previouslyFrozen = true;
 		}
 	}
-	else if (isRotating) {
+	else if (isRotating && rotationEnergy > 0.f) {
 		currentIntervalPos++;
 		currentIntervalPos = min(currentIntervalPos, maxIntervalLength);
 		normalizedIntervalPos = currentIntervalPos / maxIntervalLength;
@@ -434,10 +434,14 @@ bool Level::update(float elapsed_ms)
 			applyFreeze = true;
 			previouslyFrozen = true;
 		}
+
+		rotationEnergy -= 0.5;
 	}
 	else if (previouslyFrozen) {
 		applyThaw = true;
 		previouslyFrozen = false;
+
+		m_water.set_rotation_end_time();
 	}
 
 	// Checking Player - Enemy Collision
@@ -489,6 +493,16 @@ bool Level::update(float elapsed_ms)
 
 	if (m_player.is_alive() && is_player_at_goal && m_water.get_time_since_level_complete() > 1.5)
 		reset_game();
+		
+	if (m_water.get_time_since_rotation_end() > 4.0) {
+		rotationEnergy += 20.f;
+		m_water.set_rotation_end_time();
+
+		if (rotationEnergy >= 100.f) {
+			m_water.reset_rotation_end_time();
+			rotationEnergy = 100.f;
+		}
+	}
 
 	return true;
 }
@@ -506,7 +520,7 @@ void Level::draw()
 
 	// Updating window title with points
 	std::stringstream title_ss;
-	title_ss << "Minos' Monster Maze";
+	title_ss << "Minos' Monster Maze || Energy left to rotate: " << rotationEnergy;
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
 	if (is_player_at_goal)
@@ -733,11 +747,13 @@ void Level::reset_game()
 
 	m_player.init(initialPosition, physicsHandler);
 
+	m_water.reset_rotation_end_time();
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
 	is_player_at_goal = false;
 	rotationDeg = 0;
 	rotation = 0.f;
+	rotationEnergy = 100.f;
 	previouslyFrozen = false;
 }
 
