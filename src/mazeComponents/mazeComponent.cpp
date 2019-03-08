@@ -82,8 +82,8 @@ void MazeComponent::set_vertex_coord()
 	for (auto vert : vertices)
 	{
 		mat3 max_mat{ {vert.position.x, vert.position.y, 1},
-					  {m_width / m_scale.x, 0, 1},
-					  { 0, m_height / m_scale.y, 1 } };
+					  {0, 0, 1},
+					  { 0, 0, 1 } };
 		mat3 transformed = mul(transform, max_mat);
 
 		vertex_coords.push_back(vec2({transformed.c0.x, transformed.c0.y}));
