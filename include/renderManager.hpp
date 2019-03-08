@@ -16,8 +16,7 @@ public:
     void static draw_mesh(const mat3& projection, vec2 position, float rotation, vec2 scale, Renderable* renderable,
                           float* color, size_t num_indices);
 
-private:
-    void static init_drawing_data(const mat3& projection, vec2 position, float rotation, vec2 scale, Renderable* renderable);
+    void static init_drawing_data(vec2 position, float rotation, vec2 scale, Renderable* renderable);
 
 
 };
