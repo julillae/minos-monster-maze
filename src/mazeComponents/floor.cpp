@@ -10,7 +10,7 @@ bool Floor::init(vec2 position)
 
     if (!RenderManager::load_texture(textureFile, &texture, this)) return false;
 
-    if (!RenderManager::set_render_data(&texture, this)) return false;
+	if (!RenderManager::set_render_data(&texture, this)) return false;
 
 	set_position(position);
 

@@ -23,4 +23,5 @@ public:
     void set_left();
     void set_right();
     void set_down();
+	void set_up();
 };
