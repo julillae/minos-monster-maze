@@ -136,7 +136,7 @@ private:
 	int rotateCWKey = GLFW_KEY_X;
 	int rotateCCWKey = GLFW_KEY_Z;
 
-	int num_levels = 9;
+	int num_levels = 11;
 	int current_level = 0;
 
 	const map<int, std::string> platform_types = {

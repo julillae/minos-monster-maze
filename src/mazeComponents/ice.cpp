@@ -17,7 +17,7 @@ bool Ice::init(vec2 position)
 	// Setting initial values, scale is negative to make it face the opposite way
 	// 1.0 would be as big as the original texture
     m_scale.x = 25.0f / texture.width;
-	m_scale.y = 20.0f / texture.height;
+	m_scale.y = 25.0f / texture.height;
 	m_rotation = 0.f;
 	drag = 1.f;
 
