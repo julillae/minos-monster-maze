@@ -142,6 +142,7 @@ Physics::MTV Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, c
            mtv.normal = {0.f, 0.f};
            mtv.magnitude = 0.f;
            mtv.isCollided = false;
+           return mtv;
        } else {
            float o = getOverlap(p1, p2);
            if (o < overlap) {
@@ -160,6 +161,7 @@ Physics::MTV Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, c
            mtv.normal = {0.f, 0.f};
            mtv.magnitude = 0.f;
            mtv.isCollided = false;
+           return mtv;
        } else {
            float o = getOverlap(p1, p2);
            if (o < overlap) {
