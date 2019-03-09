@@ -20,7 +20,7 @@ public:
     ~Physics();
 
 	float rotation = 0.f;	// world rotation in radians
-	vec2 gravityAcc = {0.f,  9.81f * 0.07f };
+	vec2 gravityAcc = {0.f,  9.81f * 0.06f };
 
     struct MTV
     {
