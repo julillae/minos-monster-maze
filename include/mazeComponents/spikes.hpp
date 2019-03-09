@@ -23,7 +23,5 @@ public:
     void set_left();
     void set_right();
     void set_down();
-private:
-    std::vector<Vertex> vertices;
-    std::vector<uint16_t> indices;
+	void set_up();
 };

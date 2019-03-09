@@ -76,12 +76,7 @@ std::vector<vec2> Physics::getAxes(std::vector<vec2> vertices)const
         vec2 edge = subtract(v1, v2); // Get vector representing edge of shape
         vec2 normal = {edge.y, -edge.x}; // Get the normal (a vector perpendicular to the edge)
 
-        // Normalize the normal vector
-        auto length = static_cast<float>(sqrt(pow(normal.x, 2) + pow(normal.y, 2)));
-        normal.x /= length;
-        normal.y /= length;
-
-        axisVector.push_back(normal);
+        axisVector.push_back(normalize(normal));
     }
     return axisVector;
 
@@ -238,6 +233,7 @@ Physics::CollisionNode Physics::collideWithExit (Player *p, const Exit *e) {
 
 
 bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents) {
+
     bool isOnAtLeastOnePlatform = false;
     bool isBelowAtLeastOnePlatform = false;
 
@@ -248,71 +244,76 @@ bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vecto
         vec2 cBound = c->get_bounding_box();
         vec2 fBound = fc->get_bounding_box();
 
-		if (fastCollisionWithFixedComponents(c, fc).isCollided) {
-			std::vector<vec2> playArray = getVertices(cPos, cBound, rotation);
-			std::vector<vec2> floorArray = getVertices(fPos, fBound, 0);
+        if (fastCollisionWithFixedComponents(c, fc).isCollided) {
+            std::vector<vec2> playArray = getVertices(cPos, cBound, rotation);
+            std::vector<vec2> fixedComponentArray;
 
-			MTV mtv;
+            if (fc->can_kill) {
+                fixedComponentArray = fc->get_vertex_coord();
+                if (collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos).isCollided)
+                    return true;
+            }
+            else {
 
-			mtv = collisionWithGeometry(playArray, floorArray, cPos, fPos);
+                fixedComponentArray = getVertices(fPos, fBound, 0);
 
-			if (mtv.isCollided) {
+                MTV mtv = collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos);
 
-			    vec2 normal = mtv.normal;
-			    float magnitude = mtv.magnitude;
+                if (mtv.isCollided) {
 
-				if (fc->can_kill) return true;
-				// grab the vector that pushes the player to the tangent of the platform
-				vec2 translation = { normal.x * magnitude, normal.y * magnitude};
+                    vec2 normal = mtv.normal;
+                    float magnitude = mtv.magnitude;
 
-				vec2 currentPos = c->get_position();
-				// translate the player
-				vec2 newPos = subtract(currentPos, translation);
+                    // grab the vector that pushes the player to the tangent of the platform
+                    vec2 translation = { normal.x * magnitude, normal.y * magnitude};
 
-				c->set_position(newPos);
+                    vec2 currentPos = c->get_position();
+                    // translate the player
+                    vec2 newPos = subtract(currentPos, translation);
 
-				// add MTV to list of collision normals stored in Player
-                if (c->characterState->currentState == running) {
-                    c->collisionNormals.clear();
-                } else {
-                    c->collisionNormals.push_back(mtv.normal);
+                    c->set_position(newPos);
+
+                    // add MTV to list of collision normals stored in Player
+                    if (c->characterState->currentState == running) {
+                        c->collisionNormals.clear();
+                    } else {
+                        c->collisionNormals.push_back(mtv.normal);
+                    }
+
+                    float dy = newPos.y - fPos.y;
+                    float dx = fPos.x - newPos.x;
+                    float collisionAngle = atan2(dy, dx);
+                    // logic needed to get new angle (collisionAngle + rotation) within
+                    // the needed -pi to pi range
+                    collisionAngle = static_cast<float>(fmod(collisionAngle + rotation, 2 * M_PI));
+                    float anglePastPi = 0.f;
+                    if (collisionAngle > M_PI) {
+                        anglePastPi = static_cast<float>(collisionAngle - M_PI);
+                        collisionAngle = static_cast<float>(-M_PI + anglePastPi);
+                    }
+                    else if (collisionAngle < -M_PI) {
+                        anglePastPi = static_cast<float>(collisionAngle + M_PI);
+                        collisionAngle = static_cast<float>(M_PI + anglePastPi);
+                    }
+
+                    // place player on platform
+                    if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
+                        c->set_on_platform();
+                        isOnAtLeastOnePlatform = true;
+                        c->m_platform_drag = fc->get_drag();
+                    }
+                    if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
+                        isBelowAtLeastOnePlatform = true;
+                    }
                 }
-
-				float dy = newPos.y - fPos.y;
-				float dx = fPos.x - newPos.x;
-				float collisionAngle = atan2(dy, dx);
-				// logic needed to get new angle (collisionAngle + rotation) within
-				// the needed -pi to pi range
-				collisionAngle = static_cast<float>(fmod(collisionAngle + rotation, 2 * M_PI));
-				float anglePastPi = 0.f;
-				if (collisionAngle > M_PI) {
-					anglePastPi = static_cast<float>(collisionAngle - M_PI);
-					collisionAngle = static_cast<float>(-M_PI + anglePastPi);
-				}
-				else if (collisionAngle < -M_PI) {
-					anglePastPi = static_cast<float>(collisionAngle + M_PI);
-					collisionAngle = static_cast<float>(M_PI + anglePastPi);
-				}
-
-				// place player on platform
-				if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
-					c->set_on_platform();
-					isOnAtLeastOnePlatform = true;
-					c->m_platform_drag = fc->get_drag();
-				}
-
-				if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
-					isBelowAtLeastOnePlatform = true;
-				}
-			}
-		}
+            }
+        }
     }
 
     if (!isOnAtLeastOnePlatform) c->set_in_free_fall();
     c->isBelowPlatform = isBelowAtLeastOnePlatform;
-    
-    return false;
 
+    return false;
 }
 
 void Physics::characterVelocityUpdate(Character* c)
