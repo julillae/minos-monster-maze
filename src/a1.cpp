@@ -2,6 +2,7 @@
 #include "../include/common.hpp"
 #include "../include/physics.hpp"
 #include "../include/level.hpp"
+#include "../include/a1.hpp"
 
 #define GL3W_IMPLEMENTATION
 #include <gl3w.h>

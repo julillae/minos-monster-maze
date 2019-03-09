@@ -182,7 +182,7 @@ Physics::MTV Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, c
    return mtv;
 }
 
-Physics::CollisionNode Physics::collideWithEnemy (Player *p, const Enemy *e) {
+Physics::CollisionNode Physics::collideWithEnemy (Player *p, std::unique_ptr<Enemy> const &e) {
 
     float other_r = std::max(p->get_bounding_box().x, e->get_bounding_box().y);
     float my_r = std::max(p->width, p->height);

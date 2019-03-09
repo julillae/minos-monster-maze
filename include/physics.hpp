@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 #include <list>
+#include <memory>
 
 class Physics
 {
@@ -54,7 +55,7 @@ public:
 
     CollisionNode fastCollisionWithFixedComponents(Player *p, std::unique_ptr<FixedComponent> const &f);
 
-    CollisionNode collideWithEnemy(Player *p, const Enemy *t);
+    CollisionNode collideWithEnemy(Player *p, std::unique_ptr<Enemy> const &t);
 
     CollisionNode collideWithExit (Player *p, const Exit *e);
 
