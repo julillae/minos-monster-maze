@@ -2,8 +2,7 @@
 #include <algorithm>
 #include "../include/common.hpp"
 #define _USE_MATH_DEFINES
-#include <cmath>
-#include <cfloat>
+#include <math.h>
 
 // logic for gravity and potentially friction calculations go here
 
