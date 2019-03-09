@@ -273,13 +273,8 @@ bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vecto
                     vec2 newPos = subtract(currentPos, translation);
 
                     c->set_position(newPos);
-
-                    // add MTV to list of collision normals stored in Player
-                    if (c->characterState->currentState == running) {
-                        c->collisionNormals.clear();
-                    } else {
-                        c->collisionNormals.push_back(mtv.normal);
-                    }
+					// add MTV to list of collision normals stored in Player
+					c->collisionNormals.push_back(mtv.normal);
 
                     float dy = newPos.y - fPos.y;
                     float dx = fPos.x - newPos.x;
