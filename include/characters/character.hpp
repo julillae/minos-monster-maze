@@ -92,7 +92,7 @@ public:
 	bool isRightOfPlatform;
 
 	// constants
-	float jumpVel = -13.f;
+	float jumpVel = -12.5f;
 	float maxHorzSpeed = 8;
 	float accStep = 0.8f;
 	float m_animTime = 0.f;
