@@ -34,7 +34,7 @@ bool rectToRectIntersection(vec2 r1, vec2 r2, vec2 bb1, vec2 bb2) {
     float dx = r1.x - r2.x;
     float dy = r1.y - r2.y;
 
-    return abs(dx) <= w && abs(dy) <= h;
+    return fabs(dx) <= w && fabs(dy) <= h;
 }
 
 // Grab the vertices
@@ -53,7 +53,7 @@ std::vector <vec2> Physics::getVertices(vec2 object, vec2 bounds, float rotation
                   (y_pos + offset * sinf(static_cast<float>(rotation + M_PI - offsetAngle)))};
     vec2 vert3 = {(x_pos + offset * cosf(static_cast<float>(rotation - M_PI + offsetAngle))),
                   static_cast<float>(y_pos + offset * sin(rotation - M_PI + offsetAngle))};
-    vec2 vert4 = {x_pos + offset * cos(rotation - offsetAngle), y_pos + offset * sin(rotation - offsetAngle)};
+    vec2 vert4 = {static_cast<float>(x_pos + offset * cos(rotation - offsetAngle)), static_cast<float>(y_pos + offset * sin(rotation - offsetAngle))};
 
     verticesArr.push_back(vert1);
     verticesArr.push_back(vert2);
