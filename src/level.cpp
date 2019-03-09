@@ -141,6 +141,7 @@ bool Level::spawn_spikes(vec2 position, SpikeDir dir)
 				spikes->set_right();
 				break;
 			default:
+				spikes->set_up();
 				break;
 		}
 

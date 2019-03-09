@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "../common.hpp"
 #include "../renderManager.hpp"
 
@@ -12,9 +13,7 @@ public:
 	// Releases all associated resources
 	void destroy();
 
-	void draw(const mat3& projection) {
-        fprintf(stderr, "MC DRAW\n");
-	};
+	virtual void draw(const mat3& projection) = 0;
 
 	void set_size(vec2 size);
 
@@ -40,6 +39,9 @@ public:
 
     float get_drag();
 
+    void set_vertex_coord();
+	std::vector<vec2> get_vertex_coord();
+
     bool can_kill = false;
 protected:
 	vec2 m_position; // Window coordinates
@@ -49,4 +51,7 @@ protected:
 	float m_width;
 	float m_height;
     float drag;
+    std::vector<Vertex> vertices;
+    std::vector<uint16_t> indices;
+    std::vector<vec2> vertex_coords;
 };
