@@ -1,0 +1,25 @@
+Milestone 3 Requirements:
+
+1. Provide complete playable prior-milestone implementation 
+2. Sustain progressive, non-repetitive gameplay for 4min or more including all new features 
+    - Eleven different levels have been implemented for more than 4 minutes of progressive, non-repetitive gameplay
+    - New features implemented:
+        - Other platform surfaces (spikes and ice) are implemented in level 6 and up
+        - Smart enemy is implemented in level 8 and up. This is a flying ‘bat’ enemy that follows the player using A* search to generate a path.
+        - A player’s rotation controls has been limited with “rotation energy” that decrements as a player rotates and increments again over time 
+3. Implement time stepping based physical animation
+    - Player has linear acceleration and is affected by drag when on a platform
+4. Incorporate one or more polygonal geometric assets 
+    - Our ‘spike’ platforms are polygonal geometric assets
+5. Implement smooth non-linear motion of one or more assets or characters 
+    - The rotation of the world now uses a hermite cubic spline to interpolate the rotation’s angular velocity in time.
+6. Implement an accurate and efficient collision detection method 
+    - Fixed the bug causing the ‘jitter’ in the collision detection between the platform and the player.
+    - Implemented accurate collision detection that handles axis-aligned bounding boxes, oriented bounding boxes, and polygons 
+7. Stable game code supporting continuing execution and graceful termination
+    - Game begins at the first level and stably continues through eleven levels. After the eleventh level, the game resets to the first level again.
+8. Creative
+    - New audio for jumping and death events
+    - Camera follows player wherever they move
+    - Levels designed in a way that helps the player learn the controls and slowly exposes the different features of the game
+    
