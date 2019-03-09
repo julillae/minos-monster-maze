@@ -6,6 +6,8 @@
 #include "../include/mazeComponents/exit.hpp"
 
 #include <vector>
+#include <map>
+#include <list>
 
 class Physics
 {
@@ -19,9 +21,12 @@ public:
 	float rotation = 0.f;	// world rotation in radians
 	vec2 gravityAcc = {0.f,  9.81f * 0.07f };
 
-    std::pair<vec2, float> MTV;
-    // MTV.first = direction
-    // MTV.second = magnitude
+    struct MTV
+    {
+        vec2 normal;
+        float magnitude;
+        bool isCollided;
+    };
 
     struct Projection
     {
@@ -74,7 +79,7 @@ public:
 
     Projection getProjection(vec2 axis, std::vector<vec2> vertices)const;
 
-    bool collisionWithGeometry(const std::vector<vec2> &vertArr1, const std::vector<vec2> &vertArr2, vec2 pos1, vec2 pos2);
+    MTV collisionWithGeometry(const std::vector<vec2> &vertArr1, const std::vector<vec2> &vertArr2, vec2 pos1, vec2 pos2);
 
     float getOverlap(Projection p1, Projection p2);
 

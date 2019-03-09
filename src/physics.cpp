@@ -2,10 +2,8 @@
 #include <algorithm>
 #include "../include/common.hpp"
 #define _USE_MATH_DEFINES
-#include <math.h>
 #include <cmath>
 #include <cfloat>
-#include <limits>
 
 // logic for gravity and potentially friction calculations go here
 
@@ -125,8 +123,10 @@ float Physics::getOverlap(Projection p1, Projection p2)
  * @param pos2
  * @return true if collided, false if not
  */
-bool Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, const std::vector<vec2> &vertArr2, vec2 pos1, vec2 pos2)
+Physics::MTV Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, const std::vector<vec2> &vertArr2, vec2 pos1, vec2 pos2)
 {
+
+    MTV mtv = MTV{};
 
     float overlap = FLT_MAX;
     vec2 smallest = {0.f, 0.f};
@@ -144,7 +144,9 @@ bool Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, const std
 
        if (!p1.overlap(p2))
        {
-           return false;
+           mtv.normal = {0.f, 0.f};
+           mtv.magnitude = 0.f;
+           mtv.isCollided = false;
        } else {
            float o = getOverlap(p1, p2);
            if (o < overlap) {
@@ -160,7 +162,9 @@ bool Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, const std
 
        if (!p1.overlap(p2))
        {
-           return false;
+           mtv.normal = {0.f, 0.f};
+           mtv.magnitude = 0.f;
+           mtv.isCollided = false;
        } else {
            float o = getOverlap(p1, p2);
            if (o < overlap) {
@@ -175,10 +179,11 @@ bool Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, const std
        smallest = negateVec(smallest);
    }
 
-   MTV.first = smallest;
-   MTV.second = overlap;
+   mtv.normal = smallest;
+   mtv.magnitude = overlap;
+   mtv.isCollided = true;
 
-   return true;
+   return mtv;
 }
 
 Physics::CollisionNode Physics::collideWithEnemy (Player *p, const Enemy *e) {
@@ -234,10 +239,7 @@ Physics::CollisionNode Physics::collideWithExit (Player *p, const Exit *e) {
 
 bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents) {
     bool isOnAtLeastOnePlatform = false;
-    bool isRightOfAtLeastOnePlatform = false;
-    bool isLeftOfAtLeastOnePlatform = false;
     bool isBelowAtLeastOnePlatform = false;
-    vec2 cVelocity = c->get_velocity();
 
     for (const auto& fc : fixedComponents) {
 
@@ -250,20 +252,31 @@ bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vecto
 			std::vector<vec2> playArray = getVertices(cPos, cBound, rotation);
 			std::vector<vec2> floorArray = getVertices(fPos, fBound, 0);
 
+			MTV mtv;
 
-			bool isCollided = collisionWithGeometry(playArray, floorArray, cPos, fPos);
+			mtv = collisionWithGeometry(playArray, floorArray, cPos, fPos);
 
-			if (isCollided) {
+			if (mtv.isCollided) {
+
+			    vec2 normal = mtv.normal;
+			    float magnitude = mtv.magnitude;
 
 				if (fc->can_kill) return true;
 				// grab the vector that pushes the player to the tangent of the platform
-				vec2 translation = { MTV.first.x * MTV.second, MTV.first.y * MTV.second };
+				vec2 translation = { normal.x * magnitude, normal.y * magnitude};
 
 				vec2 currentPos = c->get_position();
 				// translate the player
 				vec2 newPos = subtract(currentPos, translation);
 
 				c->set_position(newPos);
+
+				// add MTV to list of collision normals stored in Player
+                if (c->characterState->currentState == running) {
+                    c->collisionNormals.clear();
+                } else {
+                    c->collisionNormals.push_back(mtv.normal);
+                }
 
 				float dy = newPos.y - fPos.y;
 				float dx = fPos.x - newPos.x;
@@ -297,8 +310,7 @@ bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vecto
 
     if (!isOnAtLeastOnePlatform) c->set_in_free_fall();
     c->isBelowPlatform = isBelowAtLeastOnePlatform;
-
-
+    
     return false;
 
 }
