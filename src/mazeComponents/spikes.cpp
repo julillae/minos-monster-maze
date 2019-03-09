@@ -75,6 +75,7 @@ bool Spikes::init(vec2 position)
     can_kill = true;
 	drag = 0.75f;
     set_dimensions();
+    set_vertex_coord();
 
     return true;
 }
