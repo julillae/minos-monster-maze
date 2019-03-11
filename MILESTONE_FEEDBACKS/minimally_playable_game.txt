@@ -1,0 +1,17 @@
+TEAM 13 --  Minos' Monster Maze
+
+===================================================================
+OVERALL GRADING (77.5)
+
+* Core part:
+  - Bug with collisions. Game is very jittery. Delay when trying to rotate the world  (-5)
+  - No functioning decision tree based behaviour (-10)
+  - Instructions are included.
+  - Game executes and terminates smoothly; but no restart (-2.5)
+  - Sprites match the input behaviour
+* Creative Part (20/25):
+  - Sound for the character (+5)
+  - Animation and new sprites (+5)
+  - Physics for the character (+10) 
+
+Creative from last time: hardcoded enemy behaviour
