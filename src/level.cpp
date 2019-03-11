@@ -20,6 +20,8 @@ namespace
 	float rotationDeg = 0.f;
 	float rotationSpeed;
 	float maxRotationSpeed = 1.0f;
+	float maxRotationEnergy = 180.f;
+	float rotationEnergyIncrement = 20.f;
 	float currentIntervalPos = 0.f;
 	float maxIntervalLength = 50.f;
 	float normalizedIntervalPos;
@@ -493,14 +495,15 @@ bool Level::update(float elapsed_ms)
 
 	if (m_player.is_alive() && is_player_at_goal && m_water.get_time_since_level_complete() > 1.5)
 		reset_game();
-		
-	if (m_water.get_time_since_rotation_end() > 4.0) {
-		rotationEnergy += 20.f;
+	
+	float timeToLoadRotationEnergy = 4.f;
+	if (m_water.get_time_since_rotation_end() > timeToLoadRotationEnergy) {
+		rotationEnergy += rotationEnergyIncrement;
 		m_water.set_rotation_end_time();
 
-		if (rotationEnergy >= 100.f) {
+		if (rotationEnergy >= maxRotationEnergy) {
 			m_water.reset_rotation_end_time();
-			rotationEnergy = 100.f;
+			rotationEnergy = maxRotationEnergy;
 		}
 	}
 
