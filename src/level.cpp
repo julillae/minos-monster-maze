@@ -21,7 +21,7 @@ namespace
 	float rotationSpeed;
 	float maxRotationSpeed = 1.0f;
 	float maxRotationEnergy = 180.f;
-	float rotationEnergyIncrement = 20.f;
+	float rotationEnergyIncrement = 30.f;
 	float currentIntervalPos = 0.f;
 	float maxIntervalLength = 50.f;
 	float normalizedIntervalPos;
@@ -437,7 +437,7 @@ bool Level::update(float elapsed_ms)
 			previouslyFrozen = true;
 		}
 
-		rotationEnergy -= 0.5;
+		rotationEnergy -= fabs(rotationSpeed);
 	}
 	else if (previouslyFrozen) {
 		applyThaw = true;
@@ -523,7 +523,7 @@ void Level::draw()
 
 	// Updating window title with points
 	std::stringstream title_ss;
-	title_ss << "Minos' Monster Maze || Energy left to rotate: " << rotationEnergy;
+	title_ss << "Minos' Monster Maze || Energy left to rotate: " << rotationEnergy << " / " << maxRotationEnergy;
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
 	if (is_player_at_goal)
