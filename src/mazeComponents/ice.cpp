@@ -19,7 +19,7 @@ bool Ice::init(vec2 position)
     m_scale.x = 25.0f / texture.width;
 	m_scale.y = 25.0f / texture.height;
 	m_rotation = 0.f;
-	drag = 1.f;
+	drag = 0.94f;
 
 	set_size(&texture);
 

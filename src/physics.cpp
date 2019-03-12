@@ -388,7 +388,10 @@ void Physics::characterVelocityUpdate(Character* c)
 void Physics::characterAccelerationUpdate(Character * c) {
 	vec2 horzAcc = {0.f, 0.f};
     Direction h_direction = c->get_h_direction();
+	float platformDrag = c->m_platform_drag;
     float accStep = c->accStep;
+
+	if (platformDrag > 0.9f) accStep *= 0.5f;
 
     if (c->is_alive()) {
 		if (h_direction == Direction::left)
