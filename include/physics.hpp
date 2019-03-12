@@ -46,18 +46,11 @@ public:
         }
     };
 
+    bool fastCollisionWithFixedComponent(Player *p, std::unique_ptr<FixedComponent> const &f);
 
+    bool collideWithEnemy(Player *p, std::unique_ptr<Enemy> const &t);
 
-    struct CollisionNode {
-        bool isCollided;
-        float angleOfCollision;
-    };
-
-    CollisionNode fastCollisionWithFixedComponents(Player *p, std::unique_ptr<FixedComponent> const &f);
-
-    CollisionNode collideWithEnemy(Player *p, std::unique_ptr<Enemy> const &t);
-
-    CollisionNode collideWithExit (Player *p, const Exit *e);
+    bool collideWithExit (Player *p, const Exit *e);
 
 	// produces true if player collides with a fixed component that kills the player
     bool characterCollisionsWithFixedComponents(Player *c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents);
