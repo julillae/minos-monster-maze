@@ -55,8 +55,6 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 //	fprintf(stderr, "player width: %f\n", width); // 52.00f
 
 	isBelowPlatform = false;
-	isLeftOfPlatform = false;
-	isRightOfPlatform = false;
 
 	return true;
 }
