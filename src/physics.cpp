@@ -193,11 +193,12 @@ bool Physics::collideWithEnemy (Player *p, std::unique_ptr<Enemy> const &e) {
     float my_r = std::max(p->width, p->height);
 	bool broadBasedCollisionCheck = outerCircleToCircleIntersection(pPos, ePos, other_r, my_r);
 
-    std::vector<vec2> playerVertexArray = getVertices(pPos, pBound, rotation);
-    std::vector<vec2> enemyVertexArray = getVertices(ePos, eBound, 0);
+	if (broadBasedCollisionCheck) {
+		std::vector<vec2> playerVertexArray = getVertices(pPos, pBound, rotation);
+		std::vector<vec2> enemyVertexArray = getVertices(ePos, eBound, 0);
 
-	isCollided = collisionWithGeometry(playerVertexArray, enemyVertexArray, pPos, ePos).isCollided;
-
+		isCollided = collisionWithGeometry(playerVertexArray, enemyVertexArray, pPos, ePos).isCollided;
+	}
     return isCollided;
 }
 
