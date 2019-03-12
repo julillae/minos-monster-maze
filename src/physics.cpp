@@ -16,7 +16,7 @@ bool circleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
     float xDistance = c1.x - c2.x;
     float yDistance = c1.y - c2.y;
     float radius = std::max(r1, r2);
-    radius *= 1.0f;
+    radius *= 1.1f;
     return xDistance * xDistance + yDistance * yDistance <= radius * radius;
 }
 
@@ -128,8 +128,8 @@ std::vector<vec2> Physics::getPlayerVertices(Player *p)const
     playArray.push_back(left);
 
     for (int i = 0; i < 4; i++) {
-        playArray[i] = {((playArray[i].x - playPos.x) * cosf(-rotation)) - ((playArray[i].y - playPos.y) * sinf(-rotation)) + playPos.x,
-                        ((playArray[i].y - playPos.y) * cosf(-rotation)) + ((playArray[i].x - playPos.x) * sinf(-rotation)) + playPos.y};
+        playArray[i] = {((playArray[i].x - playPos.x) * cosf(rotation)) - ((playArray[i].y - playPos.y) * sinf(rotation)) + playPos.x,
+                        ((playArray[i].y - playPos.y) * cosf(rotation)) + ((playArray[i].x - playPos.x) * sinf(rotation)) + playPos.y};
     }
 
     return playArray;
