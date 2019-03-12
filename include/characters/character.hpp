@@ -88,8 +88,6 @@ public:
 	bool isOnPlatform;
 	// collision related fields
 	bool isBelowPlatform;
-	bool isLeftOfPlatform;
-	bool isRightOfPlatform;
 
 	// constants
 	float jumpVel = -12.5f;

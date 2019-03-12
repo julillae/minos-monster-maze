@@ -1,0 +1,14 @@
+TEAM 13 COMMENTS ; GRADE: 90
+
+Grader: Chenxi
+
+-5: due to being overall too general (especially for the technical elements).
+Advanced features -5: The basic and advanced features are not balanced.
+
+The game proposal is clear and consistent, and describes everything in the requirement. However, we would like to comment that the described game only contains the passing grade technical elements. If your team wants to have a higher grade, we recommend to finish most of the features in advanced elements. More specifically, for a better grade of the final game, you may also want to include:
+    • 3D geometries; 2D skeletal animations;
+    • Additional behaviour of the enemies;
+Note that this is not a complete list but a list to start with. We recommend you to check the game example feature document here: https://www.cs.ubc.ca/~sheffa/games_course/Vjan19/GameExample.pdf
+
+
+
