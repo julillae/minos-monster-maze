@@ -641,7 +641,7 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		}
 	}
 
-	if (action == GLFW_PRESS) {
+	if (action == GLFW_PRESS && canRotate) {
 		currentIntervalPos = 0;
 		if (key == rotateCCWKey) {
 			isRotating = true;
