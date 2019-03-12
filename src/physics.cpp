@@ -116,10 +116,16 @@ std::vector<vec2> Physics::getPlayerVertices(Player *p)const
 
     std::vector<vec2> playArray;
 
-    vec2 topLeft = {(playPos.x - playBound.x / 2), (playPos.y + playBound.y / 2)};
-    vec2 topRight = {(playPos.x + playBound.x / 2), (playPos.y + playBound.y / 2)};
-    vec2 bottomRight = {(playPos.x + playBound.x / 2), (playPos.y - playBound.y / 2)};
-    vec2 bottomLeft = {(playPos.x - playBound.x / 2), (playPos.y - playBound.y / 2)};
+    vec2 topLeft = {(playPos.x + playBound.x / 2), (playPos.y - playBound.y / 2)};
+    vec2 topRight = {(playPos.x - playBound.x / 2), (playPos.y - playBound.y / 2)};
+    vec2 bottomRight = {(playPos.x - playBound.x / 2), (playPos.y + playBound.y / 2)};
+    vec2 bottomLeft = {(playPos.x + playBound.x / 2), (playPos.y + playBound.y / 2)};
+
+    printf("%f\n", topLeft.x);
+    printf("%f\n", topLeft.y);
+    printf("%f\n", bottomLeft.x);
+    printf("%f\n", bottomLeft.y);
+
 
     playArray.push_back(topLeft);
     playArray.push_back(topRight);
