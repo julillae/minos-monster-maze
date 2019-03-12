@@ -27,7 +27,7 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 
 	float spriteSheetWidth = 8.0f;
 	float spriteSheetHeight = 5.0f;
-	int horizontalTrim = 6;
+	int horizontalTrim = 7;
 	int verticalTrim = 7;
 	set_properties(initialPosition, 2.0f, 0.f);
 	set_dimensions(&m_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
