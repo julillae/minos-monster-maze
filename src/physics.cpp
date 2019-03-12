@@ -116,16 +116,16 @@ std::vector<vec2> Physics::getPlayerVertices(Player *p)const
 
     std::vector<vec2> playArray;
 
-    vec2 topLeft = {(playPos.x + playBound.x / 2), (playPos.y - playBound.y / 2)};
-    vec2 topRight = {(playPos.x - playBound.x / 2), (playPos.y - playBound.y / 2)};
-    vec2 bottomRight = {(playPos.x - playBound.x / 2), (playPos.y + playBound.y / 2)};
-    vec2 bottomLeft = {(playPos.x + playBound.x / 2), (playPos.y + playBound.y / 2)};
+    vec2 top = {playPos.x, (playPos.y - playBound.y / 2)};
+    vec2 bottom = {playPos.x, (playPos.y + playBound.y / 2)};
+    vec2 right = {(playPos.x + playBound.x / 2), playPos.y};
+    vec2 left = {(playPos.x - playBound.x / 2), playPos.y};
 
 
-    playArray.push_back(topLeft);
-    playArray.push_back(topRight);
-    playArray.push_back(bottomRight);
-    playArray.push_back(bottomLeft);
+    playArray.push_back(top);
+    playArray.push_back(right);
+    playArray.push_back(bottom);
+    playArray.push_back(left);
 
     for (int i = 0; i < 4; i++) {
         playArray[i] = {((playArray[i].x - playPos.x) * cosf(-rotation)) - ((playArray[i].y - playPos.y) * sinf(-rotation)) + playPos.x,
