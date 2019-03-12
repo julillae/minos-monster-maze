@@ -11,17 +11,6 @@ Physics::Physics() = default;
 
 Physics::~Physics() = default;
 
-// after we implement collisionWithGeometry checks for all objects (not just player against platform),
-// we can remove this function
-bool circleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
-{
-    float xDistance = c1.x - c2.x;
-    float yDistance = c1.y - c2.y;
-    float radius = std::max(r1, r2);
-    radius *= 0.85f;
-    return xDistance * xDistance + yDistance * yDistance <= radius * radius;
-}
-
 bool outerCircleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
 {
 	float xDistance = c1.x - c2.x;
@@ -195,15 +184,19 @@ Physics::MTV Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, c
 }
 
 bool Physics::collideWithEnemy (Player *p, std::unique_ptr<Enemy> const &e) {
-
-    float other_r = std::max(p->get_bounding_box().x, e->get_bounding_box().y);
+	bool isCollided = false;
+	vec2 pPos = p->get_position();
+	vec2 ePos = e->get_position();
+	vec2 pBound = p->get_bounding_box();
+	vec2 eBound = e->get_bounding_box();
+    float other_r = std::max(pBound.x, eBound.y);
     float my_r = std::max(p->width, p->height);
-    bool isCollided = circleToCircleIntersection(p->get_position(), e->get_position(), other_r, my_r);
+	bool broadBasedCollisionCheck = outerCircleToCircleIntersection(pPos, ePos, other_r, my_r);
 
-    vec2 playPos = p->get_position();
-    vec2 ePos = e->get_position();
-    std::vector<vec2> playVert = getVertices(playPos, p->get_bounding_box(), rotation);
-    std::vector<vec2> enemyVert = getVertices(ePos, e->get_bounding_box(), 0);
+    std::vector<vec2> playerVertexArray = getVertices(pPos, pBound, rotation);
+    std::vector<vec2> enemyVertexArray = getVertices(ePos, eBound, 0);
+
+	isCollided = collisionWithGeometry(playerVertexArray, enemyVertexArray, pPos, ePos).isCollided;
 
     return isCollided;
 }
@@ -221,7 +214,7 @@ bool Physics::collideWithExit (Player *p, const Exit *e) {
 	vec2 ePos = e->get_position();
 	vec2 pBound = p->get_bounding_box();
 	vec2 eBound = e->get_bounding_box();
-	float other_r = std::max(p->get_bounding_box().x, e->get_bounding_box().y);
+	float other_r = std::max(pBound.x, eBound.y);
 	float my_r = std::max(p->width, p->height);
 
 	bool broadBasedCollisionCheck = outerCircleToCircleIntersection(pPos, ePos, other_r, my_r);
