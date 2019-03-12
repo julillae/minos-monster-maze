@@ -11,6 +11,8 @@ Physics::Physics() = default;
 
 Physics::~Physics() = default;
 
+// after we implement collisionWithGeometry checks for all objects (not just player against platform),
+// we can remove this function
 bool circleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
 {
     float xDistance = c1.x - c2.x;
@@ -18,6 +20,15 @@ bool circleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
     float radius = std::max(r1, r2);
     radius *= 0.85f;
     return xDistance * xDistance + yDistance * yDistance <= radius * radius;
+}
+
+bool outerCircleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
+{
+	float xDistance = c1.x - c2.x;
+	float yDistance = c1.y - c2.y;
+	float radius = std::max(r1, r2);
+	radius *= 1.1f;
+	return xDistance * xDistance + yDistance * yDistance <= radius * radius;
 }
 
 /**
@@ -183,7 +194,7 @@ Physics::MTV Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, c
    return mtv;
 }
 
-Physics::CollisionNode Physics::collideWithEnemy (Player *p, std::unique_ptr<Enemy> const &e) {
+bool Physics::collideWithEnemy (Player *p, std::unique_ptr<Enemy> const &e) {
 
     float other_r = std::max(p->get_bounding_box().x, e->get_bounding_box().y);
     float my_r = std::max(p->width, p->height);
@@ -194,43 +205,33 @@ Physics::CollisionNode Physics::collideWithEnemy (Player *p, std::unique_ptr<Ene
     std::vector<vec2> playVert = getVertices(playPos, p->get_bounding_box(), rotation);
     std::vector<vec2> enemyVert = getVertices(ePos, e->get_bounding_box(), 0);
 
-    Physics::CollisionNode collisionNode{};
-    collisionNode.isCollided = isCollided;
-    collisionNode.angleOfCollision = 0;
-    return collisionNode;
+    return isCollided;
 }
 
-Physics::CollisionNode Physics::fastCollisionWithFixedComponents(Player *p, std::unique_ptr<FixedComponent> const &f) {
+bool Physics::fastCollisionWithFixedComponent(Player *p, std::unique_ptr<FixedComponent> const &f) {
 	float other_r = std::max(p->get_bounding_box().x, f->get_bounding_box().y);
 	float my_r = std::max(p->width, p->height);
 
-	bool isCollided = circleToCircleIntersection(p->get_position(), f->get_position(), other_r, my_r);
-
-	CollisionNode collisionNode{};
-	collisionNode.isCollided = isCollided;
-
-	if (isCollided) {
-		float dy = p->get_position().y - f->get_position().y;
-		float dx = f->get_position().x - p->get_position().x;
-		float collisionAngle = atan2(dy, dx);
-		collisionNode.angleOfCollision = collisionAngle;
-
-	} else {
-		collisionNode.angleOfCollision = 0;
-	}
-	return collisionNode;
+	return outerCircleToCircleIntersection(p->get_position(), f->get_position(), other_r, my_r);
 }
 
-Physics::CollisionNode Physics::collideWithExit (Player *p, const Exit *e) {
+bool Physics::collideWithExit (Player *p, const Exit *e) {
+	bool isCollided = false;
+	vec2 pPos = p->get_position();
+	vec2 ePos = e->get_position();
+	vec2 pBound = p->get_bounding_box();
+	vec2 eBound = e->get_bounding_box();
 	float other_r = std::max(p->get_bounding_box().x, e->get_bounding_box().y);
 	float my_r = std::max(p->width, p->height);
 
-	bool isCollided = circleToCircleIntersection(p->get_position(), e->get_position(), other_r, my_r);
+	bool broadBasedCollisionCheck = outerCircleToCircleIntersection(pPos, ePos, other_r, my_r);
+	if (broadBasedCollisionCheck) {
+		std::vector<vec2> playerVertexArray = getVertices(pPos, pBound, rotation);
+		std::vector<vec2> exitVertexArray = getVertices(ePos, eBound, 0.f);
+		isCollided = collisionWithGeometry(playerVertexArray, exitVertexArray, pPos, ePos).isCollided;
+	}
 
-    Physics::CollisionNode collisionNode{};
-    collisionNode.isCollided = isCollided;
-    collisionNode.angleOfCollision = 0;
-    return collisionNode;
+    return isCollided;
 }
 
 
@@ -246,7 +247,7 @@ bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vecto
         vec2 cBound = c->get_bounding_box();
         vec2 fBound = fc->get_bounding_box();
 
-        if (fastCollisionWithFixedComponents(c, fc).isCollided) {
+        if (fastCollisionWithFixedComponent(c, fc)) {
             std::vector<vec2> playArray = getVertices(cPos, cBound, rotation);
             std::vector<vec2> fixedComponentArray;
 
@@ -342,13 +343,6 @@ void Physics::characterVelocityUpdate(Character* c)
 		if (c->isBelowPlatform) {
 			cVelocity.y = std::max(0.f, cVelocity.y);
 		}
-		if (c->isLeftOfPlatform) {
-			cVelocity.x = std::min(0.f, cVelocity.x);
-		}
-		if (c->isRightOfPlatform) {
-			cVelocity.x = std::max(0.f, cVelocity.x);
-		}
-
 		if (c->isOnPlatform) {
 			cVelocity.y = std::min(0.f, cVelocity.y);
 			if (isZero(cAcc.x))
