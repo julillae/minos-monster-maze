@@ -356,7 +356,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	// Playing background music undefinitely
 	Mix_PlayMusic(m_background_music, -1);
 	Mix_VolumeMusic(50);
-	
+
 	fprintf(stderr, "Loaded music\n");
 
 	is_player_at_goal = false;
@@ -371,8 +371,8 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	generate_maze();
 
 	m_help_menu.init(initialPosition);
-	initialize_camera_position(w, h);
-	
+	initialize_camera_position(w/osScaleFactor, h/osScaleFactor);
+
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
@@ -476,7 +476,7 @@ bool Level::update(float elapsed_ms)
 		m_player.unfreeze();
 		unfreeze_all_enemies();
 	}
-	if (m_player.characterState->currentState == jumping) 
+	if (m_player.characterState->currentState == jumping)
 		Mix_PlayChannel(-1, m_player_jump_sound, 0);
 	m_player.update(elapsed_ms);
 
@@ -541,7 +541,7 @@ void Level::draw()
 
 	float sx = 2.f * osScaleFactor / (right - left);
 	float sy = 2.f * osScaleFactor / (top - bottom); //this is where you play around with the camera
-	
+
 	if (cameraTracking && !show_help_menu){
 		vec2 deviationVector = add(p_position, negateVec(prevCameraCenter));
 		vec2 shrinkingTetherVector = { 0.f,0.f };

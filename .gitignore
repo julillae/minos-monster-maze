@@ -288,3 +288,5 @@ __pycache__/
 
 # Ignore project path
 **/project_path.hpp
+
+.DS_Store
