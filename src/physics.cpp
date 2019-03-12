@@ -16,7 +16,7 @@ bool circleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
     float xDistance = c1.x - c2.x;
     float yDistance = c1.y - c2.y;
     float radius = std::max(r1, r2);
-    radius *= 0.85f;
+    radius *= 1.0f;
     return xDistance * xDistance + yDistance * yDistance <= radius * radius;
 }
 
@@ -54,6 +54,7 @@ std::vector <vec2> Physics::getVertices(vec2 object, vec2 bounds, float rotation
     vec2 vert3 = {(x_pos + offset * cosf(static_cast<float>(rotation - M_PI + offsetAngle))),
                   static_cast<float>(y_pos + offset * sin(rotation - M_PI + offsetAngle))};
     vec2 vert4 = {static_cast<float>(x_pos + offset * cos(rotation - offsetAngle)), static_cast<float>(y_pos + offset * sin(rotation - offsetAngle))};
+
 
     verticesArr.push_back(vert1);
     verticesArr.push_back(vert2);
@@ -106,6 +107,32 @@ float Physics::getOverlap(Projection p1, Projection p2)
         return std::min(p1.max, p2.max) - std::max(p1.min, p2.min);
     }
     return 0;
+}
+
+std::vector<vec2> Physics::getPlayerVertices(Player *p)const
+{
+    vec2 playPos = p->get_position();
+    vec2 playBound = p->get_bounding_box();
+
+    std::vector<vec2> playArray;
+
+    vec2 topLeft = {(playPos.x - playBound.x / 2), (playPos.y + playBound.y / 2)};
+    vec2 topRight = {(playPos.x + playBound.x / 2), (playPos.y + playBound.y / 2)};
+    vec2 bottomRight = {(playPos.x + playBound.x / 2), (playPos.y - playBound.y / 2)};
+    vec2 bottomLeft = {(playPos.x - playBound.x / 2), (playPos.y - playBound.y / 2)};
+
+    playArray.push_back(topLeft);
+    playArray.push_back(topRight);
+    playArray.push_back(bottomRight);
+    playArray.push_back(bottomLeft);
+
+    for (int i = 0; i < 4; i++) {
+        playArray[i] = {((playArray[i].x - playPos.x) * cosf(-rotation)) - ((playArray[i].y - playPos.y) * sinf(-rotation)) + playPos.x,
+                        ((playArray[i].y - playPos.y) * cosf(-rotation)) + ((playArray[i].x - playPos.x) * sinf(-rotation)) + playPos.y};
+    }
+
+    return playArray;
+
 }
 
 // Separating Axis Theorem
@@ -247,8 +274,10 @@ bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vecto
         vec2 fBound = fc->get_bounding_box();
 
         if (fastCollisionWithFixedComponents(c, fc).isCollided) {
-            std::vector<vec2> playArray = getVertices(cPos, cBound, rotation);
+//            std::vector<vec2> playArray = getVertices(cPos, cBound, rotation);
+            std::vector<vec2> playArray = getPlayerVertices(c);
             std::vector<vec2> fixedComponentArray;
+
 
             if (fc->can_kill) {
                 fixedComponentArray = fc->get_vertex_coord();
