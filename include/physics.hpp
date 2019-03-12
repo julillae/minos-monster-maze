@@ -77,5 +77,7 @@ public:
 
     float getOverlap(Projection p1, Projection p2);
 
+    std::vector<vec2> getPlayerVertices(Player *p)const;
+
 
 };
