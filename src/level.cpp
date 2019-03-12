@@ -443,14 +443,14 @@ bool Level::update(float elapsed_ms)
 
 	// Checking Player - Enemy Collision
 	for (auto& enemy : m_enemies) {
-		if (physicsHandler->collideWithEnemy(&m_player, enemy).isCollided)
+		if (physicsHandler->collideWithEnemy(&m_player, enemy))
 		{
 			set_player_death();
 		}
 	}
 
 //	 Checking Player - Exit Collision
-	if (physicsHandler->collideWithExit(&m_player, &m_exit).isCollided && !is_player_at_goal)
+	if (physicsHandler->collideWithExit(&m_player, &m_exit) && !is_player_at_goal)
 	{
 		Mix_PlayChannel(-1, level_complete_sound, 0);
 		m_water.set_level_complete_time();
