@@ -259,7 +259,7 @@ void Level::generate_maze()
 	}
 
 	// Note: A hack to remove the initial tile added to m_floor - shanice
-//	m_platforms.erase(m_platforms.begin());
+	m_platforms.erase(m_platforms.begin());
 
     // Set global variables
     m_maze_width = j;
