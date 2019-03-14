@@ -27,11 +27,10 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 
 	float spriteSheetWidth = 8.0f;
 	float spriteSheetHeight = 5.0f;
-	int horizontalTrim = 6;
+	int horizontalTrim = 7;
 	int verticalTrim = 7;
 	set_properties(initialPosition, 2.0f, 0.f);
 	set_dimensions(&m_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
-
 
 	if (use_sprite)
 	{
@@ -56,8 +55,6 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 //	fprintf(stderr, "player width: %f\n", width); // 52.00f
 
 	isBelowPlatform = false;
-	isLeftOfPlatform = false;
-	isRightOfPlatform = false;
 
 	return true;
 }
@@ -68,6 +65,7 @@ void Player::update(float ms)
 	physicsHandler->characterAccelerationUpdate(this);
 	physicsHandler->characterVelocityUpdate(this);
 	if (is_alive()) move();
+	collisionNormals.clear();
 }
 
 void Player::draw(const mat3& projection)
@@ -75,10 +73,10 @@ void Player::draw(const mat3& projection)
 	if (use_sprite)
 	{
 		set_animation();
-		RenderManager::draw(projection, m_position, m_rotation, m_scale, &m_texture, this);
+		RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &m_texture, this);
 	} else
 	{
-		RenderManager::draw(projection, m_position, m_rotation, m_scale, &box_texture, this);
+		RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &box_texture, this);
 
 	}
 
@@ -102,25 +100,16 @@ void Player::set_in_free_fall() {
 void Player::on_key(int key, int action)
 {
 	if (action == GLFW_PRESS) {
-		switch (key) {
-		case GLFW_KEY_UP:
-			if (keyMappingSetA ==true){
-				if (can_jump()) characterState->changeState(jumping);
-			}
-			break;
-		case GLFW_KEY_SPACE:
-			if (keyMappingSetA ==false){
-				if (can_jump()) characterState->changeState(jumping);
-			}
-			break;
-		case GLFW_KEY_LEFT:
+		if (key == jumpKey) {
+			if (can_jump()) characterState->changeState(jumping);
+		}
+		else if (key == GLFW_KEY_LEFT) {
 			direction = Direction::left;
 			m_scale.x = -std::fabs(m_scale.x);
-			break;
-		case GLFW_KEY_RIGHT:
+		}
+		else if (key == GLFW_KEY_RIGHT) {
 			direction = Direction::right;
 			m_scale.x = std::fabs(m_scale.x);
-			break;
 		}
 	}
 	else if (action == GLFW_RELEASE) {
@@ -202,4 +191,8 @@ void Player::set_animation()
 bool Player::can_jump()
 {
 	return characterState->getStateChangeCost(jumping).first;
+}
+
+std::vector<vec2> Player::getCollisionNormals() {
+	return collisionNormals;
 }

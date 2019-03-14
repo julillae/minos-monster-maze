@@ -6,12 +6,14 @@
 #include "characters/enemy.hpp"
 #include "characters/simple.hpp"
 #include "characters/spider.hpp"
+#include "characters/harpy.hpp"
 #include "mazeComponents/mazeComponent.hpp"
 #include "mazeComponents/fixedComponent.hpp"
 #include "mazeComponents/floor.hpp"
 #include "mazeComponents/exit.hpp"
 #include "mazeComponents/fire.hpp"
 #include "mazeComponents/ice.hpp"
+#include "mazeComponents/spikes.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
 #include "helpMenu.hpp"
@@ -20,6 +22,7 @@
 #include <vector>
 #include <random>
 #include <map>
+#include <memory>
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -28,9 +31,15 @@
 
 // Level class
 
+typedef std::vector<std::unique_ptr<Enemy>> Enemies;
+typedef std::vector<std::unique_ptr<FixedComponent>> Platforms;
+enum SpikeDir { UP, DOWN, LEFT, RIGHT};
+
 class Level
 {
 public:
+	Player m_player;
+	
 	Level();
 	~Level();
 
@@ -50,6 +59,7 @@ public:
 	bool is_over()const;
 
 	std::string get_platform_by_coordinates(std::pair<float, float> coords);
+	bool maze_is_platform(std::pair<int,int> coords);
 	std::vector<std::vector <int>> get_original_maze();
 
 	float get_maze_width();
@@ -64,11 +74,17 @@ private:
     void read_level_data();
 
 	// Generate a spider enemy
-	bool spawn_spider_enemy(vec2 position, float bound);
+	bool spawn_spider_enemy(vec2 position, float bound, bool upsideDown);
+
+	// Generate harpy enemy
+	bool spawn_harpy_enemy(vec2 position);
 
 	// Generates a new floor
 	bool spawn_floor(vec2 position);
+    bool spawn_ice(vec2 position);
+    bool spawn_spikes(vec2 position, SpikeDir dir);
 
+	void initialize_camera_position(int w, int h);
 	void load_new_level();
 	void reset_game();
 	void freeze_all_enemies();
@@ -81,6 +97,7 @@ private:
 	void print_maze();
 	void store_platform_coords(vec2 coords, int platform_key);
 
+	void set_player_death();
 private:
 	// Window handle
 	GLFWwindow* m_window;
@@ -93,11 +110,10 @@ private:
 	// Water effect
 	RenderEffects m_water;
 
-    Player m_player;
 	Exit m_exit;
 	Fire m_fire;
-	std::vector<Spider> m_enemies;
-    std::vector<Floor> m_floor;
+	Enemies m_enemies;
+	Platforms m_platforms;
     HelpMenu m_help_menu;
 
     float m_seed_rng;
@@ -119,14 +135,18 @@ private:
 
 	float tx;
 	float ty;
-	bool is_keyMappingSetA = true;
+	int rotateCWKey = GLFW_KEY_X;
+	int rotateCCWKey = GLFW_KEY_Z;
 
-	int num_levels = 2;
+	int num_levels = 11;
 	int current_level = 0;
 
 	const map<int, std::string> platform_types = {
 		{1, "FLOOR"},
-		{2, "EXIT"}
+		{2, "EXIT"},
+        {6, "ICE"},
+        {7, "SPIKE LEFT"},
+        {8, "SPIKE UP"}
 	};
 
     // Variables determined by level data
@@ -142,8 +162,11 @@ private:
 	// 2 = exit
 	// 3 = initial position
 	// 4 = spider enemy (and its path)
+	// 9 = harpy enemy
     std::vector<std::vector <int>> m_maze;
 	std::map<std::pair<float, float>, std::string> platforms_by_coords;
 
     bool show_help_menu = false;
+	bool cameraTracking = true;
+	bool canRotate = true;
 };

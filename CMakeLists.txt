@@ -40,6 +40,7 @@ set(SOURCE_FILES
     src/characters/player.cpp
     src/characters/enemy.cpp
     src/characters/smart.cpp
+    src/characters/harpy.cpp
     src/characters/simple.cpp
     src/characters/spider.cpp
     src/mazeComponents/mazeComponent.cpp
@@ -49,6 +50,7 @@ set(SOURCE_FILES
     src/mazeComponents/ice.cpp
     src/mazeComponents/fire.cpp
     src/mazeComponents/exit.cpp
+    src/mazeComponents/spikes.cpp
     src/gameAI.cpp
     src/physics.cpp
     src/level.cpp
@@ -65,6 +67,7 @@ set(SOURCE_FILES
     include/characters/player.hpp
     include/characters/enemy.hpp
     include/characters/smart.hpp
+    include/characters/harpy.hpp
     include/characters/simple.hpp
     include/characters/spider.hpp
     include/mazeComponents/mazeComponent.hpp
@@ -74,6 +77,7 @@ set(SOURCE_FILES
     include/mazeComponents/ice.hpp
     include/mazeComponents/exit.hpp
     include/mazeComponents/fire.hpp
+    include/mazeComponents/spikes.hpp
     include/gameAI.hpp
     include/physics.hpp
     include/level.hpp

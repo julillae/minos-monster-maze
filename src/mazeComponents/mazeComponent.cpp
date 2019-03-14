@@ -48,6 +48,12 @@ void MazeComponent::set_rotation(float radians)
 	m_rotation = radians;
 }
 
+void MazeComponent::set_size(Texture* texture)
+{
+	m_width = std::fabs(m_scale.x) * texture->width;
+	m_height = std::fabs(m_scale.y) * texture->height;
+}
+
 float MazeComponent::get_width()
 {
 	return m_width;
@@ -58,3 +64,33 @@ float MazeComponent::get_height()
 	return m_height;
 }
 
+vec2 MazeComponent::get_bounding_box() const
+{
+	return { m_width, m_height };
+
+}
+
+float MazeComponent::get_drag()
+{
+    return drag;
+}
+
+void MazeComponent::set_vertex_coord()
+{
+	RenderManager::init_drawing_data(m_position, m_rotation, m_scale, this);
+	vertex_coords.clear();
+	for (auto vert : vertices)
+	{
+		mat3 max_mat{ {vert.position.x, vert.position.y, 1},
+					  { 0, 0, 0 },
+					  { 0, 0, 0 } };
+		mat3 transformed = mul(transform, max_mat);
+
+		vertex_coords.push_back(vec2({transformed.c0.x, transformed.c0.y}));
+	}
+}
+
+std::vector<vec2> MazeComponent::get_vertex_coord()
+{
+	return vertex_coords;
+}

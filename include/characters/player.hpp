@@ -1,6 +1,7 @@
 #pragma once
 
 #include "character.hpp"
+#include "../mazeComponents/fixedComponent.hpp"
 
 class Player : public Character
 {
@@ -33,6 +34,11 @@ public:
 	// Returns true if the character is in a state that can jump
 	bool can_jump();
 
+	std::vector<vec2> getCollisionNormals();
+
 	bool keyMappingSetA=true;
+	int jumpKey = GLFW_KEY_UP;
+
+	std::vector<vec2> collisionNormals;
 
 };

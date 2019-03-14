@@ -47,6 +47,8 @@ public:
 	// Returns the current scale of the character
 	vec2 get_scale()const;
 
+	void set_scale(vec2 scale);
+
 	// Freeze and unfreeze the character
 	void freeze();
 
@@ -86,14 +88,13 @@ public:
 	bool isOnPlatform;
 	// collision related fields
 	bool isBelowPlatform;
-	bool isLeftOfPlatform;
-	bool isRightOfPlatform;
 
 	// constants
-	float jumpVel = -13.f;
+	float jumpVel = -12.5f;
 	float maxHorzSpeed = 8;
 	float accStep = 0.8f;
 	float m_animTime = 0.f;
+	float m_platform_drag;
 
 protected:
 	Physics* physicsHandler;

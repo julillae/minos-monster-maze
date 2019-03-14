@@ -62,11 +62,11 @@ void Spider::draw(const mat3& projection)
     if (use_sprite)
     {
         set_animation();
-        RenderManager::draw(projection, m_position, m_rotation, m_scale, &spider_texture, this);
+        RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &spider_texture, this);
 
     } else
     {
-        RenderManager::draw(projection, m_position, m_rotation, m_scale, &b_texture, this);
+        RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &b_texture, this);
 
     }
 

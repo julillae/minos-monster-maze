@@ -61,30 +61,15 @@ bool RenderManager::set_render_data(Texture *texture, Renderable *renderable)
     return true;
 }
 
-void RenderManager::draw(const mat3& projection, vec2 position, float rotation, vec2 scale, Texture* texture, Renderable* renderable)
+void RenderManager::draw_texture(const mat3& projection, vec2 position, float rotation, vec2 scale, Texture* texture, Renderable* renderable)
 {
-    renderable->transform_begin();
-    renderable->transform_translate(position);
-    renderable->transform_rotate(rotation);
-    renderable->transform_scale(scale);
-    renderable->transform_end();
 
-    // Setting shaders
-    glUseProgram(renderable->effect.program);
-
-    // Enabling alpha channel for textures
-    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_DEPTH_TEST);
+    init_drawing_data(position, rotation, scale, renderable);
 
     // Getting uniform locations for glUniform* calls
     GLint transform_uloc = glGetUniformLocation(renderable->effect.program, "transform");
     GLint color_uloc = glGetUniformLocation(renderable->effect.program, "fcolor");
     GLint projection_uloc = glGetUniformLocation(renderable->effect.program, "projection");
-
-    // Setting vertices and indices
-    glBindVertexArray(renderable->mesh.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, renderable->mesh.vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderable->mesh.ibo);
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(renderable->effect.program, "in_position");
@@ -109,5 +94,54 @@ void RenderManager::draw(const mat3& projection, vec2 position, float rotation, 
 
     // Drawing!
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+}
+
+void RenderManager::draw_mesh(const mat3& projection, vec2 position, float rotation, vec2 scale, Renderable* renderable,
+                              float* color, size_t num_indices)
+{
+
+    init_drawing_data(position, rotation, scale, renderable);
+
+    // Getting uniform locations for glUniform* calls
+    GLint transform_uloc = glGetUniformLocation(renderable->effect.program, "transform");
+    GLint color_uloc = glGetUniformLocation(renderable->effect.program, "fcolor");
+    GLint projection_uloc = glGetUniformLocation(renderable->effect.program, "projection");
+
+    // Input data location as in the vertex buffer
+    GLint in_position_loc = glGetAttribLocation(renderable->effect.program, "in_position");
+    GLint in_color_loc = glGetAttribLocation(renderable->effect.program, "in_color");
+    glEnableVertexAttribArray(in_position_loc);
+    glEnableVertexAttribArray(in_color_loc);
+    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+    glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)sizeof(vec3));
+
+    // Setting uniform values to the currently bound program
+    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&renderable->transform);
+    glUniform3fv(color_uloc, 1, color);
+    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+
+    // Drawing!
+    glDrawElements(GL_TRIANGLES,(GLsizei)num_indices, GL_UNSIGNED_SHORT, nullptr);
+}
+
+void RenderManager::init_drawing_data(vec2 position, float rotation, vec2 scale, Renderable* renderable)
+{
+    renderable->transform_begin();
+    renderable->transform_translate(position);
+    renderable->transform_rotate(rotation);
+    renderable->transform_scale(scale);
+    renderable->transform_end();
+
+    // Setting shaders
+    glUseProgram(renderable->effect.program);
+
+    // Enabling alpha channel for textures
+    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
+
+    // Setting vertices and indices
+    glBindVertexArray(renderable->mesh.vao);
+    glBindBuffer(GL_ARRAY_BUFFER, renderable->mesh.vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderable->mesh.ibo);
 }
 
