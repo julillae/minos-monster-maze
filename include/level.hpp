@@ -10,6 +10,7 @@
 #include "mazeComponents/fixedComponent.hpp"
 #include "mazeComponents/floor.hpp"
 #include "mazeComponents/exit.hpp"
+#include "mazeComponents/fire.hpp"
 #include "mazeComponents/ice.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
@@ -94,6 +95,7 @@ private:
 
     Player m_player;
 	Exit m_exit;
+	Fire m_fire;
 	std::vector<Spider> m_enemies;
     std::vector<Floor> m_floor;
     HelpMenu m_help_menu;

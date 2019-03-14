@@ -144,11 +144,16 @@ void Level::generate_maze()
 			} else if (cell == 2) {
 				// Add exit
 				Exit new_exit;
-
 				if ( new_exit.init({x_pos, y_pos}) ) {
 					store_platform_coords({x_pos, y_pos}, cell);
 
 					m_exit = new_exit;
+				}
+
+				Fire new_fire;
+				if (new_fire.init({x_pos, 1000.f})){
+					store_platform_coords({x_pos, y_pos}, cell);
+					m_fire = new_fire;
 				}
 			} else if (cell == 3) {
 				// Set initial position of player
@@ -498,6 +503,7 @@ void Level::draw()
 	for (auto& enemy : m_enemies)
 		enemy.draw(projection_2D);
 	m_exit.draw(projection_2D);
+	m_fire.draw(projection_2D);
 	m_player.draw(projection_2D);
 
 	/////////////////////
@@ -510,6 +516,16 @@ void Level::draw()
 	glClearColor(0, 0, 0, 1.0);
 	glClearDepth(1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+	//Create one OpenGL texture
+	//set up SDL and OpenGL
+	// SDL_Surface *img = SDL_LoadBMP("background0.png");
+	// //create an OpenGL surface
+	// GLuint textureID;
+	// glGenTextures(1 &textureID);
+	// //"Bind" the newly created texture
+	// glBindTexture(GL_TEXTURE_2D, textureID);
 
 	// Bind our texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0);

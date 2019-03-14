@@ -4,6 +4,7 @@
 #include "../include/characters/player.hpp"
 #include "../include/mazeComponents/floor.hpp"
 #include "../include/mazeComponents/exit.hpp"
+#include "../include/mazeComponents/fire.hpp"
 
 #include <vector>
 

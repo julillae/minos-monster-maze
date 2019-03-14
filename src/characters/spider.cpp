@@ -19,7 +19,7 @@ bool Spider::init(vec2 initialPosition, Physics * physicsHandler)
 
     textureFile = textures_path("spider-sprite-sheet.png");
     if (!RenderManager::load_texture(textureFile, &spider_texture, this)) return false;
-
+    
     float spriteSheetWidth = 9.0f;
     float spriteSheetHeight = 3.0f;
     int horizontalTrim = 16;
@@ -51,8 +51,8 @@ bool Spider::init(vec2 initialPosition, Physics * physicsHandler)
 	characterState->changeState(running);
 
     // kept in for debugging
-//    fprintf(stderr, "spider height: %f\n", height); // 39.00f
-//    fprintf(stderr, "spider width: %f\n", width); // 48.00f
+    //    fprintf(stderr, "spider height: %f\n", height); // 39.00f
+    //    fprintf(stderr, "spider width: %f\n", width); // 48.00f
 
 	return true;
 }
