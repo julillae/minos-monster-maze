@@ -54,10 +54,6 @@ bool RenderManager::set_render_data(Texture *texture, Renderable *renderable)
     if (gl_has_errors())
         return false;
 
-    // Loading shaders
-    if (!renderable->effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
-        return false;
-
     return true;
 }
 
