@@ -12,6 +12,9 @@ bool Ice::init(vec2 position)
 
 	if (!RenderManager::set_render_data(&texture, this)) return false;
 
+    if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+        return false;
+
 	set_position(position);
 
 	m_rotation = 0.f;
