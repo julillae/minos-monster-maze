@@ -13,6 +13,6 @@ public:
     // Renders the component
 	void draw(const mat3& projection)override;
 
-	vec2 get_position()const;
+	vec2 get_texture_size();
 
 };
