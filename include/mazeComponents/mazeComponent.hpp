@@ -23,11 +23,9 @@ public:
 	// Set component rotation in radians
 	void set_rotation(float radians);
 
-	void set_size(Texture* texture);
-
 	vec2 get_position()const;
 
-	vec2 get_scale()const;
+	void set_scale(vec2 scale);
 
 	float get_rotation()const;
 
