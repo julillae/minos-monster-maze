@@ -61,17 +61,18 @@ void Level::read_level_data() {
 
 	std::string firstLine;
 	std::getline(filein, firstLine);
-	canRotate = firstLine.compare("1") == 0 ? true : false;
+	canRotate = firstLine.compare("1") == 0;
 
 	std::string secondLine;
 	std::getline(filein, secondLine);
-	cameraTracking = secondLine.compare("1") == 0 ? true : false;
+	cameraTracking = secondLine.compare("1") == 0;
 
     for (std::string line; std::getline(filein, line);) {
         std::vector <int> row;
         for(char& c : line) {
-            // Covert char to int and push to row
-            row.push_back(c - '0');
+            // Covert char to ascii dec and push to row
+			int x = static_cast<unsigned char>( c );
+			row.push_back(x);
         }
         // Push row to maze array
         m_maze.push_back(row);
@@ -117,6 +118,11 @@ bool Level::spawn_floor(vec2 position)
 
 	if (floor->init(position))
 	{
+		vec2 textureSize = floor->get_texture_size();
+		float x_scale = m_tile_width / textureSize.x;
+		float y_scale = m_tile_height / textureSize.y;
+		floor->set_scale(vec2({x_scale, y_scale}));
+		floor->set_size(vec2({m_tile_width, m_tile_height}));
 		m_platforms.emplace_back(std::move(floor));
 		return true;
 	}
@@ -130,6 +136,11 @@ bool Level::spawn_ice(vec2 position)
 
 	if (ice->init(position))
 	{
+		vec2 textureSize = ice->get_texture_size();
+		float x_scale = m_tile_width / textureSize.x;
+		float y_scale = m_tile_height / textureSize.y;
+		ice->set_scale(vec2({x_scale, y_scale}));
+		ice->set_size(vec2({m_tile_width, m_tile_height}));
 		m_platforms.emplace_back(std::move(ice));
 		return true;
 	}
@@ -170,10 +181,6 @@ bool Level::spawn_spikes(vec2 position, SpikeDir dir)
 void Level::generate_maze()
 {
 	fprintf(stderr, "Generating maze\n");
-	// Initial tile. Assumes all tiles are same width and height
-	spawn_floor({0.0, 0.0});
-	m_tile_width = m_platforms.back()->get_width();
-	m_tile_height = m_platforms.back()->get_height();
 
 	bool setting_enemy = false;
 	bool setting_rotated_enemy = false;
@@ -182,17 +189,14 @@ void Level::generate_maze()
     float i = 0.f;
 	float j = 0.f;
 
-	m_tile_width = m_platforms.back()->get_width();
-	m_tile_height = m_platforms.back()->get_height();
-
 	for (auto &row : m_maze) {
         j = 0.f;
-		for (int &cell : row) {	
+		for (int &cell : row) {
 
 			float x_pos = (j * m_tile_width);
 			float y_pos = (i * m_tile_height);
 
-			if ((setting_enemy && cell != 4) || (setting_rotated_enemy && cell != 5)) {
+			if ((setting_enemy && cell != 52) || (setting_rotated_enemy && cell != 53)) {
 				// If we were setting enemy positions, and we hit a cell with no enemy,
 				// Spawn the enemy we were setting
 
@@ -203,12 +207,12 @@ void Level::generate_maze()
 				setting_rotated_enemy = false;
 			}
 
-			if (cell == 1) {
+			if (cell == 49) {
 				// Spawn platform
 				if ( spawn_floor({x_pos, y_pos}) ) {
 					store_platform_coords({x_pos, y_pos}, cell);
 				}
-			} else if (cell == 2) {
+			} else if (cell == 50) {
 				// Add exit
 				Exit new_exit;
 
@@ -217,38 +221,29 @@ void Level::generate_maze()
 
 					m_exit = new_exit;
 				}
-			} else if (cell == 3) {
+			} else if (cell == 51) {
 				// Set initial position of player
 				initialPosition = {x_pos, y_pos};
-			} else if (cell == 4) {
+			} else if (cell == 52) {
 				// Begin setting enemy path
 				if (!setting_enemy) {
 					setting_enemy = true;
 					enemy_start_pos = {x_pos, y_pos};
 				}
-			} else if (cell == 5) {
+			} else if (cell == 53) {
 				// Begin setting enemy path
 				if (!setting_rotated_enemy) {
 					setting_rotated_enemy = true;
 					enemy_start_pos = {x_pos, y_pos};
 				}
-			} else if (cell == 6) {
+			} else if (cell == 54) {
 
                 if (spawn_ice({x_pos, y_pos}))
                 	store_platform_coords({x_pos, y_pos}, cell);
 
-            } else if (cell == 7) {
-			    float spike_x = x_pos - m_tile_width / 2;
-
-				if (spawn_spikes({spike_x, y_pos}, LEFT))
-
-					store_platform_coords({spike_x, y_pos}, cell);
-
-			} else if (cell == 8) {
-				float spike_y = y_pos - m_tile_height / 2;
-			    if (spawn_spikes({x_pos, spike_y}, UP))
-			        store_platform_coords({x_pos, spike_y}, cell);
-			} else if (cell == 9) {
+            } else if (cell >= 65 && cell <= 68) {
+                load_spikes(cell, vec2({x_pos, y_pos}));
+			} else if (cell == 57) {
 
 				spawn_harpy_enemy(vec2({x_pos, y_pos}));
 			}
@@ -257,9 +252,6 @@ void Level::generate_maze()
 		}
         i = i + 1.f;
 	}
-
-	// Note: A hack to remove the initial tile added to m_floor - shanice
-	m_platforms.erase(m_platforms.begin());
 
     // Set global variables
     m_maze_width = j;
@@ -822,4 +814,35 @@ void Level::set_player_death()
 		m_player.kill();
 		m_water.set_player_dead();
 	}
+}
+
+void Level::load_spikes(int cell, vec2 position)
+{
+	std::string platformType = platform_types.find(cell)->second;
+
+    if (platformType == "SPIKE LEFT") {
+        float spike_x = position.x - m_tile_width / 2;
+
+        if (spawn_spikes({spike_x, position.y}, LEFT))
+            store_platform_coords({spike_x, position.y}, cell);
+
+    } else if (platformType == "SPIKE UP") {
+
+        float spike_y = position.y - m_tile_height / 2;
+        if (spawn_spikes({position.x, spike_y}, UP))
+            store_platform_coords({position.x, spike_y}, cell);
+
+    } else if (platformType == "SPIKE DOWN") {
+
+        float spike_y = position.y + m_tile_height / 2;
+        if (spawn_spikes({position.x, spike_y}, DOWN))
+            store_platform_coords({position.x, spike_y}, cell);
+
+    } else {
+        float spike_x = position.x + m_tile_width / 2;
+
+        if (spawn_spikes({spike_x, position.y}, RIGHT))
+            store_platform_coords({spike_x, position.y}, cell);
+    }
+
 }
