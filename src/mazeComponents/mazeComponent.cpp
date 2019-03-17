@@ -23,11 +23,11 @@ vec2 MazeComponent::get_position()const {
 }
 
 /**
- * Retrieve the scale of the maze component
- * @return scale of component
+ * Sets the scale of the maze component
  */
-vec2 MazeComponent::get_scale()const {
-    return m_scale;
+void MazeComponent::set_scale(vec2 scale) {
+    m_scale.x = scale.x;
+    m_scale.y = scale.y;
 }
 
 /**
@@ -48,10 +48,10 @@ void MazeComponent::set_rotation(float radians)
 	m_rotation = radians;
 }
 
-void MazeComponent::set_size(Texture* texture)
+void MazeComponent::set_size(vec2 size)
 {
-	m_width = std::fabs(m_scale.x) * texture->width;
-	m_height = std::fabs(m_scale.y) * texture->height;
+	m_width = size.x;
+	m_height = size.y;
 }
 
 float MazeComponent::get_width()

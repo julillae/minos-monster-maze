@@ -22,6 +22,7 @@
 #include <random>
 #include <map>
 #include <memory>
+#include <algorithm>
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -97,6 +98,8 @@ private:
 	void store_platform_coords(vec2 coords, int platform_key);
 
 	void set_player_death();
+
+	void load_spikes(int cell, vec2 position);
 private:
 	// Window handle
 	GLFWwindow* m_window;
@@ -140,11 +143,13 @@ private:
 	int current_level = 0;
 
 	const map<int, std::string> platform_types = {
-		{1, "FLOOR"},
-		{2, "EXIT"},
-        {6, "ICE"},
-        {7, "SPIKE LEFT"},
-        {8, "SPIKE UP"}
+		{49, "FLOOR"},       //1
+		{50, "EXIT"},        //2
+        {54, "ICE"},         //6
+        {65, "SPIKE LEFT"},  //A
+        {66, "SPIKE UP"},    //B
+        {67, "SPIKE DOWN"},  //C
+        {68, "SPIKE RIGHT"}  //D
 	};
 
     // Variables determined by level data
@@ -152,8 +157,8 @@ private:
 	float m_maze_width;
     float m_maze_height;
 
-	float m_tile_width = 0.f;
-	float m_tile_height = 0.f;
+	float m_tile_width = 25.f;
+	float m_tile_height = 25.f;
 
 	// Rows of the maze where:
 	// 1 = platform
