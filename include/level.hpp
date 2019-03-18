@@ -83,8 +83,11 @@ private:
     bool spawn_ice(vec2 position);
     bool spawn_spikes(vec2 position, SpikeDir dir);
 
+	void draw_enemies(mat3 projection_2D);
 	void reset_enemies();
 	void destroy_enemies();
+	void draw_platforms(mat3 projection_2D);
+	void destroy_platforms();
 
 	void initialize_camera_position(int w, int h);
 	void load_new_level();
@@ -92,7 +95,6 @@ private:
 	void freeze_all_enemies();
 	void unfreeze_all_enemies();
 	void update_all_enemies(float elapsed_ms);
-
 
 	// Generates hard-coded maze in each level
 	void generate_maze();
@@ -114,11 +116,14 @@ private:
 	// Water effect
 	RenderEffects m_water;
 
-	Exit m_exit;
 	std::vector<Spider> m_spiders;
 	std::vector<Harpy> m_harpies;
 
-	Platforms m_platforms;
+	Exit m_exit;
+	std::vector<Floor> m_floors;
+	std::vector<Spikes> m_spikes;
+	std::vector<Ice> m_ice;
+
     HelpMenu m_help_menu;
 
     float m_seed_rng;

@@ -113,16 +113,16 @@ bool Level::spawn_harpy_enemy(vec2 position)
 
 bool Level::spawn_floor(vec2 position)
 {
-	std::unique_ptr<Floor> floor = std::unique_ptr<Floor>(new Floor);
+	Floor floor;
 
-	if (floor->init(position))
+	if (floor.init(position))
 	{
-		vec2 textureSize = floor->get_texture_size();
+		vec2 textureSize = floor.get_texture_size();
 		float x_scale = m_tile_width / textureSize.x;
 		float y_scale = m_tile_height / textureSize.y;
-		floor->set_scale(vec2({x_scale, y_scale}));
-		floor->set_size(vec2({m_tile_width, m_tile_height}));
-		m_platforms.emplace_back(std::move(floor));
+		floor.set_scale(vec2({x_scale, y_scale}));
+		floor.set_size(vec2({m_tile_width, m_tile_height}));
+		m_floors.emplace_back(floor);
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn floor");
@@ -131,16 +131,16 @@ bool Level::spawn_floor(vec2 position)
 
 bool Level::spawn_ice(vec2 position)
 {
-	std::unique_ptr<Ice> ice = std::unique_ptr<Ice>(new Ice);
+	Ice ice;
 
-	if (ice->init(position))
+	if (ice.init(position))
 	{
-		vec2 textureSize = ice->get_texture_size();
+		vec2 textureSize = ice.get_texture_size();
 		float x_scale = m_tile_width / textureSize.x;
 		float y_scale = m_tile_height / textureSize.y;
-		ice->set_scale(vec2({x_scale, y_scale}));
-		ice->set_size(vec2({m_tile_width, m_tile_height}));
-		m_platforms.emplace_back(std::move(ice));
+		ice.set_scale(vec2({x_scale, y_scale}));
+		ice.set_size(vec2({m_tile_width, m_tile_height}));
+		m_ice.emplace_back(ice);
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn ice");
@@ -149,27 +149,27 @@ bool Level::spawn_ice(vec2 position)
 
 bool Level::spawn_spikes(vec2 position, SpikeDir dir)
 {
-    std::unique_ptr<Spikes> spikes = std::unique_ptr<Spikes>(new Spikes);
+    Spikes spikes;
 
-    if (spikes->init(position))
+    if (spikes.init(position))
     {
     	switch (dir)
 		{
 			case DOWN:
-				spikes->set_down();
+				spikes.set_down();
 				break;
 			case LEFT:
-				spikes->set_left();
+				spikes.set_left();
 				break;
 			case RIGHT:
-				spikes->set_right();
+				spikes.set_right();
 				break;
 			default:
-				spikes->set_up();
+				spikes.set_up();
 				break;
 		}
 
-        m_platforms.emplace_back(std::move(spikes));
+        m_spikes.emplace_back(spikes);
         return true;
     }
     fprintf(stderr, "Failed to spawn spikes");
@@ -385,9 +385,7 @@ void Level::destroy()
 
 	m_player.destroy();
 	destroy_enemies();
-	for (auto& platform: m_platforms)
-		platform->destroy();
-	m_platforms.clear();
+	destroy_platforms();
 	m_help_menu.destroy();
 
 	glfwDestroyWindow(m_window);
@@ -455,10 +453,9 @@ bool Level::update(float elapsed_ms)
 	}
 
 	// checking player - platform collision
-	if (physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_platforms))
-	{
-		set_player_death();
-	}
+	if (physicsHandler->characterCollisionsWithFloors(&m_player, m_floors)) set_player_death();
+	if (physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes)) set_player_death();
+	if (physicsHandler->characterCollisionsWithIce(&m_player, m_ice)) set_player_death();
 
 	m_player.set_rotation(rotation);
 	if (applyFreeze) {
@@ -577,12 +574,8 @@ void Level::draw()
 
 	projection_2D = mul(projection_2D, translation_matrix);
 
-    for (auto& platform : m_platforms)
-        platform->draw(projection_2D);
-	for (auto& spider : m_spiders)
-		spider.draw(projection_2D);
-	for (auto& harpy : m_harpies)
-		harpy.draw(projection_2D);
+	draw_platforms(projection_2D);
+	draw_enemies(projection_2D);
 	m_exit.draw(projection_2D);
 	m_player.draw(projection_2D);
 
@@ -692,6 +685,14 @@ void Level::initialize_camera_position(int w, int h)
 	}
 }
 
+void Level::draw_enemies(mat3 projection_2D) {
+    for (auto& spider: m_spiders)
+        spider.draw(projection_2D);
+
+	for (auto& harpy: m_harpies)
+        harpy.draw(projection_2D);
+}
+
 void Level::reset_enemies() {
 	for (auto& spider : m_spiders) {
 		spider.freeze();
@@ -717,13 +718,37 @@ void Level::destroy_enemies() {
 	m_harpies.clear();
 }
 
+void Level::draw_platforms(mat3 projection_2D) {
+    for (auto& floor: m_floors)
+        floor.draw(projection_2D);
+
+	for (auto& ice: m_ice)
+        ice.draw(projection_2D);
+
+	for (auto& spikes: m_spikes)
+        spikes.draw(projection_2D);
+}
+
+void Level::destroy_platforms() {
+	for (auto& floor : m_floors)
+		floor.destroy();
+
+	for (auto& spike : m_spikes)
+		spike.destroy();
+
+	for (auto& ice : m_ice)
+		ice.destroy();
+
+	m_floors.clear();
+	m_spikes.clear();
+	m_ice.clear();
+}
+
 void Level::load_new_level()
 {
-	// for (auto& platform: m_platforms)
-	// 	platform->destroy();
+	destroy_platforms();
 	destroy_enemies();
 	
-	// m_platforms.clear();
 	m_maze.clear();
 
 	current_level++;
