@@ -10,7 +10,6 @@
 #include <vector>
 #include <map>
 #include <list>
-#include <memory>
 
 class Physics
 {

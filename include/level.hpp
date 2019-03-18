@@ -21,7 +21,6 @@
 #include <vector>
 #include <random>
 #include <map>
-#include <memory>
 #include <algorithm>
 
 #define SDL_MAIN_HANDLED
@@ -31,7 +30,6 @@
 
 // Level class
 
-typedef std::vector<std::unique_ptr<FixedComponent>> Platforms;
 enum SpikeDir { UP, DOWN, LEFT, RIGHT};
 
 class Level
