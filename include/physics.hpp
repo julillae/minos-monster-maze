@@ -54,6 +54,9 @@ public:
 
     bool collideWithExit (Player *p, const Exit *e);
 
+    bool isOnAtLeastOnePlatform = false;
+    bool isBelowAtLeastOnePlatform = false;
+
 	// produces true if player collides with a fixed component that kills the player
     bool characterCollisionsWithFloors(Player *c, std::vector<Floor> floors);
     bool characterCollisionsWithSpikes(Player *c, std::vector<Spikes> spikes);

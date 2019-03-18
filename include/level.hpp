@@ -83,6 +83,8 @@ private:
     bool spawn_ice(vec2 position);
     bool spawn_spikes(vec2 position, SpikeDir dir);
 
+	void check_platform_collisions();
+
 	void draw_enemies(mat3 projection_2D);
 	void reset_enemies();
 	void destroy_enemies();

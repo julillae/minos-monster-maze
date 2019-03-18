@@ -179,7 +179,6 @@ bool Level::spawn_spikes(vec2 position, SpikeDir dir)
 // Generates maze
 void Level::generate_maze()
 {
-	fprintf(stderr, "Generating maze\n");
 
 	bool setting_enemy = false;
 	bool setting_rotated_enemy = false;
@@ -243,8 +242,7 @@ void Level::generate_maze()
             } else if (cell >= 65 && cell <= 68) {
                 load_spikes(cell, vec2({x_pos, y_pos}));
 			} else if (cell == 57) {
-
-				//spawn_harpy_enemy(vec2({x_pos, y_pos}));
+				spawn_harpy_enemy(vec2({x_pos, y_pos}));
 			}
 
             j = j + 1.f;
@@ -367,6 +365,19 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
+void Level::check_platform_collisions() {
+	if (physicsHandler->characterCollisionsWithFloors(&m_player, m_floors) ||
+		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes) ||
+	 	physicsHandler->characterCollisionsWithIce(&m_player, m_ice)) 
+			set_player_death();
+    
+	if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
+    m_player.isBelowPlatform = physicsHandler->isBelowAtLeastOnePlatform;
+
+	physicsHandler->isOnAtLeastOnePlatform = false;
+	physicsHandler->isBelowAtLeastOnePlatform = false;
+}
+
 // Releases all the associated resources
 void Level::destroy()
 {
@@ -453,9 +464,7 @@ bool Level::update(float elapsed_ms)
 	}
 
 	// checking player - platform collision
-	if (physicsHandler->characterCollisionsWithFloors(&m_player, m_floors)) set_player_death();
-	if (physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes)) set_player_death();
-	if (physicsHandler->characterCollisionsWithIce(&m_player, m_ice)) set_player_death();
+	check_platform_collisions();
 
 	m_player.set_rotation(rotation);
 	if (applyFreeze) {
