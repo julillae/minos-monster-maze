@@ -202,7 +202,7 @@ bool Physics::collideWithEnemy (Player *p, Enemy *e) {
     return isCollided;
 }
 
-bool Physics::fastCollisionWithFixedComponent(Player *p, std::unique_ptr<FixedComponent> const &f) {
+bool Physics::fastCollisionWithFixedComponent(Player *p, FixedComponent *f) {
 	float other_r = std::max(p->get_bounding_box().x, f->get_bounding_box().y);
 	float my_r = std::max(p->width, p->height);
 
@@ -228,75 +228,98 @@ bool Physics::collideWithExit (Player *p, const Exit *e) {
     return isCollided;
 }
 
+bool Physics::characterCollisionsWithFloors(Player* c, std::vector<Floor> floors) {
+    for (Floor f : floors) {
+        if (characterCollisionsWithFixedComponent(c, &f))
+            return true;
+    }
 
-bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents) {
+    return false;
+}
 
+bool Physics::characterCollisionsWithSpikes(Player* c, std::vector<Spikes> spikes) {
+    for (Spikes s : spikes) {
+        if (characterCollisionsWithFixedComponent(c, &s))
+            return true;
+    }
+
+    return false;
+}
+
+bool Physics::characterCollisionsWithIce(Player* c, std::vector<Ice> ice) {
+    for (Ice i : ice) {
+        if (characterCollisionsWithFixedComponent(c, &i))
+            return true;
+    }
+
+    return false;
+}
+
+bool Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* fc) {
     bool isOnAtLeastOnePlatform = false;
     bool isBelowAtLeastOnePlatform = false;
 
-    for (const auto& fc : fixedComponents) {
+    vec2 cPos = c->get_position();
+    vec2 fPos = fc->get_position();
+    fprintf(stderr, "FC POSITION: %f\n", fPos.x);
+    vec2 cBound = c->get_bounding_box();
+    vec2 fBound = fc->get_bounding_box();
 
-        vec2 cPos = c->get_position();
-        vec2 fPos = fc->get_position();
-        vec2 cBound = c->get_bounding_box();
-        vec2 fBound = fc->get_bounding_box();
+    if (fastCollisionWithFixedComponent(c, fc)) {
+        std::vector<vec2> playArray = getVertices(cPos, cBound, rotation);
+        std::vector<vec2> fixedComponentArray;
 
-        if (fastCollisionWithFixedComponent(c, fc)) {
-            std::vector<vec2> playArray = getVertices(cPos, cBound, rotation);
-            std::vector<vec2> fixedComponentArray;
+        if (fc->can_kill) {
+            fixedComponentArray = fc->get_vertex_coord();
+            if (collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos).isCollided)
+                return true;
+        }
+        else {
 
-            if (fc->can_kill) {
-                fixedComponentArray = fc->get_vertex_coord();
-                if (collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos).isCollided)
-                    return true;
-            }
-            else {
+            fixedComponentArray = getVertices(fPos, fBound, 0);
 
-                fixedComponentArray = getVertices(fPos, fBound, 0);
+            MTV mtv = collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos);
 
-                MTV mtv = collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos);
+            if (mtv.isCollided) {
 
-                if (mtv.isCollided) {
+                vec2 normal = mtv.normal;
+                float magnitude = mtv.magnitude;
 
-                    vec2 normal = mtv.normal;
-                    float magnitude = mtv.magnitude;
+                // grab the vector that pushes the player to the tangent of the platform
+                vec2 translation = { normal.x * magnitude, normal.y * magnitude};
 
-                    // grab the vector that pushes the player to the tangent of the platform
-                    vec2 translation = { normal.x * magnitude, normal.y * magnitude};
+                vec2 currentPos = c->get_position();
+                // translate the player
+                vec2 newPos = subtract(currentPos, translation);
 
-                    vec2 currentPos = c->get_position();
-                    // translate the player
-                    vec2 newPos = subtract(currentPos, translation);
+                c->set_position(newPos);
+                // add MTV to list of collision normals stored in Player
+                c->collisionNormals.push_back(mtv.normal);
 
-                    c->set_position(newPos);
-					// add MTV to list of collision normals stored in Player
-					c->collisionNormals.push_back(mtv.normal);
+                float dy = newPos.y - fPos.y;
+                float dx = fPos.x - newPos.x;
+                float collisionAngle = atan2(dy, dx);
+                // logic needed to get new angle (collisionAngle + rotation) within
+                // the needed -pi to pi range
+                collisionAngle = static_cast<float>(fmod(collisionAngle + rotation, 2 * M_PI));
+                float anglePastPi = 0.f;
+                if (collisionAngle > M_PI) {
+                    anglePastPi = static_cast<float>(collisionAngle - M_PI);
+                    collisionAngle = static_cast<float>(-M_PI + anglePastPi);
+                }
+                else if (collisionAngle < -M_PI) {
+                    anglePastPi = static_cast<float>(collisionAngle + M_PI);
+                    collisionAngle = static_cast<float>(M_PI + anglePastPi);
+                }
 
-                    float dy = newPos.y - fPos.y;
-                    float dx = fPos.x - newPos.x;
-                    float collisionAngle = atan2(dy, dx);
-                    // logic needed to get new angle (collisionAngle + rotation) within
-                    // the needed -pi to pi range
-                    collisionAngle = static_cast<float>(fmod(collisionAngle + rotation, 2 * M_PI));
-                    float anglePastPi = 0.f;
-                    if (collisionAngle > M_PI) {
-                        anglePastPi = static_cast<float>(collisionAngle - M_PI);
-                        collisionAngle = static_cast<float>(-M_PI + anglePastPi);
-                    }
-                    else if (collisionAngle < -M_PI) {
-                        anglePastPi = static_cast<float>(collisionAngle + M_PI);
-                        collisionAngle = static_cast<float>(M_PI + anglePastPi);
-                    }
-
-                    // place player on platform
-                    if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
-                        c->set_on_platform();
-                        isOnAtLeastOnePlatform = true;
-                        c->m_platform_drag = fc->get_drag();
-                    }
-                    if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
-                        isBelowAtLeastOnePlatform = true;
-                    }
+                // place player on platform
+                if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
+                    c->set_on_platform();
+                    isOnAtLeastOnePlatform = true;
+                    c->m_platform_drag = fc->get_drag();
+                }
+                if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
+                    isBelowAtLeastOnePlatform = true;
                 }
             }
         }

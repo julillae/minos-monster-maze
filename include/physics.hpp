@@ -3,6 +3,8 @@
 #include "../include/characters/enemy.hpp"
 #include "../include/characters/player.hpp"
 #include "../include/mazeComponents/floor.hpp"
+#include "../include/mazeComponents/spikes.hpp"
+#include "../include/mazeComponents/ice.hpp"
 #include "../include/mazeComponents/exit.hpp"
 
 #include <vector>
@@ -46,14 +48,17 @@ public:
         }
     };
 
-    bool fastCollisionWithFixedComponent(Player *p, std::unique_ptr<FixedComponent> const &f);
+    bool fastCollisionWithFixedComponent(Player *p, FixedComponent *f);
 
     bool collideWithEnemy(Player *p, Enemy *e);
 
     bool collideWithExit (Player *p, const Exit *e);
 
 	// produces true if player collides with a fixed component that kills the player
-    bool characterCollisionsWithFixedComponents(Player *c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents);
+    bool characterCollisionsWithFloors(Player *c, std::vector<Floor> floors);
+    bool characterCollisionsWithSpikes(Player *c, std::vector<Spikes> spikes);
+    bool characterCollisionsWithIce(Player *c, std::vector<Ice> ice);
+    bool characterCollisionsWithFixedComponent(Player *c, FixedComponent* fc);
 
 	void characterVelocityUpdate(Character *c);
 
