@@ -1,0 +1,51 @@
+#include "../../include/menus/mainMenu.hpp"
+
+bool MainMenu::init(vec2 position)
+{
+    const char* textureFile = textures_path("help-menu.png");
+
+    if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
+
+    if (!RenderManager::set_render_data(&m_texture, this)) return false;
+
+    // Loading shaders
+    if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+        return false;
+
+    set_position(position);
+
+    // Setting initial values, scale is negative to make it face the opposite way
+    m_scale.x = 0.51f;
+    m_scale.y = 0.51f;
+    m_rotation = 0.f;
+
+    return true;
+
+}
+
+void MainMenu::draw(const mat3 &projection)
+{
+    RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &m_texture, this);
+}
+
+void MainMenu::destroy()
+{
+    glDeleteBuffers(1, &mesh.vbo);
+    glDeleteBuffers(1, &mesh.ibo);
+    glDeleteVertexArrays(1, &mesh.vao);
+
+    effect.release();
+}
+
+void MainMenu::set_position(vec2 position)
+{
+    m_position = position;
+}
+
+
+
+
+
+
+
+

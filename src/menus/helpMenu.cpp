@@ -1,4 +1,4 @@
-#include "../include/helpMenu.hpp"
+#include "../../include/menus/helpMenu.hpp"
 
 bool HelpMenu::init(vec2 position)
 {
