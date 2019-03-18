@@ -44,8 +44,6 @@ set(SOURCE_FILES
     src/characters/simple.cpp
     src/characters/spider.cpp
     src/mazeComponents/mazeComponent.cpp
-    src/mazeComponents/fixedComponent.cpp
-    src/mazeComponents/freeComponent.cpp
     src/mazeComponents/floor.cpp
     src/mazeComponents/ice.cpp
     src/mazeComponents/exit.cpp
@@ -54,7 +52,10 @@ set(SOURCE_FILES
     src/physics.cpp
     src/level.cpp
     src/stateTree.cpp
-    src/helpMenu.cpp
+    src/menus/helpMenu.cpp
+    src/game.cpp
+    src/gameStates/mainMenuState.cpp
+    src/menus/mainMenu.cpp
     
 
     include/project_path.hpp
@@ -80,7 +81,11 @@ set(SOURCE_FILES
     include/physics.hpp
     include/level.hpp
     include/stateTree.hpp
-    include/helpMenu.hpp
+    include/menus/helpMenu.hpp
+    include/game.hpp
+    include/gameStates/gameState.hpp
+    include/gameStates/mainMenuState.hpp
+    include/menus/mainMenu.hpp
     
 	)
 

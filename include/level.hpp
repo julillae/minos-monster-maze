@@ -15,7 +15,8 @@
 #include "mazeComponents/spikes.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
-#include "helpMenu.hpp"
+#include "menus/helpMenu.hpp"
+#include "gameStates/gameState.hpp"
 
 // stlib
 #include <vector>
@@ -35,28 +36,28 @@ typedef std::vector<std::unique_ptr<Enemy>> Enemies;
 typedef std::vector<std::unique_ptr<FixedComponent>> Platforms;
 enum SpikeDir { UP, DOWN, LEFT, RIGHT};
 
-class Level
+class Level : public GameState
 {
 public:
 	Player m_player;
 	
-	Level();
+	Level(Game* game);
 	~Level();
 
     // Creates a window, sets up events and begins the game
 	bool init(vec2 screen, Physics* physicsHandler, int startLevel);
 
 	// Releases all associated resource
-    void destroy();
+    void destroy()override;
 
 	// Steps the game ahead by ms milliseconds
-    bool update(float elapsed_ms);
+    bool update(float elapsed_ms)override;
 
     // Renders our scene
-	void draw();
+	void draw()override;
 
 	// Should the game be over ?
-	bool is_over()const;
+	bool is_over()override;
 
 	std::string get_platform_by_coordinates(std::pair<float, float> coords);
 	bool maze_is_platform(std::pair<int,int> coords);
@@ -68,7 +69,7 @@ public:
 	float get_tile_height();
 private:
 	// !!! INPUT CALLBACK FUNCTIONS
-	void on_key(GLFWwindow*, int key, int, int action, int mod);
+	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
     void read_level_data();
@@ -101,13 +102,6 @@ private:
 
 	void load_spikes(int cell, vec2 position);
 private:
-	// Window handle
-	GLFWwindow* m_window;
-
-    // Screen texture
-	// The draw loop first renders to this texture, then it is used for the water shader
-	GLuint m_frame_buffer;
-	Texture m_screen_tex;
 
 	// Water effect
 	RenderEffects m_water;
@@ -131,11 +125,7 @@ private:
 	Physics* physicsHandler;
 
 	bool is_player_at_goal;
-	// Part of hack needed to deal with the MacOs Retina Display issue where it doubles the pixels rendered
-	float osScaleFactor = 1.f;
 
-	float tx;
-	float ty;
 	int rotateCWKey = GLFW_KEY_X;
 	int rotateCCWKey = GLFW_KEY_Z;
 

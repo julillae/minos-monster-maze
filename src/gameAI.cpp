@@ -24,8 +24,8 @@ std::vector<std::vector<int>> maze;
 // Function to determine a tile, given a location
 TileCoord GameAI::findTileFromLocation(vec2 location)
 {
-    float tile_width = world.get_tile_width();
-    float tile_height = world.get_tile_height();
+    float tile_width = world->get_tile_width();
+    float tile_height = world->get_tile_height();
 
     return {location.y / tile_width, location.x / tile_height};
 }
@@ -33,8 +33,8 @@ TileCoord GameAI::findTileFromLocation(vec2 location)
 // Function to determine location, given the tile
 vec2 GameAI::findLocationFromTile(TileCoord cell)
 {
-    float tile_width = world.get_tile_width();
-    float tile_height = world.get_tile_height();
+    float tile_width = world->get_tile_width();
+    float tile_height = world->get_tile_height();
     vec2 result = vec2({(cell.second * tile_width + 1), (cell.first * tile_height + 1)});
 
     return result;
@@ -49,7 +49,7 @@ bool GameAI::isValid(int row, int col)
 // Helper function to check if character can move to given tile (i.e. is it occupied by a fixed component)
 bool GameAI::canMoveHere(int row, int col)
 {
-    return !world.maze_is_platform(make_pair(row, col));
+    return !world->maze_is_platform(make_pair(row, col));
 }
 
 // Helper function to see if current tile is destination tile
@@ -118,7 +118,7 @@ void GameAI::processChildAStar(TileCoord parent, TileCoord child, TileCoord dest
 stack<vec2> GameAI::followPlayer(vec2 source, SearchMethod method)
 {
     if (method == SearchMethod::aStar) {
-        vec2 dest = world.m_player.get_position();
+        vec2 dest = world->m_player.get_position();
         return aStarSearch(source, dest);
     } else {
         printf("Must specify valid search method\n");
@@ -134,9 +134,9 @@ bool GameAI::compare(cTileCoord left, cTileCoord right)
 // Find the shortest path using A*
 stack<vec2> GameAI::aStarSearch(vec2 source, vec2 destination)
 {
-    ROW = world.get_maze_height();
-    COL = world.get_maze_width();
-    maze = world.get_original_maze();
+    ROW = world->get_maze_height();
+    COL = world->get_maze_width();
+    maze = world->get_original_maze();
     TileCoord src = findTileFromLocation(source);
     TileCoord dest = findTileFromLocation(destination);
 

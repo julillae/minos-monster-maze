@@ -1,3 +1,5 @@
 #include "../include/level.hpp"
+#include "../include/game.hpp"
 
-extern Level world;
+extern Game game;
+extern Level *world;

@@ -28,7 +28,6 @@ namespace
 	bool previouslyFrozen = false;
 	vec2 cameraCenter;
 	vec2 prevCameraCenter;
-	bool cameraTracking = true;
     void glfw_err_cb(int error, const char* desc)
     {
         fprintf(stderr, "%d: %s", error, desc);
@@ -36,10 +35,11 @@ namespace
 }
 
 
-Level::Level() : m_seed_rng(0.f)
+Level::Level(Game* game) : m_seed_rng(0.f)
 {
 // Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
+	this->game = game;
 }
 
 Level::~Level()
@@ -262,36 +262,12 @@ void Level::generate_maze()
 bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 {
 	this->physicsHandler = physicsHandler;
-
-	//-------------------------------------------------------------------------
-	// GLFW / OGL Initialization
-	// Core Opengl 3.
-	glfwSetErrorCallback(glfw_err_cb);
-	if (!glfwInit())
-	{
-		fprintf(stderr, "Failed to initialize GLFW");
-		return false;
-	}
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
-#if __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-	glfwWindowHint(GLFW_RESIZABLE, 0);
-	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "A1 Assignment", nullptr, nullptr);
-	if (m_window == nullptr)
-		return false;
+	this->m_window = game->m_window;
 
 	// hack used to make sure the display for macOS with retina display issue is consistent with display on other systems
 	int testWidth;
-	glfwGetFramebufferSize(const_cast<GLFWwindow *>(m_window), &testWidth, nullptr);
+	glfwGetFramebufferSize(m_window, &testWidth, nullptr);
 	osScaleFactor = testWidth / screen.x;
-
-	glfwMakeContextCurrent(m_window);
-	glfwSwapInterval(1); // vsync
 
 	// Load OpenGL function pointers
 	gl3w_init();
@@ -355,8 +331,6 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
 	glViewport(0, 0, w, h);
-	float left = 0.f;// *-0.5;
-	float right = (float)w;// *0.5;
 
 	current_level = startLevel;
     read_level_data();
@@ -605,7 +579,7 @@ void Level::draw()
 }
 
 // Should the game be over ?
-bool Level::is_over()const
+bool Level::is_over()
 {
 	return glfwWindowShouldClose(m_window);
 }
