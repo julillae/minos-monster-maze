@@ -31,7 +31,6 @@
 
 // Level class
 
-typedef std::vector<std::unique_ptr<Enemy>> Enemies;
 typedef std::vector<std::unique_ptr<FixedComponent>> Platforms;
 enum SpikeDir { UP, DOWN, LEFT, RIGHT};
 
@@ -84,6 +83,9 @@ private:
     bool spawn_ice(vec2 position);
     bool spawn_spikes(vec2 position, SpikeDir dir);
 
+	void reset_enemies();
+	void destroy_enemies();
+
 	void initialize_camera_position(int w, int h);
 	void load_new_level();
 	void reset_game();
@@ -113,7 +115,9 @@ private:
 	RenderEffects m_water;
 
 	Exit m_exit;
-	Enemies m_enemies;
+	std::vector<Spider> m_spiders;
+	std::vector<Harpy> m_harpies;
+
 	Platforms m_platforms;
     HelpMenu m_help_menu;
 

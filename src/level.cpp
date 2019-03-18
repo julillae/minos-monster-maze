@@ -11,7 +11,6 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
-#include <memory>
 
 namespace
 {
@@ -81,18 +80,18 @@ void Level::read_level_data() {
 
 bool Level::spawn_spider_enemy(vec2 position, float bound, bool upsideDown)
 {
-	std::unique_ptr<Spider> enemy = std::unique_ptr<Spider>(new Spider);
+	Spider enemy;
 
-	if (enemy->init(position, physicsHandler))
+	if (enemy.init(position, physicsHandler))
 	{
 		if (upsideDown) {
-			enemy->set_rotation(M_PI);
-			vec2 enemy_scale = enemy->get_scale();
-			enemy->set_scale({enemy_scale.x * -1.f, enemy_scale.y});
+			enemy.set_rotation(M_PI);
+			vec2 enemy_scale = enemy.get_scale();
+			enemy.set_scale({enemy_scale.x * -1.f, enemy_scale.y});
 		}
 
-		enemy->set_bound(bound);
-		m_enemies.emplace_back(std::move(enemy));
+		enemy.set_bound(bound);
+		m_spiders.emplace_back(enemy);
 
 		return true;
 	}
@@ -102,10 +101,10 @@ bool Level::spawn_spider_enemy(vec2 position, float bound, bool upsideDown)
 
 bool Level::spawn_harpy_enemy(vec2 position)
 {
-	std::unique_ptr<Harpy> enemy = std::unique_ptr<Harpy>(new Harpy);
-	if (enemy->init(position, physicsHandler))
+	Harpy enemy;
+	if (enemy.init(position, physicsHandler))
 	{	
-		m_enemies.emplace_back(std::move(enemy));
+		m_harpies.emplace_back(enemy);
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn harpy");
@@ -245,7 +244,7 @@ void Level::generate_maze()
                 load_spikes(cell, vec2({x_pos, y_pos}));
 			} else if (cell == 57) {
 
-				spawn_harpy_enemy(vec2({x_pos, y_pos}));
+				//spawn_harpy_enemy(vec2({x_pos, y_pos}));
 			}
 
             j = j + 1.f;
@@ -385,11 +384,9 @@ void Level::destroy()
 	Mix_CloseAudio();
 
 	m_player.destroy();
-	for (auto& enemy : m_enemies)
-		enemy->destroy();
+	destroy_enemies();
 	for (auto& platform: m_platforms)
 		platform->destroy();
-	m_enemies.clear();
 	m_platforms.clear();
 	m_help_menu.destroy();
 
@@ -433,9 +430,16 @@ bool Level::update(float elapsed_ms)
 		previouslyFrozen = false;
 	}
 
-	// Checking Player - Enemy Collision
-	for (auto& enemy : m_enemies) {
-		if (physicsHandler->collideWithEnemy(&m_player, enemy))
+	// Checking Player - Spider Collision
+	for (auto& enemy : m_spiders) {
+		if (physicsHandler->collideWithEnemy(&m_player, &enemy))
+		{
+			set_player_death();
+		}
+	}
+
+	for (auto& enemy : m_harpies) {
+		if (physicsHandler->collideWithEnemy(&m_player, &enemy))
 		{
 			set_player_death();
 		}
@@ -575,8 +579,10 @@ void Level::draw()
 
     for (auto& platform : m_platforms)
         platform->draw(projection_2D);
-	for (auto& enemy : m_enemies)
-		enemy->draw(projection_2D);
+	for (auto& spider : m_spiders)
+		spider.draw(projection_2D);
+	for (auto& harpy : m_harpies)
+		harpy.draw(projection_2D);
 	m_exit.draw(projection_2D);
 	m_player.draw(projection_2D);
 
@@ -686,16 +692,38 @@ void Level::initialize_camera_position(int w, int h)
 	}
 }
 
+void Level::reset_enemies() {
+	for (auto& spider : m_spiders) {
+		spider.freeze();
+		spider.reset_position();
+		spider.unfreeze();
+	};
+
+	for (auto& harpy : m_harpies) {
+		harpy.freeze();
+		harpy.reset_position();
+		harpy.unfreeze();
+	};
+}
+
+void Level::destroy_enemies() {
+	for (auto& spider : m_spiders)
+		spider.destroy();
+
+	for (auto& harpy : m_harpies)
+		harpy.destroy();
+
+	m_spiders.clear();
+	m_harpies.clear();
+}
+
 void Level::load_new_level()
 {
-	for (auto& platform: m_platforms)
-		platform->destroy();
-
-	for (auto& enemy : m_enemies)
-		enemy->destroy();
+	// for (auto& platform: m_platforms)
+	// 	platform->destroy();
+	destroy_enemies();
 	
-	m_platforms.clear();
-	m_enemies.clear();
+	// m_platforms.clear();
 	m_maze.clear();
 
 	current_level++;
@@ -716,11 +744,7 @@ void Level::reset_game()
 		load_new_level();
 		initialize_camera_position(w, h);
 	} else {
-		for (auto& enemy : m_enemies) {
-			enemy->freeze();
-			enemy->reset_position();
-			enemy->unfreeze();
-		};
+		reset_enemies();
 	}
 	
 
@@ -736,17 +760,20 @@ void Level::reset_game()
 
 void Level::freeze_all_enemies()
 {
-	for (auto& e : m_enemies) e->freeze();
+	for (auto& s : m_spiders) s.freeze();
+	for (auto& h : m_harpies) h.freeze();
 }
 
 void Level::unfreeze_all_enemies()
 {
-	for (auto& e : m_enemies) e->unfreeze();
+	for (auto& s : m_spiders) s.unfreeze();
+	for (auto& h : m_harpies) h.unfreeze();
 }
 
 void Level::update_all_enemies(float elapsed_ms)
 {
-	for (auto& e : m_enemies) e->update(elapsed_ms);
+	for (auto& s : m_spiders) s.update(elapsed_ms);
+	for (auto& h : m_harpies) h.update(elapsed_ms);
 }
 
 // Returns the platform type if there is a platform at these coordinates
