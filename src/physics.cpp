@@ -256,12 +256,8 @@ bool Physics::characterCollisionsWithIce(Player* c, std::vector<Ice> ice) {
 }
 
 bool Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* fc) {
-    bool isOnAtLeastOnePlatform = false;
-    bool isBelowAtLeastOnePlatform = false;
-
     vec2 cPos = c->get_position();
     vec2 fPos = fc->get_position();
-    fprintf(stderr, "FC POSITION: %f\n", fPos.x);
     vec2 cBound = c->get_bounding_box();
     vec2 fBound = fc->get_bounding_box();
 
@@ -324,9 +320,6 @@ bool Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* f
             }
         }
     }
-
-    if (!isOnAtLeastOnePlatform) c->set_in_free_fall();
-    c->isBelowPlatform = isBelowAtLeastOnePlatform;
 
     return false;
 }
