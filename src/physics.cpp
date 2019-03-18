@@ -183,7 +183,7 @@ Physics::MTV Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, c
    return mtv;
 }
 
-bool Physics::collideWithEnemy (Player *p, std::unique_ptr<Enemy> const &e) {
+bool Physics::collideWithEnemy (Player *p, Enemy *e) {
 	bool isCollided = false;
 	vec2 pPos = p->get_position();
 	vec2 ePos = e->get_position();
