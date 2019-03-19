@@ -366,16 +366,22 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 }
 
 void Level::check_platform_collisions() {
-	if (physicsHandler->characterCollisionsWithFloors(&m_player, m_floors) ||
-		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes) ||
-	 	physicsHandler->characterCollisionsWithIce(&m_player, m_ice)) 
-			set_player_death();
-    
-	if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
-    m_player.isBelowPlatform = physicsHandler->isBelowAtLeastOnePlatform;
+	if (m_player.is_alive()) {
+		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes);
+		physicsHandler->characterCollisionsWithFloors(&m_player, m_floors);
+		physicsHandler->characterCollisionsWithIce(&m_player, m_ice);
 
-	physicsHandler->isOnAtLeastOnePlatform = false;
-	physicsHandler->isBelowAtLeastOnePlatform = false;
+		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
+		m_player.isBelowPlatform = physicsHandler->isBelowAtLeastOnePlatform;
+
+		if (!m_player.is_alive()) {
+			Mix_PlayChannel(-1, m_player_dead_sound, 0);
+			m_water.set_player_dead();
+		}
+
+		physicsHandler->isOnAtLeastOnePlatform = false;
+		physicsHandler->isBelowAtLeastOnePlatform = false;
+	}
 }
 
 // Releases all the associated resources

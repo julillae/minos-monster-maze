@@ -228,34 +228,27 @@ bool Physics::collideWithExit (Player *p, const Exit *e) {
     return isCollided;
 }
 
-bool Physics::characterCollisionsWithFloors(Player* c, std::vector<Floor> floors) {
+void Physics::characterCollisionsWithFloors(Player* c, std::vector<Floor> floors) {
     for (Floor f : floors) {
-        if (characterCollisionsWithFixedComponent(c, &f))
-            return true;
+        characterCollisionsWithFixedComponent(c, &f);
     }
-
-    return false;
 }
 
-bool Physics::characterCollisionsWithSpikes(Player* c, std::vector<Spikes> spikes) {
+void Physics::characterCollisionsWithSpikes(Player* c, std::vector<Spikes> spikes) {
     for (Spikes s : spikes) {
-        if (characterCollisionsWithFixedComponent(c, &s))
-            return true;
-    }
+        characterCollisionsWithFixedComponent(c, &s);
 
-    return false;
+        if (!c->is_alive()) return;
+    }
 }
 
-bool Physics::characterCollisionsWithIce(Player* c, std::vector<Ice> ice) {
+void Physics::characterCollisionsWithIce(Player* c, std::vector<Ice> ice) {
     for (Ice i : ice) {
-        if (characterCollisionsWithFixedComponent(c, &i))
-            return true;
+        characterCollisionsWithFixedComponent(c, &i);
     }
-
-    return false;
 }
 
-bool Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* fc) {
+void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* fc) {
     vec2 cPos = c->get_position();
     vec2 fPos = fc->get_position();
     vec2 cBound = c->get_bounding_box();
@@ -268,7 +261,7 @@ bool Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* f
         if (fc->can_kill) {
             fixedComponentArray = fc->get_vertex_coord();
             if (collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos).isCollided)
-                return true;
+                c->kill();
         }
         else {
 
@@ -320,8 +313,6 @@ bool Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* f
             }
         }
     }
-
-    return false;
 }
 
 void Physics::characterVelocityUpdate(Character* c)
