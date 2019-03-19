@@ -56,11 +56,11 @@ public:
     bool isOnAtLeastOnePlatform = false;
     bool isBelowAtLeastOnePlatform = false;
 
-	// produces true if player collides with a fixed component that kills the player
-    bool characterCollisionsWithFloors(Player *c, std::vector<Floor> floors);
-    bool characterCollisionsWithSpikes(Player *c, std::vector<Spikes> spikes);
-    bool characterCollisionsWithIce(Player *c, std::vector<Ice> ice);
-    bool characterCollisionsWithFixedComponent(Player *c, FixedComponent* fc);
+	// checks for collisions and reacts appropriately
+    void characterCollisionsWithFloors(Player *c, std::vector<Floor> floors);
+    void characterCollisionsWithSpikes(Player *c, std::vector<Spikes> spikes);
+    void characterCollisionsWithIce(Player *c, std::vector<Ice> ice);
+    void characterCollisionsWithFixedComponent(Player *c, FixedComponent* fc);
 
 	void characterVelocityUpdate(Character *c);
 
