@@ -10,15 +10,23 @@
 #include <iostream>
 #include <fstream>
 
+namespace
+{
+    vec2 cameraCenter;
+}
+
 MainMenuState::MainMenuState(Game *game)
 {
     this->game = game;
-    this->m_window = game->m_window;
+//    this->m_window = game->m_window;
 
 }
 
 void MainMenuState::init(vec2 screen)
 {
+    fprintf(stderr, "hello1");
+    this->m_window = game->m_window;
+
     // hack used to make sure the display for macOS with retina display issue is consistent with display on other systems
     int testWidth;
     glfwGetFramebufferSize(m_window, &testWidth, nullptr);
@@ -44,51 +52,51 @@ void MainMenuState::init(vec2 screen)
     glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
 
     // Initialize the screen texture
-//    m_screen_tex.create_from_screen(m_window);
+    m_screen_tex.create_from_screen(m_window);
 
-//    if (SDL_Init(SDL_INIT_AUDIO) < 0)
-//    {
-//        fprintf(stderr, "Failed to initialize SDL Audio");
-//        return;
-//    }
-//
-//    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
-//    {
-//        fprintf(stderr, "Failed to open audio device");
-//        return;
-//    }
+    if (SDL_Init(SDL_INIT_AUDIO) < 0)
+    {
+        fprintf(stderr, "Failed to initialize SDL Audio");
+        return;
+    }
+
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
+    {
+        fprintf(stderr, "Failed to open audio device");
+        return;
+    }
 //
 //    //Note: the following music credits needs to be added to a credit scene at the end of the game
 //    //Secret Catacombs
 //    //by Eric Matyas
 //    //www.soundimage.org
 //
-//    m_background_music = Mix_LoadMUS(audio_path("secret_catacombs.wav"));
-//
-//    if (m_background_music == nullptr)
-//    {
-//        fprintf(stderr, "Failed to load sound\n %s,%s\n make sure the data directory is present",
-//                audio_path("salmon_dead.wav"),
-//                audio_path("secret_catacombs.wav"));
-//        return;
-//    }
+    m_background_music = Mix_LoadMUS(audio_path("secret_catacombs.wav"));
+
+    if (m_background_music == nullptr)
+    {
+        fprintf(stderr, "Failed to load sound\n %s,%s\n make sure the data directory is present",
+                audio_path("salmon_dead.wav"),
+                audio_path("secret_catacombs.wav"));
+        return;
+    }
 //
 //    // Playing background music undefinitely
-//    Mix_PlayMusic(m_background_music, -1);
-//    Mix_VolumeMusic(50);
+    Mix_PlayMusic(m_background_music, -1);
+    Mix_VolumeMusic(50);
 //
-//    fprintf(stderr, "Loaded music\n");
+    fprintf(stderr, "Loaded music\n");
 
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
     glViewport(0, 0, w, h);
 
-    vec2 cameraCenter;
-    float txOffset = w / 2;
-    float tyOffset = h / 2;
-    cameraCenter = vec2({ txOffset, tyOffset});
 
-    mainMenu.init(cameraCenter);
+
+    m_water.init();
+
+    mainMenu.init(vec2({150.f, 650.f}));
+    initialize_camera_position(w, h);
 
 }
 
@@ -130,12 +138,21 @@ void MainMenuState::draw()
     float sy = 2.f * osScaleFactor / (top - bottom); //this is where you play around with the camera
 
     // initialize camera position
-    vec2 cameraCenter;
-    float txOffset = w / 2;
-    float tyOffset = h / 2;
+//    vec2 cameraCenter;
+    int camera_w, camera_h;
+    glfwGetWindowSize(m_window, &camera_w, &camera_h);
+
+    float txOffset = camera_w / 2;
+    float tyOffset = camera_h / 2;
     cameraCenter = vec2({ txOffset, tyOffset});
+
+    mainMenu.set_position(cameraCenter);
+
     tx = -cameraCenter.x;
     ty = -cameraCenter.y;
+//
+//    fprintf(stderr, "tx: %f\n", tx);
+//    fprintf(stderr, "ty: %f\n", ty);
 
     mat3 scaling_matrix = { {sx, 0.f, 0.f },
                             { 0.f, sy, 0.f },
@@ -153,7 +170,8 @@ void MainMenuState::draw()
     projection_2D = mul(projection_2D, scaling_matrix);
     projection_2D = mul(projection_2D, translation_matrix);
 
-    mainMenu.draw(projection_2D);
+    //m_water.draw(projection_2D);
+
     /////////////////////
     // Truely render to the screen
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -166,10 +184,12 @@ void MainMenuState::draw()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Bind our texture in Texture Unit 0
-//    glActiveTexture(GL_TEXTURE0);
-//    glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
 
     //////////////////
+
+    mainMenu.draw(projection_2D);
     // Presenting
     glfwSwapBuffers(m_window);
 }
@@ -181,13 +201,13 @@ bool MainMenuState::update(float elapsed_ms)
 
 void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
-    if (action == GLFW_PRESS) {
-        if (key == GLFW_KEY_ENTER) {
+    if (action == GLFW_PRESS && key == GLFW_KEY_ENTER) {
+
             Physics *physicsHandler = new Physics();
             Level* level = new Level(game);
 	        level->init(m_screen, physicsHandler, 0);
 	        game->push_state(level);
-        }
+
     }
 }
 
@@ -198,5 +218,13 @@ bool MainMenuState::is_over()
 
 void MainMenuState::destroy()
 {
+
+}
+
+void MainMenuState::initialize_camera_position(int w, int h)
+{
+        float txOffset = w / 2;
+        float tyOffset = h / 2;
+        cameraCenter = vec2({ txOffset, tyOffset});
 
 }
