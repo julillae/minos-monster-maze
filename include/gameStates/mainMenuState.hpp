@@ -1,3 +1,5 @@
+#pragma once
+
 #include "gameState.hpp"
 #include "../menus/mainMenu.hpp"
 #include "../level.hpp"
@@ -16,8 +18,11 @@ public:
     bool is_over()override;
     void destroy()override;
 
+    void initialize_camera_position(int w, int h);
+
 private:
     MainMenu mainMenu;
     Mix_Music* m_background_music;
+    RenderEffects m_water;
 
 };
