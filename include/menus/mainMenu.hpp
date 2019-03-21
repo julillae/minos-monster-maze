@@ -5,6 +5,7 @@
 
 class MainMenu : public Renderable
 {
+    static Texture texture;
 public:
 
     bool init(vec2 position);

@@ -24,7 +24,7 @@ MainMenuState::MainMenuState(Game *game)
 
 void MainMenuState::init(vec2 screen)
 {
-    fprintf(stderr, "hello1");
+    fprintf(stderr, "main menu init\n");
     this->m_window = game->m_window;
 
     // hack used to make sure the display for macOS with retina display issue is consistent with display on other systems
@@ -50,9 +50,6 @@ void MainMenuState::init(vec2 screen)
     m_frame_buffer = 0;
     glGenFramebuffers(1, &m_frame_buffer);
     glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
-
-    // Initialize the screen texture
-    m_screen_tex.create_from_screen(m_window);
 
     if (SDL_Init(SDL_INIT_AUDIO) < 0)
     {
@@ -80,11 +77,11 @@ void MainMenuState::init(vec2 screen)
                 audio_path("secret_catacombs.wav"));
         return;
     }
-//
-//    // Playing background music undefinitely
+
+    // Playing background music undefinitely
     Mix_PlayMusic(m_background_music, -1);
     Mix_VolumeMusic(50);
-//
+
     fprintf(stderr, "Loaded music\n");
 
     int w, h;
@@ -218,6 +215,14 @@ bool MainMenuState::is_over()
 
 void MainMenuState::destroy()
 {
+    glDeleteFramebuffers(1, &m_frame_buffer);
+
+    if (m_background_music != nullptr)
+        Mix_FreeMusic(m_background_music);
+
+    Mix_CloseAudio();
+
+    mainMenu.destroy();
 
 }
 
