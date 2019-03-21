@@ -1,12 +1,14 @@
 #include "../../include/menus/mainMenu.hpp"
 
+Texture MainMenu::texture;
+
 bool MainMenu::init(vec2 position)
 {
     const char* textureFile = textures_path("main-menu.png");
 
-    if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
+    if (!RenderManager::load_texture(textureFile, &texture, this)) return false;
 
-    if (!RenderManager::set_render_data(&m_texture, this)) return false;
+    if (!RenderManager::set_render_data(&texture, this)) return false;
 
     // Loading shaders
     if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
@@ -25,7 +27,7 @@ bool MainMenu::init(vec2 position)
 
 void MainMenu::draw(const mat3 &projection)
 {
-    RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &m_texture, this);
+    RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
 }
 
 void MainMenu::destroy()

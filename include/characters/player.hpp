@@ -5,6 +5,7 @@
 
 class Player : public Character
 {
+	static Texture texture;
 public:
 	// Creates all the associated render resources and default transform
 	bool init(vec2 initialPosition, Physics* physicsHandler)override;

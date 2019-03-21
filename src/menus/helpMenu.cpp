@@ -1,12 +1,14 @@
 #include "../../include/menus/helpMenu.hpp"
 
+Texture HelpMenu::texture;
+
 bool HelpMenu::init(vec2 position)
 {
     const char* textureFile = textures_path("help-menu.png");
 
-    if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
+    if (!RenderManager::load_texture(textureFile, &texture, this)) return false;
 
-    if (!RenderManager::set_render_data(&m_texture, this)) return false;
+    if (!RenderManager::set_render_data(&texture, this)) return false;
 
     // Loading shaders
     if (!effect.load_from_file(shader_path("menu.vs.glsl"), shader_path("menu.fs.glsl")))
@@ -42,7 +44,7 @@ void HelpMenu::draw(const mat3 &projection)
 
     // Enabling and binding texture to slot 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_texture.id);
+    glBindTexture(GL_TEXTURE_2D, texture.id);
 
     // Set opacity
     GLint is_hide_uloc = glGetUniformLocation(effect.program, "is_hide");
