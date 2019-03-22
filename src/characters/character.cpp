@@ -1,6 +1,8 @@
 // Header
 #include "../include/characters/character.hpp"
 #include "../include/physics.hpp"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 bool Character::init(vec2 initialPosition, Physics * physicsHandler) {
 	return false;
@@ -155,5 +157,27 @@ void Character::initStateTree()
 	};
 
 	characterState = new StateTree(edges, idle);
+}
+
+void Character::set_world_vertex_coord()
+{
+	vertex_coords.clear();
+	auto offset = static_cast<float>(sqrt(pow(width / 2, 2) + pow(height / 2, 2)));
+	float offsetAngle = atan2(height, width);
+
+	float x_pos = m_position.x;
+	float y_pos = m_position.y;
+
+	vec2 vert1 = { x_pos + offset * cosf(m_rotation + offsetAngle), y_pos + offset * sinf(m_rotation + offsetAngle) };
+	vec2 vert2 = { (x_pos + offset * cosf(static_cast<float>(m_rotation + M_PI - offsetAngle))),
+				  (y_pos + offset * sinf(static_cast<float>(m_rotation + M_PI - offsetAngle))) };
+	vec2 vert3 = { (x_pos + offset * cosf(static_cast<float>(m_rotation - M_PI + offsetAngle))),
+				  static_cast<float>(y_pos + offset * sin(m_rotation - M_PI + offsetAngle)) };
+	vec2 vert4 = { static_cast<float>(x_pos + offset * cos(m_rotation - offsetAngle)), static_cast<float>(y_pos + offset * sin(m_rotation - offsetAngle)) };
+
+	vertex_coords.push_back(vert1);
+	vertex_coords.push_back(vert2);
+	vertex_coords.push_back(vert3);
+	vertex_coords.push_back(vert4);
 }
 

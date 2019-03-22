@@ -72,8 +72,6 @@ public:
   
 	bool notZero(float f);
 
-    std::vector<vec2> getVertices(vec2 object, vec2 bounds, float rotation)const;
-
     std::vector<vec2> getAxes(std::vector<vec2> vertices)const;
 
     Projection getProjection(vec2 axis, std::vector<vec2> vertices)const;

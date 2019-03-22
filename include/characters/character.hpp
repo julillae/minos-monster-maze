@@ -82,6 +82,9 @@ public:
 	// Sets the correct sprite sheet tile for appropriate animation
 	virtual void set_animation() = 0;
 
+	// Sets the vertex coordinates in the world (should be called once per update)
+	void set_world_vertex_coord();
+
 	StateTree* characterState;
 	float width;
 	float height;
@@ -101,11 +104,6 @@ protected:
 	Physics* physicsHandler;
 	vec2 m_velocity;
 	vec2 m_acceleration;
-	vec2 m_position;
-	vec2 m_scale;
-
-	// rotational elements
-	float m_rotation; // in radians
 
 	// states
 	bool m_frozen;

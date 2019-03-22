@@ -110,12 +110,18 @@ struct Renderable
 	Mesh mesh;
 	Effect effect;
 	mat3 transform;
+	vec2 m_position;	// Window coordinates
+	vec2 m_scale;		// 1.f is as big as the associated texture
+	float m_rotation;	// in radians
 	std::vector<vec2> vertex_coords;
 	std::vector<vec3> local_vertex_coords;
 
 	// projection contains the orthographic projection matrix. As every Renderable::draw()
 	// renders itself it needs it to correctly bind it to its shader.
 	virtual void draw(const mat3& projection) = 0;
+
+	// sets the vertex coordinates of the object relative to the world
+	void set_world_vertex_coord();
 
 	// gets the vertex coordinates of the object
 	std::vector<vec2> get_vertex_coord();

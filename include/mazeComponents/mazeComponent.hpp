@@ -41,9 +41,6 @@ public:
 
 	float boundingCircleRadius;
 protected:
-	vec2 m_position; // Window coordinates
-	vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
-	float m_rotation; // in radians
 	float m_width;
 	float m_height;
     float drag;

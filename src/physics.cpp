@@ -37,33 +37,6 @@ bool rectToRectIntersection(vec2 r1, vec2 r2, vec2 bb1, vec2 bb2) {
     return fabs(dx) <= w && fabs(dy) <= h;
 }
 
-// Grab the vertices
-std::vector <vec2> Physics::getVertices(vec2 object, vec2 bounds, float rotation)const
-{
-
-    std::vector<vec2> verticesArr;
-    auto offset = static_cast<float>(sqrt(pow(bounds.x/2, 2) + pow(bounds.y/2, 2)));
-    float offsetAngle = atan2(bounds.y, bounds.x);
-
-    float x_pos = object.x;
-    float y_pos = object.y;
-
-    vec2 vert1 = {x_pos + offset * cosf(rotation + offsetAngle), y_pos + offset * sinf(rotation + offsetAngle)};
-    vec2 vert2 = {(x_pos + offset * cosf(static_cast<float>(rotation + M_PI - offsetAngle))),
-                  (y_pos + offset * sinf(static_cast<float>(rotation + M_PI - offsetAngle)))};
-    vec2 vert3 = {(x_pos + offset * cosf(static_cast<float>(rotation - M_PI + offsetAngle))),
-                  static_cast<float>(y_pos + offset * sin(rotation - M_PI + offsetAngle))};
-    vec2 vert4 = {static_cast<float>(x_pos + offset * cos(rotation - offsetAngle)), static_cast<float>(y_pos + offset * sin(rotation - offsetAngle))};
-
-    verticesArr.push_back(vert1);
-    verticesArr.push_back(vert2);
-    verticesArr.push_back(vert3);
-    verticesArr.push_back(vert4);
-
-    return verticesArr;
-
-}
-
 std::vector<vec2> Physics::getAxes(std::vector<vec2> vertices)const
 {
 
@@ -194,8 +167,9 @@ bool Physics::collideWithEnemy (Player *p, Enemy *e) {
 	bool broadBasedCollisionCheck = outerCircleToCircleIntersection(pPos, ePos, pRadius, eRadius);
 
 	if (broadBasedCollisionCheck) {
-		std::vector<vec2> playerVertexArray = getVertices(pPos, pBound, rotation);
-		std::vector<vec2> enemyVertexArray = getVertices(ePos, eBound, 0);
+		e->set_world_vertex_coord();
+		std::vector<vec2> enemyVertexArray = e->get_vertex_coord();
+		std::vector<vec2> playerVertexArray = p->get_vertex_coord();
 
 		isCollided = collisionWithGeometry(playerVertexArray, enemyVertexArray, pPos, ePos).isCollided;
 	}
@@ -212,7 +186,7 @@ bool Physics::collideWithExit (Player *p, Exit *e) {
 
 	bool broadBasedCollisionCheck = outerCircleToCircleIntersection(pPos, ePos, pRadius, eRadius);
 	if (broadBasedCollisionCheck) {
-		std::vector<vec2> playerVertexArray = getVertices(pPos, pBound, rotation);
+		std::vector<vec2> playerVertexArray = p->get_vertex_coord();
 		std::vector<vec2> exitVertexArray = e->get_vertex_coord();
 		isCollided = collisionWithGeometry(playerVertexArray, exitVertexArray, pPos, ePos).isCollided;
 	}
@@ -248,8 +222,9 @@ void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* f
 	float fRadius = fc->boundingCircleRadius;
 
     if (outerCircleToCircleIntersection(cPos, fPos, cRadius, fRadius)) {
-        std::vector<vec2> playArray = getVertices(cPos, cBound, rotation);
-        std::vector<vec2> fixedComponentArray = fc->get_vertex_coord();
+		c->set_world_vertex_coord();
+		std::vector<vec2> playArray = c->get_vertex_coord();
+		std::vector<vec2> fixedComponentArray = fc->get_vertex_coord();
 
 		MTV mtv = collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos);
 
