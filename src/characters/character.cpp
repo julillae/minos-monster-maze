@@ -20,6 +20,7 @@ void Character::set_dimensions(Texture* texture, float spriteSheetWidth, float s
 {
 	width = (texture->width / spriteSheetWidth - xTrim) * m_scale.x;
 	height = (texture->height / spriteSheetHeight - yTrim) * m_scale.y;
+	boundingCircleRadius = sqrtf(pow(0.5*width, 2.f) + pow(0.5*height, 2.f));
 }
 
 // Call if init() was successful

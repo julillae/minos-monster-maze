@@ -10,7 +10,6 @@ class FixedComponent : public MazeComponent
 {
 
 public:
-    bool init(vec2 position) = 0;
-
-	void draw(const mat3& projection) = 0;
+	void set_vertex_coord();
+	std::vector<vec2> get_vertex_coord();
 };
