@@ -19,7 +19,6 @@ bool Floor::init(vec2 position)
 
 	m_rotation = 0.f;
 	drag = 0.7;
-
 	return true;
 }
 
