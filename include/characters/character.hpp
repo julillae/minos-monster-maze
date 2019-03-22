@@ -85,6 +85,7 @@ public:
 	StateTree* characterState;
 	float width;
 	float height;
+	float boundingCircleRadius;
 	bool isOnPlatform;
 	// collision related fields
 	bool isBelowPlatform;

@@ -15,6 +15,11 @@ void FixedComponent::set_vertex_coord()
 
 		vertex_coords.push_back(vec2({ transformed.c0.x, transformed.c0.y }));
 	}
+	//terrible hack to set radius at this time,
+	//but this is where we're sure that the width and height have been properly set
+	//needed because code to set mazeComponent dimensions is all over the place
+	//eventually will refactor this out
+	boundingCircleRadius = sqrtf(pow(0.5*m_width, 2.f) + pow(0.5*m_height, 2.f));
 }
 
 std::vector<vec2> FixedComponent::get_vertex_coord()
