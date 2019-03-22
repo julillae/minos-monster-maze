@@ -74,7 +74,7 @@ bool Spikes::init(vec2 position)
     can_kill = true;
 	drag = 0.75f;
     set_dimensions();
-    set_vertex_coord();
+    set_collision_properties();
 
     return true;
 }
@@ -91,23 +91,23 @@ void Spikes::draw(const mat3& projection)
 void Spikes::set_left()
 {
 	set_rotation(-M_PI/2);
-	set_vertex_coord();
+	set_collision_properties();
 }
 
 void Spikes::set_right()
 {
     set_rotation(M_PI / 2);
-	set_vertex_coord();
+	set_collision_properties();
 }
 
 void Spikes::set_down()
 {
     set_rotation(M_PI);
-	set_vertex_coord();
+	set_collision_properties();
 }
 
 void Spikes::set_up()
 {
 	set_rotation(0);
-	set_vertex_coord();
+	set_collision_properties();
 }

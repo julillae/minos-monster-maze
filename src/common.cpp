@@ -308,6 +308,11 @@ void Effect::release()
   	glDeleteProgram(program);
 }
 
+void Renderable::set_world_vertex_coord()
+{
+	return;
+}
+
 std::vector<vec2> Renderable::get_vertex_coord()
 {
 	return vertex_coords;
