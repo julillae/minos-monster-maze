@@ -7,8 +7,6 @@
 
 bool Spikes::init(vec2 position)
 {
-
-
     // Reads the spikes mesh from a file, which contains a list of vertices and indices
     FILE* mesh_file = fopen(mesh_path("spike.mesh"), "r");
     if (mesh_file == nullptr)
@@ -27,6 +25,7 @@ bool Spikes::init(vec2 position)
         vertex.position = { x, y, -z };
         vertex.color = { (float)r / 255, (float)g / 255, (float)b / 255 };
         vertices.push_back(vertex);
+		local_vertex_coords.push_back(vertex.position);
     }
 
     // Reading associated indices
@@ -87,36 +86,6 @@ void Spikes::draw(const mat3& projection)
     RenderManager::draw_mesh(projection, m_position, m_rotation, m_scale, this,
                              color, m_num_indices);
 
-}
-
-void Spikes::set_dimensions()
-{
-    float min_x;
-    float max_x;
-    float min_y;
-    float max_y;
-
-    for (int i = 0; i < vertices.size(); i++) {
-        float vert_x = vertices[i].position.x;
-        float vert_y = vertices[i].position.y;
-
-        if (i == 0)
-        {
-            min_x = vert_x;
-            max_x = vert_x;
-            min_y = vert_y;
-            max_y = vert_y;
-        }
-
-        if (vert_x < min_x) min_x = vert_x;
-        if (vert_x > max_x) max_x = vert_x;
-        if (vert_y < min_y) min_y = vert_y;
-        if (vert_y > max_y) max_y = vert_y;
-
-    }
-
-    m_width = (max_x - min_x) * m_scale.x;
-    m_height = (max_y - min_y) * m_scale.y;
 }
 
 void Spikes::set_left()

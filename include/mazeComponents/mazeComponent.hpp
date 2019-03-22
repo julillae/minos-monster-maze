@@ -37,19 +37,12 @@ public:
 
     float get_drag();
 
-    void set_vertex_coord();
-	std::vector<vec2> get_vertex_coord();
-
     bool can_kill = false;
 protected:
 	vec2 m_position; // Window coordinates
 	vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
 	float m_rotation; // in radians
-	size_t m_num_indices; // passed to glDrawElements
 	float m_width;
 	float m_height;
     float drag;
-    std::vector<Vertex> vertices;
-    std::vector<uint16_t> indices;
-    std::vector<vec2> vertex_coords;
 };

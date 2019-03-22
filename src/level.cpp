@@ -122,6 +122,7 @@ bool Level::spawn_floor(vec2 position)
 		float y_scale = m_tile_height / textureSize.y;
 		floor.set_scale(vec2({x_scale, y_scale}));
 		floor.set_size(vec2({m_tile_width, m_tile_height}));
+		floor.set_vertex_coord();
 		m_floors.emplace_back(floor);
 		return true;
 	}
@@ -140,6 +141,7 @@ bool Level::spawn_ice(vec2 position)
 		float y_scale = m_tile_height / textureSize.y;
 		ice.set_scale(vec2({x_scale, y_scale}));
 		ice.set_size(vec2({m_tile_width, m_tile_height}));
+		ice.set_vertex_coord();
 		m_ice.emplace_back(ice);
 		return true;
 	}
