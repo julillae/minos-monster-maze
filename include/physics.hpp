@@ -3,12 +3,13 @@
 #include "../include/characters/enemy.hpp"
 #include "../include/characters/player.hpp"
 #include "../include/mazeComponents/floor.hpp"
+#include "../include/mazeComponents/spikes.hpp"
+#include "../include/mazeComponents/ice.hpp"
 #include "../include/mazeComponents/exit.hpp"
 
 #include <vector>
 #include <map>
 #include <list>
-#include <memory>
 
 class Physics
 {
@@ -46,14 +47,20 @@ public:
         }
     };
 
-    bool fastCollisionWithFixedComponent(Player *p, std::unique_ptr<FixedComponent> const &f);
+    bool fastCollisionWithFixedComponent(Player *p, FixedComponent *f);
 
-    bool collideWithEnemy(Player *p, std::unique_ptr<Enemy> const &t);
+    bool collideWithEnemy(Player *p, Enemy *e);
 
     bool collideWithExit (Player *p, const Exit *e);
 
-	// produces true if player collides with a fixed component that kills the player
-    bool characterCollisionsWithFixedComponents(Player *c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents);
+    bool isOnAtLeastOnePlatform = false;
+    bool isBelowAtLeastOnePlatform = false;
+
+	// checks for collisions and reacts appropriately
+    void characterCollisionsWithFloors(Player *c, std::vector<Floor> floors);
+    void characterCollisionsWithSpikes(Player *c, std::vector<Spikes> spikes);
+    void characterCollisionsWithIce(Player *c, std::vector<Ice> ice);
+    void characterCollisionsWithFixedComponent(Player *c, FixedComponent* fc);
 
 	void characterVelocityUpdate(Character *c);
 
