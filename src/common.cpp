@@ -308,6 +308,11 @@ void Effect::release()
   	glDeleteProgram(program);
 }
 
+std::vector<vec2> Renderable::get_vertex_coord()
+{
+	return vertex_coords;
+}
+
 void Renderable::transform_begin()
 {
 	transform = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };

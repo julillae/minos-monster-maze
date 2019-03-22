@@ -2,6 +2,7 @@
 
 // stlib
 #include <fstream> // stdout, stderr..
+#include <vector>
 
 // glfw
 #define NOMINMAX
@@ -109,10 +110,15 @@ struct Renderable
 	Mesh mesh;
 	Effect effect;
 	mat3 transform;
+	std::vector<vec2> vertex_coords;
+	std::vector<vec3> local_vertex_coords;
 
 	// projection contains the orthographic projection matrix. As every Renderable::draw()
 	// renders itself it needs it to correctly bind it to its shader.
 	virtual void draw(const mat3& projection) = 0;
+
+	// gets the vertex coordinates of the object
+	std::vector<vec2> get_vertex_coord();
 
 	// gl Immediate mode equivalent, see the Rendering and Transformations section in the
 	// specification pdf

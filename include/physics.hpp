@@ -51,7 +51,7 @@ public:
 
     bool collideWithEnemy(Player *p, Enemy *e);
 
-    bool collideWithExit (Player *p, const Exit *e);
+    bool collideWithExit (Player *p, Exit *e);
 
     bool isOnAtLeastOnePlatform = false;
     bool isBelowAtLeastOnePlatform = false;
