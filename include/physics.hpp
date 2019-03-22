@@ -47,8 +47,6 @@ public:
         }
     };
 
-    bool fastCollisionWithFixedComponent(Player *p, FixedComponent *f);
-
     bool collideWithEnemy(Player *p, Enemy *e);
 
     bool collideWithExit (Player *p, const Exit *e);
