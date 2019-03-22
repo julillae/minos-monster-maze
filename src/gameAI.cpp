@@ -35,7 +35,7 @@ vec2 GameAI::findLocationFromTile(TileCoord cell)
 {
     float tile_width = world.get_tile_width();
     float tile_height = world.get_tile_height();
-    vec2 result = vec2({(cell.second * tile_width + 1), (cell.first * tile_height + 1)});
+    vec2 result = vec2({(cell.second * tile_width), (cell.first * tile_height + tile_height/2)});
 
     return result;
 }
