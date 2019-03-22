@@ -10,6 +10,7 @@ class FixedComponent : public MazeComponent
 {
 
 public:
+    bool init(vec2 position) = 0;
 
-
+	void draw(const mat3& projection) = 0;
 };
