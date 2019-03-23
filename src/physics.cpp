@@ -4,6 +4,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cfloat>
+#include <map>
 
 // logic for gravity and potentially friction calculations go here
 
@@ -91,7 +92,7 @@ float Physics::getOverlap(Projection p1, Projection p2)
  * @param pos2
  * @return true if collided, false if not
  */
-Physics::MTV Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, const std::vector<vec2> &vertArr2, vec2 pos1, vec2 pos2)
+MTV Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, const std::vector<vec2> &vertArr2, vec2 pos1, vec2 pos2)
 {
 
     MTV mtv = MTV{};
@@ -214,8 +215,7 @@ void Physics::characterCollisionsWithIce(Player* c, std::vector<Ice> ice) {
     }
 }
 
-
-void mtvAdjustment(Player* c, Physics::MTV mtv) {
+void mtvAdjustment(Character* c, MTV mtv) {
 	vec2 normal = mtv.normal;
 	float magnitude = mtv.magnitude;
 
@@ -227,19 +227,25 @@ void mtvAdjustment(Player* c, Physics::MTV mtv) {
 	vec2 newPos = subtract(currentPos, translation);
 
 	c->set_position(newPos);
-	// add MTV to list of collision normals stored in Player
-	c->collisionNormals.push_back(mtv.normal);
+}
+
+void mtvAggregation(vector<MTV> mtvs, Character* c) {
+	std::map<pair<float, float>, MTV> mtvMap;
+	for (MTV mtv : mtvs) {
+		mtvMap.emplace(vec2ToPair(mtv.normal), mtv);
+	}
+	for (std::pair<pair<float, float>, MTV> element : mtvMap) {
+		mtvAdjustment(c, element.second);
+	}
 }
 
 void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* fc) {
     vec2 cPos = c->get_position();
     vec2 fPos = fc->get_position();
-    vec2 cBound = c->get_bounding_box();
 	float cRadius = c->boundingCircleRadius;
 	float fRadius = fc->boundingCircleRadius;
 
     if (outerCircleToCircleIntersection(cPos, fPos, cRadius, fRadius)) {
-		c->set_world_vertex_coord();
 		std::vector<vec2> playArray = c->get_vertex_coord();
 		std::vector<vec2> fixedComponentArray = fc->get_vertex_coord();
 
@@ -250,20 +256,7 @@ void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* f
 				c->kill();
 				return;
 			}
-			//vec2 normal = mtv.normal;
-			//float magnitude = mtv.magnitude;
-
-			//// grab the vector that pushes the player to the tangent of the platform
-			//vec2 translation = { normal.x * magnitude, normal.y * magnitude };
-
-			//vec2 currentPos = c->get_position();
-			//// translate the player
-			//vec2 newPos = subtract(currentPos, translation);
-
-			//c->set_position(newPos);
-			//// add MTV to list of collision normals stored in Player
-			//c->collisionNormals.push_back(mtv.normal);
-			mtvAdjustment(c, mtv);
+			c->collisionMTVs.push_back(mtv);
 
 			float dy = cPos.y - fPos.y;
 			float dx = fPos.x - cPos.x;
@@ -296,7 +289,11 @@ void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* f
 
 void Physics::characterVelocityUpdate(Character* c)
 {
+	mtvAggregation(c->collisionMTVs, c);
+	c->collisionMTVs.clear();
 	if (c->characterState->currentState != frozen) {
+		
+
 		float platformDrag = c->m_platform_drag;
 
 		vec2 cVelocity = c->get_velocity();

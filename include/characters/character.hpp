@@ -92,6 +92,7 @@ public:
 	bool isOnPlatform;
 	// collision related fields
 	bool isBelowPlatform;
+	std::vector<MTV> collisionMTVs;
 
 	// constants
 	float jumpVel = -12.5f;

@@ -23,13 +23,6 @@ public:
 	float rotation = 0.f;	// world rotation in radians
 	vec2 gravityAcc = {0.f,  9.81f * 0.06f };
 
-    struct MTV
-    {
-        vec2 normal;
-        float magnitude;
-        bool isCollided;
-    };
-
     struct Projection
     {
         Projection(float mi, float ma)
