@@ -161,8 +161,6 @@ bool Physics::collideWithEnemy (Player *p, Enemy *e) {
 	bool isCollided = false;
 	vec2 pPos = p->get_position();
 	vec2 ePos = e->get_position();
-	vec2 pBound = p->get_bounding_box();
-	vec2 eBound = e->get_bounding_box();
 	float pRadius = p->boundingCircleRadius;
 	float eRadius = e->boundingCircleRadius;
 	bool broadBasedCollisionCheck = outerCircleToCircleIntersection(pPos, ePos, pRadius, eRadius);
@@ -181,7 +179,6 @@ bool Physics::collideWithExit (Player *p, Exit *e) {
 	bool isCollided = false;
 	vec2 pPos = p->get_position();
 	vec2 ePos = e->get_position();
-	vec2 pBound = p->get_bounding_box();
 	float pRadius = p->boundingCircleRadius;
 	float eRadius = e->boundingCircleRadius;
 
@@ -274,12 +271,14 @@ void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* f
 			}
 			c->collisionMTVs.push_back(mtv);
 
-			float dy = cPos.y - fPos.y;
-			float dx = fPos.x - cPos.x;
-			float collisionAngle = atan2(dy, dx);
+			float dy = -mtv.normal.y;
+			float dx = mtv.normal.x;
+			vec2 collisionVector = vec2({ dx, dy });
+			vec2 rotatedCollisionVector = rotateVec(collisionVector, rotation);
+			float collisionAngle = atan2(rotatedCollisionVector.y, rotatedCollisionVector.x);
+
 			// logic needed to get new angle (collisionAngle + rotation) within
 			// the needed -pi to pi range
-			collisionAngle = static_cast<float>(fmod(collisionAngle + rotation, 2 * M_PI));
 			float anglePastPi = 0.f;
 			if (collisionAngle > M_PI) {
 				anglePastPi = static_cast<float>(collisionAngle - M_PI);
@@ -291,13 +290,10 @@ void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* f
 			}
 
 			// place player on platform
-			if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
+			if (collisionAngle > -7 * M_PI / 8 && collisionAngle < -M_PI / 8) {
 				c->set_on_platform();
 				isOnAtLeastOnePlatform = true;
 				c->m_platform_drag = fc->get_drag();
-			}
-			if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
-				isBelowAtLeastOnePlatform = true;
 			}
 		}
     }
@@ -329,18 +325,15 @@ void Physics::characterVelocityUpdate(Character* c)
 			c->characterState->changeState(rising);
 		}
 
-		if (isZero(cAcc.x) && c->isOnPlatform)
-			cVelocity.x *= platformDrag;
-
-		//if (c->isBelowPlatform) {
-		//	cVelocity.y = std::max(0.f, cVelocity.y);
-		//}
 		if (c->isOnPlatform) {
-			cVelocity.y = std::min(0.f, cVelocity.y);
-			if (isZero(cAcc.x))
+			if (isZero(cAcc.x)) {
 				c->characterState->changeState(idle);
-			else
+				cVelocity.x *= platformDrag;
+				cVelocity.y = std::min(0.f, cVelocity.y);
+			}
+			else {
 				c->characterState->changeState(running);
+			}
 		}
 		else {
 			if (cVelocity.y < 0)

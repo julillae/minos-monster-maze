@@ -45,7 +45,6 @@ public:
     bool collideWithExit (Player *p, Exit *e);
 
     bool isOnAtLeastOnePlatform = false;
-    bool isBelowAtLeastOnePlatform = false;
 
 	// checks for collisions and reacts appropriately
     void characterCollisionsWithFloors(Player *c, std::vector<Floor> floors);
