@@ -18,7 +18,6 @@ namespace
 MainMenuState::MainMenuState(Game *game)
 {
     this->game = game;
-//    this->m_window = game->m_window;
 
 }
 
@@ -39,12 +38,7 @@ void MainMenuState::init(vec2 screen)
     // Load OpenGL function pointers
     gl3w_init();
 
-    // Setting callbacks to member functions (that's why the redirect is needed)
-    // Input is handled using GLFW, for more info see
-    // http://www.glfw.org/docs/latest/input_guide.html
-    glfwSetWindowUserPointer(m_window, this);
-    auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((MainMenuState*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
-    glfwSetKeyCallback(m_window, key_redirect);
+    set_onKey();
 
     // Create a frame buffer
     m_frame_buffer = 0;
@@ -88,11 +82,12 @@ void MainMenuState::init(vec2 screen)
     glfwGetFramebufferSize(m_window, &w, &h);
     glViewport(0, 0, w, h);
 
+    initialPosition = vec2({static_cast<float>(w / 2), static_cast<float>(h / 2)});
 
-
-    m_water.init();
-
-    mainMenu.init(vec2({150.f, 650.f}));
+    mainMenu.init(initialPosition);
+    m_help_menu.init(initialPosition);
+    m_help_menu.set_visibility(false);
+    init_buttons();
     initialize_camera_position(w, h);
 
 }
@@ -147,9 +142,6 @@ void MainMenuState::draw()
 
     tx = -cameraCenter.x;
     ty = -cameraCenter.y;
-//
-//    fprintf(stderr, "tx: %f\n", tx);
-//    fprintf(stderr, "ty: %f\n", ty);
 
     mat3 scaling_matrix = { {sx, 0.f, 0.f },
                             { 0.f, sy, 0.f },
@@ -166,8 +158,6 @@ void MainMenuState::draw()
 
     projection_2D = mul(projection_2D, scaling_matrix);
     projection_2D = mul(projection_2D, translation_matrix);
-
-    //m_water.draw(projection_2D);
 
     /////////////////////
     // Truely render to the screen
@@ -187,30 +177,102 @@ void MainMenuState::draw()
     //////////////////
 
     mainMenu.draw(projection_2D);
+    continueButton.draw(projection_2D);
+    newGameButton.draw(projection_2D);
+    controlsButton.draw(projection_2D);
+    quitButton.draw(projection_2D);
+    m_help_menu.draw(projection_2D);
     // Presenting
     glfwSwapBuffers(m_window);
 }
 
 bool MainMenuState::update(float elapsed_ms)
 {
-
+    return true;
 }
 
 void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
-    if (action == GLFW_PRESS && key == GLFW_KEY_ENTER) {
+    if (action == GLFW_PRESS) {
+        if (key == GLFW_KEY_ENTER)
+        {
+            switch (currentButton->buttonName)
+            {
+                case CONTROLS:
+                    show_help_menu = true;
+                    m_help_menu.set_visibility(show_help_menu);
+                    break;
+                case QUIT:
+                    close = true;
+                    break;
+                default:
+                    Physics *physicsHandler = new Physics();
+                    Level* level = new Level(game);
+                    level->init(m_screen, physicsHandler, 0);
+                    game->push_state(level);
+                    game->set_current_state(level);
+                    break;
+            }
 
-            Physics *physicsHandler = new Physics();
-            Level* level = new Level(game);
-	        level->init(m_screen, physicsHandler, 0);
-	        game->push_state(level);
+        }
+
+        if (key == GLFW_KEY_DOWN && !show_help_menu)
+        {
+            switch (currentButton->buttonName)
+            {
+                case CONTINUE:
+                    set_currentButton(&newGameButton);
+                    break;
+                case NEWGAME:
+                    set_currentButton(&controlsButton);
+                    break;
+                case CONTROLS:
+                    set_currentButton(&quitButton);
+                    break;
+                default:
+                    set_currentButton(&continueButton);
+                    break;
+            }
+        }
+
+        if (key == GLFW_KEY_UP && !show_help_menu)
+        {
+            switch (currentButton->buttonName)
+            {
+                case CONTINUE:
+                    set_currentButton(&quitButton);
+                    break;
+                case NEWGAME:
+                    set_currentButton(&continueButton);
+                    break;
+                case CONTROLS:
+                    set_currentButton(&newGameButton);
+                    break;
+                default:
+                    set_currentButton(&controlsButton);
+                    break;
+            }
+        }
+
+        if (key == GLFW_KEY_ESCAPE)
+        {
+            switch (currentButton->buttonName)
+            {
+                case CONTROLS:
+                    show_help_menu = false;
+                    m_help_menu.set_visibility(show_help_menu);
+                    break;
+                default:
+                    break;
+            }
+        }
 
     }
 }
 
 bool MainMenuState::is_over()
 {
-    return glfwWindowShouldClose(m_window);
+    return glfwWindowShouldClose(m_window) || close;
 }
 
 void MainMenuState::destroy()
@@ -232,4 +294,27 @@ void MainMenuState::initialize_camera_position(int w, int h)
         float tyOffset = h / 2;
         cameraCenter = vec2({ txOffset, tyOffset});
 
+}
+
+void MainMenuState::init_buttons()
+{
+    float buttonX = initialPosition.x / 2;
+    float buttonY = initialPosition.y - 75;
+    float buttonOffset = 75.f;
+
+
+    continueButton.init(vec2({buttonX - 94, buttonY}));
+    continueButton.set_selected(true);
+    currentButton = &continueButton;
+    newGameButton.init(vec2({buttonX - 86, buttonY + buttonOffset}));
+    controlsButton.init(vec2({buttonX - 90, buttonY + buttonOffset * 2}));
+    quitButton.init(vec2({buttonX - 157, buttonY + buttonOffset * 3}));
+
+}
+
+void MainMenuState::set_currentButton(Menu* button)
+{
+    currentButton->set_selected(false);
+    button->set_selected(true);
+    currentButton = button;
 }

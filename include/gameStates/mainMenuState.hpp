@@ -2,6 +2,10 @@
 
 #include "gameState.hpp"
 #include "../menus/mainMenu.hpp"
+#include "../menus/continueButton.hpp"
+#include "../menus/newGameButton.hpp"
+#include "../menus/controlsButton.hpp"
+#include "../menus/quitButton.hpp"
 #include "../level.hpp"
 
 class MainMenuState : public GameState
@@ -20,9 +24,25 @@ public:
 
     void initialize_camera_position(int w, int h);
 
+    void init_buttons();
+    void set_currentButton(Menu* button);
+
 private:
     MainMenu mainMenu;
+    Menu* currentButton;
+
+    // menu buttons
+    ContinueButton continueButton;
+    NewGameButton newGameButton;
+    ControlsButton controlsButton;
+    QuitButton quitButton;
+    bool show_help_menu = false;
+
+    HelpMenu m_help_menu;
+
     Mix_Music* m_background_music;
-    RenderEffects m_water;
+    vec2 initialPosition;
+
+    bool close = false;
 
 };

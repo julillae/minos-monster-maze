@@ -272,14 +272,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	// Load OpenGL function pointers
 	gl3w_init();
 
-	// Setting callbacks to member functions (that's why the redirect is needed)
-	// Input is handled using GLFW, for more info see
-	// http://www.glfw.org/docs/latest/input_guide.html
-	glfwSetWindowUserPointer(m_window, this);
-	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((Level*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
-	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((Level*)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1); };
-	glfwSetKeyCallback(m_window, key_redirect);
-	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
+	set_onKey();
 
 	// Create a frame buffer
 	m_frame_buffer = 0;
@@ -604,6 +597,12 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 			rotateCWKey = GLFW_KEY_S;
 			rotateCCWKey = GLFW_KEY_A;
 			m_player.jumpKey = GLFW_KEY_SPACE;
+		}
+
+		//TODO: make pause menu
+		if (key == GLFW_KEY_ESCAPE) {
+			GameState* mainMenuState = game->get_states().front();
+		    game->set_current_state(mainMenuState);
 		}
 	}
 

@@ -121,6 +121,7 @@ int main(int argc, char* argv[])
 	//MainMenuState* mainMenuState = new MainMenuState(&game);
 	mmState->init(screen);
 	game.push_state(mmState);
+	game.set_current_state(mmState);
 	game.game_loop();
 
 	return EXIT_SUCCESS;

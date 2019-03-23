@@ -63,20 +63,6 @@ void HelpMenu::draw(const mat3 &projection)
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void HelpMenu::destroy()
-{
-    glDeleteBuffers(1, &mesh.vbo);
-    glDeleteBuffers(1, &mesh.ibo);
-    glDeleteVertexArrays(1, &mesh.vao);
-
-    effect.release();
-}
-
-void HelpMenu::set_position(vec2 position)
-{
-    m_position = position;
-}
-
 void HelpMenu::set_visibility(bool show)
 {
 
