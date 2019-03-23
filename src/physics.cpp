@@ -229,14 +229,30 @@ void mtvAdjustment(Character* c, MTV mtv) {
 	c->set_position(newPos);
 }
 
-void mtvAggregation(vector<MTV> mtvs, Character* c) {
+vector<MTV> mtvAggregation(vector<MTV> mtvs, Character* c) {
 	std::map<pair<float, float>, MTV> mtvMap;
+	vector<MTV> normals;
 	for (MTV mtv : mtvs) {
 		mtvMap.emplace(vec2ToPair(mtv.normal), mtv);
 	}
 	for (std::pair<pair<float, float>, MTV> element : mtvMap) {
 		mtvAdjustment(c, element.second);
+		normals.push_back(element.second);
 	}
+	return normals;
+}
+
+vec2 adjustVelocity(vec2 velocity, vector<MTV> mtvs) {
+	float velocityX = velocity.x;
+	float velocityY = velocity.y;
+
+	for (MTV mtv : mtvs) {
+		//if (mtv.magnitude > 0) {
+			if (fabs(velocityX - mtv.normal.x) < fabs(velocityX)) velocityX = 0;
+			if (fabs(velocityY - mtv.normal.y) < fabs(velocityY)) velocityY = 0;
+		//}
+	}
+	return vec2({ velocityX, velocityY });
 }
 
 void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* fc) {
@@ -289,10 +305,9 @@ void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* f
 
 void Physics::characterVelocityUpdate(Character* c)
 {
-	mtvAggregation(c->collisionMTVs, c);
+	vector<MTV> uniqueMTVs = mtvAggregation(c->collisionMTVs, c);
 	c->collisionMTVs.clear();
 	if (c->characterState->currentState != frozen) {
-		
 
 		float platformDrag = c->m_platform_drag;
 
@@ -317,9 +332,9 @@ void Physics::characterVelocityUpdate(Character* c)
 		if (isZero(cAcc.x) && c->isOnPlatform)
 			cVelocity.x *= platformDrag;
 
-		if (c->isBelowPlatform) {
-			cVelocity.y = std::max(0.f, cVelocity.y);
-		}
+		//if (c->isBelowPlatform) {
+		//	cVelocity.y = std::max(0.f, cVelocity.y);
+		//}
 		if (c->isOnPlatform) {
 			cVelocity.y = std::min(0.f, cVelocity.y);
 			if (isZero(cAcc.x))
@@ -336,6 +351,7 @@ void Physics::characterVelocityUpdate(Character* c)
 
 		// rotate back to current rotation
 		cVelocity = rotateVec(cVelocity, rotation);
+		cVelocity = adjustVelocity(cVelocity, uniqueMTVs);
 		c->set_velocity(cVelocity);
 	}
 }
