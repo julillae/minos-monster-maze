@@ -375,7 +375,6 @@ void Level::check_platform_collisions() {
 		physicsHandler->characterCollisionsWithIce(&m_player, m_ice);
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
-		m_player.isBelowPlatform = physicsHandler->isBelowAtLeastOnePlatform;
 
 		if (!m_player.is_alive()) {
 			Mix_PlayChannel(-1, m_player_dead_sound, 0);
@@ -383,7 +382,6 @@ void Level::check_platform_collisions() {
 		}
 
 		physicsHandler->isOnAtLeastOnePlatform = false;
-		physicsHandler->isBelowAtLeastOnePlatform = false;
 	}
 }
 

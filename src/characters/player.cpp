@@ -27,7 +27,7 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 
 	float spriteSheetWidth = 8.0f;
 	float spriteSheetHeight = 5.0f;
-	int horizontalTrim = 7;
+	int horizontalTrim = 8;
 	int verticalTrim = 7;
 	set_properties(initialPosition, 2.0f, 0.f);
 	set_dimensions(&m_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
@@ -202,7 +202,7 @@ void Player::set_world_vertex_coord()
 	vertex_coords.clear();
 	float x_pos = m_position.x;
 	float y_pos = m_position.y;
-	bool useDiamondCollisionBox = false;
+	bool useDiamondCollisionBox = true;
 
 	if (useDiamondCollisionBox) {
 		vec2 top = { x_pos, (y_pos - height / 2) };
