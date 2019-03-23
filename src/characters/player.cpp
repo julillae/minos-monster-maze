@@ -65,7 +65,6 @@ void Player::update(float ms)
 	physicsHandler->characterAccelerationUpdate(this);
 	physicsHandler->characterVelocityUpdate(this);
 	if (is_alive()) move();
-	collisionNormals.clear();
 }
 
 void Player::draw(const mat3& projection)
@@ -191,10 +190,6 @@ void Player::set_animation()
 bool Player::can_jump()
 {
 	return characterState->getStateChangeCost(jumping).first;
-}
-
-std::vector<vec2> Player::getCollisionNormals() {
-	return collisionNormals;
 }
 
 void Player::set_world_vertex_coord()

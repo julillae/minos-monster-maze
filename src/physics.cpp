@@ -244,10 +244,8 @@ vec2 adjustVelocity(vec2 velocity, vector<MTV> mtvs) {
 	float velocityY = velocity.y;
 
 	for (MTV mtv : mtvs) {
-		//if (mtv.magnitude > 0) {
-			if (fabs(velocityX - mtv.normal.x) < fabs(velocityX)) velocityX = 0;
-			if (fabs(velocityY - mtv.normal.y) < fabs(velocityY)) velocityY = 0;
-		//}
+		if (fabs(velocityX - mtv.normal.x) < fabs(velocityX)) velocityX = 0;
+		if (fabs(velocityY - mtv.normal.y) < fabs(velocityY)) velocityY = 0;
 	}
 	return vec2({ velocityX, velocityY });
 }
