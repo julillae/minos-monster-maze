@@ -369,6 +369,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 
 void Level::check_platform_collisions() {
 	if (m_player.is_alive()) {
+		m_player.set_world_vertex_coord();
 		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes);
 		physicsHandler->characterCollisionsWithFloors(&m_player, m_floors);
 		physicsHandler->characterCollisionsWithIce(&m_player, m_ice);

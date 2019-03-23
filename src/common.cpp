@@ -120,6 +120,11 @@ vec2 scalarMultiply(vec2 v, float s)
 	return vec2({v.x * s, v.y * s});
 }
 
+std::pair<float, float> vec2ToPair(vec2 v)
+{
+	return make_pair(v.x, v.y);
+}
+
 // Given, a starting and ending position, and a starting and ending slope,
 // and a point (a float between 0 and 1) on a [0,1] interval
 // gives the interpolated position at that point on the interval
