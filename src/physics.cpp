@@ -214,6 +214,23 @@ void Physics::characterCollisionsWithIce(Player* c, std::vector<Ice> ice) {
     }
 }
 
+
+void mtvAdjustment(Player* c, Physics::MTV mtv) {
+	vec2 normal = mtv.normal;
+	float magnitude = mtv.magnitude;
+
+	// grab the vector that pushes the player to the tangent of the platform
+	vec2 translation = { normal.x * magnitude, normal.y * magnitude };
+
+	vec2 currentPos = c->get_position();
+	// translate the player
+	vec2 newPos = subtract(currentPos, translation);
+
+	c->set_position(newPos);
+	// add MTV to list of collision normals stored in Player
+	c->collisionNormals.push_back(mtv.normal);
+}
+
 void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* fc) {
     vec2 cPos = c->get_position();
     vec2 fPos = fc->get_position();
@@ -233,22 +250,23 @@ void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* f
 				c->kill();
 				return;
 			}
-			vec2 normal = mtv.normal;
-			float magnitude = mtv.magnitude;
+			//vec2 normal = mtv.normal;
+			//float magnitude = mtv.magnitude;
 
-			// grab the vector that pushes the player to the tangent of the platform
-			vec2 translation = { normal.x * magnitude, normal.y * magnitude };
+			//// grab the vector that pushes the player to the tangent of the platform
+			//vec2 translation = { normal.x * magnitude, normal.y * magnitude };
 
-			vec2 currentPos = c->get_position();
-			// translate the player
-			vec2 newPos = subtract(currentPos, translation);
+			//vec2 currentPos = c->get_position();
+			//// translate the player
+			//vec2 newPos = subtract(currentPos, translation);
 
-			c->set_position(newPos);
-			// add MTV to list of collision normals stored in Player
-			c->collisionNormals.push_back(mtv.normal);
+			//c->set_position(newPos);
+			//// add MTV to list of collision normals stored in Player
+			//c->collisionNormals.push_back(mtv.normal);
+			mtvAdjustment(c, mtv);
 
-			float dy = newPos.y - fPos.y;
-			float dx = fPos.x - newPos.x;
+			float dy = cPos.y - fPos.y;
+			float dx = fPos.x - cPos.x;
 			float collisionAngle = atan2(dy, dx);
 			// logic needed to get new angle (collisionAngle + rotation) within
 			// the needed -pi to pi range
