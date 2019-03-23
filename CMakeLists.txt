@@ -56,6 +56,11 @@ set(SOURCE_FILES
     src/game.cpp
     src/gameStates/mainMenuState.cpp
     src/menus/mainMenu.cpp
+    src/menus/menu.cpp
+    src/menus/continueButton.cpp
+    src/menus/newGameButton.cpp
+    src/menus/controlsButton.cpp
+    src/menus/quitButton.cpp
     
 
     include/project_path.hpp
@@ -86,6 +91,11 @@ set(SOURCE_FILES
     include/gameStates/gameState.hpp
     include/gameStates/mainMenuState.hpp
     include/menus/mainMenu.hpp
+    include/menus/menu.hpp
+    include/menus/continueButton.hpp
+    include/menus/newGameButton.hpp
+    include/menus/controlsButton.hpp
+    include/menus/quitButton.hpp
     
 	)
 

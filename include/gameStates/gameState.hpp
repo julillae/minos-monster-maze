@@ -13,6 +13,13 @@ public:
     virtual void on_key(GLFWwindow*, int key, int, int action, int mod) = 0;
     virtual bool is_over() = 0;
     virtual void destroy() = 0;
+
+    void set_onKey() {
+        glfwSetWindowUserPointer(m_window, this);
+        auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((GameState*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
+        glfwSetKeyCallback(m_window, key_redirect);
+    }
+
 protected:
     // Window handle
     GLFWwindow* m_window;

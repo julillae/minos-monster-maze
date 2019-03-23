@@ -123,7 +123,7 @@ GameState* Game::current_state()
     if (states.empty())
         return nullptr;
     else
-        return states.back();
+        return currentState;
 }
 
 void Game::game_loop()
@@ -150,4 +150,15 @@ void Game::game_loop()
 		}
 		current_state()->draw();
 	}
+}
+
+std::vector<GameState*> Game::get_states()
+{
+    return states;
+}
+
+void Game::set_current_state(GameState* currState)
+{
+    currentState = currState;
+    currentState->set_onKey();
 }

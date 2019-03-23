@@ -2,9 +2,9 @@
 
 #include "../common.hpp"
 #include "../renderManager.hpp"
-#include "../menus/menu.hpp"
+#include "menu.hpp"
 
-class HelpMenu : public Menu
+class ControlsButton : public Menu
 {
     static Texture texture;
 public:
@@ -12,10 +12,5 @@ public:
     bool init(vec2 position);
 
     void draw(const mat3& projection)override;
-
-    void set_visibility(bool show);
-
-private:
-    float is_hide; // 0.f if show, 1.f if hide
 
 };

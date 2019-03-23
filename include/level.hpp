@@ -17,6 +17,7 @@
 #include "physics.hpp"
 #include "menus/helpMenu.hpp"
 #include "gameStates/gameState.hpp"
+#include "gameStates/mainMenuState.hpp"
 
 // stlib
 #include <vector>

@@ -30,6 +30,8 @@ public:
     void pop_state();
 
     GameState* current_state();
+    std::vector<GameState*> get_states();
+    void set_current_state(GameState* currState);
 
     void game_loop();
 
@@ -38,15 +40,10 @@ public:
 
 private:
 
-    // Part of hack needed to deal with the MacOs Retina Display issue where it doubles the pixels rendered
-    float osScaleFactor = 1.f;
-
-    // Screen texture
-    // The draw loop first renders to this texture, then it is used for the water shader
     GLuint m_frame_buffer;
 
-    Mix_Music* m_background_music;
+    std::vector<GameState*> states; //TODO: use a map and create enum for different states
 
-    std::vector<GameState*> states;
+    GameState* currentState;
 
 };

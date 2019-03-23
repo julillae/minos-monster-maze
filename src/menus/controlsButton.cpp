@@ -1,10 +1,10 @@
-#include "../../include/menus/mainMenu.hpp"
+#include "../../include/menus/controlsButton.hpp"
 
-Texture MainMenu::texture;
+Texture ControlsButton::texture;
 
-bool MainMenu::init(vec2 position)
+bool ControlsButton::init(vec2 position)
 {
-    const char* textureFile = textures_path("main-menu.png");
+    const char* textureFile = textures_path("controls-button.png");
 
     if (!RenderManager::load_texture(textureFile, &texture, this)) return false;
 
@@ -17,17 +17,18 @@ bool MainMenu::init(vec2 position)
     set_position(position);
 
     // Setting initial values, scale is negative to make it face the opposite way
-    m_scale.x = 0.51f;
-    m_scale.y = 0.51f;
+    m_scale.x = 1.f;
+    m_scale.y = 1.f;
     m_rotation = 0.f;
+    buttonName = CONTROLS;
 
     return true;
 
 }
 
-void MainMenu::draw(const mat3 &projection)
+void ControlsButton::draw(const mat3 &projection)
 {
-    RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
+    draw_button(projection, &texture, isSelected);
 }
 
 

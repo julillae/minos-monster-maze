@@ -1,10 +1,10 @@
-#include "../../include/menus/mainMenu.hpp"
+#include "../../include/menus/newGameButton.hpp"
 
-Texture MainMenu::texture;
+Texture NewGameButton::texture;
 
-bool MainMenu::init(vec2 position)
+bool NewGameButton::init(vec2 position)
 {
-    const char* textureFile = textures_path("main-menu.png");
+    const char* textureFile = textures_path("new-game-button.png");
 
     if (!RenderManager::load_texture(textureFile, &texture, this)) return false;
 
@@ -17,17 +17,18 @@ bool MainMenu::init(vec2 position)
     set_position(position);
 
     // Setting initial values, scale is negative to make it face the opposite way
-    m_scale.x = 0.51f;
-    m_scale.y = 0.51f;
+    m_scale.x = 1.f;
+    m_scale.y = 1.f;
     m_rotation = 0.f;
+    buttonName = NEWGAME;
 
     return true;
 
 }
 
-void MainMenu::draw(const mat3 &projection)
+void NewGameButton::draw(const mat3 &projection)
 {
-    RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
+    draw_button(projection, &texture, isSelected);
 }
 
 
