@@ -36,6 +36,8 @@ public:
 
 	std::vector<vec2> getCollisionNormals();
 
+	void set_world_vertex_coord();
+
 	bool keyMappingSetA=true;
 	int jumpKey = GLFW_KEY_UP;
 
