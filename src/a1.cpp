@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 {
 	// Initializing world (after renderer.init().. sorry)
 	Physics *physicsHandler = new Physics();
-	int startLevel = 3;
+	int startLevel = 0;
 	if (!world.init({ (float)width, (float)height }, physicsHandler, startLevel))
 	{
 		// Time to read the error message
