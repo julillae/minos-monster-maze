@@ -1,3 +1,4 @@
+#include <math.h>
 #include "../include/mazeComponents/fixedComponent.hpp"
 
 // Put implementation specific to fixed maze components here
@@ -20,7 +21,7 @@ void FixedComponent::set_world_vertex_coord()
 void FixedComponent::set_collision_properties()
 {
 	set_world_vertex_coord();
-	boundingCircleRadius = sqrtf(pow(0.5*m_width, 2.f) + pow(0.5*m_height, 2.f));
+	boundingCircleRadius = sqrtf(static_cast<float>(pow(0.5 * m_width, 2.f) + pow(0.5 * m_height, 2.f)));
 }
 
 std::vector<vec2> FixedComponent::get_vertex_coord()

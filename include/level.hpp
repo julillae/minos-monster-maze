@@ -17,6 +17,7 @@
 #include "physics.hpp"
 #include "helpMenu.hpp"
 #include "levelLoader.hpp"
+#include "quadTree.hpp"
 
 // stlib
 #include <vector>
@@ -159,4 +160,7 @@ private:
     bool show_help_menu = false;
 	bool cameraTracking = true;
 	bool canRotate = true;
+
+	QuadTreeNode m_quad = QuadTreeNode(0, initialPosition, m_maze_width, m_maze_height);
+
 };
