@@ -1,16 +1,15 @@
 #pragma once
 
 #include "gameState.hpp"
-#include "../menus/mainMenu.hpp"
+#include "../menus/levelSelectMenu.hpp"
 #include "../level.hpp"
 #include "../menus/button.hpp"
-#include "../menus/mainButton.hpp"
-#include "levelSelectState.hpp"
+#include "../menus/levelButton.hpp"
 
-class MainMenuState : public GameState
+class LevelSelectState : public GameState
 {
 public:
-    MainMenuState(Game* game);
+    LevelSelectState(Game* game);
 
     void init(vec2 screen);
 
@@ -24,20 +23,18 @@ public:
     void initialize_camera_position(int w, int h);
 
     void init_buttons();
-    void set_currentButton(MainButton* button);
+    void set_currentButton(LevelButton* button);
 
 private:
-    MainMenu mainMenu;
-    MainButton* currentButton;
+    LevelSelectMenu levelSelectMenu;
+    LevelButton* currentButton;
 
     // menu buttons
-    MainButton continueButton;
-    MainButton newGameButton;
-    MainButton controlsButton;
-    MainButton quitButton;
-    bool show_help_menu = false;
+    LevelButton* levelButtons[3];
 
-    HelpMenu m_help_menu;
+    LevelButton level1Button;
+    LevelButton level2Button;
+    LevelButton level3Button;
 
     Mix_Music* m_background_music;
     vec2 initialPosition;

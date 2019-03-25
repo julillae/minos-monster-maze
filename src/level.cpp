@@ -263,6 +263,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 {
 	this->physicsHandler = physicsHandler;
 	this->m_window = game->m_window;
+	name = LEVEL;
 
 	// hack used to make sure the display for macOS with retina display issue is consistent with display on other systems
 	int testWidth;
@@ -601,7 +602,7 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 		//TODO: make pause menu
 		if (key == GLFW_KEY_ESCAPE) {
-			GameState* mainMenuState = game->get_states().front();
+			GameState* mainMenuState = game->get_states().find(MAIN)->second;
 		    game->set_current_state(mainMenuState);
 		}
 	}

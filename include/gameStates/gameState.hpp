@@ -20,6 +20,8 @@ public:
         glfwSetKeyCallback(m_window, key_redirect);
     }
 
+    gameStates name;
+
 protected:
     // Window handle
     GLFWwindow* m_window;

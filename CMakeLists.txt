@@ -55,12 +55,13 @@ set(SOURCE_FILES
     src/menus/helpMenu.cpp
     src/game.cpp
     src/gameStates/mainMenuState.cpp
+    src/gameStates/levelSelectState.cpp
     src/menus/mainMenu.cpp
     src/menus/menu.cpp
-    src/menus/continueButton.cpp
-    src/menus/newGameButton.cpp
-    src/menus/controlsButton.cpp
-    src/menus/quitButton.cpp
+    src/menus/button.cpp
+    src/menus/levelSelectMenu.cpp
+    src/menus/levelButton.cpp
+    src/menus/mainButton.cpp
     
 
     include/project_path.hpp
@@ -90,12 +91,13 @@ set(SOURCE_FILES
     include/game.hpp
     include/gameStates/gameState.hpp
     include/gameStates/mainMenuState.hpp
+    include/gameStates/levelSelectState.hpp
     include/menus/mainMenu.hpp
     include/menus/menu.hpp
-    include/menus/continueButton.hpp
-    include/menus/newGameButton.hpp
-    include/menus/controlsButton.hpp
-    include/menus/quitButton.hpp
+    include/menus/button.hpp
+    include/menus/levelSelectMenu.hpp
+    include/menus/levelButton.hpp
+    include/menus/mainButton.hpp
     
 	)
 
