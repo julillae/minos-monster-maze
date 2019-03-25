@@ -122,7 +122,7 @@ bool Level::spawn_floor(vec2 position)
 		float y_scale = m_tile_height / textureSize.y;
 		floor.set_scale(vec2({x_scale, y_scale}));
 		floor.set_size(vec2({m_tile_width, m_tile_height}));
-		floor.set_vertex_coord();
+		floor.set_collision_properties();
 		m_floors.emplace_back(floor);
 		return true;
 	}
@@ -141,7 +141,7 @@ bool Level::spawn_ice(vec2 position)
 		float y_scale = m_tile_height / textureSize.y;
 		ice.set_scale(vec2({x_scale, y_scale}));
 		ice.set_size(vec2({m_tile_width, m_tile_height}));
-		ice.set_vertex_coord();
+		ice.set_collision_properties();
 		m_ice.emplace_back(ice);
 		return true;
 	}
@@ -369,12 +369,12 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 
 void Level::check_platform_collisions() {
 	if (m_player.is_alive()) {
+		m_player.set_world_vertex_coord();
 		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes);
 		physicsHandler->characterCollisionsWithFloors(&m_player, m_floors);
 		physicsHandler->characterCollisionsWithIce(&m_player, m_ice);
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
-		m_player.isBelowPlatform = physicsHandler->isBelowAtLeastOnePlatform;
 
 		if (!m_player.is_alive()) {
 			Mix_PlayChannel(-1, m_player_dead_sound, 0);
@@ -382,7 +382,6 @@ void Level::check_platform_collisions() {
 		}
 
 		physicsHandler->isOnAtLeastOnePlatform = false;
-		physicsHandler->isBelowAtLeastOnePlatform = false;
 	}
 }
 
@@ -418,7 +417,7 @@ bool Level::update(float elapsed_ms)
 	vec2 screen = { (float)w, (float)h };
 	bool applyFreeze = false;
 	bool applyThaw = false;
-
+	m_player.set_rotation(rotation);
 	physicsHandler->updateWorldRotation(rotation);
 
 	// freezes and unfreezes character for rotation
@@ -474,7 +473,6 @@ bool Level::update(float elapsed_ms)
 	// checking player - platform collision
 	check_platform_collisions();
 
-	m_player.set_rotation(rotation);
 	if (applyFreeze) {
 		m_player.freeze();
 		freeze_all_enemies();

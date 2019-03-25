@@ -23,13 +23,6 @@ public:
 	float rotation = 0.f;	// world rotation in radians
 	vec2 gravityAcc = {0.f,  9.81f * 0.06f };
 
-    struct MTV
-    {
-        vec2 normal;
-        float magnitude;
-        bool isCollided;
-    };
-
     struct Projection
     {
         Projection(float mi, float ma)
@@ -52,7 +45,6 @@ public:
     bool collideWithExit (Player *p, Exit *e);
 
     bool isOnAtLeastOnePlatform = false;
-    bool isBelowAtLeastOnePlatform = false;
 
 	// checks for collisions and reacts appropriately
     void characterCollisionsWithFloors(Player *c, std::vector<Floor> floors);
@@ -71,8 +63,6 @@ public:
 	bool isZero(float f);
   
 	bool notZero(float f);
-
-    std::vector<vec2> getVertices(vec2 object, vec2 bounds, float rotation)const;
 
     std::vector<vec2> getAxes(std::vector<vec2> vertices)const;
 

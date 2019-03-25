@@ -23,7 +23,7 @@ bool Exit::init(vec2 position)
 	m_rotation = 0.f;
 
     set_size();
-	set_vertex_coord();
+	set_collision_properties();
 	return true;
 }
 

@@ -40,6 +40,7 @@ vec2  negateVec(vec2 v);
 float vecLength(vec2 v);
 vec2 rotateVec(vec2 v, float rotation);
 vec2 scalarMultiply(vec2 v, float s);
+std::pair<float, float> vec2ToPair(vec2 v);
 
 //implemented according to Unit interval(0,1) https://en.wikipedia.org/wiki/Cubic_Hermite_spline
 float hermiteSplineVal(float startPos, float endPos, float startSlope, float endSlope, float intervalPos);
@@ -110,12 +111,18 @@ struct Renderable
 	Mesh mesh;
 	Effect effect;
 	mat3 transform;
+	vec2 m_position;	// Window coordinates
+	vec2 m_scale;		// 1.f is as big as the associated texture
+	float m_rotation;	// in radians
 	std::vector<vec2> vertex_coords;
 	std::vector<vec3> local_vertex_coords;
 
 	// projection contains the orthographic projection matrix. As every Renderable::draw()
 	// renders itself it needs it to correctly bind it to its shader.
 	virtual void draw(const mat3& projection) = 0;
+
+	// sets the vertex coordinates of the object relative to the world
+	void set_world_vertex_coord();
 
 	// gets the vertex coordinates of the object
 	std::vector<vec2> get_vertex_coord();
@@ -127,6 +134,13 @@ struct Renderable
 	void transform_rotate(float radians);
 	void transform_translate(vec2 pos);
 	void transform_end();
+};
+
+struct MTV
+{
+	vec2 normal;
+	float magnitude;
+	bool isCollided;
 };
 
 // Enum for salmon directions

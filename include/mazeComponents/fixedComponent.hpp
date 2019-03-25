@@ -10,6 +10,9 @@ class FixedComponent : public MazeComponent
 {
 
 public:
-	void set_vertex_coord();
+	// sets the vertex coordinates of the object relative to the world
+	void set_world_vertex_coord();
+
+	void set_collision_properties();
 	std::vector<vec2> get_vertex_coord();
 };
