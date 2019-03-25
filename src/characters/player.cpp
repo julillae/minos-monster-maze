@@ -27,11 +27,10 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 
 	float spriteSheetWidth = 8.0f;
 	float spriteSheetHeight = 5.0f;
-	int horizontalTrim = 6;
+	int horizontalTrim = 8;
 	int verticalTrim = 7;
 	set_properties(initialPosition, 2.0f, 0.f);
 	set_dimensions(&m_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
-
 
 	if (use_sprite)
 	{
@@ -56,8 +55,6 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 //	fprintf(stderr, "player width: %f\n", width); // 52.00f
 
 	isBelowPlatform = false;
-	isLeftOfPlatform = false;
-	isRightOfPlatform = false;
 
 	return true;
 }
@@ -193,4 +190,46 @@ void Player::set_animation()
 bool Player::can_jump()
 {
 	return characterState->getStateChangeCost(jumping).first;
+}
+
+void Player::set_world_vertex_coord()
+{
+	vertex_coords.clear();
+	float x_pos = m_position.x;
+	float y_pos = m_position.y;
+	bool useDiamondCollisionBox = true;
+
+	if (useDiamondCollisionBox) {
+		vec2 top = { x_pos, (y_pos - height / 2) };
+		vec2 bottom = { x_pos, (y_pos + height / 2) };
+		vec2 right = { (x_pos + width / 2), y_pos };
+		vec2 left = { (x_pos - width / 2), y_pos };
+
+		std::vector<vec2> playArray;
+		playArray.push_back(top);
+		playArray.push_back(right);
+		playArray.push_back(bottom);
+		playArray.push_back(left);
+
+		for (int i = 0; i < 4; i++) {
+			playArray[i] = { ((playArray[i].x - x_pos) * cosf(m_rotation)) - ((playArray[i].y - y_pos) * sinf(m_rotation)) + x_pos,
+							((playArray[i].y - y_pos) * cosf(m_rotation)) + ((playArray[i].x - x_pos) * sinf(m_rotation)) + y_pos };
+			vertex_coords.push_back(playArray[i]);
+		}
+	}
+	else {
+		auto offset = static_cast<float>(sqrt(pow(width / 2, 2) + pow(height / 2, 2)));
+		float offsetAngle = atan2(height, width);
+		vec2 vert1 = { x_pos + offset * cosf(m_rotation + offsetAngle), y_pos + offset * sinf(m_rotation + offsetAngle) };
+		vec2 vert2 = { (x_pos + offset * cosf(static_cast<float>(m_rotation + M_PI - offsetAngle))),
+					  (y_pos + offset * sinf(static_cast<float>(m_rotation + M_PI - offsetAngle))) };
+		vec2 vert3 = { (x_pos + offset * cosf(static_cast<float>(m_rotation - M_PI + offsetAngle))),
+					  static_cast<float>(y_pos + offset * sin(m_rotation - M_PI + offsetAngle)) };
+		vec2 vert4 = { static_cast<float>(x_pos + offset * cos(m_rotation - offsetAngle)), static_cast<float>(y_pos + offset * sin(m_rotation - offsetAngle)) };
+
+		vertex_coords.push_back(vert1);
+		vertex_coords.push_back(vert2);
+		vertex_coords.push_back(vert3);
+		vertex_coords.push_back(vert4);
+	}
 }

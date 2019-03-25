@@ -21,7 +21,7 @@
 #include <vector>
 #include <random>
 #include <map>
-#include <memory>
+#include <algorithm>
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -30,8 +30,6 @@
 
 // Level class
 
-typedef std::vector<std::unique_ptr<Enemy>> Enemies;
-typedef std::vector<std::unique_ptr<FixedComponent>> Platforms;
 enum SpikeDir { UP, DOWN, LEFT, RIGHT};
 
 class Level
@@ -83,6 +81,14 @@ private:
     bool spawn_ice(vec2 position);
     bool spawn_spikes(vec2 position, SpikeDir dir);
 
+	void check_platform_collisions();
+
+	void draw_enemies(mat3 projection_2D);
+	void reset_enemies();
+	void destroy_enemies();
+	void draw_platforms(mat3 projection_2D);
+	void destroy_platforms();
+
 	void initialize_camera_position(int w, int h);
 	void load_new_level();
 	void reset_game();
@@ -90,13 +96,14 @@ private:
 	void unfreeze_all_enemies();
 	void update_all_enemies(float elapsed_ms);
 
-
 	// Generates hard-coded maze in each level
 	void generate_maze();
 	void print_maze();
 	void store_platform_coords(vec2 coords, int platform_key);
 
 	void set_player_death();
+
+	void load_spikes(int cell, vec2 position);
 private:
 	// Window handle
 	GLFWwindow* m_window;
@@ -109,9 +116,14 @@ private:
 	// Water effect
 	RenderEffects m_water;
 
+	std::vector<Spider> m_spiders;
+	std::vector<Harpy> m_harpies;
+
 	Exit m_exit;
-	Enemies m_enemies;
-	Platforms m_platforms;
+	std::vector<Floor> m_floors;
+	std::vector<Spikes> m_spikes;
+	std::vector<Ice> m_ice;
+
     HelpMenu m_help_menu;
 
     float m_seed_rng;
@@ -136,15 +148,17 @@ private:
 	int rotateCWKey = GLFW_KEY_X;
 	int rotateCCWKey = GLFW_KEY_Z;
 
-	int num_levels = 9;
+	int num_levels = 11;
 	int current_level = 0;
 
 	const map<int, std::string> platform_types = {
-		{1, "FLOOR"},
-		{2, "EXIT"},
-        {6, "ICE"},
-        {7, "SPIKE LEFT"},
-        {8, "SPIKE UP"}
+		{49, "FLOOR"},       //1
+		{50, "EXIT"},        //2
+        {54, "ICE"},         //6
+        {65, "SPIKE LEFT"},  //A
+        {66, "SPIKE UP"},    //B
+        {67, "SPIKE DOWN"},  //C
+        {68, "SPIKE RIGHT"}  //D
 	};
 
     // Variables determined by level data
@@ -152,8 +166,8 @@ private:
 	float m_maze_width;
     float m_maze_height;
 
-	float m_tile_width = 0.f;
-	float m_tile_height = 0.f;
+	float m_tile_width = 25.f;
+	float m_tile_height = 25.f;
 
 	// Rows of the maze where:
 	// 1 = platform

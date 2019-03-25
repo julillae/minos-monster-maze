@@ -1,6 +1,8 @@
 // Header
 #include "../include/characters/character.hpp"
 #include "../include/physics.hpp"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 bool Character::init(vec2 initialPosition, Physics * physicsHandler) {
 	return false;
@@ -20,6 +22,7 @@ void Character::set_dimensions(Texture* texture, float spriteSheetWidth, float s
 {
 	width = (texture->width / spriteSheetWidth - xTrim) * m_scale.x;
 	height = (texture->height / spriteSheetHeight - yTrim) * m_scale.y;
+	boundingCircleRadius = sqrtf(pow(0.5*width, 2.f) + pow(0.5*height, 2.f));
 }
 
 // Call if init() was successful
@@ -154,5 +157,24 @@ void Character::initStateTree()
 	};
 
 	characterState = new StateTree(edges, idle);
+}
+
+void Character::set_world_vertex_coord()
+{
+	vertex_coords.clear();
+
+	float rightSide = m_position.x + width / 2;
+	float leftSide = m_position.x - width / 2;
+	float topSide = m_position.y + height / 2;
+	float bottomSide = m_position.y - height / 2;
+	vec2 vert1b = { rightSide, topSide };
+	vec2 vert2b = { rightSide, bottomSide };
+	vec2 vert3b = { leftSide , bottomSide };
+	vec2 vert4b = { leftSide, topSide };
+
+	vertex_coords.push_back(vert1b);
+	vertex_coords.push_back(vert2b);
+	vertex_coords.push_back(vert3b);
+	vertex_coords.push_back(vert4b);
 }
 

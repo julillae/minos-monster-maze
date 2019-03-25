@@ -1,0 +1,12 @@
+
+Team 13
+Grade: 77.5
+Creative:
++10 Hard-coded enemy behavior.
+
+Issue/Missing:
+-7.5 Collision detection is buggy. After jumping, the player can sink into the platform or float in the air.
+
+Feedback:
+The development seems to go well. Prioritize fixing the collision system and the time step problem mentioned during the grading (see this: https://gafferongames.com/post/fix_your_timestep/).
+Note that we mentioned in the proposal feedback that the goal of the game only reaches the level of basic score. Given the development goes well, we recommend you to consider adding more advanced features to achieve higher final score.
