@@ -4,7 +4,7 @@ Texture MainMenu::texture;
 
 bool MainMenu::init(vec2 position)
 {
-    const char* textureFile = textures_path("main-menu.png");
+    const char* textureFile = textures_path("main-menu2.png");
 
     if (!RenderManager::load_texture(textureFile, &texture, this)) return false;
 

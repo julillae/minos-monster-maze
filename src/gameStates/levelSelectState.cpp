@@ -1,4 +1,4 @@
-#include "../../include/gameStates/mainMenuState.hpp"
+#include "../../include/gameStates/levelSelectState.hpp"
 #include "../../include/renderManager.hpp"
 
 // stlib
@@ -15,17 +15,17 @@ namespace
     vec2 cameraCenter;
 }
 
-MainMenuState::MainMenuState(Game *game)
+LevelSelectState::LevelSelectState(Game *game)
 {
     this->game = game;
 
 }
 
-void MainMenuState::init(vec2 screen)
+void LevelSelectState::init(vec2 screen)
 {
-    fprintf(stderr, "main menu init\n");
+    fprintf(stderr, "level select init\n");
     this->m_window = game->m_window;
-    name = MAIN;
+    name = LEVELSELECT;
 
     // hack used to make sure the display for macOS with retina display issue is consistent with display on other systems
     int testWidth;
@@ -67,8 +67,7 @@ void MainMenuState::init(vec2 screen)
 
     if (m_background_music == nullptr)
     {
-        fprintf(stderr, "Failed to load sound\n %s,%s\n make sure the data directory is present",
-                audio_path("salmon_dead.wav"),
+        fprintf(stderr, "Failed to load sound\n %s\n make sure the data directory is present",
                 audio_path("secret_catacombs.wav"));
         return;
     }
@@ -85,15 +84,13 @@ void MainMenuState::init(vec2 screen)
 
     initialPosition = vec2({static_cast<float>(w / 2), static_cast<float>(h / 2)});
 
-    mainMenu.init(initialPosition);
-    m_help_menu.init(initialPosition);
-    m_help_menu.set_visibility(false);
+    levelSelectMenu.init(initialPosition);
     init_buttons();
     initialize_camera_position(w, h);
 
 }
 
-void MainMenuState::draw()
+void LevelSelectState::draw()
 {
     // Clearing error buffer
     gl_flush_errors();
@@ -138,7 +135,7 @@ void MainMenuState::draw()
     float tyOffset = camera_h / 2;
     cameraCenter = vec2({ txOffset, tyOffset});
 
-    mainMenu.set_position(cameraCenter);
+    levelSelectMenu.set_position(cameraCenter);
 
     tx = -cameraCenter.x;
     ty = -cameraCenter.y;
@@ -176,114 +173,66 @@ void MainMenuState::draw()
 
     //////////////////
 
-    mainMenu.draw(projection_2D);
-    continueButton.draw(projection_2D);
-    newGameButton.draw(projection_2D);
-    controlsButton.draw(projection_2D);
-    quitButton.draw(projection_2D);
-    m_help_menu.draw(projection_2D);
+    levelSelectMenu.draw(projection_2D);
+
+    for (auto& button : levelButtons){
+        button->draw(projection_2D);
+    }
+
     // Presenting
     glfwSwapBuffers(m_window);
 }
 
-bool MainMenuState::update(float elapsed_ms)
+bool LevelSelectState::update(float elapsed_ms)
 {
     return true;
 }
 
-void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
+void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
     if (action == GLFW_PRESS) {
         if (key == GLFW_KEY_ENTER)
         {
-            switch (currentButton->buttonName)
-            {
-                case NEWGAME:
-                {
-                    LevelSelectState* levelSelect = new LevelSelectState(game);
-                    levelSelect->init(m_screen);
-                    game->push_state(levelSelect);
-                    game->set_current_state(levelSelect);
-                    break;
-                }
-                case CONTROLS:
-                    show_help_menu = true;
-                    m_help_menu.set_visibility(show_help_menu);
-                    break;
-                case QUIT:
-                    close = true;
-                    break;
-                default:
-                    Physics *physicsHandler = new Physics();
-                    Level* level = new Level(game);
-                    level->init(m_screen, physicsHandler, 0);
-                    game->push_state(level);
-                    game->set_current_state(level);
-                    break;
-            }
+            Physics *physicsHandler = new Physics();
+            Level* level = new Level(game);
+            level->init(m_screen, physicsHandler, currentButton->level);
+            game->push_state(level);
+            game->set_current_state(level);
 
         }
 
-        if (key == GLFW_KEY_DOWN && !show_help_menu)
+        if (key == GLFW_KEY_RIGHT)
         {
-            switch (currentButton->buttonName)
-            {
-                case CONTINUE:
-                    set_currentButton(&newGameButton);
-                    break;
-                case NEWGAME:
-                    set_currentButton(&controlsButton);
-                    break;
-                case CONTROLS:
-                    set_currentButton(&quitButton);
-                    break;
-                default:
-                    set_currentButton(&continueButton);
-                    break;
-            }
+
+            int nextButton = (currentButton->level + 1) % (sizeof(levelButtons)/sizeof(*levelButtons));
+            set_currentButton(levelButtons[nextButton]);
         }
 
-        if (key == GLFW_KEY_UP && !show_help_menu)
+        if (key == GLFW_KEY_LEFT)
         {
-            switch (currentButton->buttonName)
-            {
-                case CONTINUE:
-                    set_currentButton(&quitButton);
-                    break;
-                case NEWGAME:
-                    set_currentButton(&continueButton);
-                    break;
-                case CONTROLS:
-                    set_currentButton(&newGameButton);
-                    break;
-                default:
-                    set_currentButton(&controlsButton);
-                    break;
-            }
+
+            int nextButton = currentButton->level - 1;
+            if (nextButton < 0)
+                nextButton = sizeof(levelButtons)/sizeof(*levelButtons) - 1;
+            set_currentButton(levelButtons[nextButton]);
         }
+
 
         if (key == GLFW_KEY_ESCAPE)
         {
-            switch (currentButton->buttonName)
-            {
-                case CONTROLS:
-                    show_help_menu = false;
-                    m_help_menu.set_visibility(show_help_menu);
-                    break;
-                default:
-                    break;
-            }
+            GameState* mainMenuState = game->get_states().find(MAIN)->second;
+            game->set_current_state(mainMenuState);
         }
 
     }
 }
 
-bool MainMenuState::is_over()
+bool LevelSelectState::is_over()
 {
     return glfwWindowShouldClose(m_window) || close;
 }
 
-void MainMenuState::destroy()
+void LevelSelectState::destroy()
 {
     glDeleteFramebuffers(1, &m_frame_buffer);
 
@@ -292,11 +241,11 @@ void MainMenuState::destroy()
 
     Mix_CloseAudio();
 
-    mainMenu.destroy();
+    levelSelectMenu.destroy();
 
 }
 
-void MainMenuState::initialize_camera_position(int w, int h)
+void LevelSelectState::initialize_camera_position(int w, int h)
 {
         float txOffset = w / 2;
         float tyOffset = h / 2;
@@ -304,28 +253,32 @@ void MainMenuState::initialize_camera_position(int w, int h)
 
 }
 
-void MainMenuState::init_buttons()
+void LevelSelectState::init_buttons()
 {
-    float buttonX = initialPosition.x;
-    float buttonY = initialPosition.y + 40;
-    float buttonOffset = 75.f;
+    float buttonX = initialPosition.x / 2;
+    float buttonY = initialPosition.y;
+    float buttonOffset = 150.f;
 
-    const char* continueText = textures_path("continue-button2.png");
-    const char* newGameText = textures_path("new-game-button2.png");
-    const char* controlsText = textures_path("controls-button2.png");
-    const char* quitText = textures_path("quit-button2.png");
-    continueButton.init(vec2({buttonX, buttonY}), continueText, CONTINUE );
-    continueButton.set_selected(true);
-    currentButton = &continueButton;
-    newGameButton.init(vec2({buttonX, buttonY + buttonOffset}), newGameText, NEWGAME);
-    controlsButton.init(vec2({buttonX, buttonY + buttonOffset * 2}), controlsText, CONTROLS);
-    quitButton.init(vec2({buttonX, buttonY + buttonOffset * 3}), quitText, QUIT);
+    const char* level1Text = textures_path("level1.png");
+    const char* level2Text = textures_path("level2.png");
+    const char* level3Text = textures_path("level3.png");
+    level1Button.init(vec2({buttonX, buttonY}), level1Text, 0 );
+    level1Button.set_selected(true);
+    currentButton = &level1Button;
+    level2Button.init(vec2({buttonX + buttonOffset, buttonY}), level2Text, 1);
+    level3Button.init(vec2({buttonX + buttonOffset * 2, buttonY }), level3Text, 2);
+
+    levelButtons[0] = &level1Button;
+    levelButtons[1] = &level2Button;
+    levelButtons[2] = &level3Button;
 
 }
 
-void MainMenuState::set_currentButton(MainButton* button)
+void LevelSelectState::set_currentButton(LevelButton* button)
 {
     currentButton->set_selected(false);
     button->set_selected(true);
     currentButton = button;
+
+
 }

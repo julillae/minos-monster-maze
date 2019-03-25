@@ -26,8 +26,10 @@ Game::Game()
 
 Game::~Game()
 {
-    while(!states.empty())
-        pop_state();
+    for (auto const& state : states)
+    {
+        state.second->destroy();
+    }
 }
 
 bool Game::init(vec2 screen)
@@ -69,53 +71,12 @@ bool Game::init(vec2 screen)
     glGenFramebuffers(1, &m_frame_buffer);
     glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
 
-    //-------------------------------------------------------------------------
-    // Loading music and sounds
-//    if (SDL_Init(SDL_INIT_AUDIO) < 0)
-//    {
-//        fprintf(stderr, "Failed to initialize SDL Audio");
-//        return false;
-//    }
-//
-//    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
-//    {
-//        fprintf(stderr, "Failed to open audio device");
-//        return false;
-//    }
-//
-//    //Note: the following music credits needs to be added to a credit scene at the end of the game
-//    //Secret Catacombs
-//    //by Eric Matyas
-//    //www.soundimage.org
-//
-//    m_background_music = Mix_LoadMUS(audio_path("secret_catacombs.wav"));
-//
-//    if (m_background_music == nullptr)
-//    {
-//        fprintf(stderr, "Failed to load sound\n %s,%s\n make sure the data directory is present",
-//                audio_path("salmon_dead.wav"),
-//                audio_path("secret_catacombs.wav"));
-//        return false;
-//    }
-//
-//    // Playing background music undefinitely
-//    Mix_PlayMusic(m_background_music, -1);
-//    Mix_VolumeMusic(50);
-//
-//    fprintf(stderr, "Loaded music\n");
     return true;
 }
 
 void Game::push_state(GameState* state)
 {
-    states.push_back(state);
-}
-
-void Game::pop_state()
-{
-    states.back()->destroy();
-    //delete states.back();
-    states.pop_back();
+    states.insert( std::pair<gameStates, GameState*>(state->name, state));
 }
 
 GameState* Game::current_state()
@@ -152,7 +113,7 @@ void Game::game_loop()
 	}
 }
 
-std::vector<GameState*> Game::get_states()
+std::map<gameStates, GameState*> Game::get_states()
 {
     return states;
 }

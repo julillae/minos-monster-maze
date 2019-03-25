@@ -16,6 +16,8 @@
 
 class GameState;
 
+enum gameStates { MAIN, LEVELSELECT, LEVEL };
+
 // Game class
 class Game
 {
@@ -27,10 +29,9 @@ public:
     bool init(vec2 screen);
 
     void push_state(GameState* state);
-    void pop_state();
 
     GameState* current_state();
-    std::vector<GameState*> get_states();
+    std::map<gameStates, GameState*> get_states();
     void set_current_state(GameState* currState);
 
     void game_loop();
@@ -42,7 +43,7 @@ private:
 
     GLuint m_frame_buffer;
 
-    std::vector<GameState*> states; //TODO: use a map and create enum for different states
+    std::map<gameStates, GameState*> states;
 
     GameState* currentState;
 

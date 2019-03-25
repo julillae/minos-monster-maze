@@ -4,7 +4,7 @@
 #include "../renderManager.hpp"
 #include "menu.hpp"
 
-class ControlsButton : public Menu
+class LevelSelectMenu : public Menu
 {
     static Texture texture;
 public:

@@ -3,14 +3,17 @@
 #include "../common.hpp"
 #include "../renderManager.hpp"
 #include "menu.hpp"
+#include "button.hpp"
 
-class NewGameButton : public Menu
+class MainButton : public Button
 {
-    static Texture texture;
+
 public:
 
-    bool init(vec2 position);
+    bool init(vec2 position, const char* textureFile, button name);
 
     void draw(const mat3& projection)override;
+
+    button buttonName;
 
 };
