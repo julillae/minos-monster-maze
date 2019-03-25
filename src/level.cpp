@@ -28,7 +28,7 @@ namespace
 	vec2 cameraCenter;
 	vec2 prevCameraCenter;
 	bool cameraTracking = true;
-    void glfw_err_cb(int error, const char* desc)
+void glfw_err_cb(int error, const char* desc)
     {
         fprintf(stderr, "%d: %s", error, desc);
     }
@@ -38,7 +38,7 @@ namespace
 Level::Level() : m_seed_rng(0.f)
 {
 // Seeding rng with random device
-	m_rng = std::default_random_engine(std::random_device()());
+    m_rng = std::default_random_engine(std::random_device()());
 }
 
 Level::~Level()
@@ -146,6 +146,8 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	float left = 0.f;// *-0.5;
 	float right = (float)w;// *0.5;
 
+    m_quad = QuadTreeNode(0, initialPosition, m_maze_width, m_maze_height);
+
 	current_level = startLevel;
 	call_level_loader();
 
@@ -233,6 +235,8 @@ bool Level::update(float elapsed_ms)
 		applyThaw = true;
 		previouslyFrozen = false;
 	}
+
+	m_quad.clear();
 
 	// Checking Player - Spider Collision
 	for (auto& enemy : m_spiders) {
