@@ -12,6 +12,9 @@ bool Exit::init(vec2 position)
 
 	if (!RenderManager::set_render_data(&texture, this)) return false;
 
+	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+		return false;
+
     set_position(position);
 
 	// Setting initial values, scale is negative to make it face the opposite way
@@ -20,21 +23,13 @@ bool Exit::init(vec2 position)
 	m_rotation = 0.f;
 
     set_size();
-
+	set_collision_properties();
 	return true;
 }
 
 void Exit::draw(const mat3& projection)
 {
 	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
-}
-
-
-// Returns the local bounding coordinates scaled by the current size of the component
-vec2 Exit::get_bounding_box()const
-{
-	// fabs is to avoid negative scale due to the facing direction
-	return { std::fabs(m_scale.x) * texture.width, std::fabs(m_scale.y) * texture.height };
 }
 
 void Exit::set_size()

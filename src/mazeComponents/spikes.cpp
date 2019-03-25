@@ -2,11 +2,11 @@
 
 #include <string>
 #include <algorithm>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 bool Spikes::init(vec2 position)
 {
-
-
     // Reads the spikes mesh from a file, which contains a list of vertices and indices
     FILE* mesh_file = fopen(mesh_path("spike.mesh"), "r");
     if (mesh_file == nullptr)
@@ -25,6 +25,7 @@ bool Spikes::init(vec2 position)
         vertex.position = { x, y, -z };
         vertex.color = { (float)r / 255, (float)g / 255, (float)b / 255 };
         vertices.push_back(vertex);
+		local_vertex_coords.push_back(vertex.position);
     }
 
     // Reading associated indices
@@ -66,14 +67,14 @@ bool Spikes::init(vec2 position)
 
     // Setting initial values
     m_scale.x = 10.f;
-    m_scale.y = 25.f;
+	m_scale.y = 25.f;
     m_rotation = 0.f;
     m_num_indices = indices.size();
     m_position = position;
     can_kill = true;
 	drag = 0.75f;
     set_dimensions();
-    set_vertex_coord();
+    set_collision_properties();
 
     return true;
 }
@@ -87,47 +88,26 @@ void Spikes::draw(const mat3& projection)
 
 }
 
-void Spikes::set_dimensions()
-{
-    float min_x;
-    float max_x;
-    float min_y;
-    float max_y;
-
-    for (int i = 0; i < vertices.size(); i++) {
-        float vert_x = vertices[i].position.x;
-        float vert_y = vertices[i].position.y;
-
-        if (i == 0)
-        {
-            min_x = vert_x;
-            max_x = vert_x;
-            min_y = vert_y;
-            max_y = vert_y;
-        }
-
-        if (vert_x < min_x) min_x = vert_x;
-        if (vert_x > max_x) max_x = vert_x;
-        if (vert_y < min_y) min_y = vert_y;
-        if (vert_y > max_y) max_y = vert_y;
-
-    }
-
-    m_width = (max_x - min_x) * m_scale.x;
-    m_height = (max_y - min_y) * m_scale.y;
-}
-
 void Spikes::set_left()
 {
-    set_rotation(67.5);
+	set_rotation(-M_PI/2);
+	set_collision_properties();
 }
 
 void Spikes::set_right()
 {
-    set_rotation(-67.5);
+    set_rotation(M_PI / 2);
+	set_collision_properties();
 }
 
 void Spikes::set_down()
 {
-    set_rotation(180.f);
+    set_rotation(M_PI);
+	set_collision_properties();
+}
+
+void Spikes::set_up()
+{
+	set_rotation(0);
+	set_collision_properties();
 }

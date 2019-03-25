@@ -3,10 +3,13 @@
 #include "../include/characters/enemy.hpp"
 #include "../include/characters/player.hpp"
 #include "../include/mazeComponents/floor.hpp"
+#include "../include/mazeComponents/spikes.hpp"
+#include "../include/mazeComponents/ice.hpp"
 #include "../include/mazeComponents/exit.hpp"
 
 #include <vector>
-#include <memory>
+#include <map>
+#include <list>
 
 class Physics
 {
@@ -18,21 +21,36 @@ public:
     ~Physics();
 
 	float rotation = 0.f;	// world rotation in radians
-	vec2 gravityAcc = {0.f,  9.81f * 0.07f };
+	vec2 gravityAcc = {0.f,  9.81f * 0.06f };
 
-    struct CollisionNode {
-        bool isCollided;
-        float angleOfCollision;
+    struct Projection
+    {
+        Projection(float mi, float ma)
+        {
+            min = mi;
+            max = ma;
+        }
+        float min;
+        float max;
+
+        bool overlap(Projection p)
+        {
+            bool isSeparated = (p.max < min || max < p.min);
+            return !isSeparated;
+        }
     };
 
-    CollisionNode collisionWithFixedWalls(Player *p, std::unique_ptr<FixedComponent> const &f);
+    bool collideWithEnemy(Player *p, Enemy *e);
 
-    CollisionNode collideWithEnemy(Player *p, std::unique_ptr<Enemy> const &t);
+    bool collideWithExit (Player *p, Exit *e);
 
-    CollisionNode collideWithExit (Player *p, const Exit *e);
+    bool isOnAtLeastOnePlatform = false;
 
-	// produces true if player collides with a fixed component that kills the player
-    bool characterCollisionsWithFixedComponents(Player *c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents);
+	// checks for collisions and reacts appropriately
+    void characterCollisionsWithFloors(Player *c, std::vector<Floor> floors);
+    void characterCollisionsWithSpikes(Player *c, std::vector<Spikes> spikes);
+    void characterCollisionsWithIce(Player *c, std::vector<Ice> ice);
+    void characterCollisionsWithFixedComponent(Player *c, FixedComponent* fc);
 
 	void characterVelocityUpdate(Character *c);
 
@@ -42,9 +60,17 @@ public:
 
 	void updateCharacterVelocityRotation(Character * c, float vecRotation);
 
-	vec2 calculateDimensionsAfterRotation(vec2 c1, vec2 bound);
-
 	bool isZero(float f);
   
 	bool notZero(float f);
+
+    std::vector<vec2> getAxes(std::vector<vec2> vertices)const;
+
+    Projection getProjection(vec2 axis, std::vector<vec2> vertices)const;
+
+    MTV collisionWithGeometry(const std::vector<vec2> &vertArr1, const std::vector<vec2> &vertArr2, vec2 pos1, vec2 pos2);
+
+    float getOverlap(Projection p1, Projection p2);
+
+
 };

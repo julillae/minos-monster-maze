@@ -12,16 +12,13 @@ bool Ice::init(vec2 position)
 
 	if (!RenderManager::set_render_data(&texture, this)) return false;
 
+    if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+        return false;
+
 	set_position(position);
 
-	// Setting initial values, scale is negative to make it face the opposite way
-	// 1.0 would be as big as the original texture
-    m_scale.x = 25.0f / texture.width;
-	m_scale.y = 20.0f / texture.height;
 	m_rotation = 0.f;
-	drag = 1.f;
-
-	set_size(&texture);
+	drag = 0.96f;
 
     return true;
 }
@@ -30,4 +27,9 @@ bool Ice::init(vec2 position)
 void Ice::draw(const mat3& projection)
 {
 	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
+}
+
+vec2 Ice::get_texture_size()
+{
+	return vec2({static_cast<float>(texture.width), static_cast<float>(texture.height)});
 }

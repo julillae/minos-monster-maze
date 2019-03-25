@@ -91,6 +91,11 @@ vec2 add(vec2 v1, vec2 v2)
 	return vec2({v1.x + v2.x, v1.y + v2.y});
 }
 
+vec2 subtract(vec2 v1, vec2 v2)
+{
+    return vec2({v1.x - v2.x, v1.y - v2.y});
+}
+
 vec2 negateVec(vec2 v)
 {
 	return vec2({ -v.x, -v.y });
@@ -113,6 +118,11 @@ vec2 rotateVec(vec2 v, float rotation)
 vec2 scalarMultiply(vec2 v, float s)
 {
 	return vec2({v.x * s, v.y * s});
+}
+
+std::pair<float, float> vec2ToPair(vec2 v)
+{
+	return make_pair(v.x, v.y);
 }
 
 // Given, a starting and ending position, and a starting and ending slope,
@@ -301,6 +311,16 @@ void Effect::release()
   	glDeleteShader(fragment);
 
   	glDeleteProgram(program);
+}
+
+void Renderable::set_world_vertex_coord()
+{
+	return;
+}
+
+std::vector<vec2> Renderable::get_vertex_coord()
+{
+	return vertex_coords;
 }
 
 void Renderable::transform_begin()
