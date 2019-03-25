@@ -22,7 +22,7 @@ bool Spider::init(vec2 initialPosition, Physics * physicsHandler)
 
     float spriteSheetWidth = 9.0f;
     float spriteSheetHeight = 3.0f;
-    int horizontalTrim = 16;
+    int horizontalTrim = 18;
     int verticalTrim = 19;
 
     set_properties(initialPosition, 3.0f, speed);

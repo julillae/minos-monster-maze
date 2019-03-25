@@ -32,6 +32,10 @@ bool RenderManager::set_render_data(Texture *texture, Renderable *renderable)
     vertices[2].texcoord = { 1.f, 0.f };
     vertices[3].position = { -wr, -hr, -0.02f };
     vertices[3].texcoord = { 0.f, 0.f };
+	renderable->local_vertex_coords.push_back(vertices[0].position);
+	renderable->local_vertex_coords.push_back(vertices[1].position);
+	renderable->local_vertex_coords.push_back(vertices[2].position);
+	renderable->local_vertex_coords.push_back(vertices[3].position);
 
     // counterclockwise as it's the default opengl front winding direction
     uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
