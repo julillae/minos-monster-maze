@@ -3,7 +3,7 @@
 
 bool MainButton::init(vec2 position, const char* textureFile, button name)
 {
-    
+
     m_texture.id = 0;
 
     if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;

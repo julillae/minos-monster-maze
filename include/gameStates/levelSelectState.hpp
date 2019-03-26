@@ -36,7 +36,6 @@ private:
     LevelButton level2Button;
     LevelButton level3Button;
 
-    Mix_Music* m_background_music;
     vec2 initialPosition;
 
     bool close = false;
