@@ -46,217 +46,6 @@ Level::~Level()
 
 }
 
-void Level::store_platform_coords(vec2 coords, int platform_key) {
-	std::string platformType = platform_types.find(platform_key)->second;
-	std::pair <float,float> coords_pair (coords.x,coords.y);
-	platforms_by_coords.emplace(coords_pair, platformType);
-}
-
-void Level::read_level_data() {
-	std::string level = std::to_string(current_level);
-	fprintf(stderr, "Loading level %s\n", level.c_str());
-	std::string fileName = "levels/level" + level + ".txt";
-    std::ifstream filein(fileName);
-
-	std::string firstLine;
-	std::getline(filein, firstLine);
-	canRotate = firstLine.compare("1") == 0;
-
-	std::string secondLine;
-	std::getline(filein, secondLine);
-	cameraTracking = secondLine.compare("1") == 0;
-
-    for (std::string line; std::getline(filein, line);) {
-        std::vector <int> row;
-        for(char& c : line) {
-            // Covert char to ascii dec and push to row
-			int x = static_cast<unsigned char>( c );
-			row.push_back(x);
-        }
-        // Push row to maze array
-        m_maze.push_back(row);
-    }
-}
-
-bool Level::spawn_spider_enemy(vec2 position, float bound, bool upsideDown)
-{
-	Spider enemy;
-
-	if (enemy.init(position, physicsHandler))
-	{
-		if (upsideDown) {
-			enemy.set_rotation(M_PI);
-			vec2 enemy_scale = enemy.get_scale();
-			enemy.set_scale({enemy_scale.x * -1.f, enemy_scale.y});
-		}
-
-		enemy.set_bound(bound);
-		m_spiders.emplace_back(enemy);
-
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn enemy");
-	return false;
-}
-
-bool Level::spawn_harpy_enemy(vec2 position)
-{
-	Harpy enemy;
-	if (enemy.init(position, physicsHandler))
-	{	
-		m_harpies.emplace_back(enemy);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn harpy");
-	return false;
-}
-
-bool Level::spawn_floor(vec2 position)
-{
-	Floor floor;
-
-	if (floor.init(position))
-	{
-		vec2 textureSize = floor.get_texture_size();
-		float x_scale = m_tile_width / textureSize.x;
-		float y_scale = m_tile_height / textureSize.y;
-		floor.set_scale(vec2({x_scale, y_scale}));
-		floor.set_size(vec2({m_tile_width, m_tile_height}));
-		floor.set_collision_properties();
-		m_floors.emplace_back(floor);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn floor");
-	return false;
-}
-
-bool Level::spawn_ice(vec2 position)
-{
-	Ice ice;
-
-	if (ice.init(position))
-	{
-		vec2 textureSize = ice.get_texture_size();
-		float x_scale = m_tile_width / textureSize.x;
-		float y_scale = m_tile_height / textureSize.y;
-		ice.set_scale(vec2({x_scale, y_scale}));
-		ice.set_size(vec2({m_tile_width, m_tile_height}));
-		ice.set_collision_properties();
-		m_ice.emplace_back(ice);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn ice");
-	return false;
-}
-
-bool Level::spawn_spikes(vec2 position, SpikeDir dir)
-{
-    Spikes spikes;
-
-    if (spikes.init(position))
-    {
-    	switch (dir)
-		{
-			case DOWN:
-				spikes.set_down();
-				break;
-			case LEFT:
-				spikes.set_left();
-				break;
-			case RIGHT:
-				spikes.set_right();
-				break;
-			default:
-				spikes.set_up();
-				break;
-		}
-
-        m_spikes.emplace_back(spikes);
-        return true;
-    }
-    fprintf(stderr, "Failed to spawn spikes");
-    return false;
-}
-
-// Generates maze
-void Level::generate_maze()
-{
-
-	bool setting_enemy = false;
-	bool setting_rotated_enemy = false;
-	vec2 enemy_start_pos;
-
-    float i = 0.f;
-	float j = 0.f;
-
-	for (auto &row : m_maze) {
-        j = 0.f;
-		for (int &cell : row) {
-
-			float x_pos = (j * m_tile_width);
-			float y_pos = (i * m_tile_height);
-
-			if ((setting_enemy && cell != 52) || (setting_rotated_enemy && cell != 53)) {
-				// If we were setting enemy positions, and we hit a cell with no enemy,
-				// Spawn the enemy we were setting
-
-				float last_x_pos = x_pos - m_tile_width;
-				float distance = abs(last_x_pos - enemy_start_pos.x);
-				spawn_spider_enemy(enemy_start_pos, distance, setting_rotated_enemy);
-				setting_enemy = false;
-				setting_rotated_enemy = false;
-			}
-
-			if (cell == 49) {
-				// Spawn platform
-				if ( spawn_floor({x_pos, y_pos}) ) {
-					store_platform_coords({x_pos, y_pos}, cell);
-				}
-			} else if (cell == 50) {
-				// Add exit
-				Exit new_exit;
-
-				if ( new_exit.init({x_pos, y_pos}) ) {
-					store_platform_coords({x_pos, y_pos}, cell);
-
-					m_exit = new_exit;
-				}
-			} else if (cell == 51) {
-				// Set initial position of player
-				initialPosition = {x_pos, y_pos};
-			} else if (cell == 52) {
-				// Begin setting enemy path
-				if (!setting_enemy) {
-					setting_enemy = true;
-					enemy_start_pos = {x_pos, y_pos};
-				}
-			} else if (cell == 53) {
-				// Begin setting enemy path
-				if (!setting_rotated_enemy) {
-					setting_rotated_enemy = true;
-					enemy_start_pos = {x_pos, y_pos};
-				}
-			} else if (cell == 54) {
-
-                if (spawn_ice({x_pos, y_pos}))
-                	store_platform_coords({x_pos, y_pos}, cell);
-
-            } else if (cell >= 65 && cell <= 68) {
-                load_spikes(cell, vec2({x_pos, y_pos}));
-			} else if (cell == 57) {
-				spawn_harpy_enemy(vec2({x_pos, y_pos}));
-			}
-
-            j = j + 1.f;
-		}
-        i = i + 1.f;
-	}
-
-    // Set global variables
-    m_maze_width = j;
-    m_maze_height = i;
-}
-
 // Level initialization
 bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 {
@@ -358,8 +147,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	float right = (float)w;// *0.5;
 
 	current_level = startLevel;
-    read_level_data();
-	generate_maze();
+	call_level_loader();
 
 	m_help_menu.init(initialPosition);
 	initialize_camera_position(w, h);
@@ -759,6 +547,28 @@ void Level::destroy_platforms() {
 	m_ice.clear();
 }
 
+void Level::call_level_loader()
+{
+	LevelLoader levelLoader;
+	m_maze = levelLoader.load_level(current_level, physicsHandler);
+
+	m_maze_width = levelLoader.get_maze_width();
+	m_maze_height = levelLoader.get_maze_height();
+
+	canRotate = levelLoader.can_rotate();
+	cameraTracking = levelLoader.can_camera_track();
+
+	initialPosition = levelLoader.get_player_position();
+	m_exit = levelLoader.get_exit();
+
+	m_spiders = levelLoader.get_spiders();
+	m_harpies = levelLoader.get_harpies();
+
+	m_floors = levelLoader.get_floors();
+	m_ice = levelLoader.get_ice();
+	m_spikes = levelLoader.get_spikes();
+}
+
 void Level::load_new_level()
 {
 	destroy_platforms();
@@ -770,8 +580,7 @@ void Level::load_new_level()
 	if (current_level >= num_levels)
 		current_level = 0;
 
-	read_level_data();
-	generate_maze();
+	call_level_loader();
 }
 
 void Level::reset_game()
@@ -816,17 +625,6 @@ void Level::update_all_enemies(float elapsed_ms)
 	for (auto& h : m_harpies) h.update(elapsed_ms);
 }
 
-// Returns the platform type if there is a platform at these coordinates
-// If no platform exists, returns ""
-std::string Level::get_platform_by_coordinates(std::pair<float, float> coords) {
-	std::pair<float, float> coords_check (coords.first, coords.second);
-	if (platforms_by_coords.find(coords_check) != platforms_by_coords.end()) {
-		return platforms_by_coords.find(coords_check)->second;
-	}
-
-	return "";
-}
-
 bool Level::maze_is_platform(std::pair<int,int> coords){
 	int val_at_coords = m_maze[coords.first][coords.second];
 	for (auto& p : platform_types) {
@@ -835,23 +633,6 @@ bool Level::maze_is_platform(std::pair<int,int> coords){
 		}
 	}
 	return false;
-}
-
-// Method for visualizing full maze in console for debugging purposes
-// 1 = platform
-// 2 = exit
-// 3 = initial player position
-// 4 = enemy path
-// 5 = upside down enemy path
-void Level::print_maze() {
-	for (int i = 0; i < m_maze.size(); i++)
-	{
-		cout << "\n";
-		for (int j = 0; j < m_maze[i].size(); j++)
-		{
-			cout << m_maze[i][j];
-		}
-	}
 }
 
 std::vector<std::vector <int>> Level::get_original_maze() {
@@ -881,35 +662,4 @@ void Level::set_player_death()
 		m_player.kill();
 		m_water.set_player_dead();
 	}
-}
-
-void Level::load_spikes(int cell, vec2 position)
-{
-	std::string platformType = platform_types.find(cell)->second;
-
-    if (platformType == "SPIKE LEFT") {
-        float spike_x = position.x - m_tile_width / 2;
-
-        if (spawn_spikes({spike_x, position.y}, LEFT))
-            store_platform_coords({spike_x, position.y}, cell);
-
-    } else if (platformType == "SPIKE UP") {
-
-        float spike_y = position.y - m_tile_height / 2;
-        if (spawn_spikes({position.x, spike_y}, UP))
-            store_platform_coords({position.x, spike_y}, cell);
-
-    } else if (platformType == "SPIKE DOWN") {
-
-        float spike_y = position.y + m_tile_height / 2;
-        if (spawn_spikes({position.x, spike_y}, DOWN))
-            store_platform_coords({position.x, spike_y}, cell);
-
-    } else {
-        float spike_x = position.x + m_tile_width / 2;
-
-        if (spawn_spikes({spike_x, position.y}, RIGHT))
-            store_platform_coords({spike_x, position.y}, cell);
-    }
-
 }

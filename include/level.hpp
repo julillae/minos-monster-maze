@@ -16,6 +16,7 @@
 #include "renderEffects.hpp"
 #include "physics.hpp"
 #include "helpMenu.hpp"
+#include "levelLoader.hpp"
 
 // stlib
 #include <vector>
@@ -29,8 +30,6 @@
 #include <time.h>
 
 // Level class
-
-enum SpikeDir { UP, DOWN, LEFT, RIGHT};
 
 class Level
 {
@@ -55,7 +54,6 @@ public:
 	// Should the game be over ?
 	bool is_over()const;
 
-	std::string get_platform_by_coordinates(std::pair<float, float> coords);
 	bool maze_is_platform(std::pair<int,int> coords);
 	std::vector<std::vector <int>> get_original_maze();
 
@@ -68,19 +66,6 @@ private:
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-    void read_level_data();
-
-	// Generate a spider enemy
-	bool spawn_spider_enemy(vec2 position, float bound, bool upsideDown);
-
-	// Generate harpy enemy
-	bool spawn_harpy_enemy(vec2 position);
-
-	// Generates a new floor
-	bool spawn_floor(vec2 position);
-    bool spawn_ice(vec2 position);
-    bool spawn_spikes(vec2 position, SpikeDir dir);
-
 	void check_platform_collisions();
 
 	void draw_enemies(mat3 projection_2D);
@@ -90,20 +75,14 @@ private:
 	void destroy_platforms();
 
 	void initialize_camera_position(int w, int h);
+	void call_level_loader();
 	void load_new_level();
 	void reset_game();
 	void freeze_all_enemies();
 	void unfreeze_all_enemies();
 	void update_all_enemies(float elapsed_ms);
 
-	// Generates hard-coded maze in each level
-	void generate_maze();
-	void print_maze();
-	void store_platform_coords(vec2 coords, int platform_key);
-
 	void set_player_death();
-
-	void load_spikes(int cell, vec2 position);
 private:
 	// Window handle
 	GLFWwindow* m_window;
@@ -176,7 +155,6 @@ private:
 	// 4 = spider enemy (and its path)
 	// 9 = harpy enemy
     std::vector<std::vector <int>> m_maze;
-	std::map<std::pair<float, float>, std::string> platforms_by_coords;
 
     bool show_help_menu = false;
 	bool cameraTracking = true;
