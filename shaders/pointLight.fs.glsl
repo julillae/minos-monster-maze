@@ -3,30 +3,33 @@
 //////////////////////
 ////INPUT VARIABLES///
 /////////////////////
-in vec3 Position;
-in vec2 texCoord;
-
+in vec2 Position;
+//in vec2 texCoord;
+//in vec3 l_pos;
 ///////////////////////
 ///OUTPUT VARIABLES///
 //////////////////////
 out vec4 outputColor;
 
-struct ShaderBufferStruct
-{
-    vec3 pointLightPosition;
-};
+//struct ShaderBufferStruct
+//{
+    //vec3 l_pos;
+//};
+
 
 /////////////////////////
 ///UNIFORM VARIABLES/////
 /////////////////////////
-uniform ShaderBufferStruct shaderBufferStruct;
-uniform sampler2D sampler0;
+//uniform ShaderBufferStruct shaderBufferStruct;
+//uniform sampler2D sampler0;
+uniform vec2 light_pos;
+uniform sampler2D screen_texture;
 
-vec3 calculatePointLight(vec3 lightPosition, vec3 Color)
+vec3 calculatePointLight(vec2 lightPosition, vec3 Color)
 {
     vec3 finalColor = vec3(0.0);
 
-    vec3 l = lightPosition - Position;
+    vec2 l = lightPosition - Position;
     float dist = length(l);
 
     float linear = 0;
@@ -49,7 +52,15 @@ vec3 calculatePointLight(vec3 lightPosition, vec3 Color)
 ////////////////////////////////////////////////////////////////////////////////
 void main(void)
 {
-    vec4 textureColor = texture(sampler0, texCoord);
-    outputColor = vec4(calculatePointLight(shaderBufferStruct.pointLightPosition, vec3(1,1,1)), 1.0) * textureColor;
+    //vec4 textureColor = texture(sampler0, texCoord);
+    //outputColor = vec4(calculatePointLight(shaderBufferStruct.l_pos, vec3(1,1,1)), 1.0) * textureColor;
+    //vec3 l_pos = vec3(light_pos, 1.0);
+
+    //vec2 coord = distort(uv);
+
+    vec4 in_color = texture(screen_texture, Position);
+    //outputColor = in_color;
+
+    outputColor = vec4(calculatePointLight(light_pos, vec3(1,1,1)), 1.0)*in_color;
 
 }

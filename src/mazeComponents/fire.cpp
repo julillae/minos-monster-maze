@@ -4,32 +4,42 @@
 
 #include <cmath>
 
-bool Fire::init(vec2 position)
+bool Fire::init()
 {
-	const char* textureFile = textures_path("fire.png");
+	//const char* textureFile = textures_path("fire.png");
 
-	if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
+	//if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
 
-	float wr = m_texture.width * 0.5f;
-    float hr = m_texture.height * 0.5f;
+	//float wr = m_texture.width * 0.5f;
+    //float hr = m_texture.height * 0.5f;
 
-	TexturedVertex vertices[1];
-	vertices[0].position = { position.x, position.y, -0.02f };
-    vertices[0].texcoord = { 0.f, 0.f };
+	//TexturedVertex vertices[1];
+	//vertices[0].position = { position.x, position.y, -0.02f };
+    //vertices[0].texcoord = { 0.f, 0.f };
 
-	uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
+    static const GLfloat screen_vertex_buffer[] = {
+		-1.05f, -1.05f, 0.0f,
+		1.05f, -1.05f, 0.0f,
+		-1.05f,  1.05f, 0.0f,
+		-1.05f,  1.05f, 0.0f,
+		1.05f, -1.05f, 0.0f,
+		1.05f,  1.05f, 0.0f,
+	};
+
+    gl_flush_errors();
+
+	//uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
 	// Vertex Buffer creation
     glGenBuffers(1, &mesh.vbo);
     glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedVertex) * 1, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(screen_vertex_buffer), screen_vertex_buffer, GL_STATIC_DRAW);
 
 	// // Index Buffer creation
     // glGenBuffers(1, &mesh.ibo);
     // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
     // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint16_t) * 6, indices, GL_STATIC_DRAW);
-
 	// Vertex Array (Container for Vertex + Index buffer)
-    glGenVertexArrays(1, &mesh.vao);
+    //glGenVertexArrays(1, &mesh.vao);
     if (gl_has_errors())
         return false;
 
@@ -38,64 +48,83 @@ bool Fire::init(vec2 position)
         return false;
 
 
-	if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
+	//if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
 
-	if (!RenderManager::set_render_data(&m_texture, this)) return false;
+	//if (!RenderManager::set_render_data(&m_texture, this)) return false;
 
-    set_position(position);
+    //set_position(position);
 
 	// Setting initial values, scale is negative to make it face the opposite way
-    m_scale.x = 0.05f;
-	m_scale.y = 0.04f;
-	m_rotation = 0.f;
+    //m_scale.x = 0.05f;
+	//m_scale.y = 0.04f;
+	//m_rotation = 0.f;
 
     //set_size();
 
 	return true;
 }
 
+void Fire::destroy() {
+	glDeleteBuffers(1, &mesh.vbo);
+
+	glDeleteShader(effect.vertex);
+	glDeleteShader(effect.fragment);
+	glDeleteShader(effect.program);
+}
+
 void Fire::draw(const mat3& projection)
 {
-    // Setting shaders
-    glUseProgram(effect.program);
-
 	 // Enabling alpha channel for textures
     glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_DEPTH_TEST);
+    glUseProgram(effect.program);
 
 	// Getting uniform locations for glUniform* calls
     GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
     //GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
     //define uniform here
+    ////GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
-
-	// Setting vertices and indices
-    glBindVertexArray(mesh.vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-	GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
-    GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
-    glEnableVertexAttribArray(in_position_loc);
-    glEnableVertexAttribArray(in_texcoord_loc);
-	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
-    glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
-
-	// Enabling and binding texture to slot 0
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_texture.id);
-
-	// Setting uniform values to the currently bound program
+    GLuint screen_text_uloc = glGetUniformLocation(effect.program, "screen_texture");
+    GLint light_pos = glGetUniformLocation(effect.program, "light_pos");
+    glUniform1i(screen_text_uloc, 0);
+    float l_position[] = {0.0f, 0.0f};
+    glUniform2fv(light_pos, 1, l_position);
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
-    //float color[] = { 1.f, 1.f, 1.f};
-    //glUniform3fv(color_uloc, 1, color);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
-    // magnifies texture to avoid it being blurry when scaled
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	// Setting vertices and indices
+    //glBindVertexArray(mesh.vao);
+    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+    ////glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
 
+	////GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
+    //GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
+    ////glEnableVertexAttribArray(in_position_loc);
+    //glEnableVertexAttribArray(in_texcoord_loc);
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    //glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+
+	// Enabling and binding texture to slot 0
+    //glActiveTexture(GL_TEXTURE0);
+    //glBindTexture(GL_TEXTURE_2D, m_texture.id);
+
+	// Setting uniform values to the currently bound program
+    //glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
+    //float color[] = { 1.f, 1.f, 1.f};
+    //glUniform3fv(color_uloc, 1, color);
+    //glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+
+    // magnifies texture to avoid it being blurry when scaled
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+	// Draw
+	glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
+	glDisableVertexAttribArray(0);
 	
-	glDrawElements(GL_TRIANGLES, 1, GL_UNSIGNED_SHORT, nullptr);
+	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 	//RenderManager::draw(projection, m_position, m_rotation, m_scale, &texture, this);
 }
 
@@ -107,10 +136,10 @@ void Fire::draw(const mat3& projection)
 	//return { std::fabs(m_scale.x) * texture.width, std::fabs(m_scale.y) * texture.height };
 //}
 
-void Fire::set_position(vec2 position)
-{
-    m_position = position;
-}
+// void Fire::set_position(vec2 position)
+// {
+//     m_position = position;
+// }
 
 
 //  void Fire::set_size()

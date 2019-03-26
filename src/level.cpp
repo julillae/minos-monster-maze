@@ -217,9 +217,9 @@ void Level::generate_maze()
 					m_exit = new_exit;
 				}
 
-				Fire new_fire;
-				if (new_fire.init({x_pos, 1000.f})){
-					store_platform_coords({x_pos, y_pos}, cell);
+				Fire new_fire;  //change it to cell==a
+				if (new_fire.init()){
+					//store_platform_coords({x_pos, y_pos}, cell);
 					m_fire = new_fire;
 				}
 			} else if (cell == 3) {
@@ -264,7 +264,7 @@ void Level::generate_maze()
 	}
 
 	// Note: A hack to remove the initial tile added to m_floor - shanice
-	m_platforms.erase(m_platforms.begin());
+	//m_platforms.erase(m_platforms.begin());
 
     // Set global variables
     m_maze_width = j;
@@ -405,6 +405,7 @@ void Level::destroy()
 	m_enemies.clear();
 	m_platforms.clear();
 	m_help_menu.destroy();
+	m_fire.destroy();
 
 	glfwDestroyWindow(m_window);
 }
