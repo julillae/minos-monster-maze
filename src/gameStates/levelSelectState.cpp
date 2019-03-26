@@ -46,38 +46,6 @@ void LevelSelectState::init(vec2 screen)
     glGenFramebuffers(1, &m_frame_buffer);
     glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
 
-    if (SDL_Init(SDL_INIT_AUDIO) < 0)
-    {
-        fprintf(stderr, "Failed to initialize SDL Audio");
-        return;
-    }
-
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
-    {
-        fprintf(stderr, "Failed to open audio device");
-        return;
-    }
-//
-//    //Note: the following music credits needs to be added to a credit scene at the end of the game
-//    //Secret Catacombs
-//    //by Eric Matyas
-//    //www.soundimage.org
-//
-    m_background_music = Mix_LoadMUS(audio_path("secret_catacombs.wav"));
-
-    if (m_background_music == nullptr)
-    {
-        fprintf(stderr, "Failed to load sound\n %s\n make sure the data directory is present",
-                audio_path("secret_catacombs.wav"));
-        return;
-    }
-
-    // Playing background music undefinitely
-    Mix_PlayMusic(m_background_music, -1);
-    Mix_VolumeMusic(50);
-
-    fprintf(stderr, "Loaded music\n");
-
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
     glViewport(0, 0, w, h);
@@ -236,12 +204,10 @@ void LevelSelectState::destroy()
 {
     glDeleteFramebuffers(1, &m_frame_buffer);
 
-    if (m_background_music != nullptr)
-        Mix_FreeMusic(m_background_music);
-
-    Mix_CloseAudio();
-
     levelSelectMenu.destroy();
+    for (auto& button : levelButtons) {
+        button->destroy();
+    }
 
 }
 

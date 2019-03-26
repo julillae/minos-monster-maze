@@ -214,6 +214,7 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
                     close = true;
                     break;
                 default:
+                    //TODO: load from saved file if exists
                     Physics *physicsHandler = new Physics();
                     Level* level = new Level(game);
                     level->init(m_screen, physicsHandler, 0);
@@ -293,6 +294,11 @@ void MainMenuState::destroy()
     Mix_CloseAudio();
 
     mainMenu.destroy();
+    continueButton.destroy();
+    newGameButton.destroy();
+    controlsButton.destroy();
+    quitButton.destroy();
+    m_help_menu.destroy();
 
 }
 
@@ -310,10 +316,10 @@ void MainMenuState::init_buttons()
     float buttonY = initialPosition.y + 40;
     float buttonOffset = 75.f;
 
-    const char* continueText = textures_path("continue-button2.png");
-    const char* newGameText = textures_path("new-game-button2.png");
-    const char* controlsText = textures_path("controls-button2.png");
-    const char* quitText = textures_path("quit-button2.png");
+    const char* continueText = textures_path("continue-button.png");
+    const char* newGameText = textures_path("new-game-button.png");
+    const char* controlsText = textures_path("controls-button.png");
+    const char* quitText = textures_path("quit-button.png");
     continueButton.init(vec2({buttonX, buttonY}), continueText, CONTINUE );
     continueButton.set_selected(true);
     currentButton = &continueButton;
