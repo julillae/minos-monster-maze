@@ -222,7 +222,10 @@ bool Level::update(float elapsed_ms)
 		currentIntervalPos = min(currentIntervalPos, maxIntervalLength);
 		normalizedIntervalPos = currentIntervalPos / maxIntervalLength;
 		rotationSpeed = hermiteSplineVal(0.f, maxRotationSpeed, 0.f, 0.f, normalizedIntervalPos);
+
+		if (rotationEnergy - fabs(rotationSpeed) < 0) rotationSpeed = rotationEnergy;
 		if (rotateCW) rotationSpeed *= -1;
+
 		rotationDeg = fmod(rotationDeg + rotationSpeed, 360.f);
 
 		rotation = static_cast<float>((rotationDeg * M_PI) / 180);

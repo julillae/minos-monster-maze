@@ -160,5 +160,5 @@ private:
 	bool cameraTracking = true;
 	bool canRotate = true;
 
-	float rotationEnergy = 100.0;
+	float rotationEnergy = 180.0;
 };
