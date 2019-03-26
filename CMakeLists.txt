@@ -56,6 +56,7 @@ set(SOURCE_FILES
     src/level.cpp
     src/stateTree.cpp
     src/helpMenu.cpp
+    src/levelLoader.cpp
     
 
     include/project_path.hpp
@@ -83,6 +84,7 @@ set(SOURCE_FILES
     include/level.hpp
     include/stateTree.hpp
     include/helpMenu.hpp
+    include/levelLoader.hpp
     
 	)
 
