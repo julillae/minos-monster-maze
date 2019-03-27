@@ -24,9 +24,20 @@ class Minotaur: public Smart
 
         void set_bound(float bound);
 
+        bool isPlayerClose();
+
+        void initStateTreeMinotaur();
+
+        void setFollowDirection();
+
+        bool atBound();
+
+        void updateVelocity();
+
     private:
         float maxVerticalSpeed = 1.f;
         float maxHorzSpeed = 1.f;
         float m_stopBound;
+        float detectPlayerRange = 200.f;
 	
 };
