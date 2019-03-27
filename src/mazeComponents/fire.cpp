@@ -80,7 +80,7 @@ void Fire::draw(const mat3& projection)
     glUseProgram(effect.program);
 
 	// Getting uniform locations for glUniform* calls
-    //GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
+    GLint transform_uloc = glGetUniformLocation(effect.program, "transform");
     //GLint color_uloc = glGetUniformLocation(effect.program, "fcolor");
     //define uniform here
     ////GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
@@ -94,7 +94,7 @@ void Fire::draw(const mat3& projection)
     glUniform1i(screen_text_uloc, 0);
     float l_position[] = {0.0f, 0.0f};
     glUniform2fv(light_pos, 2, l_position);
-    //glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
+    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
     glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(vec3));
