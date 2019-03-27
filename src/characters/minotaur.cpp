@@ -47,7 +47,6 @@ void Minotaur::update(float ms)
         // Also want to be able to rotate world?
         characterState->changeState(running);
 		if (atBound()) {
-            printf("Pacing: switched direction");
             if (direction == Direction::left) {
                 direction = Direction::right;
             } else {
@@ -61,7 +60,7 @@ void Minotaur::update(float ms)
         {
             characterState->changeState(idle);
         } else if (abs(playerLoc.x - m_position.x) <= 10.f){
-            characterState->changeState(idle);
+            characterState->changeState(swinging);
         } else
         {
             setFollowDirection();
@@ -92,6 +91,9 @@ void Minotaur::updateVelocity()
             } else {
                 m_velocity.x = (maxHorzSpeed + 1.f)* -1;
             }
+            break;
+        case swinging:
+            printf("In case for swinging");
             break;
         default:
             break;
@@ -207,12 +209,14 @@ void Minotaur::initStateTreeMinotaur()
 		{idle, frozen, 1},
 		{idle, dead, 1},
         {idle, following, 1},
+        {idle, swinging, 1},
 		{running, idle, 1},
 		{running, jumping, 1},
 		{running, falling, 1},
 		{running, frozen, 1},
 		{running, dead, 1},
         {running, following, 1},
+        {running, swinging, 1},
 		{jumping, rising, 0},
 		{jumping, frozen, 0},
 		{jumping, dead, 0},
@@ -234,9 +238,15 @@ void Minotaur::initStateTreeMinotaur()
 		{thawing, rising, 0},
 		{thawing, falling, 0},
         {thawing, following, 0},
+        {thawing, swinging, 0},
         {following, idle, 1},
         {following, running, 1},
         {following, frozen, 1},
+        {following, swinging, 1},
+        {swinging, idle, 1},
+        {swinging, running, 1},
+        {swinging, frozen, 1},
+        {swinging, following, 1},
 		{dead, reviving, 0},
 		{reviving, idle, 0}
 	};

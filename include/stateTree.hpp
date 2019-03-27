@@ -6,7 +6,7 @@ using namespace std;
 
 // Enum for character states
 // set StateMAX = last item in enum, needed to know how many states are available
-enum State { idle, running, jumping, rising, falling, landing, frozen, thawing, reviving, following, dead, StateMAX = dead};
+enum State { idle, running, jumping, rising, falling, landing, frozen, thawing, reviving, following, swinging, dead, StateMAX = dead};
 
 struct Edge {
 	State src;
