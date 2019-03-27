@@ -42,6 +42,7 @@ void main(void)
     //l_pos = light_p;
 
     //Position = worldPosition + in_position;
-    Position = (in_position.xy + vec2(1.05, 1.05)) / 2.1;
+    vec3 Po = projection * vec3(in_position.xy, 1.0);
+    Position = Po.xy;
     texCoord = in_texcoord;
 }

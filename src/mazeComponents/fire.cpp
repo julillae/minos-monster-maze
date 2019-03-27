@@ -93,9 +93,12 @@ void Fire::draw(const mat3& projection)
     glEnableVertexAttribArray(in_texcoord_loc);
     glUniform1i(screen_text_uloc, 0);
     float l_position[] = {0.0f, 0.0f};
-    glUniform2fv(light_pos, 1, l_position);
+    glUniform2fv(light_pos, 2, l_position);
     //glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(vec3));
+
 
 	// Setting vertices and indices
     //glBindVertexArray(mesh.vao);
@@ -121,8 +124,8 @@ void Fire::draw(const mat3& projection)
 
     // magnifies texture to avoid it being blurry when scaled
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    //glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	// Draw
 	glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
