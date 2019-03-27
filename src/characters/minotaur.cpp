@@ -1,4 +1,5 @@
 #include <stack>
+#include <chrono>
 
 #include "../include/characters/minotaur.hpp"
 #include "../include/common.hpp"
@@ -9,6 +10,7 @@
 
 // Put implementation for Minotaur enemy here
 
+using Clock = std::chrono::high_resolution_clock;
 Texture Minotaur::minotaur_texture;
 
 bool Minotaur::init(vec2 initialPosition, Physics * physicsHandler)
@@ -25,6 +27,7 @@ bool Minotaur::init(vec2 initialPosition, Physics * physicsHandler)
     int horizontalTrim = 12;
     int verticalTrim = 19;
     m_stopBound = 10.f;
+    cycle_start = Clock::now();
 
 	spriteSheet.init(&minotaur_texture, { spriteSheetWidth, spriteSheetHeight }, this);
 
@@ -55,21 +58,22 @@ void Minotaur::update(float ms)
 		}
 	} else if (is_alive() && !m_frozen && isPlayerClose())
     {
-        vec2 playerLoc = world.m_player.get_position();
+        vec2 playerLoc = world->m_player.get_position();
         if (atBound())
         {
             characterState->changeState(idle);
-        } else if (abs(playerLoc.x - m_position.x) <= 10.f){
+        } else if (abs(playerLoc.x - m_position.x) <= 10.f)
+        {
             characterState->changeState(swinging);
         } else
         {
             setFollowDirection();
             characterState->changeState(following);
         }        
-    }
+    } 
     updateVelocity();
     move();
-
+    handleBossRotation();
 }
 
 void Minotaur::updateVelocity()
@@ -93,7 +97,7 @@ void Minotaur::updateVelocity()
             }
             break;
         case swinging:
-            printf("In case for swinging");
+            printf("In case for swinging\n");
             break;
         default:
             break;
@@ -116,7 +120,7 @@ bool Minotaur::atBound()
 
 void Minotaur::setFollowDirection()
 {
-    vec2 playerLoc = world.m_player.get_position();
+    vec2 playerLoc = world->m_player.get_position();
     if (((playerLoc.x < m_position.x) && (m_velocity.x > 0)) ||
          ((playerLoc.x > m_position.x) && (m_velocity.x < 0)) ) {
         // switch direction to follow player if necessary
@@ -130,7 +134,7 @@ void Minotaur::setFollowDirection()
 
 bool Minotaur::isPlayerClose()
 {
-   vec2 playerLoc = world.m_player.get_position();
+   vec2 playerLoc = world->m_player.get_position();
    if (abs(playerLoc.x - m_position.x) <= detectPlayerRange && abs(playerLoc.y - m_position.y) <= detectPlayerRange) {
        return true;
    }
@@ -140,6 +144,35 @@ bool Minotaur::isPlayerClose()
 void Minotaur::set_bound(float bound) 
 {
    m_stopBound = bound;
+}
+
+void Minotaur::handleBossRotation()
+{
+    printf("In handleBossRotation\n");
+    float timeElapsed = getTimeElapsed();
+    if (rotating && (timeElapsed >= rotate_duration)) {
+        printf("Stopping boss rotation\n");
+        world->boss_rotation_set(false);
+        rotating = false;
+        resetCycleStart();
+    } else
+     if (timeElapsed >= rotate_cycle_time) {
+        printf("Starting boss rotation\n");
+        world->boss_rotation_set(true);
+        rotating = true;
+        resetCycleStart();
+    }
+}
+
+float Minotaur::getTimeElapsed() 
+{
+    auto now = Clock::now();
+	float elapsed_sec = (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - cycle_start)).count() / 1000;
+    return elapsed_sec;
+}
+
+void Minotaur::resetCycleStart() {
+    cycle_start = Clock::now();
 }
 
 void Minotaur::draw(const mat3& projection)

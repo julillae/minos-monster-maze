@@ -793,3 +793,7 @@ void Level::load_harpies()
 		m_harpies[i].set_scale(vec2({scale_x, scale_y}));
 	}
 }
+void Level::boss_rotation_set(bool enable)
+{
+	isRotating = enable;
+}

@@ -34,10 +34,20 @@ class Minotaur: public Smart
 
         void updateVelocity();
 
+        void handleBossRotation();
+
+        float getTimeElapsed();
+
+        void resetCycleStart();
+
     private:
         float maxVerticalSpeed = 1.f;
         float maxHorzSpeed = 1.f;
         float m_stopBound;
         float detectPlayerRange = 200.f;
+        std::chrono::high_resolution_clock::time_point cycle_start;
+        const float rotate_cycle_time = 5000.f;
+        const float rotate_duration = 1000.f;
+        bool rotating = false;
 	
 };
