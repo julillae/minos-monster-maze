@@ -651,5 +651,9 @@ void Level::load_select_level(int level)
 	current_level = level;
 	call_level_loader();
 
+	int w, h;
+	glfwGetWindowSize(m_window, &w, &h);
+	initialize_camera_position(w, h);
+
 	reset_player_camera();
 }

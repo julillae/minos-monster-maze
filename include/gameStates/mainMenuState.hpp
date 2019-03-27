@@ -37,6 +37,7 @@ private:
     MainButton controlsButton;
     MainButton quitButton;
     bool show_help_menu = false;
+    bool show_continue = false;
 
     HelpMenu m_help_menu;
 

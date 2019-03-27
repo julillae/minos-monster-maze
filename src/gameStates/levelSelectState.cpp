@@ -10,6 +10,8 @@
 #include <iostream>
 #include <fstream>
 
+Level* world;
+
 namespace
 {
     vec2 cameraCenter;
@@ -174,6 +176,8 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
                 game->push_state(newLevel);
                 game->set_current_state(newLevel);
             }
+
+            world = (Level*) game->get_state(LEVEL);
 
         }
 
