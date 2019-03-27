@@ -29,6 +29,7 @@ public:
     bool init(vec2 screen);
 
     void push_state(GameState* state);
+    GameState* get_state(gameStates stateName);
 
     GameState* current_state();
     std::map<gameStates, GameState*> get_states();

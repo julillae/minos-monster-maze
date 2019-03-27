@@ -215,11 +215,16 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
                     break;
                 default:
                     //TODO: load from saved file if exists
-                    Physics *physicsHandler = new Physics();
-                    Level* level = new Level(game);
-                    level->init(m_screen, physicsHandler, 0);
-                    game->push_state(level);
-                    game->set_current_state(level);
+                    if (game->get_state(LEVEL) != NULL)
+                    {
+                        game->set_current_state(game->get_state(LEVEL));
+                    } else {
+                        Physics *physicsHandler = new Physics();
+                        Level* level = new Level(game);
+                        level->init(m_screen, physicsHandler, 0);
+                        game->push_state(level);
+                        game->set_current_state(level);
+                    }
                     break;
             }
 

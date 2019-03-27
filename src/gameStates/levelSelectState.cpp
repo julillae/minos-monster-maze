@@ -169,10 +169,12 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
 
         }
 
+        int numButtons = sizeof(levelButtons)/sizeof(*levelButtons);
+
         if (key == GLFW_KEY_RIGHT)
         {
 
-            int nextButton = (currentButton->level + 1) % (sizeof(levelButtons)/sizeof(*levelButtons));
+            int nextButton = (currentButton->level + 1) % numButtons;
             set_currentButton(levelButtons[nextButton]);
         }
 
@@ -181,7 +183,19 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
 
             int nextButton = currentButton->level - 1;
             if (nextButton < 0)
-                nextButton = sizeof(levelButtons)/sizeof(*levelButtons) - 1;
+                nextButton = numButtons - 1;
+            set_currentButton(levelButtons[nextButton]);
+        }
+
+        if (key == GLFW_KEY_DOWN && currentButton->level < 6)
+        {
+            int nextButton = (currentButton->level + 6) % numButtons;
+            set_currentButton(levelButtons[nextButton]);
+        }
+
+        if (key == GLFW_KEY_UP && currentButton->level >=6)
+        {
+            int nextButton = (currentButton->level - 6);
             set_currentButton(levelButtons[nextButton]);
         }
 
@@ -221,22 +235,49 @@ void LevelSelectState::initialize_camera_position(int w, int h)
 
 void LevelSelectState::init_buttons()
 {
-    float buttonX = initialPosition.x / 2;
-    float buttonY = initialPosition.y;
-    float buttonOffset = 150.f;
+    float buttonX = initialPosition.x / 3 + 50;
+    float buttonY = initialPosition.y - 85;
+    float buttonOffset_x = 150.f;
+    float buttonOffset_y = 200.f;
+
 
     const char* level1Text = textures_path("level1.png");
     const char* level2Text = textures_path("level2.png");
     const char* level3Text = textures_path("level3.png");
+    const char* level4Text = textures_path("level4.png");
+    const char* level5Text = textures_path("level5.png");
+    const char* level6Text = textures_path("level6.png");
+    const char* level7Text = textures_path("level7.png");
+    const char* level8Text = textures_path("level8.png");
+    const char* level9Text = textures_path("level9.png");
+    const char* level10Text = textures_path("level10.png");
+
     level1Button.init(vec2({buttonX, buttonY}), level1Text, 0 );
     level1Button.set_selected(true);
     currentButton = &level1Button;
-    level2Button.init(vec2({buttonX + buttonOffset, buttonY}), level2Text, 1);
-    level3Button.init(vec2({buttonX + buttonOffset * 2, buttonY }), level3Text, 2);
+    level2Button.init(vec2({buttonX + buttonOffset_x, buttonY}), level2Text, 1);
+    level3Button.init(vec2({buttonX + buttonOffset_x * 2, buttonY }), level3Text, 2);
+    level4Button.init(vec2({buttonX + buttonOffset_x * 3, buttonY }), level4Text, 3);
+    level5Button.init(vec2({buttonX + buttonOffset_x * 4, buttonY }), level5Text, 4);
+    level6Button.init(vec2({buttonX + buttonOffset_x * 5, buttonY }), level6Text, 5);
+
+    buttonY = buttonY + buttonOffset_y;
+
+    level7Button.init(vec2({buttonX + buttonOffset_x * 0, buttonY }), level7Text, 6);
+    level8Button.init(vec2({buttonX + buttonOffset_x * 1, buttonY }), level8Text, 7);
+    level9Button.init(vec2({buttonX + buttonOffset_x * 2, buttonY }), level9Text, 8);
+    level10Button.init(vec2({buttonX + buttonOffset_x * 3, buttonY }), level10Text, 9);
 
     levelButtons[0] = &level1Button;
     levelButtons[1] = &level2Button;
     levelButtons[2] = &level3Button;
+    levelButtons[3] = &level4Button;
+    levelButtons[4] = &level5Button;
+    levelButtons[5] = &level6Button;
+    levelButtons[6] = &level7Button;
+    levelButtons[7] = &level8Button;
+    levelButtons[8] = &level9Button;
+    levelButtons[9] = &level10Button;
 
 }
 

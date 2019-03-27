@@ -18,8 +18,8 @@ bool LevelButton::init(vec2 position, const char* textureFile, int level)
     set_position(position);
 
     // Setting initial values, scale is negative to make it face the opposite way
-    m_scale.x = 0.7f;
-    m_scale.y = 0.7f;
+    m_scale.x = 0.6f;
+    m_scale.y = 0.6f;
     m_rotation = 0.f;
     this->level = level;
 
