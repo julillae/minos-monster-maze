@@ -57,7 +57,7 @@ set(SOURCE_FILES
     src/stateTree.cpp
     src/helpMenu.cpp
     src/levelLoader.cpp
-    
+    src/quadTree.cpp
 
     include/project_path.hpp
 	include/common.hpp
@@ -85,7 +85,7 @@ set(SOURCE_FILES
     include/stateTree.hpp
     include/helpMenu.hpp
     include/levelLoader.hpp
-    
+    include/quadTree.hpp
 	)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
@@ -127,8 +127,10 @@ if (IS_OS_LINUX OR IS_OS_MAC)
     if (IS_OS_MAC)
        find_library(COCOA_LIBRARY Cocoa)
        find_library(CF_LIBRARY CoreFoundation)
+       set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo")
        target_link_libraries(${PROJECT_NAME} PUBLIC ${COCOA_LIBRARY} ${CF_LIBRARY})
     endif()
+
 elseif (IS_OS_WINDOWS)
 # https://stackoverflow.com/questions/17126860/cmake-link-precompiled-library-depending-on-os-and-architecture
     set(GLFW_FOUND TRUE)

@@ -9,6 +9,8 @@
 #include <array>
 #include <memory>
 #include "../include/mazeComponents/mazeComponent.hpp"
+#include "../include/mazeComponents/fixedComponent.hpp"
+
 
 class QuadTreeNode {
 public:
