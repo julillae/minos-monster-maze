@@ -25,6 +25,7 @@ public:
 
     void init_buttons();
     void set_currentButton(MainButton* button);
+    void reset_buttons();
 
 private:
     MainMenu mainMenu;

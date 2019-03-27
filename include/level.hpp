@@ -33,7 +33,7 @@
 
 // Level class
 
-class Level
+class Level : public GameState
 {
 public:
 	Player m_player;
@@ -63,6 +63,8 @@ public:
 	float get_maze_height();
 	float get_tile_width();
 	float get_tile_height();
+
+	void load_select_level(int level);
 private:
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
@@ -80,6 +82,7 @@ private:
 	void call_level_loader();
 	void load_new_level();
 	void reset_game();
+	void reset_player_camera();
 	void freeze_all_enemies();
 	void unfreeze_all_enemies();
 	void update_all_enemies(float elapsed_ms);

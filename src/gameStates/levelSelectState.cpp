@@ -161,11 +161,19 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
     if (action == GLFW_PRESS) {
         if (key == GLFW_KEY_ENTER)
         {
-            Physics *physicsHandler = new Physics();
-            Level* level = new Level(game);
-            level->init(m_screen, physicsHandler, currentButton->level);
-            game->push_state(level);
-            game->set_current_state(level);
+            Level* level = (Level*) game->get_state(LEVEL);
+            if (level != NULL)
+            {
+                level->load_select_level(currentButton->level);
+                game->set_current_state(level);
+            } else
+            {
+                Physics *physicsHandler = new Physics();
+                Level* newLevel = new Level(game);
+                newLevel->init(m_screen, physicsHandler, currentButton->level);
+                game->push_state(newLevel);
+                game->set_current_state(newLevel);
+            }
 
         }
 
@@ -187,13 +195,13 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
             set_currentButton(levelButtons[nextButton]);
         }
 
-        if (key == GLFW_KEY_DOWN && currentButton->level < 6)
+        if (key == GLFW_KEY_DOWN && currentButton->level < 4)
         {
             int nextButton = (currentButton->level + 6) % numButtons;
             set_currentButton(levelButtons[nextButton]);
         }
 
-        if (key == GLFW_KEY_UP && currentButton->level >=6)
+        if (key == GLFW_KEY_UP && currentButton->level >=5)
         {
             int nextButton = (currentButton->level - 6);
             set_currentButton(levelButtons[nextButton]);
@@ -287,5 +295,9 @@ void LevelSelectState::set_currentButton(LevelButton* button)
     button->set_selected(true);
     currentButton = button;
 
+}
 
+void LevelSelectState::reset_buttons()
+{
+    set_currentButton(levelButtons[0]);
 }
