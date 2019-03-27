@@ -7,6 +7,7 @@
 #include "characters/simple.hpp"
 #include "characters/spider.hpp"
 #include "characters/harpy.hpp"
+#include "characters/minotaur.hpp"
 #include "mazeComponents/mazeComponent.hpp"
 #include "mazeComponents/fixedComponent.hpp"
 #include "mazeComponents/floor.hpp"
@@ -74,6 +75,9 @@ public:
     std::vector<Harpy> get_harpies();
 
     void load_saved_game();
+	// Boss controls
+	void boss_rotation_set(bool enable);
+	
 private:
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
