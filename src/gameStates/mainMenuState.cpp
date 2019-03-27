@@ -188,6 +188,10 @@ void MainMenuState::draw()
 
 bool MainMenuState::update(float elapsed_ms)
 {
+    if (game->get_state(LEVEL) != NULL)
+    {
+        continueButton.set_visibility(true);
+    }
     return true;
 }
 
@@ -200,10 +204,19 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
             {
                 case NEWGAME:
                 {
-                    LevelSelectState* levelSelect = new LevelSelectState(game);
-                    levelSelect->init(m_screen);
-                    game->push_state(levelSelect);
-                    game->set_current_state(levelSelect);
+                    LevelSelectState* levelSelectState = (LevelSelectState*) game->get_state(LEVELSELECT);
+                    if (levelSelectState != NULL)
+                    {
+                        levelSelectState->reset_buttons();
+                        game->set_current_state(levelSelectState);
+                    } else
+                    {
+                        LevelSelectState* levelSelect = new LevelSelectState(game);
+                        levelSelect->init(m_screen);
+                        game->push_state(levelSelect);
+                        game->set_current_state(levelSelect);
+                    }
+
                     break;
                 }
                 case CONTROLS:
@@ -326,9 +339,10 @@ void MainMenuState::init_buttons()
     const char* controlsText = textures_path("controls-button.png");
     const char* quitText = textures_path("quit-button.png");
     continueButton.init(vec2({buttonX, buttonY}), continueText, CONTINUE );
-    continueButton.set_selected(true);
-    currentButton = &continueButton;
+    continueButton.set_visibility(false);
     newGameButton.init(vec2({buttonX, buttonY + buttonOffset}), newGameText, NEWGAME);
+    newGameButton.set_selected(true);
+    currentButton = &newGameButton;
     controlsButton.init(vec2({buttonX, buttonY + buttonOffset * 2}), controlsText, CONTROLS);
     quitButton.init(vec2({buttonX, buttonY + buttonOffset * 3}), quitText, QUIT);
 
@@ -339,4 +353,9 @@ void MainMenuState::set_currentButton(MainButton* button)
     currentButton->set_selected(false);
     button->set_selected(true);
     currentButton = button;
+}
+
+void MainMenuState::reset_buttons()
+{
+    set_currentButton(&continueButton);
 }

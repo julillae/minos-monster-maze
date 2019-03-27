@@ -403,7 +403,8 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		}
 
 		if (key == GLFW_KEY_ESCAPE) {
-            GameState* mainMenuState = game->get_state(MAIN);
+            MainMenuState* mainMenuState = (MainMenuState*) game->get_state(MAIN);
+            mainMenuState->reset_buttons();
 		    game->set_current_state(mainMenuState);
 		}
 	}
@@ -569,7 +570,11 @@ void Level::reset_game()
 		reset_enemies();
 	}
 	
+	reset_player_camera();
+}
 
+void Level::reset_player_camera()
+{
 	m_player.init(initialPosition, physicsHandler);
 
 	m_water.reset_player_win_time();
@@ -635,4 +640,16 @@ void Level::set_player_death()
 		m_player.kill();
 		m_water.set_player_dead();
 	}
+}
+
+void Level::load_select_level(int level)
+{
+	destroy_platforms();
+	destroy_enemies();
+	m_maze.clear();
+
+	current_level = level;
+	call_level_loader();
+
+	reset_player_camera();
 }

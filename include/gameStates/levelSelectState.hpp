@@ -24,7 +24,7 @@ public:
 
     void init_buttons();
     void set_currentButton(LevelButton* button);
-
+    void reset_buttons();
 private:
     LevelSelectMenu levelSelectMenu;
     LevelButton* currentButton;
