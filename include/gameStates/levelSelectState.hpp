@@ -30,11 +30,18 @@ private:
     LevelButton* currentButton;
 
     // menu buttons
-    LevelButton* levelButtons[3];
+    LevelButton* levelButtons[10];
 
     LevelButton level1Button;
     LevelButton level2Button;
     LevelButton level3Button;
+    LevelButton level4Button;
+    LevelButton level5Button;
+    LevelButton level6Button;
+    LevelButton level7Button;
+    LevelButton level8Button;
+    LevelButton level9Button;
+    LevelButton level10Button;
 
     vec2 initialPosition;
 

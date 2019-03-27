@@ -79,6 +79,14 @@ void Game::push_state(GameState* state)
     states.insert( std::pair<gameStates, GameState*>(state->name, state));
 }
 
+GameState* Game::get_state(gameStates stateName)
+{
+    if (states.find(stateName) != states.end())
+        return states.find(stateName)->second;
+    else
+        return NULL;
+}
+
 GameState* Game::current_state()
 {
     if (states.empty())

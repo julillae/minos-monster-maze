@@ -614,9 +614,8 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 			m_player.jumpKey = GLFW_KEY_SPACE;
 		}
 
-		//TODO: make pause menu
 		if (key == GLFW_KEY_ESCAPE) {
-			GameState* mainMenuState = game->get_states().find(MAIN)->second;
+            GameState* mainMenuState = game->get_state(MAIN);
 		    game->set_current_state(mainMenuState);
 		}
 	}
