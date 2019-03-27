@@ -4,7 +4,7 @@
 ////INPUT VARIABLES///
 /////////////////////
 in vec2 Position;
-//in vec2 texCoord;
+in vec2 texCoord;
 //in vec3 l_pos;
 ///////////////////////
 ///OUTPUT VARIABLES///
@@ -58,9 +58,10 @@ void main(void)
 
     //vec2 coord = distort(uv);
 
-    vec4 in_color = texture(screen_texture, Position);
+    vec4 texturecolor = texture(screen_texture, texCoord);
     //outputColor = in_color;
 
-    outputColor = vec4(calculatePointLight(light_pos, vec3(1,1,1)), 1.0)*in_color;
+
+    outputColor = vec4(calculatePointLight(light_pos, vec3(1,1,1)), 1.0)*texturecolor;
 
 }

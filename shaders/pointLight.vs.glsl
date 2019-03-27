@@ -4,19 +4,19 @@
 ////INPUT VARIABLES///
 /////////////////////
 layout(location = 0)in vec4 in_position;
-//layout(location = 1)in vec2 in_texcoord;
+layout(location = 1)in vec2 in_texcoord;
 
 /////////////////////
 //OUTPUT VARIABLES//
 ////////////////////
 out vec2 Position;
-//out vec2 texCoord;
+out vec2 texCoord;
 //out vec3 l_pos;
 
 ////////////////////
 //UNIFORM VARIABLES//
 ////////////////////
-uniform mat3 transform;
+//uniform mat3 transform;
 //uniform mat4 viewMatrix;
 uniform mat3 projection;
 //uniform vec3 worldPosition;
@@ -32,8 +32,9 @@ void main(void)
     //mat3 mvp = projection*transform;
     //gl_Position = mvp*vec4(in_position, 1.0);
     //vec3 pos = vec3(in_position.xy, 1.0);
-    vec3 pos = projection * transform * vec3(in_position.xy, 1.0);
+    vec3 pos = projection *  vec3(in_position.xy, 1.0);
 	gl_Position = vec4(pos.xy, in_position.z, 1.0);
+
 
     //gl_Position = in_position;
 
@@ -42,5 +43,5 @@ void main(void)
 
     //Position = worldPosition + in_position;
     Position = (in_position.xy + vec2(1.05, 1.05)) / 2.1;
-    //texCoord = in_texcoord;
+    texCoord = in_texcoord;
 }
