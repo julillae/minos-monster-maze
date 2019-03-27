@@ -18,7 +18,6 @@ using Clock = std::chrono::high_resolution_clock;
 
 // Global
 Game game;
-Level *world = new Level(&game);
 MainMenuState *mmState = new MainMenuState(&game);
 const int width = 1280;
 const int height = 720;

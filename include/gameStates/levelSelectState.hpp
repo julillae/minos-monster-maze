@@ -6,6 +6,10 @@
 #include "../menus/button.hpp"
 #include "../menus/levelButton.hpp"
 
+class Level;
+
+extern Level* world;
+
 class LevelSelectState : public GameState
 {
 public:

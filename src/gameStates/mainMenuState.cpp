@@ -188,8 +188,9 @@ void MainMenuState::draw()
 
 bool MainMenuState::update(float elapsed_ms)
 {
-    if (game->get_state(LEVEL) != NULL)
+    if (game->get_state(LEVEL) != NULL && !show_continue)
     {
+        show_continue = true;
         continueButton.set_visibility(true);
     }
     return true;
@@ -257,7 +258,10 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
                     set_currentButton(&quitButton);
                     break;
                 default:
-                    set_currentButton(&continueButton);
+                    if (show_continue)
+                        set_currentButton(&continueButton);
+                    else
+                        set_currentButton(&newGameButton);
                     break;
             }
         }
@@ -270,7 +274,10 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
                     set_currentButton(&quitButton);
                     break;
                 case NEWGAME:
-                    set_currentButton(&continueButton);
+                    if (show_continue)
+                        set_currentButton(&continueButton);
+                    else
+                        set_currentButton(&quitButton);
                     break;
                 case CONTROLS:
                     set_currentButton(&newGameButton);
