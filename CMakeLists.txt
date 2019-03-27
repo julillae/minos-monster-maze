@@ -41,6 +41,7 @@ set(SOURCE_FILES
     src/characters/enemy.cpp
     src/characters/smart.cpp
     src/characters/harpy.cpp
+    src/characters/minotaur.cpp
     src/characters/simple.cpp
     src/characters/spider.cpp
     src/mazeComponents/mazeComponent.cpp
@@ -80,6 +81,7 @@ set(SOURCE_FILES
     include/characters/enemy.hpp
     include/characters/smart.hpp
     include/characters/harpy.hpp
+    include/characters/minotaur.hpp
     include/characters/simple.hpp
     include/characters/spider.hpp
     include/mazeComponents/mazeComponent.hpp
