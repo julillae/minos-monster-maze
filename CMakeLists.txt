@@ -65,7 +65,8 @@ set(SOURCE_FILES
     src/menus/levelSelectMenu.cpp
     src/menus/levelButton.cpp
     src/menus/mainButton.cpp
-    
+    src/levelLoader.cpp
+
 
     include/project_path.hpp
 	include/common.hpp
@@ -102,7 +103,8 @@ set(SOURCE_FILES
     include/menus/levelSelectMenu.hpp
     include/menus/levelButton.hpp
     include/menus/mainButton.hpp
-    
+    include/levelLoader.hpp
+
 	)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
