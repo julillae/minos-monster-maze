@@ -255,6 +255,7 @@ bool Level::update(float elapsed_ms)
 		Mix_PlayChannel(-1, level_complete_sound, 0);
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
+		m_player.freeze();
 		m_player.set_invincibility(true);
 	}
 
