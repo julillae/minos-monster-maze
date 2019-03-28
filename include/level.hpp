@@ -153,4 +153,7 @@ private:
     bool show_help_menu = false;
 	bool cameraTracking = true;
 	bool canRotate = true;
+
+	float maxRotationEnergy = 180.f;
+	float rotationEnergy = maxRotationEnergy;
 };

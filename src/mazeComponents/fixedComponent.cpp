@@ -1,4 +1,5 @@
 #include "../include/mazeComponents/fixedComponent.hpp"
+#include <cmath>
 
 // Put implementation specific to fixed maze components here
 
