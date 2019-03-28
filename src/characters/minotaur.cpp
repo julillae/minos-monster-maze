@@ -148,7 +148,6 @@ void Minotaur::set_bound(float bound)
 
 void Minotaur::handleBossRotation()
 {
-    printf("In handleBossRotation\n");
     float timeElapsed = getTimeElapsed();
     if (rotating && (timeElapsed >= rotate_duration)) {
         printf("Stopping boss rotation\n");
