@@ -17,15 +17,16 @@ bool Minotaur::init(vec2 initialPosition, Physics * physicsHandler)
 {
     Smart::init(initialPosition, physicsHandler);
 
-    const char* textureFile = textures_path("bat-sprite-sheet.png");
+    const char* textureFile = textures_path("minotaur-sprite-sheet-cropped.png");
 	if (!RenderManager::load_texture(textureFile, &minotaur_texture, this)) {
         return false;
     }
 
-	float spriteSheetWidth = 5.0f;
-	float spriteSheetHeight = 3.0f;
-    int horizontalTrim = 12;
-    int verticalTrim = 19;
+	float spriteSheetWidth = 9.0f;
+	float spriteSheetHeight = 10.0f;
+    int horizontalTrim = 0;
+    int verticalTrim = 0;
+
     m_stopBound = 10.f;
     cycle_start = Clock::now();
 
@@ -34,7 +35,7 @@ bool Minotaur::init(vec2 initialPosition, Physics * physicsHandler)
 	spriteSheet.set_render_data(this, 0);
 
 	initStateTreeMinotaur();
-	set_properties(initialPosition, 3.0f, speed);
+	set_properties(initialPosition, 1.0f, speed);
 	m_frozen = false;
 	set_dimensions(&minotaur_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
 	characterState->changeState(idle);
@@ -55,6 +56,7 @@ void Minotaur::update(float ms)
             } else {
                 direction = Direction::left;
             }
+            m_scale.x *= -1;
 		}
 	} else if (is_alive() && !m_frozen && isPlayerClose())
     {
@@ -62,7 +64,7 @@ void Minotaur::update(float ms)
         if (atBound())
         {
             characterState->changeState(idle);
-        } else if (abs(playerLoc.x - m_position.x) <= 10.f)
+        } else if (abs(playerLoc.x - m_position.x) <= 40.f)
         {
             characterState->changeState(swinging);
         } else
@@ -97,7 +99,7 @@ void Minotaur::updateVelocity()
             }
             break;
         case swinging:
-            printf("In case for swinging\n");
+            m_velocity.x = 0.f;
             break;
         default:
             break;
@@ -129,6 +131,7 @@ void Minotaur::setFollowDirection()
         } else {
             direction = Direction::left;
         }
+        m_scale.x *= -1;
     } 
 }
 
@@ -194,29 +197,28 @@ void Minotaur::set_animation()
         is_anim_once = false;
         switch (characterState->currentState) {
             case idle:
+                numTiles = 6;
+                tileIndex = 45;
+                break;
             case running:
-            case rising:
-            case falling:
-                numTiles = 5;
-                tileIndex = 0;
+            case following:
+                numTiles = 8;
+                tileIndex = 9;
+                break;
+            case swinging:
+                numTiles = 9;
+                tileIndex = 27;
                 break;
             default:
-                numTiles = 1;
+                numTiles = 5;
                 tileIndex = 0;
 
         }
     } else {
         isRepeat = false;
-
-        if (is_anim_once)
-        {
-            numTiles = 1;
-            tileIndex = 14;
-        } else
-        {
-            numTiles = 5;
-            tileIndex = 10;
-        }
+        numTiles = 6;
+        tileIndex = 81;
+ 
     }
 
     // Increment animation time
@@ -226,7 +228,7 @@ void Minotaur::set_animation()
     tileIndex = tileIndex + (int)m_animTime % numTiles;
 
     // do not repeat death animation
-    if (!isRepeat && tileIndex == 14) is_anim_once = true;
+    if (!isRepeat && tileIndex == 81) is_anim_once = true;
 
     spriteSheet.update_render_data(this, tileIndex);
 }
