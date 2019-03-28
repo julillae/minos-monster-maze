@@ -28,7 +28,6 @@ namespace
 	bool previouslyFrozen = false;
 	vec2 cameraCenter;
 	vec2 prevCameraCenter;
-	bool cameraTracking = true;
     void glfw_err_cb(int error, const char* desc)
     {
         fprintf(stderr, "%d: %s", error, desc);
@@ -36,10 +35,11 @@ namespace
 }
 
 
-Level::Level() : m_seed_rng(0.f)
+Level::Level(Game* game) : m_seed_rng(0.f)
 {
 // Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
+	this->game = game;
 }
 
 Level::~Level()
@@ -51,48 +51,18 @@ Level::~Level()
 bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 {
 	this->physicsHandler = physicsHandler;
-
-	//-------------------------------------------------------------------------
-	// GLFW / OGL Initialization
-	// Core Opengl 3.
-	glfwSetErrorCallback(glfw_err_cb);
-	if (!glfwInit())
-	{
-		fprintf(stderr, "Failed to initialize GLFW");
-		return false;
-	}
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
-#if __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-	glfwWindowHint(GLFW_RESIZABLE, 0);
-	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "A1 Assignment", nullptr, nullptr);
-	if (m_window == nullptr)
-		return false;
+	this->m_window = game->m_window;
+	name = LEVEL;
 
 	// hack used to make sure the display for macOS with retina display issue is consistent with display on other systems
 	int testWidth;
-	glfwGetFramebufferSize(const_cast<GLFWwindow *>(m_window), &testWidth, nullptr);
+	glfwGetFramebufferSize(m_window, &testWidth, nullptr);
 	osScaleFactor = testWidth / screen.x;
-
-	glfwMakeContextCurrent(m_window);
-	glfwSwapInterval(1); // vsync
 
 	// Load OpenGL function pointers
 	gl3w_init();
 
-	// Setting callbacks to member functions (that's why the redirect is needed)
-	// Input is handled using GLFW, for more info see
-	// http://www.glfw.org/docs/latest/input_guide.html
-	glfwSetWindowUserPointer(m_window, this);
-	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((Level*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
-	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((Level*)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1); };
-	glfwSetKeyCallback(m_window, key_redirect);
-	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
+	set_onKey();
 
 	// Create a frame buffer
 	m_frame_buffer = 0;
@@ -144,8 +114,6 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
 	glViewport(0, 0, w, h);
-	float left = 0.f;// *-0.5;
-	float right = (float)w;// *0.5;
 
 	current_level = startLevel;
 	call_level_loader();
@@ -403,32 +371,18 @@ void Level::draw()
 	m_exit.draw(projection_2D);
 	m_player.draw(projection_2D);
 
-	/////////////////////
-	// Truely render to the screen
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// Clearing backbuffer
-	glViewport(0, 0, w, h);
-	glDepthRange(0, 10);
-	glClearColor(0, 0, 0, 1.0);
-	glClearDepth(1.f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// Bind our texture in Texture Unit 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
+	render_to_screen(w, h);
 
 	m_water.draw(projection_2D);
 
 	m_help_menu.draw(projection_2D);
 
-	//////////////////
 	// Presenting
 	glfwSwapBuffers(m_window);
 }
 
 // Should the game be over ?
-bool Level::is_over()const
+bool Level::is_over()
 {
 	return glfwWindowShouldClose(m_window);
 }
@@ -453,6 +407,12 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 			rotateCWKey = GLFW_KEY_S;
 			rotateCCWKey = GLFW_KEY_A;
 			m_player.jumpKey = GLFW_KEY_SPACE;
+		}
+
+		if (key == GLFW_KEY_ESCAPE) {
+            MainMenuState* mainMenuState = (MainMenuState*) game->get_state(MAIN);
+            mainMenuState->reset_buttons();
+		    game->set_current_state(mainMenuState);
 		}
 	}
 
@@ -617,7 +577,11 @@ void Level::reset_game()
 		reset_enemies();
 	}
 	
+	reset_player_camera();
+}
 
+void Level::reset_player_camera()
+{
 	m_player.init(initialPosition, physicsHandler);
 
 	m_water.reset_rotation_end_time();
@@ -685,4 +649,20 @@ void Level::set_player_death()
 		m_player.kill();
 		m_water.set_player_dead();
 	}
+}
+
+void Level::load_select_level(int level)
+{
+	destroy_platforms();
+	destroy_enemies();
+	m_maze.clear();
+
+	current_level = level;
+	call_level_loader();
+
+	int w, h;
+	glfwGetWindowSize(m_window, &w, &h);
+	initialize_camera_position(w, h);
+
+	reset_player_camera();
 }
