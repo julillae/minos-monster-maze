@@ -17,7 +17,7 @@ bool Minotaur::init(vec2 initialPosition, Physics * physicsHandler)
 {
     Smart::init(initialPosition, physicsHandler);
 
-    const char* textureFile = textures_path("minotaur-sprite-sheet-cropped.png");
+    const char* textureFile = textures_path("minotaur-sprite-sheet.png");
 	if (!RenderManager::load_texture(textureFile, &minotaur_texture, this)) {
         return false;
     }
