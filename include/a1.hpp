@@ -1,3 +1,6 @@
 #include "../include/level.hpp"
+#include "../include/game.hpp"
+#include "../include/gameStates/mainMenuState.hpp"
 
-extern Level world;
+extern Game game;
+extern MainMenuState *mmState;

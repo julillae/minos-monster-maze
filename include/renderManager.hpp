@@ -18,5 +18,8 @@ public:
 
     void static init_drawing_data(vec2 position, float rotation, vec2 scale, Renderable* renderable);
 
+    void static draw_texture_color(const mat3& projection, vec2 position, float rotation, vec2 scale, float* color,
+                                   Texture* texture, Renderable* renderable);
+
 
 };
