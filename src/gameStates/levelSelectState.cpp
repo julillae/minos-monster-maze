@@ -12,11 +12,6 @@
 
 Level* world;
 
-namespace
-{
-    vec2 cameraCenter;
-}
-
 LevelSelectState::LevelSelectState(Game *game)
 {
     this->game = game;
@@ -33,8 +28,6 @@ void LevelSelectState::init(vec2 screen)
     int testWidth;
     glfwGetFramebufferSize(m_window, &testWidth, nullptr);
     osScaleFactor = testWidth / screen.x;
-
-    m_position = vec2({screen.x / 2, screen.y / 2});
 
     m_screen = screen;
 
@@ -57,6 +50,7 @@ void LevelSelectState::init(vec2 screen)
     levelSelectMenu.init(initialPosition);
     init_buttons();
     initialize_camera_position(w, h);
+    levelSelectMenu.set_position(cameraCenter);
 
 }
 
@@ -74,74 +68,9 @@ void LevelSelectState::draw()
     title_ss << "Minos' Monster Maze";
     glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
-    /////////////////////////////////////
-    // First render to the custom framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
+    render_to_framebuffer_screen();
 
-    // Clearing backbuffer
-    glViewport(0, 0, w, h);
-    glDepthRange(0.00001, 10);
-    const float clear_color[3] = { 0.5f, 0.5f, 0.5f };
-
-    glClearColor(clear_color[0], clear_color[1], clear_color[2], 1.0);
-    glClearDepth(1.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // Fake projection matrix, scales with respect to window coordinates
-    // PS: 1.f / w in [1][1] is correct.. do you know why ? (:
-    float left = 0.f;// *-0.5;
-    float top = 0.f;// (float)h * -0.5;
-    float right = (float)w;// *0.5;
-    float bottom = (float)h;// *0.5;
-
-    float sx = 2.f * osScaleFactor / (right - left);
-    float sy = 2.f * osScaleFactor / (top - bottom); //this is where you play around with the camera
-
-    // initialize camera position
-    int camera_w, camera_h;
-    glfwGetWindowSize(m_window, &camera_w, &camera_h);
-
-    float txOffset = camera_w / 2;
-    float tyOffset = camera_h / 2;
-    cameraCenter = vec2({ txOffset, tyOffset});
-
-    levelSelectMenu.set_position(cameraCenter);
-
-    tx = -cameraCenter.x;
-    ty = -cameraCenter.y;
-
-    mat3 scaling_matrix = { {sx, 0.f, 0.f },
-                            { 0.f, sy, 0.f },
-                            { 0.f, 0.f, 1.f } };
-
-
-    mat3 translation_matrix = { {1.f, 0.f, 0.f},
-                                {0.f, 1.f, 0.f},
-                                {tx, ty, 1.f} };
-
-    mat3 projection_2D{ { 1.f, 0.f, 0.f },
-                        { 0.f, 1.f, 0.f },
-                        { 0.f, 0.f, 1.f } };
-
-    projection_2D = mul(projection_2D, scaling_matrix);
-    projection_2D = mul(projection_2D, translation_matrix);
-
-    /////////////////////
-    // Truely render to the screen
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    // Clearing backbuffer
-    glViewport(0, 0, w, h);
-    glDepthRange(0, 10);
-    glClearColor(0, 0, 0, 1.0);
-    glClearDepth(1.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // Bind our texture in Texture Unit 0
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
-
-    //////////////////
+    mat3 projection_2D = calculate_projection();
 
     levelSelectMenu.draw(projection_2D);
 
@@ -234,14 +163,6 @@ void LevelSelectState::destroy()
     for (auto& button : levelButtons) {
         button->destroy();
     }
-
-}
-
-void LevelSelectState::initialize_camera_position(int w, int h)
-{
-        float txOffset = w / 2;
-        float tyOffset = h / 2;
-        cameraCenter = vec2({ txOffset, tyOffset});
 
 }
 

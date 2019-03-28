@@ -21,6 +21,7 @@ bool MainButton::init(vec2 position, const char* textureFile, button name)
     m_scale.y = 0.7f;
     m_rotation = 0.f;
     buttonName = name;
+    is_hidden = false;
 
     return true;
 
@@ -48,8 +49,8 @@ void MainButton::draw(const mat3 &projection)
     glBindTexture(GL_TEXTURE_2D, m_texture.id);
 
     // Set opacity
-    GLint is_hide_uloc = glGetUniformLocation(effect.program, "is_hide");
-    glUniform1f(is_hide_uloc, is_hide);
+    GLint is_hidden_uloc = glGetUniformLocation(effect.program, "is_hidden");
+    glUniform1f(is_hidden_uloc, is_hidden);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
@@ -60,8 +61,7 @@ void MainButton::draw(const mat3 &projection)
         float color[] = { 1.f, 1.f, 1.f };
         glUniform3fv(color_uloc, 1, color);
     }
-    //float color[] = { 1.f, 1.f, 1.f};
-    //glUniform3fv(color_uloc, 1, color);
+
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
     // magnifies texture to avoid it being blurry when scaled
@@ -71,16 +71,9 @@ void MainButton::draw(const mat3 &projection)
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void MainButton::set_visibility(bool show)
+void MainButton::set_visibility(bool is_visible)
 {
-
-    if (show)
-    {
-        is_hide = 0.f;
-    } else {
-        is_hide = 1.f;
-    }
-
+    is_hidden = !is_visible;
 }
 
 

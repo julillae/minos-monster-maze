@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../game.hpp"
+#include "../common.hpp"
 
 class GameState
 {
@@ -14,15 +15,18 @@ public:
     virtual bool is_over() = 0;
     virtual void destroy() = 0;
 
-    void set_onKey() {
-        glfwSetWindowUserPointer(m_window, this);
-        auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((GameState*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
-        glfwSetKeyCallback(m_window, key_redirect);
-    }
+    void set_onKey();
+    void initialize_camera_position(int w, int h);
+
+    mat3 calculate_projection();
+    void render_to_framebuffer_screen();
 
     gameStates name;
 
 protected:
+    void render_to_screen(int w, int h);
+    void render_to_framebuffer(int w, int h);
+
     // Window handle
     GLFWwindow* m_window;
 
@@ -36,9 +40,7 @@ protected:
 
     float tx;
     float ty;
+    vec2 cameraCenter;
 
-    vec2 m_position;
-    vec2 m_scale; // 1.f in each dimension. 1.f is as big as the associated texture
-    float m_rotation; // in radians
     vec2 m_screen;
 };
