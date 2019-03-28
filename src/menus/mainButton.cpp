@@ -1,8 +1,10 @@
-#include "../include/helpMenu.hpp"
+#include "../../include/menus/mainButton.hpp"
 
-bool HelpMenu::init(vec2 position)
+
+bool MainButton::init(vec2 position, const char* textureFile, button name)
 {
-    const char* textureFile = textures_path("help-menu.png");
+
+    m_texture.id = 0;
 
     if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
 
@@ -15,15 +17,17 @@ bool HelpMenu::init(vec2 position)
     set_position(position);
 
     // Setting initial values, scale is negative to make it face the opposite way
-    m_scale.x = 0.51f;
-    m_scale.y = 0.51f;
+    m_scale.x = 0.7f;
+    m_scale.y = 0.7f;
     m_rotation = 0.f;
+    buttonName = name;
+    is_hidden = false;
 
     return true;
 
 }
 
-void HelpMenu::draw(const mat3 &projection)
+void MainButton::draw(const mat3 &projection)
 {
     RenderManager::init_drawing_data(m_position, m_rotation, m_scale, this);
 
@@ -45,13 +49,19 @@ void HelpMenu::draw(const mat3 &projection)
     glBindTexture(GL_TEXTURE_2D, m_texture.id);
 
     // Set opacity
-    GLint is_hide_uloc = glGetUniformLocation(effect.program, "is_hide");
-    glUniform1f(is_hide_uloc, is_hide);
+    GLint is_hidden_uloc = glGetUniformLocation(effect.program, "is_hidden");
+    glUniform1f(is_hidden_uloc, is_hidden);
 
     // Setting uniform values to the currently bound program
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
-    float color[] = { 1.f, 1.f, 1.f};
-    glUniform3fv(color_uloc, 1, color);
+    if (isSelected) {
+        float color[] = { 0.f, 0.f, 0.f };
+        glUniform3fv(color_uloc, 1, color);
+    } else {
+        float color[] = { 1.f, 1.f, 1.f };
+        glUniform3fv(color_uloc, 1, color);
+    }
+
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
 
     // magnifies texture to avoid it being blurry when scaled
@@ -61,31 +71,16 @@ void HelpMenu::draw(const mat3 &projection)
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void HelpMenu::destroy()
+void MainButton::set_visibility(bool is_visible)
 {
-    glDeleteBuffers(1, &mesh.vbo);
-    glDeleteBuffers(1, &mesh.ibo);
-    glDeleteVertexArrays(1, &mesh.vao);
-
-    effect.release();
+    is_hidden = !is_visible;
 }
 
-void HelpMenu::set_position(vec2 position)
-{
-    m_position = position;
-}
 
-void HelpMenu::set_visibility(bool show)
-{
 
-    if (show)
-    {
-        is_hide = 0.f;
-    } else {
-        is_hide = 1.f;
-    }
 
-}
+
+
 
 
 
