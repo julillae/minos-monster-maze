@@ -19,6 +19,7 @@ namespace
 	float rotationDeg = 0.f;
 	float rotationSpeed;
 	float maxRotationSpeed = 1.0f;
+	float rotationEnergyIncrement = 30.f;
 	float currentIntervalPos = 0.f;
 	float maxIntervalLength = 50.f;
 	float normalizedIntervalPos;
@@ -183,12 +184,15 @@ bool Level::update(float elapsed_ms)
 			previouslyFrozen = true;
 		}
 	}
-	else if (isRotating) {
+	else if (isRotating && rotationEnergy > 0.f) {
 		currentIntervalPos++;
 		currentIntervalPos = min(currentIntervalPos, maxIntervalLength);
 		normalizedIntervalPos = currentIntervalPos / maxIntervalLength;
 		rotationSpeed = hermiteSplineVal(0.f, maxRotationSpeed, 0.f, 0.f, normalizedIntervalPos);
+
+		if (rotationEnergy - fabs(rotationSpeed) < 0) rotationSpeed = rotationEnergy;
 		if (rotateCW) rotationSpeed *= -1;
+
 		rotationDeg = fmod(rotationDeg + rotationSpeed, 360.f);
 
 		rotation = static_cast<float>((rotationDeg * M_PI) / 180);
@@ -196,10 +200,14 @@ bool Level::update(float elapsed_ms)
 			applyFreeze = true;
 			previouslyFrozen = true;
 		}
+
+		rotationEnergy -= fabs(rotationSpeed);
 	}
 	else if (previouslyFrozen) {
 		applyThaw = true;
 		previouslyFrozen = false;
+
+		m_water.set_rotation_end_time();
 	}
 
 	// Checking Player - Spider Collision
@@ -254,6 +262,17 @@ bool Level::update(float elapsed_ms)
 
 	if (m_player.is_alive() && is_player_at_goal && m_water.get_time_since_level_complete() > 1.5)
 		reset_game();
+	
+	float timeToLoadRotationEnergy = 4.f;
+	if (m_water.get_time_since_rotation_end() > timeToLoadRotationEnergy) {
+		rotationEnergy += rotationEnergyIncrement;
+		m_water.set_rotation_end_time();
+
+		if (rotationEnergy >= maxRotationEnergy) {
+			m_water.reset_rotation_end_time();
+			rotationEnergy = maxRotationEnergy;
+		}
+	}
 
 	return true;
 }
@@ -272,6 +291,8 @@ void Level::draw()
 	// Updating window title with points
 	std::stringstream title_ss;
 	title_ss << "Minos' Monster Maze";
+	if (canRotate)
+		title_ss << " || Energy left to rotate: " << rotationEnergy << " / " << maxRotationEnergy;
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
 	if (is_player_at_goal)
@@ -563,11 +584,13 @@ void Level::reset_player_camera()
 {
 	m_player.init(initialPosition, physicsHandler);
 
+	m_water.reset_rotation_end_time();
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
 	is_player_at_goal = false;
 	rotationDeg = 0;
 	rotation = 0.f;
+	rotationEnergy = maxRotationEnergy;
 	previouslyFrozen = false;
 }
 
