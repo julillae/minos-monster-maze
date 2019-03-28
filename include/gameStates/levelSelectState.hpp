@@ -24,8 +24,6 @@ public:
     bool is_over()override;
     void destroy()override;
 
-    void initialize_camera_position(int w, int h);
-
     void init_buttons();
     void set_currentButton(LevelButton* button);
     void reset_buttons();

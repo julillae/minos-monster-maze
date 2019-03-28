@@ -350,26 +350,12 @@ void Level::draw()
 	m_exit.draw(projection_2D);
 	m_player.draw(projection_2D);
 
-	/////////////////////
-	// Truely render to the screen
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// Clearing backbuffer
-	glViewport(0, 0, w, h);
-	glDepthRange(0, 10);
-	glClearColor(0, 0, 0, 1.0);
-	glClearDepth(1.f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// Bind our texture in Texture Unit 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
+	render_to_screen(w, h);
 
 	m_water.draw(projection_2D);
 
 	m_help_menu.draw(projection_2D);
 
-	//////////////////
 	// Presenting
 	glfwSwapBuffers(m_window);
 }

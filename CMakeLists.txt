@@ -57,6 +57,7 @@ set(SOURCE_FILES
     src/stateTree.cpp
     src/menus/helpMenu.cpp
     src/game.cpp
+    src/gameStates/gameState.cpp
     src/gameStates/mainMenuState.cpp
     src/gameStates/levelSelectState.cpp
     src/menus/mainMenu.cpp

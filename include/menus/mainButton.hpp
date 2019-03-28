@@ -16,8 +16,8 @@ public:
 
     button buttonName;
 
-    void set_visibility(bool show);
+    void set_visibility(bool is_visible);
 
 private:
-    float is_hide; // 0.f if show, 1.f if hide
+    bool is_hidden;
 };
