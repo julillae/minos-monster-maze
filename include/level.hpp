@@ -67,7 +67,7 @@ private:
 	void on_key(GLFWwindow*, int key, int, int action, int mod);
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-	void check_platform_collisions();
+	void check_platform_collisions(std::vector<Floor> nearbyFloors);
 
 	void draw_enemies(mat3 projection_2D);
 	void reset_enemies();
@@ -161,6 +161,6 @@ private:
 	bool cameraTracking = true;
 	bool canRotate = true;
 
-	QuadTreeNode m_quad = QuadTreeNode(0, initialPosition, m_maze_width, m_maze_height);
+	QuadTreeNode m_quad = QuadTreeNode(0, initialPosition, 0, 0);
 
 };

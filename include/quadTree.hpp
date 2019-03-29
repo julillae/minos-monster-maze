@@ -4,27 +4,34 @@
 
 #pragma once
 
-
 #include <vector>
 #include <array>
-#include <memory>
-#include "../include/mazeComponents/mazeComponent.hpp"
-#include "../include/mazeComponents/fixedComponent.hpp"
+#include "mazeComponents/floor.hpp"
 
 
 class QuadTreeNode {
 public:
-    QuadTreeNode(const int &level, vec2 &initialPosition, float &width, float &height);
+    QuadTreeNode(const int &level, vec2 initialPosition, float width, float height);
     ;
 
     /**
-     * Clear the tree
+     * Clears out the tree
      */
     void clear();
 
-    void insert(const std::shared_ptr<MazeComponent> &mazeComponent);
+    /**
+     * Inserts a floor node into the QuadTree
+     * @param floor
+     */
+    void insert(const Floor &floor);
 
-    std::vector<std::shared_ptr<MazeComponent>> getNearbyEntities(const std::shared_ptr<MazeComponent> &mazeComponent) const;
+    /**
+     * Retrieves floor components that are closet to coordinate
+     * @param pos
+     * @param aabb
+     * @return list of floor components
+     */
+    std::vector<Floor> getNearbyFloorComponents(vec2 pos, vec2 aabb) const;
 
 private:
 
@@ -33,19 +40,15 @@ private:
     static const int MAX_LEVELS;
 
     /**
-     * A node can either be childless or have four children.
-     * Indices map to quadrants as follows:
-     * 0 - Top left
-     * 1 - Top right
-     * 2 - Bottom left
-     * 3 - Bottom right
-     */
+     * A node can have up to four children or none at all
+    */
+
     std::array<std::unique_ptr<QuadTreeNode>, 4> m_children;
 
     /**
-     * The entities contained by this node
+     * The floors contained by this node
      */
-    std::vector<std::shared_ptr<MazeComponent>> m_entities;
+    std::vector<Floor> m_floors;
 
     /**
      * The node's level
@@ -69,19 +72,23 @@ private:
 
 private:
 
-    /**
-     * Divide this node's entities amongst four new nodes that are created as children to this node
-     */
     void split();
 
-    void getNearbyEntitiesHelper(std::vector<std::shared_ptr<MazeComponent>> &nearbyMazeComponents,
-                                 const std::shared_ptr<MazeComponent> &mazeComponent) const;
+    /**
+     * Helper function to retrieve nearby floor components
+     * @param nearbyFloor
+     * @param pos
+     * @param aabb
+     */
+    void getNearbyFloorComponentsHelper(std::vector<Floor> &nearbyFloor,
+                                 vec2 pos, vec2 aabb) const;
 
     /**
-     * Checks if the given entity is in this node's region
-     * @param entity
-     * @return true if entity is within node
+     * Checks whether an object is within a node of the quad tree
+     * @param pos
+     * @param aabb
+     * @return
      */
-    bool isEntityInNode(const std::shared_ptr<MazeComponent> &mazeComponent) const;
+    bool isEntityInNode(vec2 pos, vec2 aabb) const;
 
 };
