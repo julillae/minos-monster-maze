@@ -32,9 +32,10 @@ bool FlashMessage::init(int levelNumber)
 
 void FlashMessage::draw(const mat3& projection)
 {
-    if (get_time_since_flash() > m_flash_duration) {
+    if (numFlashes < maxFlashes && get_time_since_flash() > m_flash_duration) {
         set_flash_time();
         set_visibility(is_hidden);
+        numFlashes++;
     }
 
     RenderManager::init_drawing_data(m_position, m_rotation, m_scale, this);

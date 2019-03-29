@@ -8,6 +8,9 @@
 #include <SDL_mixer.h>
 #include <time.h>
 
+// Renders a flashing prompt that flashes 10 times
+// to get the users attention and then stays on the screen
+
 class FlashMessage : public Renderable
 {
     public:
@@ -25,6 +28,9 @@ class FlashMessage : public Renderable
         float get_time_since_flash();
     private:
         Texture m_texture;
+
+        int numFlashes = 0;
+        const int maxFlashes = 10;
 
         const float m_flash_duration = 0.8;
 
