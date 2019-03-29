@@ -9,8 +9,7 @@
 #include "../ext/rapidjson/filereadstream.h"
 #include <cstdio>
 
-//internal
-#include "../include/level.hpp"
+//#include "level.hpp"
 
 using namespace rapidjson;
 

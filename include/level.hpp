@@ -65,6 +65,12 @@ public:
 	float get_tile_height();
 
 	void load_select_level(int level);
+    int get_current_level();
+    float get_rotation();
+    float get_rotationDeg();
+    float get_rotationEnergy();
+
+    void load_saved_game();
 private:
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;

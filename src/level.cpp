@@ -666,3 +666,40 @@ void Level::load_select_level(int level)
 
 	reset_player_camera();
 }
+
+int Level::get_current_level() { return current_level; }
+
+float Level::get_rotation() { return rotation; }
+
+float Level::get_rotationDeg() { return rotationDeg; }
+
+float Level::get_rotationEnergy() { return rotationEnergy; }
+
+void Level::load_saved_game()
+{
+	float player_x, player_y;
+
+	fprintf(stderr, "loading saved game\n");
+
+	Value& player_pos = GameSave::document["player_pos"];
+	for (auto& pos : player_pos.GetObject()) {
+		if (strncmp(pos.name.GetString(), "x", 1) == 0)
+			player_x = pos.value.GetFloat();
+
+		if (strncmp(pos.name.GetString(), "y", 1) == 0)
+			player_y = pos.value.GetFloat();
+
+	}
+
+	m_player.set_position(vec2({player_x, player_y}));
+
+	int w, h;
+	glfwGetWindowSize(m_window, &w, &h);
+	initialPosition = m_player.m_position;
+	initialize_camera_position(w, h);
+
+	rotation = GameSave::document["rotation"].GetFloat();
+	rotationDeg = GameSave::document["rotationDeg"].GetFloat();
+	rotationEnergy = GameSave::document["rotationEnergy"].GetFloat();
+
+}
