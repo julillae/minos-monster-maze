@@ -29,16 +29,19 @@ void GameSave::save_player()
     // must pass an allocator when the object may need to allocate memory
     Document::AllocatorType& allocator = document.GetAllocator();
 
-    Value pos_x, pos_y, scale_x;
+    Value pos_x, pos_y, scale_x, alive;
     pos_x.SetFloat(gameLevel->m_player.m_position.x);
     pos_y.SetFloat(gameLevel->m_player.m_position.y);
     scale_x.SetFloat(gameLevel->m_player.m_scale.x);
+    alive.SetBool(gameLevel->m_player.is_alive());
 
     // create a rapidjson object type
     Value player(rapidjson::kObjectType);
     player.AddMember("pos_x", pos_x, allocator);
     player.AddMember("pos_y", pos_y, allocator);
     player.AddMember("scale_x", scale_x, allocator);
+    player.AddMember("alive", alive, allocator);
+
     document.AddMember("player", player, allocator);
 }
 
