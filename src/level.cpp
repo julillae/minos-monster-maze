@@ -688,7 +688,6 @@ void Level::load_saved_game()
 
 	int w, h;
 	glfwGetWindowSize(m_window, &w, &h);
-	initialPosition = m_player.m_position;
 	initialize_camera_position(w, h);
 
 	rotation = GameSave::document["rotation"].GetFloat();
@@ -703,10 +702,19 @@ void Level::load_saved_game()
 void Level::load_player()
 {
 	float player_x, player_y, player_scaleX, player_scaleY;
+	bool alive;
 
 	Value& player = GameSave::document["player"];
 
-	Value::ConstMemberIterator itr = player.GetObject().FindMember("pos_x");
+	Value::ConstMemberIterator itr = player.GetObject().FindMember("alive");
+	alive = itr->value.GetBool();
+
+	if (!alive) {
+		reset_game();
+		return;
+	}
+
+	itr = player.GetObject().FindMember("pos_x");
 	player_x = itr->value.GetFloat();
 
 	itr = player.GetObject().FindMember("pos_y");
@@ -719,6 +727,7 @@ void Level::load_player()
 
 	m_player.set_position(vec2({player_x, player_y}));
 	m_player.set_scale(vec2({player_scaleX, player_scaleY}));
+	m_player.set_world_vertex_coord();
 }
 
 void Level::load_spiders()
