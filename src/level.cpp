@@ -119,6 +119,10 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 
 	m_help_menu.init(initialPosition);
 	initialize_camera_position(w, h);
+
+	if (hasPrompt) {
+		m_message.init(current_level);
+	}
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -356,6 +360,12 @@ void Level::draw()
 
 	m_help_menu.draw(projection_2D);
 
+	float screen_height = static_cast<float>(h);
+	float message_y_shift = (screen_height / 2.f) - m_tile_height;
+	float message_y_pos = cameraCenter.y - message_y_shift;
+	m_message.set_position({cameraCenter.x, message_y_pos});
+	m_message.draw(projection_2D);
+
 	// Presenting
 	glfwSwapBuffers(m_window);
 }
@@ -517,6 +527,7 @@ void Level::call_level_loader()
 
 	canRotate = levelLoader.can_rotate();
 	cameraTracking = levelLoader.can_camera_track();
+	hasPrompt = levelLoader.has_prompt();
 
 	initialPosition = levelLoader.get_player_position();
 	m_exit = levelLoader.get_exit();
@@ -535,12 +546,15 @@ void Level::load_new_level()
 	destroy_enemies();
 	
 	m_maze.clear();
+	m_message.destroy();
 
 	current_level++;
 	if (current_level >= num_levels)
 		current_level = 0;
 
 	call_level_loader();
+	if (hasPrompt)
+		m_message.init(current_level);
 }
 
 void Level::reset_game()

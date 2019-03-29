@@ -19,6 +19,7 @@
 #include "gameStates/gameState.hpp"
 #include "gameStates/mainMenuState.hpp"
 #include "levelLoader.hpp"
+#include "flashMessage.hpp"
 
 // stlib
 #include <vector>
@@ -103,6 +104,8 @@ private:
 
     HelpMenu m_help_menu;
 
+	FlashMessage m_message;
+
     float m_seed_rng;
 
     Mix_Music* m_background_music;
@@ -153,4 +156,5 @@ private:
     bool show_help_menu = false;
 	bool cameraTracking = true;
 	bool canRotate = true;
+	bool hasPrompt = false;
 };

@@ -67,6 +67,7 @@ set(SOURCE_FILES
     src/menus/levelButton.cpp
     src/menus/mainButton.cpp
     src/levelLoader.cpp
+    src/flashMessage.cpp
 
 
     include/project_path.hpp
@@ -105,7 +106,7 @@ set(SOURCE_FILES
     include/menus/levelButton.hpp
     include/menus/mainButton.hpp
     include/levelLoader.hpp
-
+    include/flashMessage.hpp
 	)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
