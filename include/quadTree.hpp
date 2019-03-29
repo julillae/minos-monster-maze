@@ -7,6 +7,7 @@
 #include <vector>
 #include <array>
 #include "mazeComponents/floor.hpp"
+#include <memory>
 
 
 class QuadTreeNode {

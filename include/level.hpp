@@ -158,6 +158,6 @@ private:
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;
 
-	QuadTreeNode m_quad = QuadTreeNode(0, initialPosition, 0, 0);
+	QuadTreeNode m_quad = QuadTreeNode(0, {0.f, 0.f}, 0, 0);
 
 };

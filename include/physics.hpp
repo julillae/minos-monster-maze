@@ -47,7 +47,7 @@ public:
     bool isOnAtLeastOnePlatform = false;
 
 	// checks for collisions and reacts appropriately
-    void characterCollisionsWithFloors(Player *c, std::vector<Floor> floor);
+    void characterCollisionsWithFloors(Player *c, std::vector<Floor> floors);
     void characterCollisionsWithSpikes(Player *c, std::vector<Spikes> spikes);
     void characterCollisionsWithIce(Player *c, std::vector<Ice> ice);
     void characterCollisionsWithFixedComponent(Player *c, FixedComponent* fc);
