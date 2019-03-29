@@ -154,6 +154,7 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
                     m_help_menu.set_visibility(show_help_menu);
                     break;
                 case QUIT:
+                    GameSave::save_game((Level*) game->get_state(LEVEL));
                     close = true;
                     break;
                 default:
@@ -162,11 +163,21 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
                     {
                         game->set_current_state(game->get_state(LEVEL));
                     } else {
+
+                        int startLevel = 0;
+
+                        if (saved_file) {
+                            GameSave::load_game();
+                            startLevel = GameSave::document["level"].GetInt();
+                        }
+
                         Physics *physicsHandler = new Physics();
                         Level* level = new Level(game);
-                        level->init(m_screen, physicsHandler, 0);
+                        level->init(m_screen, physicsHandler, startLevel);
+                        level->load_saved_game();
                         game->push_state(level);
                         game->set_current_state(level);
+
                     }
                     break;
             }
@@ -267,10 +278,22 @@ void MainMenuState::init_buttons()
     const char* controlsText = textures_path("controls-button.png");
     const char* quitText = textures_path("quit-button.png");
     continueButton.init(vec2({buttonX, buttonY}), continueText, CONTINUE );
-    continueButton.set_visibility(false);
     newGameButton.init(vec2({buttonX, buttonY + buttonOffset}), newGameText, NEWGAME);
-    newGameButton.set_selected(true);
-    currentButton = &newGameButton;
+
+    std::ifstream infile("../src/savedGame.txt");
+    if (infile.good()) {
+        continueButton.set_visibility(true);
+        continueButton.set_selected(true);
+        currentButton = &continueButton;
+        show_continue = true;
+        saved_file = true;
+    } else {
+        continueButton.set_visibility(false);
+        newGameButton.set_selected(true);
+        currentButton = &newGameButton;
+        saved_file = false;
+    }
+
     controlsButton.init(vec2({buttonX, buttonY + buttonOffset * 2}), controlsText, CONTROLS);
     quitButton.init(vec2({buttonX, buttonY + buttonOffset * 3}), quitText, QUIT);
 

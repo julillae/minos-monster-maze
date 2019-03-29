@@ -67,6 +67,7 @@ set(SOURCE_FILES
     src/menus/levelButton.cpp
     src/menus/mainButton.cpp
     src/levelLoader.cpp
+    src/gameSave.cpp
 
 
     include/project_path.hpp
@@ -105,6 +106,7 @@ set(SOURCE_FILES
     include/menus/levelButton.hpp
     include/menus/mainButton.hpp
     include/levelLoader.hpp
+    include/gameSave.hpp
 
 	)
 
@@ -122,6 +124,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS 0)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_image/)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/gl3w)
+target_include_directories(${PROJECT_NAME} PUBLIC ext/rapidjson)
 
 # Find OpenGL
 find_package(OpenGL REQUIRED)

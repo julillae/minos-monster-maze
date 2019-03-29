@@ -1,4 +1,5 @@
 #include "../include/gameSave.hpp"
+#include "../include/level.hpp"
 
 Document GameSave::document;
 Level* GameSave::gameLevel;
@@ -43,13 +44,15 @@ void GameSave::save_level()
     // must pass an allocator when the object may need to allocate memory
     Document::AllocatorType& allocator = document.GetAllocator();
 
-    Value level, rotation, rotationDeg;
+    Value level, rotation, rotationDeg, rotationEnergy;
     level.SetInt(gameLevel->get_current_level());
     rotation.SetFloat(gameLevel->get_rotation());
     rotationDeg.SetFloat(gameLevel->get_rotationDeg());
+    rotationEnergy.SetFloat(gameLevel->get_rotationEnergy());
     document.AddMember("level", level, allocator);
     document.AddMember("rotation", rotation, allocator);
     document.AddMember("rotationDeg", rotationDeg, allocator);
+    document.AddMember("rotationEnergy", rotationEnergy, allocator);
 }
 
 void GameSave::load_game()
