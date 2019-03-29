@@ -12,7 +12,6 @@
 //#include "level.hpp"
 
 using namespace rapidjson;
-
 using namespace std;
 
 class Level;
@@ -30,5 +29,8 @@ public:
 private:
     void static save_player();
     void static save_level();
+    void static save_enemies();
+    void static save_spiders();
+    void static save_harpies();
 
 };

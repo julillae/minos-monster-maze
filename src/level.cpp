@@ -675,23 +675,15 @@ float Level::get_rotationDeg() { return rotationDeg; }
 
 float Level::get_rotationEnergy() { return rotationEnergy; }
 
+std::vector<Spider> Level::get_spiders() { return m_spiders; }
+
+std::vector<Harpy> Level::get_harpies() { return m_harpies; }
+
 void Level::load_saved_game()
 {
-	float player_x, player_y;
-
 	fprintf(stderr, "loading saved game\n");
 
-	Value& player_pos = GameSave::document["player_pos"];
-	for (auto& pos : player_pos.GetObject()) {
-		if (strncmp(pos.name.GetString(), "x", 1) == 0)
-			player_x = pos.value.GetFloat();
-
-		if (strncmp(pos.name.GetString(), "y", 1) == 0)
-			player_y = pos.value.GetFloat();
-
-	}
-
-	m_player.set_position(vec2({player_x, player_y}));
+	load_player();
 
 	int w, h;
 	glfwGetWindowSize(m_window, &w, &h);
@@ -702,4 +694,88 @@ void Level::load_saved_game()
 	rotationDeg = GameSave::document["rotationDeg"].GetFloat();
 	rotationEnergy = GameSave::document["rotationEnergy"].GetFloat();
 
+	load_spiders();
+	load_harpies();
+
+}
+
+void Level::load_player()
+{
+	float player_x, player_y, player_scaleX, player_scaleY;
+
+	Value& player = GameSave::document["player"];
+
+	Value::ConstMemberIterator itr = player.GetObject().FindMember("pos_x");
+	player_x = itr->value.GetFloat();
+
+	itr = player.GetObject().FindMember("pos_y");
+	player_y = itr->value.GetFloat();
+
+	itr = player.GetObject().FindMember("scale_x");
+	player_scaleX = itr->value.GetFloat();
+
+	player_scaleY = m_player.get_scale().y;
+
+	m_player.set_position(vec2({player_x, player_y}));
+	m_player.set_scale(vec2({player_scaleX, player_scaleY}));
+}
+
+void Level::load_spiders()
+{
+	const Value& spiders = GameSave::document["spiders"];
+
+	for (SizeType i = 0; i < spiders.Size(); i++) // Uses SizeType instead of size_t
+	{
+		float pos_x, pos_y, vel_x, vel_y, scale_x, scale_y;
+		Value::ConstMemberIterator itr = spiders[i].GetObject().FindMember("pos_x");
+		pos_x = itr->value.GetFloat();
+
+		itr = spiders[i].GetObject().FindMember("pos_y");
+		pos_y = itr->value.GetFloat();
+
+		itr = spiders[i].GetObject().FindMember("vel_x");
+		vel_x = itr->value.GetFloat();
+
+		itr = spiders[i].GetObject().FindMember("vel_y");
+		vel_y = itr->value.GetFloat();
+
+		itr = spiders[i].GetObject().FindMember("scale_x");
+		scale_x = itr->value.GetFloat();
+
+		scale_y = m_spiders[i].get_scale().y;
+
+		m_spiders[i].set_position(vec2({pos_x, pos_y}));
+		m_spiders[i].set_velocity(vec2({vel_x, vel_y}));
+		m_spiders[i].set_scale(vec2({scale_x, scale_y}));
+	}
+}
+
+void Level::load_harpies()
+{
+	const Value& harpies = GameSave::document["harpies"];
+
+	for (SizeType i = 0; i < harpies.Size(); i++) // Uses SizeType instead of size_t
+	{
+		float pos_x, pos_y, vel_x, vel_y, scale_x, scale_y;
+		Value::ConstMemberIterator itr = harpies[i].GetObject().FindMember("pos_x");
+		pos_x = itr->value.GetFloat();
+
+		itr = harpies[i].GetObject().FindMember("pos_y");
+		pos_y = itr->value.GetFloat();
+
+		itr = harpies[i].GetObject().FindMember("vel_x");
+		vel_x = itr->value.GetFloat();
+
+		itr = harpies[i].GetObject().FindMember("vel_y");
+		vel_y = itr->value.GetFloat();
+
+		itr = harpies[i].GetObject().FindMember("scale_x");
+		scale_x = itr->value.GetFloat();
+
+		scale_y = m_harpies[i].get_scale().y;
+
+		m_harpies[i].set_position(vec2({pos_x, pos_y}));
+		m_harpies[i].set_velocity(vec2({vel_x, vel_y}));
+		m_harpies[i].set_scale(vec2({scale_x, scale_y}));
+	}
 }

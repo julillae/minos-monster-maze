@@ -14,7 +14,7 @@
 using namespace std;
 
 #include "../include/gameAI.hpp"
-#include "../include/gameStates/levelSelectState.hpp"
+#include "../include/gameStates/mainMenuState.hpp"
 
 // Create a type to store the location of a tile
 typedef pair<int,int> TileCoord;

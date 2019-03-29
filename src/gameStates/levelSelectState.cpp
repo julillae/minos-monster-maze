@@ -97,6 +97,7 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
             {
                 level->load_select_level(currentButton->level);
                 game->set_current_state(level);
+                world = level;
             } else
             {
                 Physics *physicsHandler = new Physics();
@@ -104,10 +105,8 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
                 newLevel->init(m_screen, physicsHandler, currentButton->level);
                 game->push_state(newLevel);
                 game->set_current_state(newLevel);
+                world = newLevel;
             }
-
-            world = (Level*) game->get_state(LEVEL);
-
         }
 
         int numButtons = sizeof(levelButtons)/sizeof(*levelButtons);
