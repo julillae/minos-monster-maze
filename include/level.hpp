@@ -15,7 +15,9 @@
 #include "mazeComponents/spikes.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
-#include "helpMenu.hpp"
+#include "menus/helpMenu.hpp"
+#include "gameStates/gameState.hpp"
+#include "gameStates/mainMenuState.hpp"
 #include "levelLoader.hpp"
 #include "quadTree.hpp"
 
@@ -32,28 +34,28 @@
 
 // Level class
 
-class Level
+class Level : public GameState
 {
 public:
 	Player m_player;
 	
-	Level();
+	Level(Game* game);
 	~Level();
 
     // Creates a window, sets up events and begins the game
 	bool init(vec2 screen, Physics* physicsHandler, int startLevel);
 
 	// Releases all associated resource
-    void destroy();
+    void destroy()override;
 
 	// Steps the game ahead by ms milliseconds
-    bool update(float elapsed_ms);
+    bool update(float elapsed_ms)override;
 
     // Renders our scene
-	void draw();
+	void draw()override;
 
 	// Should the game be over ?
-	bool is_over()const;
+	bool is_over()override;
 
 	bool maze_is_platform(std::pair<int,int> coords);
 	std::vector<std::vector <int>> get_original_maze();
@@ -62,9 +64,11 @@ public:
 	float get_maze_height();
 	float get_tile_width();
 	float get_tile_height();
+
+	void load_select_level(int level);
 private:
 	// !!! INPUT CALLBACK FUNCTIONS
-	void on_key(GLFWwindow*, int key, int, int action, int mod);
+	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
 	void check_platform_collisions(std::vector<Floor> nearbyFloors);
@@ -79,19 +83,13 @@ private:
 	void call_level_loader();
 	void load_new_level();
 	void reset_game();
+	void reset_player_camera();
 	void freeze_all_enemies();
 	void unfreeze_all_enemies();
 	void update_all_enemies(float elapsed_ms);
 
 	void set_player_death();
 private:
-	// Window handle
-	GLFWwindow* m_window;
-
-    // Screen texture
-	// The draw loop first renders to this texture, then it is used for the water shader
-	GLuint m_frame_buffer;
-	Texture m_screen_tex;
 
 	// Water effect
 	RenderEffects m_water;
@@ -120,11 +118,7 @@ private:
 	Physics* physicsHandler;
 
 	bool is_player_at_goal;
-	// Part of hack needed to deal with the MacOs Retina Display issue where it doubles the pixels rendered
-	float osScaleFactor = 1.f;
 
-	float tx;
-	float ty;
 	int rotateCWKey = GLFW_KEY_X;
 	int rotateCCWKey = GLFW_KEY_Z;
 
@@ -160,6 +154,9 @@ private:
     bool show_help_menu = false;
 	bool cameraTracking = true;
 	bool canRotate = true;
+
+	float maxRotationEnergy = 180.f;
+	float rotationEnergy = maxRotationEnergy;
 
 	QuadTreeNode m_quad = QuadTreeNode(0, initialPosition, 0, 0);
 
