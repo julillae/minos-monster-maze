@@ -11,6 +11,7 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
+#include <utility>
 
 namespace
 {
@@ -146,22 +147,21 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	float left = 0.f;// *-0.5;
 	float right = (float)w;// *0.5;
 
-    m_quad = QuadTreeNode(0, initialPosition, m_maze_width, m_maze_height);
-
 	current_level = startLevel;
 	call_level_loader();
 
 	m_help_menu.init(initialPosition);
 	initialize_camera_position(w, h);
+    m_quad = QuadTreeNode(0, {0.f, 0.f}, w, h);
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
-void Level::check_platform_collisions() {
+void Level::check_platform_collisions(std::vector<Floor> nearbyFloors) {
 	if (m_player.is_alive()) {
 		m_player.set_world_vertex_coord();
 		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes);
-		physicsHandler->characterCollisionsWithFloors(&m_player, m_floors);
+		physicsHandler->characterCollisionsWithFloors(&m_player, std::move(nearbyFloors));
 		physicsHandler->characterCollisionsWithIce(&m_player, m_ice);
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
@@ -262,8 +262,18 @@ bool Level::update(float elapsed_ms)
 		m_player.set_invincibility(true);
 	}
 
+	// insert all floor components into the quad tree
+	for (auto& floor: m_floors) {
+	    m_quad.insert(floor);
+	}
+
+	// retrieve the closest floor components to player
+
+    std::vector<Floor> nearbyFloorComponents =
+			m_quad.getNearbyFloorComponents(m_player.get_position(), m_player.get_bounding_box());
+
 	// checking player - platform collision
-	check_platform_collisions();
+	check_platform_collisions(nearbyFloorComponents);
 
 	if (applyFreeze) {
 		m_player.freeze();
@@ -488,7 +498,7 @@ void Level::initialize_camera_position(int w, int h)
 	else {
 		float txOffset = w / 2;
 		float tyOffset = h / 2;
-		cameraCenter = vec2({ txOffset, tyOffset});
+		cameraCenter = vec2({ txOffset/osScaleFactor, tyOffset/osScaleFactor});
 	}
 }
 
