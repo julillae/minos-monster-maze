@@ -125,6 +125,9 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	initialize_camera_position(w, h);
 
 	m_quad = QuadTreeNode(0, {0.f, 0.f}, w+500, h+500);
+    for (auto& floor: m_floors) {
+        m_quad.insert(floor);
+    }
 
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -215,8 +218,6 @@ bool Level::update(float elapsed_ms)
 		m_water.set_rotation_end_time();
 	}
 
-	m_quad.clear();
-
 	// Checking Player - Spider Collision
 	for (auto& enemy : m_spiders) {
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy))
@@ -239,11 +240,6 @@ bool Level::update(float elapsed_ms)
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
 		m_player.set_invincibility(true);
-	}
-
-	// insert all floor components into the quad tree
-	for (auto& floor: m_floors) {
-	    m_quad.insert(floor);
 	}
 
 	// retrieve the closest floor components to player
