@@ -124,7 +124,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	m_help_menu.init(initialPosition);
 	initialize_camera_position(w, h);
 
-	m_quad = QuadTreeNode(0, {0.f, 0.f}, 2*w, 2*h);
+	m_quad = QuadTreeNode(0, {0.f, 0.f}, w+500, h+500);
 
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
