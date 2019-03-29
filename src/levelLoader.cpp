@@ -33,6 +33,15 @@ void LevelLoader::read_level_data(int levelNumber) {
 	std::getline(filein, secondLine);
 	cameraTracking = secondLine.compare("1") == 0;
 
+	std::string thirdLine;
+	std::getline(filein, thirdLine);
+	minotaurPresent = thirdLine.compare("1") == 0;
+	if (minotaurPresent) {
+		canRotate = false;
+		minotaurPresent = true;
+		
+	}
+
     for (std::string line; std::getline(filein, line);) {
         std::vector <int> row;
         for(char& c : line) {
@@ -112,6 +121,9 @@ void LevelLoader::generate_maze()
                 load_spikes(cell, vec2({x_pos, y_pos}));
 			} else if (cell == 57) {
 				spawn_harpy_enemy(vec2({x_pos, y_pos}));
+			} else if (cell == 69) {
+				spawn_minotaur(vec2({x_pos, y_pos}), 400.f);
+				minotaurPresent = true;
 			}
 
             j = j + 1.f;
@@ -160,6 +172,17 @@ bool LevelLoader::spawn_harpy_enemy(vec2 position)
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn harpy");
+	return false;
+}
+
+bool LevelLoader::spawn_minotaur(vec2 position, float bound) 
+{
+	if (m_minotaur.init(position, physicsHandler))
+	{
+		m_minotaur.set_bound(bound);
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn minotaur");
 	return false;
 }
 
@@ -326,6 +349,15 @@ std::vector<Spider> LevelLoader::get_spiders()
 std::vector<Harpy> LevelLoader::get_harpies()
 {
     return m_harpies;
+}
+
+Minotaur LevelLoader::get_minotaur()
+{
+	return m_minotaur;
+}
+
+bool LevelLoader::minotaurInLevel(){
+	return minotaurPresent;
 }
 
 std::vector<Floor> LevelLoader::get_floors()

@@ -9,6 +9,7 @@
 #include "physics.hpp"
 #include "characters/spider.hpp"
 #include "characters/harpy.hpp"
+#include "characters/minotaur.hpp"
 
 // stlib
 #include <vector>
@@ -41,6 +42,8 @@ public:
 
     std::vector<Spider> get_spiders();
 	std::vector<Harpy> get_harpies();
+    Minotaur get_minotaur();
+    bool minotaurInLevel();
 
 	std::vector<Floor> get_floors();
 	std::vector<Spikes> get_spikes();
@@ -53,6 +56,7 @@ private:
 
     bool spawn_spider_enemy(vec2 position, float bound, bool upsideDown);
     bool spawn_harpy_enemy(vec2 position);
+    bool spawn_minotaur(vec2 position, float bound);
     bool spawn_floor(vec2 position);
     bool spawn_ice(vec2 position);
     bool spawn_spikes(vec2 position, SpikeDir dir);
@@ -77,6 +81,7 @@ private:
 
     bool canRotate;
     bool cameraTracking;
+    bool minotaurPresent;
 
     float m_maze_width;
     float m_maze_height;
@@ -89,6 +94,7 @@ private:
 
     std::vector<Spider> m_spiders;
 	std::vector<Harpy> m_harpies;
+    Minotaur m_minotaur;
 
 	std::vector<Floor> m_floors;
 	std::vector<Spikes> m_spikes;

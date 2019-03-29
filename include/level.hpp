@@ -112,6 +112,7 @@ private:
 
 	std::vector<Spider> m_spiders;
 	std::vector<Harpy> m_harpies;
+	Minotaur m_minotaur;
 
 	Exit m_exit;
 	std::vector<Floor> m_floors;
@@ -173,4 +174,5 @@ private:
 
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;
+	bool minotaurPresent = false;
 };

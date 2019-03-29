@@ -225,6 +225,13 @@ bool Level::update(float elapsed_ms)
 		}
 	}
 
+	if (minotaurPresent) {
+		if (physicsHandler->collideWithEnemy(&m_player, &m_minotaur) &&
+			 m_minotaur.characterState->currentState == swinging) {
+			set_player_death();
+		}
+	}
+
 //	 Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit) && !is_player_at_goal)
 	{
@@ -476,6 +483,10 @@ void Level::draw_enemies(mat3 projection_2D) {
 
 	for (auto& harpy: m_harpies)
         harpy.draw(projection_2D);
+	
+	if (minotaurPresent) {
+		m_minotaur.draw(projection_2D);
+	}
 }
 
 void Level::reset_enemies() {
@@ -490,6 +501,12 @@ void Level::reset_enemies() {
 		harpy.reset_position();
 		harpy.unfreeze();
 	};
+
+	if (minotaurPresent) {
+		m_minotaur.freeze();
+		m_minotaur.reset_position();
+		m_minotaur.unfreeze();
+	}
 }
 
 void Level::destroy_enemies() {
@@ -501,6 +518,10 @@ void Level::destroy_enemies() {
 
 	m_spiders.clear();
 	m_harpies.clear();
+
+	if (minotaurPresent) {
+		m_minotaur.destroy();
+	}
 }
 
 void Level::draw_platforms(mat3 projection_2D) {
@@ -545,6 +566,11 @@ void Level::call_level_loader()
 
 	m_spiders = levelLoader.get_spiders();
 	m_harpies = levelLoader.get_harpies();
+
+	minotaurPresent = levelLoader.minotaurInLevel();
+	if (minotaurPresent) {
+		m_minotaur = levelLoader.get_minotaur();
+	}
 
 	m_floors = levelLoader.get_floors();
 	m_ice = levelLoader.get_ice();
@@ -599,18 +625,27 @@ void Level::freeze_all_enemies()
 {
 	for (auto& s : m_spiders) s.freeze();
 	for (auto& h : m_harpies) h.freeze();
+	if (minotaurPresent){
+		m_minotaur.freeze();
+	}
 }
 
 void Level::unfreeze_all_enemies()
 {
 	for (auto& s : m_spiders) s.unfreeze();
 	for (auto& h : m_harpies) h.unfreeze();
+	if (minotaurPresent){
+		m_minotaur.unfreeze();
+	}
 }
 
 void Level::update_all_enemies(float elapsed_ms)
 {
 	for (auto& s : m_spiders) s.update(elapsed_ms);
 	for (auto& h : m_harpies) h.update(elapsed_ms);
+	if (minotaurPresent){
+		m_minotaur.update(elapsed_ms);
+	}
 }
 
 bool Level::maze_is_platform(std::pair<int,int> coords){

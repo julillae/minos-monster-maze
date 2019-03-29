@@ -46,8 +46,8 @@ class Minotaur: public Smart
         float m_stopBound;
         float detectPlayerRange = 200.f;
         std::chrono::high_resolution_clock::time_point cycle_start;
-        const float rotate_cycle_time = 5000.f;
-        const float rotate_duration = 1000.f;
+        float rotate_cycle_time = 5000.f;
+        float rotate_duration = 1000.f;
         bool rotating = false;
 	
 };
