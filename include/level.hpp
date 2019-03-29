@@ -70,6 +70,9 @@ public:
     float get_rotationDeg();
     float get_rotationEnergy();
 
+    std::vector<Spider> get_spiders();
+    std::vector<Harpy> get_harpies();
+
     void load_saved_game();
 private:
 	// !!! INPUT CALLBACK FUNCTIONS
@@ -94,6 +97,10 @@ private:
 	void update_all_enemies(float elapsed_ms);
 
 	void set_player_death();
+
+	void load_player();
+	void load_spiders();
+	void load_harpies();
 private:
 
 	// Water effect
