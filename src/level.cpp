@@ -570,6 +570,7 @@ void Level::load_new_level()
 {
 	destroy_platforms();
 	destroy_enemies();
+	m_quad.clear();
 	
 	m_maze.clear();
 
