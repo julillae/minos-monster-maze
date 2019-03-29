@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mazeComponent.hpp"
+#include <math.h>
 
 // subclass of mazeComponent for all objects unaffected by gravity
 // examples include walls/platforms, spikes fixed to platforms, etc

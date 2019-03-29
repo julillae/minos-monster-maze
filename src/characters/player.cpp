@@ -13,6 +13,8 @@
 #include <math.h>
 #include <cmath>
 
+Texture Player::texture;
+
 bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 {
 	this->physicsHandler = physicsHandler;
@@ -23,18 +25,18 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 	use_sprite = true;
 
 	textureFile = textures_path("player-sprite-sheet.png");
-	if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
+	if (!RenderManager::load_texture(textureFile, &texture, this)) return false;
 
 	float spriteSheetWidth = 8.0f;
 	float spriteSheetHeight = 5.0f;
 	int horizontalTrim = 8;
 	int verticalTrim = 7;
 	set_properties(initialPosition, 2.0f, 0.f);
-	set_dimensions(&m_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
+	set_dimensions(&texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
 
 	if (use_sprite)
 	{
-		spriteSheet.init(&m_texture, { spriteSheetWidth, spriteSheetHeight }, this);
+		spriteSheet.init(&texture, { spriteSheetWidth, spriteSheetHeight }, this);
 		spriteSheet.set_render_data(this, 0);
 
 	} else
@@ -48,11 +50,10 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 
 	}
 
-    initStateTree();
+    if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+        return false;
 
-	// kept in for debugging
-//	fprintf(stderr, "player height: %f\n", height); // 50.00f
-//	fprintf(stderr, "player width: %f\n", width); // 52.00f
+    initStateTree();
 
 	isBelowPlatform = false;
 
@@ -72,7 +73,7 @@ void Player::draw(const mat3& projection)
 	if (use_sprite)
 	{
 		set_animation();
-		RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &m_texture, this);
+		RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
 	} else
 	{
 		RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &box_texture, this);
