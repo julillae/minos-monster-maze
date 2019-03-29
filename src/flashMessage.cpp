@@ -21,21 +21,20 @@ bool FlashMessage::init(int levelNumber)
 
 	if (!RenderManager::set_render_data(&m_texture, this)) return false;
 
-    if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+    if (!effect.load_from_file(shader_path("menu.vs.glsl"), shader_path("menu.fs.glsl")))
         return false;
 
 	m_rotation = 0.f;
     m_scale = {1.f, 1.f};
+    set_visibility(true);
     set_flash_time();
 	return true;
 }
 
 void FlashMessage::draw(const mat3& projection)
 {
-    if (numFlashes < maxFlashes && get_time_since_flash() > m_flash_duration) {
-        set_flash_time();
-        set_visibility(is_hidden);
-        numFlashes++;
+    if (get_time_since_flash() > m_flash_duration) {
+        set_visibility(false);
     }
 
     RenderManager::init_drawing_data(m_position, m_rotation, m_scale, this);

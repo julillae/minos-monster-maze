@@ -228,6 +228,7 @@ bool Level::update(float elapsed_ms)
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
 		m_player.set_invincibility(true);
+		m_message.destroy();
 	}
 
 	// checking player - platform collision
@@ -360,11 +361,13 @@ void Level::draw()
 
 	m_help_menu.draw(projection_2D);
 
-	float screen_height = static_cast<float>(h);
-	float message_y_shift = (screen_height / 2.f) - m_tile_height;
-	float message_y_pos = cameraCenter.y - message_y_shift;
-	m_message.set_position({cameraCenter.x, message_y_pos});
-	m_message.draw(projection_2D);
+	if (hasPrompt) {
+		float screen_height = static_cast<float>(h);
+		float message_y_shift = (screen_height / 2.f) - m_tile_height;
+		float message_y_pos = cameraCenter.y - message_y_shift;
+		m_message.set_position({cameraCenter.x, message_y_pos});
+		m_message.draw(projection_2D);
+	}
 
 	// Presenting
 	glfwSwapBuffers(m_window);
@@ -402,6 +405,8 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
             MainMenuState* mainMenuState = (MainMenuState*) game->get_state(MAIN);
             mainMenuState->reset_buttons();
 		    game->set_current_state(mainMenuState);
+			if (hasPrompt)
+				m_message.destroy();
 		}
 	}
 
@@ -546,7 +551,6 @@ void Level::load_new_level()
 	destroy_enemies();
 	
 	m_maze.clear();
-	m_message.destroy();
 
 	current_level++;
 	if (current_level >= num_levels)
@@ -656,4 +660,7 @@ void Level::load_select_level(int level)
 	initialize_camera_position(w, h);
 
 	reset_player_camera();
+
+	if (hasPrompt)
+		m_message.init(current_level);
 }
