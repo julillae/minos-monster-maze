@@ -13,7 +13,6 @@
 class QuadTreeNode {
 public:
     QuadTreeNode(const int &level, vec2 initialPosition, float width, float height);
-    ;
 
     /**
      * Clears out the tree
