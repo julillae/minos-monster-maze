@@ -192,8 +192,8 @@ bool Physics::collideWithExit (Player *p, Exit *e) {
     return isCollided;
 }
 
-void Physics::characterCollisionsWithFloors(Player* c, std::vector<Floor> floor) {
-        for (Floor f: floor) {
+void Physics::characterCollisionsWithFloors(Player* c, std::vector<Floor> floors) {
+        for (Floor f: floors) {
             characterCollisionsWithFixedComponent(c, &f);
         }
 }
