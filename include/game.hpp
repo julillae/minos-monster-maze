@@ -16,7 +16,7 @@
 
 class GameState;
 
-enum gameStates { MAIN, LEVELSELECT, LEVEL };
+enum gameStates { MAIN, LEVELSELECT, LEVEL, PAUSE };
 
 // Game class
 class Game

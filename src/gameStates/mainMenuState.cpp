@@ -1,6 +1,8 @@
 #include "../../include/gameStates/mainMenuState.hpp"
 #include "../../include/renderManager.hpp"
 #include "../../include/gameStates/levelSelectState.hpp"
+#include "../../include/gameStates/pauseMenuState.hpp"
+
 
 // stlib
 #include <stdio.h>
@@ -90,6 +92,10 @@ void MainMenuState::init(vec2 screen)
     levelSelect->init(m_screen);
     game->push_state(levelSelect);
 
+    PauseMenuState* pauseMenu = new PauseMenuState(game);
+    pauseMenu->init(m_screen);
+    game->push_state(pauseMenu);
+
 }
 
 void MainMenuState::draw()
@@ -111,7 +117,7 @@ void MainMenuState::draw()
     mat3 projection_2D = calculate_projection();
 
     mainMenu.draw(projection_2D);
-    continueButton.draw(projection_2D);
+    loadButton.draw(projection_2D);
     newGameButton.draw(projection_2D);
     controlsButton.draw(projection_2D);
     quitButton.draw(projection_2D);
@@ -122,107 +128,69 @@ void MainMenuState::draw()
 
 bool MainMenuState::update(float elapsed_ms)
 {
-    if (game->get_state(LEVEL) != NULL && !show_continue)
-    {
-        show_continue = true;
-        continueButton.set_visibility(true);
-    }
     return true;
 }
 
 void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
     if (action == GLFW_PRESS) {
-        if (key == GLFW_KEY_ENTER)
+        if (!show_help_menu)
         {
-            switch (currentButton->buttonName)
+            if (key == GLFW_KEY_ENTER)
             {
-                case NEWGAME:
+                switch (currentButton->buttonName)
                 {
-                    LevelSelectState* levelSelectState = (LevelSelectState*) game->get_state(LEVELSELECT);
-                    game->set_current_state(levelSelectState);
-                    break;
-                }
-                case CONTROLS:
-                    show_help_menu = true;
-                    m_help_menu.set_visibility(show_help_menu);
-                    break;
-                case QUIT:
-                {
-                    Level* level = (Level*) game->get_state(LEVEL);
-                    if (level != NULL) {
-                        GameSave::save_game((Level*) game->get_state(LEVEL));
+                    case NEWGAME:
+                    {
+                        LevelSelectState* levelSelectState = (LevelSelectState*) game->get_state(LEVELSELECT);
+                        levelSelectState->reset_buttons();
+                        game->set_current_state(levelSelectState);
+                        break;
                     }
+                    case CONTROLS:
+                        show_help_menu = true;
+                        m_help_menu.set_visibility(show_help_menu);
+                        break;
+                    case QUIT:
+                    {
+                        close = true;
+                        break;
+                    }
+                    case LOAD:
+                    {
+                        if (saved_file) {
+                            GameSave::load_game();
+                            int startLevel = GameSave::document["level"].GetInt();
+                            Physics *physicsHandler = new Physics();
+                            Level* level = new Level(game);
+                            level->init(m_screen, physicsHandler, startLevel);
+                            level->load_saved_game();
+                            game->push_state(level);
+                            game->set_current_state(level);
+                            world = level;
+                        }
+                        break;
+                    }
+                    default:
+                        break;
+                }
 
-                    close = true;
-                    break;
-                }
-                case CONTINUE:
-                {
-                    Level* level = (Level*) game->get_state(LEVEL);
-                    if (level != NULL) {
-                        game->set_current_state(level);
-                        world = level;
-                    } else if (saved_file) {
-                        GameSave::load_game();
-                        int startLevel = GameSave::document["level"].GetInt();
-                        Physics *physicsHandler = new Physics();
-                        Level* level = new Level(game);
-                        level->init(m_screen, physicsHandler, startLevel);
-                        level->load_saved_game();
-                        game->push_state(level);
-                        game->set_current_state(level);
-                        world = level;
-                    }
-                    break;
-                }
-                default:
-                    break;
             }
 
-        }
-
-        if (key == GLFW_KEY_DOWN && !show_help_menu)
-        {
-            switch (currentButton->buttonName)
+            if (key == GLFW_KEY_DOWN)
             {
-                case CONTINUE:
-                    set_currentButton(&newGameButton);
-                    break;
-                case NEWGAME:
-                    set_currentButton(&controlsButton);
-                    break;
-                case CONTROLS:
-                    set_currentButton(&quitButton);
-                    break;
-                default:
-                    if (show_continue)
-                        set_currentButton(&continueButton);
-                    else
-                        set_currentButton(&newGameButton);
-                    break;
+                buttonIndex = (buttonIndex + 1) % numButtons;
+                set_currentButton(mainButtons[buttonIndex]);
             }
-        }
 
-        if (key == GLFW_KEY_UP && !show_help_menu)
-        {
-            switch (currentButton->buttonName)
+
+            if (key == GLFW_KEY_UP)
             {
-                case CONTINUE:
-                    set_currentButton(&quitButton);
-                    break;
-                case NEWGAME:
-                    if (show_continue)
-                        set_currentButton(&continueButton);
-                    else
-                        set_currentButton(&quitButton);
-                    break;
-                case CONTROLS:
-                    set_currentButton(&newGameButton);
-                    break;
-                default:
-                    set_currentButton(&controlsButton);
-                    break;
+                int nextButton = buttonIndex - 1;
+                if (nextButton < 0)
+                    nextButton = numButtons - 1;
+                buttonIndex = nextButton;
+                set_currentButton(mainButtons[buttonIndex]);
             }
         }
 
@@ -257,7 +225,7 @@ void MainMenuState::destroy()
     Mix_CloseAudio();
 
     mainMenu.destroy();
-    continueButton.destroy();
+    loadButton.destroy();
     newGameButton.destroy();
     controlsButton.destroy();
     quitButton.destroy();
@@ -275,25 +243,36 @@ void MainMenuState::init_buttons()
     const char* newGameText = textures_path("new-game-button.png");
     const char* controlsText = textures_path("controls-button.png");
     const char* quitText = textures_path("quit-button.png");
-    continueButton.init(vec2({buttonX, buttonY}), continueText, CONTINUE );
+    loadButton.init(vec2({buttonX, buttonY}), continueText, LOAD );
     newGameButton.init(vec2({buttonX, buttonY + buttonOffset}), newGameText, NEWGAME);
 
     std::ifstream infile("../src/savedGame.txt");
     if (infile.good()) {
-        continueButton.set_visibility(true);
-        continueButton.set_selected(true);
-        currentButton = &continueButton;
+        loadButton.set_visibility(true);
+        loadButton.set_selected(true);
+        currentButton = &loadButton;
         show_continue = true;
         saved_file = true;
+        numButtons = 4;
+        buttonIndex = 3;
     } else {
-        continueButton.set_visibility(false);
+        loadButton.set_visibility(false);
         newGameButton.set_selected(true);
         currentButton = &newGameButton;
         saved_file = false;
+        numButtons = 3;
+        buttonIndex = 0;
     }
 
     controlsButton.init(vec2({buttonX, buttonY + buttonOffset * 2}), controlsText, CONTROLS);
     quitButton.init(vec2({buttonX, buttonY + buttonOffset * 3}), quitText, QUIT);
+
+    mainButtons[0] = &newGameButton;
+    mainButtons[1] = &controlsButton;
+    mainButtons[2] = &quitButton;
+    mainButtons[3] = &loadButton;
+
+    infile.close();
 
 }
 
@@ -306,5 +285,19 @@ void MainMenuState::set_currentButton(MainButton* button)
 
 void MainMenuState::reset_buttons()
 {
-    set_currentButton(&continueButton);
+    if (saved_file)
+        set_currentButton(&loadButton);
+    else
+        set_currentButton(&newGameButton);
+}
+
+void MainMenuState::show_load_button()
+{
+    std::ifstream infile("../src/savedGame.txt");
+    if (infile.good()) {
+        saved_file = true;
+        loadButton.set_visibility(true);
+        numButtons = 4;
+    }
+    infile.close();
 }
