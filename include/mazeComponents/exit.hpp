@@ -14,4 +14,5 @@ public:
 	void draw(const mat3& projection)override;
 
     void set_size();
+	void set_world_vertex_coord();
 };
