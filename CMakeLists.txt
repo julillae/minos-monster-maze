@@ -60,6 +60,7 @@ set(SOURCE_FILES
     src/gameStates/gameState.cpp
     src/gameStates/mainMenuState.cpp
     src/gameStates/levelSelectState.cpp
+    src/gameStates/pauseMenuState.cpp
     src/menus/mainMenu.cpp
     src/menus/menu.cpp
     src/menus/button.cpp
@@ -99,6 +100,7 @@ set(SOURCE_FILES
     include/gameStates/gameState.hpp
     include/gameStates/mainMenuState.hpp
     include/gameStates/levelSelectState.hpp
+    include/gameStates/pauseMenuState.hpp
     include/menus/mainMenu.hpp
     include/menus/menu.hpp
     include/menus/button.hpp
