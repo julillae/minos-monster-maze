@@ -1,3 +1,5 @@
+#include <utility>
+
 // Header
 #include "../include/level.hpp"
 #include "../include/physics.hpp"
@@ -121,7 +123,8 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 
 	m_help_menu.init(initialPosition);
 	initialize_camera_position(w, h);
-    m_quad = QuadTreeNode(0, {0.f, 0.f}, w, h);
+
+	m_quad = QuadTreeNode(0, {0.f, 0.f}, 2*w, 2*h);
 
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -244,11 +247,10 @@ bool Level::update(float elapsed_ms)
 	}
 
 	// retrieve the closest floor components to player
-
     std::vector<Floor> nearbyFloorComponents =
 			m_quad.getNearbyFloorComponents(m_player.get_position(), m_player.get_bounding_box());
 
-	// checking player - platform collision
+    // checking player - platform collision
 	check_platform_collisions(nearbyFloorComponents);
 
 	if (applyFreeze) {
@@ -479,7 +481,7 @@ void Level::initialize_camera_position(int w, int h)
 	else {
 		float txOffset = w / 2;
 		float tyOffset = h / 2;
-		cameraCenter = vec2({ txOffset/osScaleFactor, tyOffset/osScaleFactor});
+		cameraCenter = vec2({ txOffset, tyOffset});
 	}
 }
 
