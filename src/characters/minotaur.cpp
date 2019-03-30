@@ -45,41 +45,45 @@ bool Minotaur::init(vec2 initialPosition, Physics * physicsHandler)
 
 void Minotaur::update(float ms)
 {
-	if (is_alive() && !m_frozen && !isPlayerClose())
-	{
-        characterState->changeState(running);
-		if (atBound()) {
-            if (direction == Direction::left) {
-                direction = Direction::right;
-            } else {
-                direction = Direction::left;
+	if (is_alive() && !m_frozen && characterState->currentState != preparing){
+        if (is_alive() && !m_frozen && !isPlayerClose())
+        {
+            characterState->changeState(running);
+            if (atBound()) {
+                if (direction == Direction::left) {
+                    direction = Direction::right;
+                } else {
+                    direction = Direction::left;
+                }
+                m_scale.x *= -1;
             }
-            m_scale.x *= -1;
-		}
-	} else if (is_alive() && !m_frozen && isPlayerClose())
-    {
-        vec2 playerLoc = world->m_player.get_position();
-        if (atBound())
-        {   
-            characterState->changeState(idle);
-        } else if (abs(playerLoc.x - m_position.x) <= 40.f)
+        } else if (is_alive() && !m_frozen && isPlayerClose())
         {
-            characterState->changeState(swinging);
-        } else
-        {
-            setFollowDirection();
-            characterState->changeState(following);
-        }        
-    } 
+            vec2 playerLoc = world->m_player.get_position();
+            if (atBound())
+            {   
+                characterState->changeState(idle);
+            } else if (abs(playerLoc.x - m_position.x) <= 40.f)
+            {
+                characterState->changeState(swinging);
+            } else
+            {
+                setFollowDirection();
+                characterState->changeState(following);
+            }        
+        } 
+    }
+
+    handleBossRotation();
     updateVelocity();
     move();
-    handleBossRotation();
 }
 
 void Minotaur::updateVelocity()
 {
     switch (characterState->currentState){
         case idle:
+        case preparing:
             m_velocity.x = 0.f;
             break;
         case running:
@@ -168,12 +172,21 @@ void Minotaur::handleBossRotation()
             }
                 // }
     } else {
-        if (!rotating && timeElapsed >= rotate_cycle_time) {
-        printf("Starting boss rotation\n");
-        printf("Rotation clockwise is %d\n", rotate_cw);
-        world->boss_rotation_set(true, rotate_cw);
-        rotating = true;
-        resetCycleStart();
+        if (!rotating && (characterState->currentState != preparing)) {
+            if (timeElapsed >= rotate_cycle_time) {
+                printf("Set preparing\n");
+                previous_state = characterState->currentState;
+                bool isPreparing = characterState->changeState(preparing);\
+                printf("Is preparing %d\n", isPreparing);
+                resetCycleStart();
+            }
+        } else if (!rotating && characterState->currentState == preparing && timeElapsed >= prep_time) {
+            printf("Starting boss rotation\n");
+            printf("Rotation clockwise is %d\n", rotate_cw);
+            world->boss_rotation_set(true, rotate_cw);
+            rotating = true;
+            characterState->changeState(previous_state);
+            resetCycleStart();
         }
     }
 }
@@ -209,6 +222,7 @@ void Minotaur::set_animation()
         is_anim_once = false;
         switch (characterState->currentState) {
             case idle:
+            case preparing:
                 numTiles = 6;
                 tileIndex = 45;
                 break;
@@ -256,6 +270,7 @@ void Minotaur::initStateTreeMinotaur()
 		{idle, dead, 1},
         {idle, following, 1},
         {idle, swinging, 1},
+        {idle, preparing, 1},
 		{running, idle, 1},
 		{running, jumping, 1},
 		{running, falling, 1},
@@ -263,6 +278,7 @@ void Minotaur::initStateTreeMinotaur()
 		{running, dead, 1},
         {running, following, 1},
         {running, swinging, 1},
+        {running, preparing, 1},
 		{jumping, rising, 0},
 		{jumping, frozen, 0},
 		{jumping, dead, 0},
@@ -285,14 +301,22 @@ void Minotaur::initStateTreeMinotaur()
 		{thawing, falling, 0},
         {thawing, following, 0},
         {thawing, swinging, 0},
+        {thawing, preparing, 0},
         {following, idle, 1},
         {following, running, 1},
         {following, frozen, 1},
         {following, swinging, 1},
+        {following, preparing, 1},
         {swinging, idle, 1},
         {swinging, running, 1},
         {swinging, frozen, 1},
         {swinging, following, 1},
+        {swinging, preparing, 1},
+        {preparing, idle, 1},
+        {preparing, running, 1},
+        {preparing, frozen, 1},
+        {preparing, following, 1},
+        {preparing, swinging, 1},
 		{dead, reviving, 0},
 		{reviving, idle, 0}
 	};
