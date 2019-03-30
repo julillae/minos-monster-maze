@@ -48,7 +48,6 @@ private:
 
     void store_platform_coords(vec2 coords, int platform_key);
 
-    bool spawn_spider_enemy(vec2 position, float bound, bool upsideDown);
     bool spawn_harpy_enemy(vec2 position);
     void load_spikes(int cell, vec2 position);
 
@@ -81,10 +80,9 @@ private:
     vec2 m_initial_position;
     Exit m_exit;
 
-    std::vector<Spider> m_spiders;
+	Spiders spiders;
 	std::vector<Harpy> m_harpies;
 
-	std::vector<Floor> m_floors;
 	Floors floors;
 	Spikes spikes;
 	Ices ices;
