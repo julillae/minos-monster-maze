@@ -4,7 +4,7 @@ in vec2 texcoord;
 uniform float is_hide;
 
 // Application data
-uniform sampler2D sampler0;
+
 uniform vec3 fcolor;
 
 // Output color
