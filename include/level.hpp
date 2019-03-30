@@ -79,8 +79,6 @@ public:
 	// Boss controls
 	void boss_rotation_set(bool enable, bool ccw);
 
-	// Return the rotation degree of the world
-	float get_rotation_deg();
 private:
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;

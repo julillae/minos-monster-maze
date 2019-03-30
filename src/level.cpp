@@ -834,8 +834,3 @@ void Level::boss_rotation_set(bool enable, bool cw)
 	isRotating = enable;
 	rotateCW = cw;
 }
-
-float Level::get_rotation_deg()
-{
-	return rotationDeg;
-}
