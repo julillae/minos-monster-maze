@@ -45,12 +45,14 @@ void PauseMenuState::init(vec2 screen)
 
     initialPosition = vec2({static_cast<float>(w / 2), static_cast<float>(h / 2)});
 
-    mainMenu.init(initialPosition);
+    pauseMenu.init(initialPosition);
     m_help_menu.init(initialPosition);
     m_help_menu.set_visibility(false);
     init_buttons();
+    savePopup.init(initialPosition);
+    savePopup.set_visibility(false);
     initialize_camera_position(w, h);
-    mainMenu.set_position(cameraCenter);
+    pauseMenu.set_position(cameraCenter);
 
 }
 
@@ -72,19 +74,24 @@ void PauseMenuState::draw()
 
     mat3 projection_2D = calculate_projection();
 
-    mainMenu.draw(projection_2D);
+    pauseMenu.draw(projection_2D);
 
     for (auto& button : pauseButtons) {
         button->draw(projection_2D);
     }
 
     m_help_menu.draw(projection_2D);
+    savePopup.draw(projection_2D);
     // Presenting
     glfwSwapBuffers(m_window);
 }
 
 bool PauseMenuState::update(float elapsed_ms)
 {
+    float popupDuration = 2.f;
+    if (savePopup.get_time_since_popup() > popupDuration)
+        savePopup.set_visibility(false);
+
     return true;
 }
 
@@ -125,6 +132,8 @@ void PauseMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
                         break;
                     case SAVE:
                     {
+                        savePopup.set_visibility(true);
+                        savePopup.set_popup_time();
                         GameSave::save_game(level);
                         MainMenuState* mainMenuState = (MainMenuState*) game->get_state(MAIN);
                         mainMenuState->show_load_button();
@@ -166,14 +175,15 @@ void PauseMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 bool PauseMenuState::is_over()
 {
-    return glfwWindowShouldClose(m_window) || close;
+    return glfwWindowShouldClose(m_window);
 }
 
 void PauseMenuState::destroy()
 {
     glDeleteFramebuffers(1, &m_frame_buffer);
 
-    mainMenu.destroy();
+    pauseMenu.destroy();
+    savePopup.destroy();
     for (auto& button : pauseButtons) {
         button->destroy();
     }
@@ -183,20 +193,21 @@ void PauseMenuState::destroy()
 void PauseMenuState::init_buttons()
 {
     float buttonX = initialPosition.x;
-    float buttonY = initialPosition.y;
+    float buttonY = initialPosition.y - 50;
     float buttonOffset = 75.f;
 
     const char* continueText = textures_path("continue-button.png");
-    const char* newGameText = textures_path("new-game-button.png");
+    const char* restartText = textures_path("restart-button.png");
+    const char* saveText = textures_path("save-button.png");
     const char* controlsText = textures_path("controls-button.png");
-    const char* quitText = textures_path("quit-button.png");
+    const char* menuText = textures_path("main-menu-button.png");
     continueButton.init(vec2({buttonX, buttonY}), continueText, CONTINUE );
     continueButton.set_selected(true);
     currentButton = &continueButton;
-    restartButton.init(vec2({buttonX, buttonY + buttonOffset * 1}), continueText, RESTART );
-    saveButton.init(vec2({buttonX, buttonY + buttonOffset * 2}), continueText, SAVE );
+    restartButton.init(vec2({buttonX, buttonY + buttonOffset * 1}), restartText, RESTART );
+    saveButton.init(vec2({buttonX, buttonY + buttonOffset * 2}), saveText, SAVE );
     controlsButton.init(vec2({buttonX, buttonY + buttonOffset * 3}), controlsText, CONTROLS);
-    mainMenuButton.init(vec2({buttonX, buttonY + buttonOffset * 4}), controlsText, MAIN_MENU);
+    mainMenuButton.init(vec2({buttonX, buttonY + buttonOffset * 4}), menuText, MAIN_MENU);
 
     pauseButtons[0] = &continueButton;
     pauseButtons[1] = &restartButton;
@@ -214,5 +225,6 @@ void PauseMenuState::set_currentButton(MainButton* button)
 
 void PauseMenuState::reset_buttons()
 {
+    buttonIndex = 0;
     set_currentButton(&continueButton);
 }
