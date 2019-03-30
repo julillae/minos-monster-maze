@@ -32,3 +32,48 @@ vec2 Floor::get_texture_size()
 {
 	return vec2({static_cast<float>(texture.width), static_cast<float>(texture.height)});
 }
+
+bool Floors::init(float tile_width, float tile_height)
+{
+	m_tile_width = tile_width;
+	m_tile_height = tile_height;
+
+	return false;
+}
+
+bool Floors::spawn_floor(vec2 position)
+{
+	Floor floor;
+
+	if (floor.init(position))
+	{
+		vec2 textureSize = floor.get_texture_size();
+		float x_scale = m_tile_width / textureSize.x;
+		float y_scale = m_tile_height / textureSize.y;
+		floor.set_scale(vec2({ x_scale, y_scale }));
+		floor.set_size(vec2({ m_tile_width, m_tile_height }));
+		floor.set_collision_properties();
+		m_floors.emplace_back(floor);
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn floor");
+	return false;
+}
+
+std::vector<Floor> Floors::get_floor_vector()
+{
+	return m_floors;
+}
+
+void Floors::draw(const mat3 & projection)
+{
+	for (auto& floor : m_floors)
+		floor.draw(projection);
+}
+
+void Floors::destroy()
+{
+	for (auto& floor : m_floors)
+		floor.destroy();
+	m_floors.clear();
+}

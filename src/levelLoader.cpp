@@ -52,6 +52,8 @@ void LevelLoader::generate_maze()
 	bool setting_enemy = false;
 	bool setting_rotated_enemy = false;
 	vec2 enemy_start_pos;
+	floors.init(m_tile_width, m_tile_height);
+	ices.init(m_tile_width, m_tile_height);
 
     float i = 0.f;
 	float j = 0.f;
@@ -76,8 +78,8 @@ void LevelLoader::generate_maze()
 
 			if (cell == 49) {
 				// Spawn platform
-				if ( spawn_floor({x_pos, y_pos}) ) {
-					store_platform_coords({x_pos, y_pos}, cell);
+				if (floors.spawn_floor({ x_pos, y_pos })) {
+					store_platform_coords({ x_pos, y_pos }, cell);
 				}
 			} else if (cell == 50) {
 				// Add exit
@@ -105,7 +107,7 @@ void LevelLoader::generate_maze()
 				}
 			} else if (cell == 54) {
 
-                if (spawn_ice({x_pos, y_pos}))
+                if (ices.spawn_ice({x_pos, y_pos}))
                 	store_platform_coords({x_pos, y_pos}, cell);
 
             } else if (cell >= 65 && cell <= 68) {
@@ -118,7 +120,6 @@ void LevelLoader::generate_maze()
 		}
         i = i + 1.f;
 	}
-
     // Set global variables
     m_maze_width = j;
     m_maze_height = i;
@@ -160,44 +161,6 @@ bool LevelLoader::spawn_harpy_enemy(vec2 position)
 		return true;
 	}
 	fprintf(stderr, "Failed to spawn harpy");
-	return false;
-}
-
-bool LevelLoader::spawn_floor(vec2 position)
-{
-	Floor floor;
-
-	if (floor.init(position))
-	{
-		vec2 textureSize = floor.get_texture_size();
-		float x_scale = m_tile_width / textureSize.x;
-		float y_scale = m_tile_height / textureSize.y;
-		floor.set_scale(vec2({x_scale, y_scale}));
-		floor.set_size(vec2({m_tile_width, m_tile_height}));
-		floor.set_collision_properties();
-		m_floors.emplace_back(floor);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn floor");
-	return false;
-}
-
-bool LevelLoader::spawn_ice(vec2 position)
-{
-	Ice ice;
-
-	if (ice.init(position))
-	{
-		vec2 textureSize = ice.get_texture_size();
-		float x_scale = m_tile_width / textureSize.x;
-		float y_scale = m_tile_height / textureSize.y;
-		ice.set_scale(vec2({x_scale, y_scale}));
-		ice.set_size(vec2({m_tile_width, m_tile_height}));
-		ice.set_collision_properties();
-		m_ice.emplace_back(ice);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn ice");
 	return false;
 }
 
@@ -328,10 +291,11 @@ std::vector<Harpy> LevelLoader::get_harpies()
     return m_harpies;
 }
 
-std::vector<Floor> LevelLoader::get_floors()
+Floors LevelLoader::get_floors()
 {
-    return m_floors;
+	return floors;
 }
+
 
 std::vector<Spikes> LevelLoader::get_spikes()
 {
@@ -340,5 +304,5 @@ std::vector<Spikes> LevelLoader::get_spikes()
 
 std::vector<Ice> LevelLoader::get_ice()
 {
-    return m_ice;
+    return ices.get_ice_vector();
 }
