@@ -47,8 +47,6 @@ void Minotaur::update(float ms)
 {
 	if (is_alive() && !m_frozen && !isPlayerClose())
 	{
-        // Want to move in direction of player if within a certain distance. Will stop at stop_bound if player still within range, be idle
-        // Also want to be able to rotate world?
         characterState->changeState(running);
 		if (atBound()) {
             if (direction == Direction::left) {
@@ -62,7 +60,7 @@ void Minotaur::update(float ms)
     {
         vec2 playerLoc = world->m_player.get_position();
         if (atBound())
-        {
+        {   
             characterState->changeState(idle);
         } else if (abs(playerLoc.x - m_position.x) <= 40.f)
         {
@@ -111,7 +109,7 @@ bool Minotaur::atBound()
     float vel_x = m_velocity.x;
     float vel_y = m_velocity.y;
     float right_bound = m_initialPosition.x + m_stopBound;
-    float left_bound = m_initialPosition.x;
+    float left_bound = m_initialPosition.x - m_stopBound;
     float next_pos_x = m_position.x + vel_x;
 
     if ((next_pos_x >= right_bound) || (next_pos_x <= left_bound)) {
