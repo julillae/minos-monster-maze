@@ -46,6 +46,7 @@ set(SOURCE_FILES
     src/mazeComponents/mazeComponent.cpp
     src/mazeComponents/fixedComponent.cpp
     src/mazeComponents/freeComponent.cpp
+    src/mazeComponents/geometricComponent.cpp
     src/mazeComponents/floor.cpp
     src/mazeComponents/ice.cpp
     src/mazeComponents/fire.cpp
@@ -55,8 +56,19 @@ set(SOURCE_FILES
     src/physics.cpp
     src/level.cpp
     src/stateTree.cpp
-    src/helpMenu.cpp
-    
+    src/menus/helpMenu.cpp
+    src/game.cpp
+    src/gameStates/gameState.cpp
+    src/gameStates/mainMenuState.cpp
+    src/gameStates/levelSelectState.cpp
+    src/menus/mainMenu.cpp
+    src/menus/menu.cpp
+    src/menus/button.cpp
+    src/menus/levelSelectMenu.cpp
+    src/menus/levelButton.cpp
+    src/menus/mainButton.cpp
+    src/levelLoader.cpp
+
 
     include/project_path.hpp
 	include/common.hpp
@@ -73,6 +85,7 @@ set(SOURCE_FILES
     include/mazeComponents/mazeComponent.hpp
     include/mazeComponents/fixedComponent.hpp
     include/mazeComponents/freeComponent.hpp
+    include/mazeComponents/geometricComponent.hpp
     include/mazeComponents/floor.hpp
     include/mazeComponents/ice.hpp
     include/mazeComponents/exit.hpp
@@ -82,8 +95,19 @@ set(SOURCE_FILES
     include/physics.hpp
     include/level.hpp
     include/stateTree.hpp
-    include/helpMenu.hpp
-    
+    include/menus/helpMenu.hpp
+    include/game.hpp
+    include/gameStates/gameState.hpp
+    include/gameStates/mainMenuState.hpp
+    include/gameStates/levelSelectState.hpp
+    include/menus/mainMenu.hpp
+    include/menus/menu.hpp
+    include/menus/button.hpp
+    include/menus/levelSelectMenu.hpp
+    include/menus/levelButton.hpp
+    include/menus/mainButton.hpp
+    include/levelLoader.hpp
+
 	)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

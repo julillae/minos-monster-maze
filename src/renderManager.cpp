@@ -32,6 +32,10 @@ bool RenderManager::set_render_data(Texture *texture, Renderable *renderable)
     vertices[2].texcoord = { 1.f, 0.f };
     vertices[3].position = { -wr, -hr, -0.02f };
     vertices[3].texcoord = { 0.f, 0.f };
+	renderable->local_vertex_coords.push_back(vertices[0].position);
+	renderable->local_vertex_coords.push_back(vertices[1].position);
+	renderable->local_vertex_coords.push_back(vertices[2].position);
+	renderable->local_vertex_coords.push_back(vertices[3].position);
 
     // counterclockwise as it's the default opengl front winding direction
     uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
@@ -52,10 +56,6 @@ bool RenderManager::set_render_data(Texture *texture, Renderable *renderable)
     // Vertex Array (Container for Vertex + Index buffer)
     glGenVertexArrays(1, &renderable->mesh.vao);
     if (gl_has_errors())
-        return false;
-
-    // Loading shaders
-    if (!renderable->effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
         return false;
 
     return true;
@@ -143,5 +143,40 @@ void RenderManager::init_drawing_data(vec2 position, float rotation, vec2 scale,
     glBindVertexArray(renderable->mesh.vao);
     glBindBuffer(GL_ARRAY_BUFFER, renderable->mesh.vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderable->mesh.ibo);
+}
+
+void RenderManager::draw_texture_color(const mat3& projection, vec2 position, float rotation, vec2 scale, float* color,
+                                       Texture* texture, Renderable* renderable)
+{
+
+    init_drawing_data(position, rotation, scale, renderable);
+
+    // Getting uniform locations for glUniform* calls
+    GLint transform_uloc = glGetUniformLocation(renderable->effect.program, "transform");
+    GLint color_uloc = glGetUniformLocation(renderable->effect.program, "fcolor");
+    GLint projection_uloc = glGetUniformLocation(renderable->effect.program, "projection");
+
+    // Input data location as in the vertex buffer
+    GLint in_position_loc = glGetAttribLocation(renderable->effect.program, "in_position");
+    GLint in_texcoord_loc = glGetAttribLocation(renderable->effect.program, "in_texcoord");
+    glEnableVertexAttribArray(in_position_loc);
+    glEnableVertexAttribArray(in_texcoord_loc);
+    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
+    glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+
+    // Enabling and binding texture to slot 0
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture->id);
+
+    // Setting uniform values to the currently bound program
+    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&renderable->transform);
+    glUniform3fv(color_uloc, 1, color);
+    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+
+    // magnifies texture to avoid it being blurry when scaled
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    // Drawing!
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 

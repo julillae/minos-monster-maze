@@ -1,4 +1,5 @@
 #version 400
+
 uniform sampler2D screen_texture;
 //uniform float time;
 //uniform float dead_timer;
@@ -15,13 +16,7 @@ out vec4 outputColor;
 //};
 
 
-/////////////////////////
-///UNIFORM VARIABLES/////
-/////////////////////////
-//uniform ShaderBufferStruct shaderBufferStruct;
-//uniform sampler2D sampler0;
-//uniform vec2 light_pos;
-//uniform sampler2D screen_texture;
+
 
 vec3 calculatePointLight(vec2 lightPosition, vec3 Color)
 {
@@ -81,7 +76,6 @@ void main(void)
 // ///UNIFORM VARIABLES/////
 // /////////////////////////
 // //uniform ShaderBufferStruct shaderBufferStruct;
-// //uniform sampler2D sampler0;
 // uniform vec2 light_pos;
 // uniform sampler2D screen_texture;
 

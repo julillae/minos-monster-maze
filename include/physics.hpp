@@ -3,13 +3,14 @@
 #include "../include/characters/enemy.hpp"
 #include "../include/characters/player.hpp"
 #include "../include/mazeComponents/floor.hpp"
+#include "../include/mazeComponents/spikes.hpp"
+#include "../include/mazeComponents/ice.hpp"
 #include "../include/mazeComponents/exit.hpp"
 #include "../include/mazeComponents/fire.hpp"
 
 #include <vector>
 #include <map>
 #include <list>
-#include <memory>
 
 class Physics
 {
@@ -22,13 +23,6 @@ public:
 
 	float rotation = 0.f;	// world rotation in radians
 	vec2 gravityAcc = {0.f,  9.81f * 0.06f };
-
-    struct MTV
-    {
-        vec2 normal;
-        float magnitude;
-        bool isCollided;
-    };
 
     struct Projection
     {
@@ -47,14 +41,17 @@ public:
         }
     };
 
-    bool fastCollisionWithFixedComponent(Player *p, std::unique_ptr<FixedComponent> const &f);
+    bool collideWithEnemy(Player *p, Enemy *e);
 
-    bool collideWithEnemy(Player *p, std::unique_ptr<Enemy> const &t);
+    bool collideWithExit (Player *p, Exit *e);
 
-    bool collideWithExit (Player *p, const Exit *e);
+    bool isOnAtLeastOnePlatform = false;
 
-	// produces true if player collides with a fixed component that kills the player
-    bool characterCollisionsWithFixedComponents(Player *c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents);
+	// checks for collisions and reacts appropriately
+    void characterCollisionsWithFloors(Player *c, std::vector<Floor> floors);
+    void characterCollisionsWithSpikes(Player *c, std::vector<Spikes> spikes);
+    void characterCollisionsWithIce(Player *c, std::vector<Ice> ice);
+    void characterCollisionsWithFixedComponent(Player *c, FixedComponent* fc);
 
 	void characterVelocityUpdate(Character *c);
 
@@ -67,8 +64,6 @@ public:
 	bool isZero(float f);
   
 	bool notZero(float f);
-
-    std::vector<vec2> getVertices(vec2 object, vec2 bounds, float rotation)const;
 
     std::vector<vec2> getAxes(std::vector<vec2> vertices)const;
 

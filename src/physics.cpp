@@ -4,6 +4,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cfloat>
+#include <map>
 
 // logic for gravity and potentially friction calculations go here
 
@@ -13,11 +14,11 @@ Physics::~Physics() = default;
 
 bool outerCircleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
 {
+	float roundingTolerance = 1.1f;	// some float > 1
 	float xDistance = c1.x - c2.x;
 	float yDistance = c1.y - c2.y;
-	float radius = std::max(r1, r2);
-	radius *= 1.1f;
-	return xDistance * xDistance + yDistance * yDistance <= radius * radius;
+	float radius = r1 + r2;
+	return xDistance * xDistance + yDistance * yDistance <= radius * radius * roundingTolerance;
 }
 
 /**
@@ -35,33 +36,6 @@ bool rectToRectIntersection(vec2 r1, vec2 r2, vec2 bb1, vec2 bb2) {
     float dy = r1.y - r2.y;
 
     return fabs(dx) <= w && fabs(dy) <= h;
-}
-
-// Grab the vertices
-std::vector <vec2> Physics::getVertices(vec2 object, vec2 bounds, float rotation)const
-{
-
-    std::vector<vec2> verticesArr;
-    auto offset = static_cast<float>(sqrt(pow(bounds.x/2, 2) + pow(bounds.y/2, 2)));
-    float offsetAngle = atan2(bounds.y, bounds.x);
-
-    float x_pos = object.x;
-    float y_pos = object.y;
-
-    vec2 vert1 = {x_pos + offset * cosf(rotation + offsetAngle), y_pos + offset * sinf(rotation + offsetAngle)};
-    vec2 vert2 = {(x_pos + offset * cosf(static_cast<float>(rotation + M_PI - offsetAngle))),
-                  (y_pos + offset * sinf(static_cast<float>(rotation + M_PI - offsetAngle)))};
-    vec2 vert3 = {(x_pos + offset * cosf(static_cast<float>(rotation - M_PI + offsetAngle))),
-                  static_cast<float>(y_pos + offset * sin(rotation - M_PI + offsetAngle))};
-    vec2 vert4 = {static_cast<float>(x_pos + offset * cos(rotation - offsetAngle)), static_cast<float>(y_pos + offset * sin(rotation - offsetAngle))};
-
-    verticesArr.push_back(vert1);
-    verticesArr.push_back(vert2);
-    verticesArr.push_back(vert3);
-    verticesArr.push_back(vert4);
-
-    return verticesArr;
-
 }
 
 std::vector<vec2> Physics::getAxes(std::vector<vec2> vertices)const
@@ -118,7 +92,7 @@ float Physics::getOverlap(Projection p1, Projection p2)
  * @param pos2
  * @return true if collided, false if not
  */
-Physics::MTV Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, const std::vector<vec2> &vertArr2, vec2 pos1, vec2 pos2)
+MTV Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, const std::vector<vec2> &vertArr2, vec2 pos1, vec2 pos2)
 {
 
     MTV mtv = MTV{};
@@ -183,134 +157,156 @@ Physics::MTV Physics::collisionWithGeometry(const std::vector<vec2> &vertArr1, c
    return mtv;
 }
 
-bool Physics::collideWithEnemy (Player *p, std::unique_ptr<Enemy> const &e) {
+bool Physics::collideWithEnemy (Player *p, Enemy *e) {
 	bool isCollided = false;
 	vec2 pPos = p->get_position();
 	vec2 ePos = e->get_position();
-	vec2 pBound = p->get_bounding_box();
-	vec2 eBound = e->get_bounding_box();
-    float other_r = std::max(pBound.x, eBound.y);
-    float my_r = std::max(p->width, p->height);
-	bool broadBasedCollisionCheck = outerCircleToCircleIntersection(pPos, ePos, other_r, my_r);
+	float pRadius = p->boundingCircleRadius;
+	float eRadius = e->boundingCircleRadius;
+	bool broadBasedCollisionCheck = outerCircleToCircleIntersection(pPos, ePos, pRadius, eRadius);
 
 	if (broadBasedCollisionCheck) {
-		std::vector<vec2> playerVertexArray = getVertices(pPos, pBound, rotation);
-		std::vector<vec2> enemyVertexArray = getVertices(ePos, eBound, 0);
+		e->set_world_vertex_coord();
+		std::vector<vec2> enemyVertexArray = e->get_vertex_coord();
+		std::vector<vec2> playerVertexArray = p->get_vertex_coord();
 
 		isCollided = collisionWithGeometry(playerVertexArray, enemyVertexArray, pPos, ePos).isCollided;
 	}
     return isCollided;
 }
 
-bool Physics::fastCollisionWithFixedComponent(Player *p, std::unique_ptr<FixedComponent> const &f) {
-	float other_r = std::max(p->get_bounding_box().x, f->get_bounding_box().y);
-	float my_r = std::max(p->width, p->height);
-
-	return outerCircleToCircleIntersection(p->get_position(), f->get_position(), other_r, my_r);
-}
-
-bool Physics::collideWithExit (Player *p, const Exit *e) {
+bool Physics::collideWithExit (Player *p, Exit *e) {
 	bool isCollided = false;
 	vec2 pPos = p->get_position();
 	vec2 ePos = e->get_position();
-	vec2 pBound = p->get_bounding_box();
-	vec2 eBound = e->get_bounding_box();
-	float other_r = std::max(pBound.x, eBound.y);
-	float my_r = std::max(p->width, p->height);
+	float pRadius = p->boundingCircleRadius;
+	float eRadius = e->boundingCircleRadius;
 
-	bool broadBasedCollisionCheck = outerCircleToCircleIntersection(pPos, ePos, other_r, my_r);
+	bool broadBasedCollisionCheck = outerCircleToCircleIntersection(pPos, ePos, pRadius, eRadius);
 	if (broadBasedCollisionCheck) {
-		std::vector<vec2> playerVertexArray = getVertices(pPos, pBound, rotation);
-		std::vector<vec2> exitVertexArray = getVertices(ePos, eBound, 0.f);
+		std::vector<vec2> playerVertexArray = p->get_vertex_coord();
+		std::vector<vec2> exitVertexArray = e->get_vertex_coord();
 		isCollided = collisionWithGeometry(playerVertexArray, exitVertexArray, pPos, ePos).isCollided;
 	}
 
     return isCollided;
 }
 
-
-bool Physics::characterCollisionsWithFixedComponents(Player* c, const std::vector<std::unique_ptr<FixedComponent>> &fixedComponents) {
-
-    bool isOnAtLeastOnePlatform = false;
-    bool isBelowAtLeastOnePlatform = false;
-
-    for (const auto& fc : fixedComponents) {
-
-        vec2 cPos = c->get_position();
-        vec2 fPos = fc->get_position();
-        vec2 cBound = c->get_bounding_box();
-        vec2 fBound = fc->get_bounding_box();
-
-        if (fastCollisionWithFixedComponent(c, fc)) {
-            std::vector<vec2> playArray = getVertices(cPos, cBound, rotation);
-            std::vector<vec2> fixedComponentArray;
-
-            if (fc->can_kill) {
-                fixedComponentArray = fc->get_vertex_coord();
-                if (collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos).isCollided)
-                    return true;
-            }
-            else {
-
-                fixedComponentArray = getVertices(fPos, fBound, 0);
-
-                MTV mtv = collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos);
-
-                if (mtv.isCollided) {
-
-                    vec2 normal = mtv.normal;
-                    float magnitude = mtv.magnitude;
-
-                    // grab the vector that pushes the player to the tangent of the platform
-                    vec2 translation = { normal.x * magnitude, normal.y * magnitude};
-
-                    vec2 currentPos = c->get_position();
-                    // translate the player
-                    vec2 newPos = subtract(currentPos, translation);
-
-                    c->set_position(newPos);
-					// add MTV to list of collision normals stored in Player
-					c->collisionNormals.push_back(mtv.normal);
-
-                    float dy = newPos.y - fPos.y;
-                    float dx = fPos.x - newPos.x;
-                    float collisionAngle = atan2(dy, dx);
-                    // logic needed to get new angle (collisionAngle + rotation) within
-                    // the needed -pi to pi range
-                    collisionAngle = static_cast<float>(fmod(collisionAngle + rotation, 2 * M_PI));
-                    float anglePastPi = 0.f;
-                    if (collisionAngle > M_PI) {
-                        anglePastPi = static_cast<float>(collisionAngle - M_PI);
-                        collisionAngle = static_cast<float>(-M_PI + anglePastPi);
-                    }
-                    else if (collisionAngle < -M_PI) {
-                        anglePastPi = static_cast<float>(collisionAngle + M_PI);
-                        collisionAngle = static_cast<float>(M_PI + anglePastPi);
-                    }
-
-                    // place player on platform
-                    if (collisionAngle > -3 * M_PI / 4 && collisionAngle < -M_PI / 4) {
-                        c->set_on_platform();
-                        isOnAtLeastOnePlatform = true;
-                        c->m_platform_drag = fc->get_drag();
-                    }
-                    if (collisionAngle > M_PI / 4 && collisionAngle < 3 * M_PI / 4) {
-                        isBelowAtLeastOnePlatform = true;
-                    }
-                }
-            }
-        }
+void Physics::characterCollisionsWithFloors(Player* c, std::vector<Floor> floors) {
+    for (Floor f : floors) {
+        characterCollisionsWithFixedComponent(c, &f);
     }
+}
 
-    if (!isOnAtLeastOnePlatform) c->set_in_free_fall();
-    c->isBelowPlatform = isBelowAtLeastOnePlatform;
+void Physics::characterCollisionsWithSpikes(Player* c, std::vector<Spikes> spikes) {
+    for (Spikes s : spikes) {
+        characterCollisionsWithFixedComponent(c, &s);
 
-    return false;
+        if (!c->is_alive()) return;
+    }
+}
+
+void Physics::characterCollisionsWithIce(Player* c, std::vector<Ice> ice) {
+    for (Ice i : ice) {
+        characterCollisionsWithFixedComponent(c, &i);
+    }
+}
+
+void mtvAdjustment(Character* c, MTV mtv) {
+	vec2 normal = mtv.normal;
+	float magnitude = mtv.magnitude;
+
+	// grab the vector that pushes the player to the tangent of the platform
+	vec2 translation = { normal.x * magnitude, normal.y * magnitude };
+
+	vec2 currentPos = c->get_position();
+	// translate the player
+	vec2 newPos = subtract(currentPos, translation);
+
+	c->set_position(newPos);
+}
+
+vector<MTV> mtvAggregation(vector<MTV> mtvs, Character* c) {
+	std::map<pair<float, float>, MTV> mtvMap;
+	vector<MTV> normals;
+	for (MTV mtv : mtvs) {
+		mtvMap.emplace(vec2ToPair(mtv.normal), mtv);
+	}
+	for (std::pair<pair<float, float>, MTV> element : mtvMap) {
+		mtvAdjustment(c, element.second);
+		normals.push_back(element.second);
+	}
+	return normals;
+}
+
+vec2 adjustVelocity(vec2 velocity, vector<MTV> mtvs) {
+	float velocityX = velocity.x;
+	float velocityY = velocity.y;
+
+	for (MTV mtv : mtvs) {
+		if (fabs(velocityX - mtv.normal.x) < fabs(velocityX)) {
+			velocityX *= (1 - fabs(mtv.normal.x));
+		}
+		if (fabs(velocityY - mtv.normal.y) < fabs(velocityY)) {
+			velocityY *= (1 - fabs(mtv.normal.y));
+		}
+	}
+	return vec2({ velocityX, velocityY });
+}
+
+void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* fc) {
+    vec2 cPos = c->get_position();
+    vec2 fPos = fc->get_position();
+	float cRadius = c->boundingCircleRadius;
+	float fRadius = fc->boundingCircleRadius;
+
+    if (outerCircleToCircleIntersection(cPos, fPos, cRadius, fRadius)) {
+		std::vector<vec2> playArray = c->get_vertex_coord();
+		std::vector<vec2> fixedComponentArray = fc->get_vertex_coord();
+
+		MTV mtv = collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos);
+
+		if (mtv.isCollided) {
+			if (fc->can_kill) {
+				c->kill();
+				return;
+			}
+			c->collisionMTVs.push_back(mtv);
+
+			float dy = -mtv.normal.y;
+			float dx = mtv.normal.x;
+			vec2 collisionVector = vec2({ dx, dy });
+			vec2 rotatedCollisionVector = rotateVec(collisionVector, rotation);
+			float collisionAngle = atan2(rotatedCollisionVector.y, rotatedCollisionVector.x);
+
+			// logic needed to get new angle (collisionAngle + rotation) within
+			// the needed -pi to pi range
+			float anglePastPi = 0.f;
+			if (collisionAngle > M_PI) {
+				anglePastPi = static_cast<float>(collisionAngle - M_PI);
+				collisionAngle = static_cast<float>(-M_PI + anglePastPi);
+			}
+			else if (collisionAngle < -M_PI) {
+				anglePastPi = static_cast<float>(collisionAngle + M_PI);
+				collisionAngle = static_cast<float>(M_PI + anglePastPi);
+			}
+
+			// place player on platform
+			if (collisionAngle > -7 * M_PI / 8 && collisionAngle < -M_PI / 8) {
+				c->set_on_platform();
+				isOnAtLeastOnePlatform = true;
+				c->m_platform_drag = fc->get_drag();
+			}
+		}
+    }
 }
 
 void Physics::characterVelocityUpdate(Character* c)
 {
+	vector<MTV> uniqueMTVs = mtvAggregation(c->collisionMTVs, c);
+	c->collisionMTVs.clear();
 	if (c->characterState->currentState != frozen) {
+
 		float platformDrag = c->m_platform_drag;
 
 		vec2 cVelocity = c->get_velocity();
@@ -331,18 +327,15 @@ void Physics::characterVelocityUpdate(Character* c)
 			c->characterState->changeState(rising);
 		}
 
-		if (isZero(cAcc.x) && c->isOnPlatform)
-			cVelocity.x *= platformDrag;
-
-		if (c->isBelowPlatform) {
-			cVelocity.y = std::max(0.f, cVelocity.y);
-		}
 		if (c->isOnPlatform) {
-			cVelocity.y = std::min(0.f, cVelocity.y);
-			if (isZero(cAcc.x))
+			if (isZero(cAcc.x)) {
 				c->characterState->changeState(idle);
-			else
+				cVelocity.x *= platformDrag;
+				cVelocity.y = std::min(0.f, cVelocity.y);
+			}
+			else {
 				c->characterState->changeState(running);
+			}
 		}
 		else {
 			if (cVelocity.y < 0)
@@ -353,6 +346,7 @@ void Physics::characterVelocityUpdate(Character* c)
 
 		// rotate back to current rotation
 		cVelocity = rotateVec(cVelocity, rotation);
+		cVelocity = adjustVelocity(cVelocity, uniqueMTVs);
 		c->set_velocity(cVelocity);
 	}
 }

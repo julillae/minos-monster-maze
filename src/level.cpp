@@ -11,7 +11,6 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
-#include <memory>
 
 namespace
 {
@@ -20,6 +19,7 @@ namespace
 	float rotationDeg = 0.f;
 	float rotationSpeed;
 	float maxRotationSpeed = 1.0f;
+	float rotationEnergyIncrement = 30.f;
 	float currentIntervalPos = 0.f;
 	float maxIntervalLength = 50.f;
 	float normalizedIntervalPos;
@@ -28,7 +28,6 @@ namespace
 	bool previouslyFrozen = false;
 	vec2 cameraCenter;
 	vec2 prevCameraCenter;
-	bool cameraTracking = true;
     void glfw_err_cb(int error, const char* desc)
     {
         fprintf(stderr, "%d: %s", error, desc);
@@ -36,10 +35,11 @@ namespace
 }
 
 
-Level::Level() : m_seed_rng(0.f)
+Level::Level(Game* game) : m_seed_rng(0.f)
 {
 // Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
+	this->game = game;
 }
 
 Level::~Level()
@@ -47,276 +47,28 @@ Level::~Level()
 
 }
 
-void Level::store_platform_coords(vec2 coords, int platform_key) {
-	std::string platformType = platform_types.find(platform_key)->second;
-	std::pair <float,float> coords_pair (coords.x,coords.y);
-	platforms_by_coords.emplace(coords_pair, platformType);
-}
-
-void Level::read_level_data() {
-	std::string level = std::to_string(current_level);
-	fprintf(stderr, "Loading level %s\n", level.c_str());
-	std::string fileName = "levels/level" + level + ".txt";
-    std::ifstream filein(fileName);
-
-	std::string firstLine;
-	std::getline(filein, firstLine);
-	canRotate = firstLine.compare("1") == 0 ? true : false;
-
-	std::string secondLine;
-	std::getline(filein, secondLine);
-	cameraTracking = secondLine.compare("1") == 0 ? true : false;
-
-    for (std::string line; std::getline(filein, line);) {
-        std::vector <int> row;
-        for(char& c : line) {
-            // Covert char to int and push to row
-            row.push_back(c - '0');
-        }
-        // Push row to maze array
-        m_maze.push_back(row);
-    }
-}
-
-bool Level::spawn_spider_enemy(vec2 position, float bound, bool upsideDown)
-{
-	std::unique_ptr<Spider> enemy = std::unique_ptr<Spider>(new Spider);
-
-	if (enemy->init(position, physicsHandler))
-	{
-		if (upsideDown) {
-			enemy->set_rotation(M_PI);
-			vec2 enemy_scale = enemy->get_scale();
-			enemy->set_scale({enemy_scale.x * -1.f, enemy_scale.y});
-		}
-
-		enemy->set_bound(bound);
-		m_enemies.emplace_back(std::move(enemy));
-
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn enemy");
-	return false;
-}
-
-bool Level::spawn_harpy_enemy(vec2 position)
-{
-	std::unique_ptr<Harpy> enemy = std::unique_ptr<Harpy>(new Harpy);
-	if (enemy->init(position, physicsHandler))
-	{	
-		m_enemies.emplace_back(std::move(enemy));
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn harpy");
-	return false;
-}
-
-bool Level::spawn_floor(vec2 position)
-{
-	std::unique_ptr<Floor> floor = std::unique_ptr<Floor>(new Floor);
-
-	if (floor->init(position))
-	{
-		m_platforms.emplace_back(std::move(floor));
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn floor");
-	return false;
-}
-
-bool Level::spawn_ice(vec2 position)
-{
-	std::unique_ptr<Ice> ice = std::unique_ptr<Ice>(new Ice);
-
-	if (ice->init(position))
-	{
-		m_platforms.emplace_back(std::move(ice));
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn ice");
-	return false;
-}
-
-bool Level::spawn_spikes(vec2 position, SpikeDir dir)
-{
-    std::unique_ptr<Spikes> spikes = std::unique_ptr<Spikes>(new Spikes);
-
-    if (spikes->init(position))
-    {
-    	switch (dir)
-		{
-			case DOWN:
-				spikes->set_down();
-				break;
-			case LEFT:
-				spikes->set_left();
-				break;
-			case RIGHT:
-				spikes->set_right();
-				break;
-			default:
-				spikes->set_up();
-				break;
-		}
-
-        m_platforms.emplace_back(std::move(spikes));
-        return true;
-    }
-    fprintf(stderr, "Failed to spawn spikes");
-    return false;
-}
-
-// Generates maze
-void Level::generate_maze()
-{
-	fprintf(stderr, "Generating maze\n");
-	// Initial tile. Assumes all tiles are same width and height
-	spawn_floor({0.0, 0.0});
-	m_tile_width = m_platforms.back()->get_width();
-	m_tile_height = m_platforms.back()->get_height();
-
-	bool setting_enemy = false;
-	bool setting_rotated_enemy = false;
-	vec2 enemy_start_pos;
-
-    float i = 0.f;
-	float j = 0.f;
-
-	m_tile_width = m_platforms.back()->get_width();
-	m_tile_height = m_platforms.back()->get_height();
-
-	for (auto &row : m_maze) {
-        j = 0.f;
-		for (int &cell : row) {	
-
-			float x_pos = (j * m_tile_width);
-			float y_pos = (i * m_tile_height);
-
-			if ((setting_enemy && cell != 4) || (setting_rotated_enemy && cell != 5)) {
-				// If we were setting enemy positions, and we hit a cell with no enemy,
-				// Spawn the enemy we were setting
-
-				float last_x_pos = x_pos - m_tile_width;
-				float distance = abs(last_x_pos - enemy_start_pos.x);
-				spawn_spider_enemy(enemy_start_pos, distance, setting_rotated_enemy);
-				setting_enemy = false;
-				setting_rotated_enemy = false;
-			}
-
-			if (cell == 1) {
-				// Spawn platform
-				if ( spawn_floor({x_pos, y_pos}) ) {
-					store_platform_coords({x_pos, y_pos}, cell);
-				}
-			} else if (cell == 2) {
-				// Add exit
-				Exit new_exit;
-				if ( new_exit.init({x_pos, y_pos}) ) {
-					store_platform_coords({x_pos, y_pos}, cell);
-
-					m_exit = new_exit;
-				}
-
-				Fire new_fire;  //change it to cell==a
-				if (new_fire.init()){
-					//store_platform_coords({x_pos, y_pos}, cell);
-					m_fire = new_fire;
-				}
-			} else if (cell == 3) {
-				// Set initial position of player
-				initialPosition = {x_pos, y_pos};
-			} else if (cell == 4) {
-				// Begin setting enemy path
-				if (!setting_enemy) {
-					setting_enemy = true;
-					enemy_start_pos = {x_pos, y_pos};
-				}
-			} else if (cell == 5) {
-				// Begin setting enemy path
-				if (!setting_rotated_enemy) {
-					setting_rotated_enemy = true;
-					enemy_start_pos = {x_pos, y_pos};
-				}
-			} else if (cell == 6) {
-
-                if (spawn_ice({x_pos, y_pos}))
-                	store_platform_coords({x_pos, y_pos}, cell);
-
-            } else if (cell == 7) {
-			    float spike_x = x_pos - m_tile_width / 2;
-
-				if (spawn_spikes({spike_x, y_pos}, LEFT))
-
-					store_platform_coords({spike_x, y_pos}, cell);
-
-			} else if (cell == 8) {
-				float spike_y = y_pos - m_tile_height / 2;
-			    if (spawn_spikes({x_pos, spike_y}, UP))
-			        store_platform_coords({x_pos, spike_y}, cell);
-			} else if (cell == 9) {
-
-				spawn_harpy_enemy(vec2({x_pos, y_pos}));
-			}
-
-            j = j + 1.f;
-		}
-        i = i + 1.f;
-	}
-
-	// Note: A hack to remove the initial tile added to m_floor - shanice
-	//m_platforms.erase(m_platforms.begin());
-
-    // Set global variables
-    m_maze_width = j;
-    m_maze_height = i;
-}
+// Fire new_fire;  //change it to cell==a
+// 				if (new_fire.init()){
+// 					//store_platform_coords({x_pos, y_pos}, cell);
+// 					m_fire = new_fire;
+// 				}
 
 // Level initialization
 bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 {
 	this->physicsHandler = physicsHandler;
-
-	//-------------------------------------------------------------------------
-	// GLFW / OGL Initialization
-	// Core Opengl 3.
-	glfwSetErrorCallback(glfw_err_cb);
-	if (!glfwInit())
-	{
-		fprintf(stderr, "Failed to initialize GLFW");
-		return false;
-	}
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
-#if __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-	glfwWindowHint(GLFW_RESIZABLE, 0);
-	m_window = glfwCreateWindow((int)screen.x, (int)screen.y, "A1 Assignment", nullptr, nullptr);
-	if (m_window == nullptr)
-		return false;
+	this->m_window = game->m_window;
+	name = LEVEL;
 
 	// hack used to make sure the display for macOS with retina display issue is consistent with display on other systems
 	int testWidth;
-	glfwGetFramebufferSize(const_cast<GLFWwindow *>(m_window), &testWidth, nullptr);
+	glfwGetFramebufferSize(m_window, &testWidth, nullptr);
 	osScaleFactor = testWidth / screen.x;
-
-	glfwMakeContextCurrent(m_window);
-	glfwSwapInterval(1); // vsync
 
 	// Load OpenGL function pointers
 	gl3w_init();
 
-	// Setting callbacks to member functions (that's why the redirect is needed)
-	// Input is handled using GLFW, for more info see
-	// http://www.glfw.org/docs/latest/input_guide.html
-	glfwSetWindowUserPointer(m_window, this);
-	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((Level*)glfwGetWindowUserPointer(wnd))->on_key(wnd, _0, _1, _2, _3); };
-	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((Level*)glfwGetWindowUserPointer(wnd))->on_mouse_move(wnd, _0, _1); };
-	glfwSetKeyCallback(m_window, key_redirect);
-	glfwSetCursorPosCallback(m_window, cursor_pos_redirect);
+	set_onKey();
 
 	// Create a frame buffer
 	m_frame_buffer = 0;
@@ -368,17 +120,38 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
 	glViewport(0, 0, w, h);
-	float left = 0.f;// *-0.5;
-	float right = (float)w;// *0.5;
 
 	current_level = startLevel;
-    read_level_data();
-	generate_maze();
+	call_level_loader();
 
 	m_help_menu.init(initialPosition);
 	initialize_camera_position(w, h);
+
+	//Fire new_fire;  //change it to cell==a
+ 	m_fire.init();
+ 		//store_platform_coords({x_pos, y_pos}, cell);
+ 		//m_fire = new_fire;
+ 	//}
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
+}
+
+void Level::check_platform_collisions() {
+	if (m_player.is_alive()) {
+		m_player.set_world_vertex_coord();
+		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes);
+		physicsHandler->characterCollisionsWithFloors(&m_player, m_floors);
+		physicsHandler->characterCollisionsWithIce(&m_player, m_ice);
+
+		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
+
+		if (!m_player.is_alive()) {
+			Mix_PlayChannel(-1, m_player_dead_sound, 0);
+			m_water.set_player_dead();
+		}
+
+		physicsHandler->isOnAtLeastOnePlatform = false;
+	}
 }
 
 // Releases all the associated resources
@@ -398,12 +171,8 @@ void Level::destroy()
 	Mix_CloseAudio();
 
 	m_player.destroy();
-	for (auto& enemy : m_enemies)
-		enemy->destroy();
-	for (auto& platform: m_platforms)
-		platform->destroy();
-	m_enemies.clear();
-	m_platforms.clear();
+	destroy_enemies();
+	destroy_platforms();
 	m_help_menu.destroy();
 	m_fire.destroy();
 
@@ -418,7 +187,7 @@ bool Level::update(float elapsed_ms)
 	vec2 screen = { (float)w, (float)h };
 	bool applyFreeze = false;
 	bool applyThaw = false;
-
+	m_player.set_rotation(rotation);
 	physicsHandler->updateWorldRotation(rotation);
 
 	// freezes and unfreezes character for rotation
@@ -428,12 +197,15 @@ bool Level::update(float elapsed_ms)
 			previouslyFrozen = true;
 		}
 	}
-	else if (isRotating) {
+	else if (isRotating && rotationEnergy > 0.f) {
 		currentIntervalPos++;
 		currentIntervalPos = min(currentIntervalPos, maxIntervalLength);
 		normalizedIntervalPos = currentIntervalPos / maxIntervalLength;
 		rotationSpeed = hermiteSplineVal(0.f, maxRotationSpeed, 0.f, 0.f, normalizedIntervalPos);
+
+		if (rotationEnergy - fabs(rotationSpeed) < 0) rotationSpeed = rotationEnergy;
 		if (rotateCW) rotationSpeed *= -1;
+
 		rotationDeg = fmod(rotationDeg + rotationSpeed, 360.f);
 
 		rotation = static_cast<float>((rotationDeg * M_PI) / 180);
@@ -441,15 +213,26 @@ bool Level::update(float elapsed_ms)
 			applyFreeze = true;
 			previouslyFrozen = true;
 		}
+
+		rotationEnergy -= fabs(rotationSpeed);
 	}
 	else if (previouslyFrozen) {
 		applyThaw = true;
 		previouslyFrozen = false;
+
+		m_water.set_rotation_end_time();
 	}
 
-	// Checking Player - Enemy Collision
-	for (auto& enemy : m_enemies) {
-		if (physicsHandler->collideWithEnemy(&m_player, enemy))
+	// Checking Player - Spider Collision
+	for (auto& enemy : m_spiders) {
+		if (physicsHandler->collideWithEnemy(&m_player, &enemy))
+		{
+			set_player_death();
+		}
+	}
+
+	for (auto& enemy : m_harpies) {
+		if (physicsHandler->collideWithEnemy(&m_player, &enemy))
 		{
 			set_player_death();
 		}
@@ -461,16 +244,13 @@ bool Level::update(float elapsed_ms)
 		Mix_PlayChannel(-1, level_complete_sound, 0);
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
+		m_player.freeze();
 		m_player.set_invincibility(true);
 	}
 
 	// checking player - platform collision
-	if (physicsHandler->characterCollisionsWithFixedComponents(&m_player, m_platforms))
-	{
-		set_player_death();
-	}
+	check_platform_collisions();
 
-	m_player.set_rotation(rotation);
 	if (applyFreeze) {
 		m_player.freeze();
 		freeze_all_enemies();
@@ -496,6 +276,17 @@ bool Level::update(float elapsed_ms)
 
 	if (m_player.is_alive() && is_player_at_goal && m_water.get_time_since_level_complete() > 1.5)
 		reset_game();
+	
+	float timeToLoadRotationEnergy = 4.f;
+	if (m_water.get_time_since_rotation_end() > timeToLoadRotationEnergy) {
+		rotationEnergy += rotationEnergyIncrement;
+		m_water.set_rotation_end_time();
+
+		if (rotationEnergy >= maxRotationEnergy) {
+			m_water.reset_rotation_end_time();
+			rotationEnergy = maxRotationEnergy;
+		}
+	}
 
 	return true;
 }
@@ -514,6 +305,8 @@ void Level::draw()
 	// Updating window title with points
 	std::stringstream title_ss;
 	title_ss << "Minos' Monster Maze";
+	if (canRotate)
+		title_ss << " || Energy left to rotate: " << rotationEnergy << " / " << maxRotationEnergy;
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
 	if (is_player_at_goal)
@@ -587,50 +380,24 @@ void Level::draw()
 
 	projection_2D = mul(projection_2D, translation_matrix);
 
-    for (auto& platform : m_platforms)
-        platform->draw(projection_2D);
-	for (auto& enemy : m_enemies)
-		enemy->draw(projection_2D);
+	draw_platforms(projection_2D);
+	draw_enemies(projection_2D);
 	m_exit.draw(projection_2D);
 	m_fire.draw(projection_2D);
 	m_player.draw(projection_2D);
 
-	/////////////////////
-	// Truely render to the screen
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// Clearing backbuffer
-	glViewport(0, 0, w, h);
-	glDepthRange(0, 10);
-	glClearColor(0, 0, 0, 1.0);
-	glClearDepth(1.f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-	//Create one OpenGL texture
-	//set up SDL and OpenGL
-	// SDL_Surface *img = SDL_LoadBMP("background0.png");
-	// //create an OpenGL surface
-	// GLuint textureID;
-	// glGenTextures(1 &textureID);
-	// //"Bind" the newly created texture
-	// glBindTexture(GL_TEXTURE_2D, textureID);
-
-	// Bind our texture in Texture Unit 0
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_screen_tex.id);
+	render_to_screen(w, h);
 
 	m_water.draw(projection_2D);
 
 	m_help_menu.draw(projection_2D);
 
-	//////////////////
 	// Presenting
 	glfwSwapBuffers(m_window);
 }
 
 // Should the game be over ?
-bool Level::is_over()const
+bool Level::is_over()
 {
 	return glfwWindowShouldClose(m_window);
 }
@@ -655,6 +422,12 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 			rotateCWKey = GLFW_KEY_S;
 			rotateCCWKey = GLFW_KEY_A;
 			m_player.jumpKey = GLFW_KEY_SPACE;
+		}
+
+		if (key == GLFW_KEY_ESCAPE) {
+            MainMenuState* mainMenuState = (MainMenuState*) game->get_state(MAIN);
+            mainMenuState->reset_buttons();
+		    game->set_current_state(mainMenuState);
 		}
 	}
 
@@ -711,24 +484,99 @@ void Level::initialize_camera_position(int w, int h)
 	}
 }
 
+void Level::draw_enemies(mat3 projection_2D) {
+    for (auto& spider: m_spiders)
+        spider.draw(projection_2D);
+
+	for (auto& harpy: m_harpies)
+        harpy.draw(projection_2D);
+}
+
+void Level::reset_enemies() {
+	for (auto& spider : m_spiders) {
+		spider.freeze();
+		spider.reset_position();
+		spider.unfreeze();
+	};
+
+	for (auto& harpy : m_harpies) {
+		harpy.freeze();
+		harpy.reset_position();
+		harpy.unfreeze();
+	};
+}
+
+void Level::destroy_enemies() {
+	for (auto& spider : m_spiders)
+		spider.destroy();
+
+	for (auto& harpy : m_harpies)
+		harpy.destroy();
+
+	m_spiders.clear();
+	m_harpies.clear();
+}
+
+void Level::draw_platforms(mat3 projection_2D) {
+    for (auto& floor: m_floors)
+        floor.draw(projection_2D);
+
+	for (auto& ice: m_ice)
+        ice.draw(projection_2D);
+
+	for (auto& spikes: m_spikes)
+        spikes.draw(projection_2D);
+}
+
+void Level::destroy_platforms() {
+	for (auto& floor : m_floors)
+		floor.destroy();
+
+	for (auto& spike : m_spikes)
+		spike.destroy();
+
+	for (auto& ice : m_ice)
+		ice.destroy();
+
+	m_floors.clear();
+	m_spikes.clear();
+	m_ice.clear();
+}
+
+void Level::call_level_loader()
+{
+	LevelLoader levelLoader;
+	m_maze = levelLoader.load_level(current_level, physicsHandler);
+
+	m_maze_width = levelLoader.get_maze_width();
+	m_maze_height = levelLoader.get_maze_height();
+
+	canRotate = levelLoader.can_rotate();
+	cameraTracking = levelLoader.can_camera_track();
+
+	initialPosition = levelLoader.get_player_position();
+	m_exit = levelLoader.get_exit();
+
+	m_spiders = levelLoader.get_spiders();
+	m_harpies = levelLoader.get_harpies();
+
+	m_floors = levelLoader.get_floors();
+	m_ice = levelLoader.get_ice();
+	m_spikes = levelLoader.get_spikes();
+}
+
 void Level::load_new_level()
 {
-	for (auto& platform: m_platforms)
-		platform->destroy();
-
-	for (auto& enemy : m_enemies)
-		enemy->destroy();
+	destroy_platforms();
+	destroy_enemies();
 	
-	m_platforms.clear();
-	m_enemies.clear();
 	m_maze.clear();
 
 	current_level++;
 	if (current_level >= num_levels)
 		current_level = 0;
 
-	read_level_data();
-	generate_maze();
+	call_level_loader();
 }
 
 void Level::reset_game()
@@ -741,48 +589,42 @@ void Level::reset_game()
 		load_new_level();
 		initialize_camera_position(w, h);
 	} else {
-		for (auto& enemy : m_enemies) {
-			enemy->freeze();
-			enemy->reset_position();
-			enemy->unfreeze();
-		};
+		reset_enemies();
 	}
 	
+	reset_player_camera();
+}
 
+void Level::reset_player_camera()
+{
 	m_player.init(initialPosition, physicsHandler);
 
+	m_water.reset_rotation_end_time();
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
 	is_player_at_goal = false;
 	rotationDeg = 0;
 	rotation = 0.f;
+	rotationEnergy = maxRotationEnergy;
 	previouslyFrozen = false;
 }
 
 void Level::freeze_all_enemies()
 {
-	for (auto& e : m_enemies) e->freeze();
+	for (auto& s : m_spiders) s.freeze();
+	for (auto& h : m_harpies) h.freeze();
 }
 
 void Level::unfreeze_all_enemies()
 {
-	for (auto& e : m_enemies) e->unfreeze();
+	for (auto& s : m_spiders) s.unfreeze();
+	for (auto& h : m_harpies) h.unfreeze();
 }
 
 void Level::update_all_enemies(float elapsed_ms)
 {
-	for (auto& e : m_enemies) e->update(elapsed_ms);
-}
-
-// Returns the platform type if there is a platform at these coordinates
-// If no platform exists, returns ""
-std::string Level::get_platform_by_coordinates(std::pair<float, float> coords) {
-	std::pair<float, float> coords_check (coords.first, coords.second);
-	if (platforms_by_coords.find(coords_check) != platforms_by_coords.end()) {
-		return platforms_by_coords.find(coords_check)->second;
-	}
-
-	return "";
+	for (auto& s : m_spiders) s.update(elapsed_ms);
+	for (auto& h : m_harpies) h.update(elapsed_ms);
 }
 
 bool Level::maze_is_platform(std::pair<int,int> coords){
@@ -793,23 +635,6 @@ bool Level::maze_is_platform(std::pair<int,int> coords){
 		}
 	}
 	return false;
-}
-
-// Method for visualizing full maze in console for debugging purposes
-// 1 = platform
-// 2 = exit
-// 3 = initial player position
-// 4 = enemy path
-// 5 = upside down enemy path
-void Level::print_maze() {
-	for (int i = 0; i < m_maze.size(); i++)
-	{
-		cout << "\n";
-		for (int j = 0; j < m_maze[i].size(); j++)
-		{
-			cout << m_maze[i][j];
-		}
-	}
 }
 
 std::vector<std::vector <int>> Level::get_original_maze() {
@@ -839,4 +664,20 @@ void Level::set_player_death()
 		m_player.kill();
 		m_water.set_player_dead();
 	}
+}
+
+void Level::load_select_level(int level)
+{
+	destroy_platforms();
+	destroy_enemies();
+	m_maze.clear();
+
+	current_level = level;
+	call_level_loader();
+
+	int w, h;
+	glfwGetWindowSize(m_window, &w, &h);
+	initialize_camera_position(w, h);
+
+	reset_player_camera();
 }

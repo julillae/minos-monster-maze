@@ -13,6 +13,8 @@
 #include <math.h>
 #include <cmath>
 
+Texture Player::texture;
+
 bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 {
 	this->physicsHandler = physicsHandler;
@@ -23,18 +25,18 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 	use_sprite = true;
 
 	textureFile = textures_path("player-sprite-sheet.png");
-	if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
+	if (!RenderManager::load_texture(textureFile, &texture, this)) return false;
 
 	float spriteSheetWidth = 8.0f;
 	float spriteSheetHeight = 5.0f;
-	int horizontalTrim = 7;
+	int horizontalTrim = 8;
 	int verticalTrim = 7;
 	set_properties(initialPosition, 2.0f, 0.f);
-	set_dimensions(&m_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
+	set_dimensions(&texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
 
 	if (use_sprite)
 	{
-		spriteSheet.init(&m_texture, { spriteSheetWidth, spriteSheetHeight }, this);
+		spriteSheet.init(&texture, { spriteSheetWidth, spriteSheetHeight }, this);
 		spriteSheet.set_render_data(this, 0);
 
 	} else
@@ -48,11 +50,10 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 
 	}
 
-    initStateTree();
+    if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+        return false;
 
-	// kept in for debugging
-//	fprintf(stderr, "player height: %f\n", height); // 50.00f
-//	fprintf(stderr, "player width: %f\n", width); // 52.00f
+    initStateTree();
 
 	isBelowPlatform = false;
 
@@ -65,7 +66,6 @@ void Player::update(float ms)
 	physicsHandler->characterAccelerationUpdate(this);
 	physicsHandler->characterVelocityUpdate(this);
 	if (is_alive()) move();
-	collisionNormals.clear();
 }
 
 void Player::draw(const mat3& projection)
@@ -73,7 +73,7 @@ void Player::draw(const mat3& projection)
 	if (use_sprite)
 	{
 		set_animation();
-		RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &m_texture, this);
+		RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
 	} else
 	{
 		RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &box_texture, this);
@@ -193,6 +193,44 @@ bool Player::can_jump()
 	return characterState->getStateChangeCost(jumping).first;
 }
 
-std::vector<vec2> Player::getCollisionNormals() {
-	return collisionNormals;
+void Player::set_world_vertex_coord()
+{
+	vertex_coords.clear();
+	float x_pos = m_position.x;
+	float y_pos = m_position.y;
+	bool useDiamondCollisionBox = true;
+
+	if (useDiamondCollisionBox) {
+		vec2 top = { x_pos, (y_pos - height / 2) };
+		vec2 bottom = { x_pos, (y_pos + height / 2) };
+		vec2 right = { (x_pos + width / 2), y_pos };
+		vec2 left = { (x_pos - width / 2), y_pos };
+
+		std::vector<vec2> playArray;
+		playArray.push_back(top);
+		playArray.push_back(right);
+		playArray.push_back(bottom);
+		playArray.push_back(left);
+
+		for (int i = 0; i < 4; i++) {
+			playArray[i] = { ((playArray[i].x - x_pos) * cosf(m_rotation)) - ((playArray[i].y - y_pos) * sinf(m_rotation)) + x_pos,
+							((playArray[i].y - y_pos) * cosf(m_rotation)) + ((playArray[i].x - x_pos) * sinf(m_rotation)) + y_pos };
+			vertex_coords.push_back(playArray[i]);
+		}
+	}
+	else {
+		auto offset = static_cast<float>(sqrt(pow(width / 2, 2) + pow(height / 2, 2)));
+		float offsetAngle = atan2(height, width);
+		vec2 vert1 = { x_pos + offset * cosf(m_rotation + offsetAngle), y_pos + offset * sinf(m_rotation + offsetAngle) };
+		vec2 vert2 = { (x_pos + offset * cosf(static_cast<float>(m_rotation + M_PI - offsetAngle))),
+					  (y_pos + offset * sinf(static_cast<float>(m_rotation + M_PI - offsetAngle))) };
+		vec2 vert3 = { (x_pos + offset * cosf(static_cast<float>(m_rotation - M_PI + offsetAngle))),
+					  static_cast<float>(y_pos + offset * sin(m_rotation - M_PI + offsetAngle)) };
+		vec2 vert4 = { static_cast<float>(x_pos + offset * cos(m_rotation - offsetAngle)), static_cast<float>(y_pos + offset * sin(m_rotation - offsetAngle)) };
+
+		vertex_coords.push_back(vert1);
+		vertex_coords.push_back(vert2);
+		vertex_coords.push_back(vert3);
+		vertex_coords.push_back(vert4);
+	}
 }

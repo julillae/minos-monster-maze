@@ -5,6 +5,7 @@
 
 class Player : public Character
 {
+	static Texture texture;
 public:
 	// Creates all the associated render resources and default transform
 	bool init(vec2 initialPosition, Physics* physicsHandler)override;
@@ -34,11 +35,8 @@ public:
 	// Returns true if the character is in a state that can jump
 	bool can_jump();
 
-	std::vector<vec2> getCollisionNormals();
+	void set_world_vertex_coord();
 
 	bool keyMappingSetA=true;
 	int jumpKey = GLFW_KEY_UP;
-
-	std::vector<vec2> collisionNormals;
-
 };

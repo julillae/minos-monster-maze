@@ -16,13 +16,16 @@
 #include "mazeComponents/spikes.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
-#include "helpMenu.hpp"
+#include "menus/helpMenu.hpp"
+#include "gameStates/gameState.hpp"
+#include "gameStates/mainMenuState.hpp"
+#include "levelLoader.hpp"
 
 // stlib
 #include <vector>
 #include <random>
 #include <map>
-#include <memory>
+#include <algorithm>
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -31,34 +34,29 @@
 
 // Level class
 
-typedef std::vector<std::unique_ptr<Enemy>> Enemies;
-typedef std::vector<std::unique_ptr<FixedComponent>> Platforms;
-enum SpikeDir { UP, DOWN, LEFT, RIGHT};
-
-class Level
+class Level : public GameState
 {
 public:
 	Player m_player;
 	
-	Level();
+	Level(Game* game);
 	~Level();
 
     // Creates a window, sets up events and begins the game
 	bool init(vec2 screen, Physics* physicsHandler, int startLevel);
 
 	// Releases all associated resource
-    void destroy();
+    void destroy()override;
 
 	// Steps the game ahead by ms milliseconds
-    bool update(float elapsed_ms);
+    bool update(float elapsed_ms)override;
 
     // Renders our scene
-	void draw();
+	void draw()override;
 
 	// Should the game be over ?
-	bool is_over()const;
+	bool is_over()override;
 
-	std::string get_platform_by_coordinates(std::pair<float, float> coords);
 	bool maze_is_platform(std::pair<int,int> coords);
 	std::vector<std::vector <int>> get_original_maze();
 
@@ -66,54 +64,44 @@ public:
 	float get_maze_height();
 	float get_tile_width();
 	float get_tile_height();
+
+	void load_select_level(int level);
 private:
 	// !!! INPUT CALLBACK FUNCTIONS
-	void on_key(GLFWwindow*, int key, int, int action, int mod);
+	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-    void read_level_data();
+	void check_platform_collisions();
 
-	// Generate a spider enemy
-	bool spawn_spider_enemy(vec2 position, float bound, bool upsideDown);
-
-	// Generate harpy enemy
-	bool spawn_harpy_enemy(vec2 position);
-
-	// Generates a new floor
-	bool spawn_floor(vec2 position);
-    bool spawn_ice(vec2 position);
-    bool spawn_spikes(vec2 position, SpikeDir dir);
+	void draw_enemies(mat3 projection_2D);
+	void reset_enemies();
+	void destroy_enemies();
+	void draw_platforms(mat3 projection_2D);
+	void destroy_platforms();
 
 	void initialize_camera_position(int w, int h);
+	void call_level_loader();
 	void load_new_level();
 	void reset_game();
+	void reset_player_camera();
 	void freeze_all_enemies();
 	void unfreeze_all_enemies();
 	void update_all_enemies(float elapsed_ms);
 
-
-	// Generates hard-coded maze in each level
-	void generate_maze();
-	void print_maze();
-	void store_platform_coords(vec2 coords, int platform_key);
-
 	void set_player_death();
 private:
-	// Window handle
-	GLFWwindow* m_window;
-
-    // Screen texture
-	// The draw loop first renders to this texture, then it is used for the water shader
-	GLuint m_frame_buffer;
-	Texture m_screen_tex;
 
 	// Water effect
 	RenderEffects m_water;
 
+	std::vector<Spider> m_spiders;
+	std::vector<Harpy> m_harpies;
+
 	Exit m_exit;
 	Fire m_fire;
-	Enemies m_enemies;
-	Platforms m_platforms;
+	std::vector<Floor> m_floors;
+	std::vector<Spikes> m_spikes;
+	std::vector<Ice> m_ice;
     HelpMenu m_help_menu;
 
     float m_seed_rng;
@@ -130,11 +118,7 @@ private:
 	Physics* physicsHandler;
 
 	bool is_player_at_goal;
-	// Part of hack needed to deal with the MacOs Retina Display issue where it doubles the pixels rendered
-	float osScaleFactor = 1.f;
 
-	float tx;
-	float ty;
 	int rotateCWKey = GLFW_KEY_X;
 	int rotateCCWKey = GLFW_KEY_Z;
 
@@ -142,11 +126,13 @@ private:
 	int current_level = 0;
 
 	const map<int, std::string> platform_types = {
-		{1, "FLOOR"},
-		{2, "EXIT"},
-        {6, "ICE"},
-        {7, "SPIKE LEFT"},
-        {8, "SPIKE UP"}
+		{49, "FLOOR"},       //1
+		{50, "EXIT"},        //2
+        {54, "ICE"},         //6
+        {65, "SPIKE LEFT"},  //A
+        {66, "SPIKE UP"},    //B
+        {67, "SPIKE DOWN"},  //C
+        {68, "SPIKE RIGHT"}  //D
 	};
 
     // Variables determined by level data
@@ -154,8 +140,8 @@ private:
 	float m_maze_width;
     float m_maze_height;
 
-	float m_tile_width = 0.f;
-	float m_tile_height = 0.f;
+	float m_tile_width = 25.f;
+	float m_tile_height = 25.f;
 
 	// Rows of the maze where:
 	// 1 = platform
@@ -164,9 +150,11 @@ private:
 	// 4 = spider enemy (and its path)
 	// 9 = harpy enemy
     std::vector<std::vector <int>> m_maze;
-	std::map<std::pair<float, float>, std::string> platforms_by_coords;
 
     bool show_help_menu = false;
 	bool cameraTracking = true;
 	bool canRotate = true;
+
+	float maxRotationEnergy = 180.f;
+	float rotationEnergy = maxRotationEnergy;
 };
