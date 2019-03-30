@@ -38,7 +38,7 @@ public:
     Exit get_exit();
 
     Spiders get_spiders();
-	std::vector<Harpy> get_harpies();
+	Harpies get_harpies();
 	Floors get_floors();
 	Spikes get_spikes();
 	Ices get_ice();
@@ -47,8 +47,6 @@ private:
     void generate_maze();
 
     void store_platform_coords(vec2 coords, int platform_key);
-
-    bool spawn_harpy_enemy(vec2 position);
     void load_spikes(int cell, vec2 position);
 
     void print_maze();
@@ -81,8 +79,7 @@ private:
     Exit m_exit;
 
 	Spiders spiders;
-	std::vector<Harpy> m_harpies;
-
+	Harpies harpies;
 	Floors floors;
 	Spikes spikes;
 	Ices ices;

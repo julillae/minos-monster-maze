@@ -107,7 +107,7 @@ private:
 	RenderEffects m_water;
 
 	Spiders m_spiders;
-	std::vector<Harpy> m_harpies;
+	Harpies m_harpies;
 
 	Exit m_exit;
 	Floors m_floors;
