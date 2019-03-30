@@ -128,7 +128,7 @@ void Level::check_platform_collisions() {
 	if (m_player.is_alive()) {
 		m_player.set_world_vertex_coord();
 		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes);
-		physicsHandler->characterCollisionsWithFloors(&m_player, m_floors);
+		physicsHandler->characterCollisionsWithFloors(&m_player, m_floors.get_floor_vector());
 		physicsHandler->characterCollisionsWithIce(&m_player, m_ice);
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
@@ -504,8 +504,7 @@ void Level::destroy_enemies() {
 }
 
 void Level::draw_platforms(mat3 projection_2D) {
-    for (auto& floor: m_floors)
-        floor.draw(projection_2D);
+	m_floors.draw(projection_2D);
 
 	for (auto& ice: m_ice)
         ice.draw(projection_2D);
@@ -515,8 +514,7 @@ void Level::draw_platforms(mat3 projection_2D) {
 }
 
 void Level::destroy_platforms() {
-	for (auto& floor : m_floors)
-		floor.destroy();
+	m_floors.destroy();
 
 	for (auto& spike : m_spikes)
 		spike.destroy();
@@ -524,7 +522,6 @@ void Level::destroy_platforms() {
 	for (auto& ice : m_ice)
 		ice.destroy();
 
-	m_floors.clear();
 	m_spikes.clear();
 	m_ice.clear();
 }

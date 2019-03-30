@@ -17,3 +17,8 @@ public:
 	void set_collision_properties();
 	std::vector<vec2> get_vertex_coord();
 };
+
+class FixedComponents : public MazeComponents
+{
+
+};

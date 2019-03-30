@@ -110,7 +110,8 @@ private:
 	std::vector<Harpy> m_harpies;
 
 	Exit m_exit;
-	std::vector<Floor> m_floors;
+	//std::vector<Floor> m_floors;
+	Floors m_floors;
 	std::vector<Spikes> m_spikes;
 	std::vector<Ice> m_ice;
 

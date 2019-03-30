@@ -26,7 +26,7 @@ enum SpikeDir { UP, DOWN, LEFT, RIGHT};
 class LevelLoader
 {
 public:
-    std::vector<std::vector <int>> load_level(int levelNumber, Physics* physicsHandler);
+	std::vector<std::vector <int>> load_level(int levelNumber, Physics* physicsHandler);
 
     std::string get_platform_by_coordinates(std::pair<float, float> coords);
 
@@ -42,7 +42,7 @@ public:
     std::vector<Spider> get_spiders();
 	std::vector<Harpy> get_harpies();
 
-	std::vector<Floor> get_floors();
+	Floors get_floors();
 	std::vector<Spikes> get_spikes();
 	std::vector<Ice> get_ice();
 private:
@@ -53,8 +53,6 @@ private:
 
     bool spawn_spider_enemy(vec2 position, float bound, bool upsideDown);
     bool spawn_harpy_enemy(vec2 position);
-    bool spawn_floor(vec2 position);
-    bool spawn_ice(vec2 position);
     bool spawn_spikes(vec2 position, SpikeDir dir);
     void load_spikes(int cell, vec2 position);
 
@@ -91,6 +89,7 @@ private:
 	std::vector<Harpy> m_harpies;
 
 	std::vector<Floor> m_floors;
+	Floors floors;
 	std::vector<Spikes> m_spikes;
-	std::vector<Ice> m_ice;
+	Ices ices;
 };
