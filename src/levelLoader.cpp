@@ -11,6 +11,10 @@
 
 std::vector<std::vector <int>> LevelLoader::load_level(int levelNumber, Physics* physicsHandler) {
     this->physicsHandler = physicsHandler;
+	floors.init(m_tile_width, m_tile_height);
+	ices.init(m_tile_width, m_tile_height);
+	spiders.init(physicsHandler);
+	harpies.init(physicsHandler);
     
     read_level_data(levelNumber);
 
@@ -52,10 +56,6 @@ void LevelLoader::generate_maze()
 	bool setting_enemy = false;
 	bool setting_rotated_enemy = false;
 	vec2 enemy_start_pos;
-	floors.init(m_tile_width, m_tile_height);
-	ices.init(m_tile_width, m_tile_height);
-	spiders.init(physicsHandler);
-	harpies.init(physicsHandler);
 
     float i = 0.f;
 	float j = 0.f;
