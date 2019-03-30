@@ -728,6 +728,10 @@ void Level::load_player()
     rotation = GameSave::document["rotation"].GetFloat();
     rotationDeg = GameSave::document["rotationDeg"].GetFloat();
     rotationEnergy = GameSave::document["rotationEnergy"].GetFloat();
+
+    if (rotationEnergy < maxRotationEnergy)
+    	m_water.set_rotation_end_time();
+    
 }
 
 void Level::load_spiders()
