@@ -150,24 +150,31 @@ void Minotaur::set_bound(float bound)
 void Minotaur::handleBossRotation()
 {
     float timeElapsed = getTimeElapsed();
-    if (rotating && abs(world->get_rotation_deg()) >= rotate_max_degree) {
-        float rotationDegree = world->get_rotation_deg();
-        printf("Rotation degree is %lf\n", rotationDegree);
-        printf("Stopping boss rotation\n");
-        world->boss_rotation_set(false, rotate_cw);
-        rotating = false;
-        if (rotate_cw) {
-            rotate_cw = false;
-        } else {
-            rotate_cw = true;
-        }
-    } else
-     if (timeElapsed >= rotate_cycle_time) {
+    float rotation_degree = world->get_rotation_deg();
+    if (rotating && ((!rotate_cw && (rotation_degree >= rotate_max_degree)) || (rotate_cw && (rotation_degree <= rotate_max_degree*-1)))) {
+        float curr_rotation = world->get_rotation_deg();
+        // if ((!rotate_cw && (curr_rotation >= rotate_max_degree)) ||
+        //         rotate_cw && (curr_rotation <= rotate_max_degree)) {
+            
+            // float rotationDegree = world->get_rotation_deg();
+            printf("Rotation degree is %lf\n", rotation_degree);
+            printf("Stopping boss rotation\n");
+            world->boss_rotation_set(false, rotate_cw);
+            rotating = false;
+            if (rotate_cw) {
+                rotate_cw = false;
+            } else {
+                rotate_cw = true;
+            }
+                // }
+    } else {
+        if (!rotating && timeElapsed >= rotate_cycle_time) {
         printf("Starting boss rotation\n");
         printf("Rotation clockwise is %d\n", rotate_cw);
         world->boss_rotation_set(true, rotate_cw);
         rotating = true;
         resetCycleStart();
+        }
     }
 }
 
