@@ -707,6 +707,8 @@ void Level::load_player()
 	m_player.set_scale(vec2({player_scaleX, player_scaleY}));
 	m_player.set_world_vertex_coord();
 
+	initialPosition = m_player.get_position();
+
     int w, h;
     glfwGetWindowSize(m_window, &w, &h);
     initialize_camera_position(w, h);
