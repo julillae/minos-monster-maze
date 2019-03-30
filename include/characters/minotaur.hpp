@@ -50,5 +50,7 @@ class Minotaur: public Smart
         float rotate_max_degree = 45.0f;
         bool rotate_cw = false;
         bool rotating = false;
+        State previous_state;
+        float prep_time = 1000.0f;
 	
 };
