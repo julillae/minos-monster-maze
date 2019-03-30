@@ -1,5 +1,6 @@
 #include "../../include/gameStates/mainMenuState.hpp"
 #include "../../include/renderManager.hpp"
+#include "../../include/gameStates/levelSelectState.hpp"
 
 // stlib
 #include <stdio.h>
@@ -85,6 +86,10 @@ void MainMenuState::init(vec2 screen)
     initialize_camera_position(w, h);
     mainMenu.set_position(cameraCenter);
 
+    LevelSelectState* levelSelect = new LevelSelectState(game);
+    levelSelect->init(m_screen);
+    game->push_state(levelSelect);
+
 }
 
 void MainMenuState::draw()
@@ -135,18 +140,7 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
                 case NEWGAME:
                 {
                     LevelSelectState* levelSelectState = (LevelSelectState*) game->get_state(LEVELSELECT);
-                    if (levelSelectState != NULL)
-                    {
-                        levelSelectState->reset_buttons();
-                        game->set_current_state(levelSelectState);
-                    } else
-                    {
-                        LevelSelectState* levelSelect = new LevelSelectState(game);
-                        levelSelect->init(m_screen);
-                        game->push_state(levelSelect);
-                        game->set_current_state(levelSelect);
-                    }
-
+                    game->set_current_state(levelSelectState);
                     break;
                 }
                 case CONTROLS:
@@ -154,20 +148,35 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
                     m_help_menu.set_visibility(show_help_menu);
                     break;
                 case QUIT:
+                {
+                    Level* level = (Level*) game->get_state(LEVEL);
+                    if (level != NULL) {
+                        GameSave::save_game((Level*) game->get_state(LEVEL));
+                    }
+
                     close = true;
                     break;
-                default:
-                    //TODO: load from saved file if exists
-                    if (game->get_state(LEVEL) != NULL)
-                    {
-                        game->set_current_state(game->get_state(LEVEL));
-                    } else {
+                }
+                case CONTINUE:
+                {
+                    Level* level = (Level*) game->get_state(LEVEL);
+                    if (level != NULL) {
+                        game->set_current_state(level);
+                        world = level;
+                    } else if (saved_file) {
+                        GameSave::load_game();
+                        int startLevel = GameSave::document["level"].GetInt();
                         Physics *physicsHandler = new Physics();
                         Level* level = new Level(game);
-                        level->init(m_screen, physicsHandler, 0);
+                        level->init(m_screen, physicsHandler, startLevel);
+                        level->load_saved_game();
                         game->push_state(level);
                         game->set_current_state(level);
+                        world = level;
                     }
+                    break;
+                }
+                default:
                     break;
             }
 
@@ -267,10 +276,22 @@ void MainMenuState::init_buttons()
     const char* controlsText = textures_path("controls-button.png");
     const char* quitText = textures_path("quit-button.png");
     continueButton.init(vec2({buttonX, buttonY}), continueText, CONTINUE );
-    continueButton.set_visibility(false);
     newGameButton.init(vec2({buttonX, buttonY + buttonOffset}), newGameText, NEWGAME);
-    newGameButton.set_selected(true);
-    currentButton = &newGameButton;
+
+    std::ifstream infile("../src/savedGame.txt");
+    if (infile.good()) {
+        continueButton.set_visibility(true);
+        continueButton.set_selected(true);
+        currentButton = &continueButton;
+        show_continue = true;
+        saved_file = true;
+    } else {
+        continueButton.set_visibility(false);
+        newGameButton.set_selected(true);
+        currentButton = &newGameButton;
+        saved_file = false;
+    }
+
     controlsButton.init(vec2({buttonX, buttonY + buttonOffset * 2}), controlsText, CONTROLS);
     quitButton.init(vec2({buttonX, buttonY + buttonOffset * 3}), quitText, QUIT);
 

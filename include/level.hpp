@@ -65,6 +65,15 @@ public:
 	float get_tile_height();
 
 	void load_select_level(int level);
+    int get_current_level();
+    float get_rotation();
+    float get_rotationDeg();
+    float get_rotationEnergy();
+
+    std::vector<Spider> get_spiders();
+    std::vector<Harpy> get_harpies();
+
+    void load_saved_game();
 private:
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
@@ -88,6 +97,10 @@ private:
 	void update_all_enemies(float elapsed_ms);
 
 	void set_player_death();
+
+	void load_player();
+	void load_spiders();
+	void load_harpies();
 private:
 
 	// Water effect

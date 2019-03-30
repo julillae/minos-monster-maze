@@ -5,7 +5,11 @@
 #include "../level.hpp"
 #include "../menus/button.hpp"
 #include "../menus/mainButton.hpp"
-#include "levelSelectState.hpp"
+#include "../gameSave.hpp"
+
+extern Level* world;
+
+class LevelSelectState;
 
 class MainMenuState : public GameState
 {
@@ -43,5 +47,6 @@ private:
     vec2 initialPosition;
 
     bool close = false;
+    bool saved_file;
 
 };
