@@ -55,6 +55,7 @@ void LevelLoader::generate_maze()
 	floors.init(m_tile_width, m_tile_height);
 	ices.init(m_tile_width, m_tile_height);
 	spiders.init(physicsHandler);
+	harpies.init(physicsHandler);
 
     float i = 0.f;
 	float j = 0.f;
@@ -114,7 +115,7 @@ void LevelLoader::generate_maze()
             } else if (cell >= 65 && cell <= 68) {
                 load_spikes(cell, vec2({x_pos, y_pos}));
 			} else if (cell == 57) {
-				spawn_harpy_enemy(vec2({x_pos, y_pos}));
+				harpies.spawn_harpy_enemy(vec2({x_pos, y_pos}));
 			}
 
             j = j + 1.f;
@@ -130,18 +131,6 @@ void LevelLoader::store_platform_coords(vec2 coords, int platform_key) {
 	std::string platformType = platform_types.find(platform_key)->second;
 	std::pair <float,float> coords_pair (coords.x,coords.y);
 	m_platforms_by_coords.emplace(coords_pair, platformType);
-}
-
-bool LevelLoader::spawn_harpy_enemy(vec2 position)
-{
-	Harpy enemy;
-	if (enemy.init(position, physicsHandler))
-	{	
-		m_harpies.emplace_back(enemy);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn harpy");
-	return false;
 }
 
 void LevelLoader::load_spikes(int cell, vec2 position)
@@ -237,9 +226,9 @@ Spiders LevelLoader::get_spiders()
 	return spiders;
 }
 
-std::vector<Harpy> LevelLoader::get_harpies()
+Harpies LevelLoader::get_harpies()
 {
-    return m_harpies;
+    return harpies;
 }
 
 Floors LevelLoader::get_floors()

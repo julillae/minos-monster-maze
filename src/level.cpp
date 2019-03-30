@@ -218,7 +218,7 @@ bool Level::update(float elapsed_ms)
 		}
 	}
 
-	for (auto& enemy : m_harpies) {
+	for (auto& enemy : m_harpies.get_harpy_vector()) {
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy))
 		{
 			set_player_death();
@@ -472,28 +472,17 @@ void Level::initialize_camera_position(int w, int h)
 
 void Level::draw_enemies(mat3 projection_2D) {
 	m_spiders.draw(projection_2D);
-
-	for (auto& harpy: m_harpies)
-        harpy.draw(projection_2D);
+	m_harpies.draw(projection_2D);
 }
 
 void Level::reset_enemies() {
 	m_spiders.reset();
-
-	for (auto& harpy : m_harpies) {
-		harpy.freeze();
-		harpy.reset_position();
-		harpy.unfreeze();
-	};
+	m_harpies.reset();
 }
 
 void Level::destroy_enemies() {
 	m_spiders.destroy();
-
-	for (auto& harpy : m_harpies)
-		harpy.destroy();
-
-	m_harpies.clear();
+	m_harpies.destroy();
 }
 
 void Level::draw_platforms(mat3 projection_2D) {
@@ -577,19 +566,19 @@ void Level::reset_player_camera()
 void Level::freeze_all_enemies()
 {
 	m_spiders.freeze();
-	for (auto& h : m_harpies) h.freeze();
+	m_harpies.freeze();
 }
 
 void Level::unfreeze_all_enemies()
 {
 	m_spiders.unfreeze();
-	for (auto& h : m_harpies) h.unfreeze();
+	m_harpies.unfreeze();
 }
 
 void Level::update_all_enemies(float elapsed_ms)
 {
 	m_spiders.update(elapsed_ms);
-	for (auto& h : m_harpies) h.update(elapsed_ms);
+	m_harpies.update(elapsed_ms);
 }
 
 bool Level::maze_is_platform(std::pair<int,int> coords){
@@ -657,7 +646,7 @@ float Level::get_rotationEnergy() { return rotationEnergy; }
 
 std::vector<Spider> Level::get_spiders() { return m_spiders.get_spider_vector(); }
 
-std::vector<Harpy> Level::get_harpies() { return m_harpies; }
+std::vector<Harpy> Level::get_harpies() { return m_harpies.get_harpy_vector(); }
 
 void Level::load_saved_game()
 {
@@ -767,10 +756,12 @@ void Level::load_harpies()
 		itr = harpies[i].GetObject().FindMember("scale_x");
 		scale_x = itr->value.GetFloat();
 
-		scale_y = m_harpies[i].get_scale().y;
+		scale_y = m_harpies.get_harpy_vector()[i].get_scale().y;
 
-		m_harpies[i].set_position(vec2({pos_x, pos_y}));
-		m_harpies[i].set_velocity(vec2({vel_x, vel_y}));
-		m_harpies[i].set_scale(vec2({scale_x, scale_y}));
+		vec2 position = vec2({ pos_x, pos_y });
+		vec2 velocity = vec2({ vel_x, vel_y });
+		vec2 scale = vec2({ scale_x, scale_y });
+		
+		m_harpies.setHarpyProperties(i, position, velocity, scale);
 	}
 }
