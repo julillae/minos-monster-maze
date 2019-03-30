@@ -51,11 +51,12 @@ void GameSave::save_minotaur()
     Document::AllocatorType& allocator = document.GetAllocator();
     Minotaur m_minotaur = gameLevel->get_minotaur();
 
-    Value pos_x, pos_y, scale_x, alive;
+    Value pos_x, pos_y, scale_x, alive, vel_x;
     pos_x.SetFloat(m_minotaur.m_position.x);
     pos_y.SetFloat(m_minotaur.m_position.y);
     scale_x.SetFloat(m_minotaur.m_scale.x);
     alive.SetBool(m_minotaur.is_alive());
+    vel_x.SetFloat(m_minotaur.get_velocity().x);
 
     // create a rapidjson object type
     Value minotaur(rapidjson::kObjectType);
@@ -63,6 +64,7 @@ void GameSave::save_minotaur()
     minotaur.AddMember("pos_y", pos_y, allocator);
     minotaur.AddMember("scale_x", scale_x, allocator);
     minotaur.AddMember("alive", alive, allocator);
+    minotaur.AddMember("velocity_x",vel_x, allocator);
 
     document.AddMember("minotaur", minotaur, allocator);
 }

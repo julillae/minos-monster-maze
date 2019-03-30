@@ -732,6 +732,9 @@ void Level::load_saved_game()
         load_player();
         load_spiders();
         load_harpies();
+		if (minotaurPresent) {
+			load_minotaur();
+		}
     }
 
 }
@@ -768,6 +771,41 @@ void Level::load_player()
 
     if (rotationEnergy < maxRotationEnergy)
     	m_water.set_rotation_end_time();
+    
+}
+
+void Level::load_minotaur()
+{
+	float minotaur_x, minotaur_y, minotaur_scaleX, minotaur_scaleY, minotaur_velx;
+	bool alive;
+
+	Value& minotaur = GameSave::document["minotaur"];
+
+    Value::ConstMemberIterator itr = minotaur.GetObject().FindMember("pos_x");
+	minotaur_x = itr->value.GetFloat();
+
+	itr = minotaur.GetObject().FindMember("pos_y");
+	minotaur_y = itr->value.GetFloat();
+
+	itr = minotaur.GetObject().FindMember("scale_x");
+	minotaur_scaleX = itr->value.GetFloat();
+
+	minotaur_scaleY = m_player.get_scale().y;
+
+	itr = minotaur.GetObject().FindMember("velocity_x");
+	minotaur_velx = itr->value.GetFloat();
+
+	m_minotaur.set_velocity(vec2{minotaur_velx, 0.f});
+
+	if (minotaur_velx > 0) {
+		m_minotaur.set_direction(Direction::right);
+	} else {
+		m_minotaur.set_direction(Direction::left);
+	}
+
+	m_minotaur.set_position(vec2({minotaur_x, minotaur_y}));
+	m_minotaur.set_scale(vec2({minotaur_scaleX, minotaur_scaleY}));
+
     
 }
 
