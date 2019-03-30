@@ -20,7 +20,6 @@ public:
 class Floors : public FixedComponents
 {
 public:
-	bool init(float tile_width, float tile_height);
 	bool spawn_floor(vec2 position);
 	std::vector<Floor> get_floor_vector();
 
@@ -29,7 +28,5 @@ public:
 
 	void destroy();
 private:
-	float m_tile_width;
-	float m_tile_height;
 	std::vector<Floor> m_floors;
 };

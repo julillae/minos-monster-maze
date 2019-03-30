@@ -164,35 +164,6 @@ bool LevelLoader::spawn_harpy_enemy(vec2 position)
 	return false;
 }
 
-bool LevelLoader::spawn_spikes(vec2 position, SpikeDir dir)
-{
-    Spikes spikes;
-
-    if (spikes.init(position))
-    {
-    	switch (dir)
-		{
-			case DOWN:
-				spikes.set_down();
-				break;
-			case LEFT:
-				spikes.set_left();
-				break;
-			case RIGHT:
-				spikes.set_right();
-				break;
-			default:
-				spikes.set_up();
-				break;
-		}
-
-        m_spikes.emplace_back(spikes);
-        return true;
-    }
-    fprintf(stderr, "Failed to spawn spikes");
-    return false;
-}
-
 void LevelLoader::load_spikes(int cell, vec2 position)
 {
 	std::string platformType = platform_types.find(cell)->second;
@@ -200,25 +171,25 @@ void LevelLoader::load_spikes(int cell, vec2 position)
     if (platformType == "SPIKE LEFT") {
         float spike_x = position.x - m_tile_width / 2;
 
-        if (spawn_spikes({spike_x, position.y}, LEFT))
+        if (spikes.spawn_spike({spike_x, position.y}, LEFT))
             store_platform_coords({spike_x, position.y}, cell);
 
     } else if (platformType == "SPIKE UP") {
 
         float spike_y = position.y - m_tile_height / 2;
-        if (spawn_spikes({position.x, spike_y}, UP))
+        if (spikes.spawn_spike({position.x, spike_y}, UP))
             store_platform_coords({position.x, spike_y}, cell);
 
     } else if (platformType == "SPIKE DOWN") {
 
         float spike_y = position.y + m_tile_height / 2;
-        if (spawn_spikes({position.x, spike_y}, DOWN))
+        if (spikes.spawn_spike({position.x, spike_y}, DOWN))
             store_platform_coords({position.x, spike_y}, cell);
 
     } else {
         float spike_x = position.x + m_tile_width / 2;
 
-        if (spawn_spikes({spike_x, position.y}, RIGHT))
+        if (spikes.spawn_spike({spike_x, position.y}, RIGHT))
             store_platform_coords({spike_x, position.y}, cell);
     }
 }
@@ -297,12 +268,12 @@ Floors LevelLoader::get_floors()
 }
 
 
-std::vector<Spikes> LevelLoader::get_spikes()
+Spikes LevelLoader::get_spikes()
 {
-    return m_spikes;
+    return spikes;
 }
 
-std::vector<Ice> LevelLoader::get_ice()
+Ices LevelLoader::get_ice()
 {
-    return ices.get_ice_vector();
+    return ices;
 }

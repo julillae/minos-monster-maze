@@ -34,14 +34,6 @@ vec2 Ice::get_texture_size()
 	return vec2({static_cast<float>(texture.width), static_cast<float>(texture.height)});
 }
 
-bool Ices::init(float tile_width, float tile_height)
-{
-	m_tile_width = tile_width;
-	m_tile_height = tile_height;
-
-	return false;
-}
-
 bool Ices::spawn_ice(vec2 position)
 {
 	Ice ice;
