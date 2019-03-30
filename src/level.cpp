@@ -715,6 +715,8 @@ std::vector<Spider> Level::get_spiders() { return m_spiders; }
 
 std::vector<Harpy> Level::get_harpies() { return m_harpies; }
 
+Minotaur Level::get_minotaur() { return m_minotaur; }
+
 void Level::load_saved_game()
 {
 	fprintf(stderr, "loading saved game\n");

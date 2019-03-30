@@ -45,6 +45,28 @@ void GameSave::save_player()
     document.AddMember("player", player, allocator);
 }
 
+void GameSave::save_minotaur()
+{
+    // must pass an allocator when the object may need to allocate memory
+    Document::AllocatorType& allocator = document.GetAllocator();
+    Minotaur m_minotaur = gameLevel->get_minotaur();
+
+    Value pos_x, pos_y, scale_x, alive;
+    pos_x.SetFloat(m_minotaur.m_position.x);
+    pos_y.SetFloat(m_minotaur.m_position.y);
+    scale_x.SetFloat(m_minotaur.m_scale.x);
+    alive.SetBool(m_minotaur.is_alive());
+
+    // create a rapidjson object type
+    Value minotaur(rapidjson::kObjectType);
+    minotaur.AddMember("pos_x", pos_x, allocator);
+    minotaur.AddMember("pos_y", pos_y, allocator);
+    minotaur.AddMember("scale_x", scale_x, allocator);
+    minotaur.AddMember("alive", alive, allocator);
+
+    document.AddMember("minotaur", minotaur, allocator);
+}
+
 void GameSave::save_level()
 {
     // must pass an allocator when the object may need to allocate memory
@@ -65,6 +87,9 @@ void GameSave::save_enemies()
 {
     save_spiders();
     save_harpies();
+    if (gameLevel->minotaurPresent) {
+        save_minotaur();
+    }
 }
 
 void GameSave::save_spiders()

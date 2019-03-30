@@ -73,11 +73,14 @@ public:
 
     std::vector<Spider> get_spiders();
     std::vector<Harpy> get_harpies();
+	Minotaur get_minotaur();
 
     void load_saved_game();
 
 	// Boss controls
 	void boss_rotation_set(bool enable, bool ccw);
+
+	bool minotaurPresent = false;
 
 private:
 	// !!! INPUT CALLBACK FUNCTIONS
@@ -175,5 +178,4 @@ private:
 
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;
-	bool minotaurPresent = false;
 };
