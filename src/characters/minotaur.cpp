@@ -218,9 +218,12 @@ void Minotaur::set_animation()
         is_anim_once = false;
         switch (characterState->currentState) {
             case idle:
-            case preparing:
                 numTiles = 6;
                 tileIndex = 45;
+                break;
+            case preparing:
+                numTiles = 9;
+                tileIndex = 54;
                 break;
             case running:
             case following:
