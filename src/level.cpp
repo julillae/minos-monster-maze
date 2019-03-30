@@ -670,29 +670,29 @@ void Level::load_saved_game()
 {
 	fprintf(stderr, "loading saved game\n");
 
-	load_player();
+    Value& player = GameSave::document["player"];
 
-	int w, h;
-	glfwGetWindowSize(m_window, &w, &h);
-	initialPosition = m_player.m_position;
-	initialize_camera_position(w, h);
+    Value::ConstMemberIterator itr = player.GetObject().FindMember("alive");
+    bool alive = itr->value.GetBool();
 
-	rotation = GameSave::document["rotation"].GetFloat();
-	rotationDeg = GameSave::document["rotationDeg"].GetFloat();
-	rotationEnergy = GameSave::document["rotationEnergy"].GetFloat();
-
-	load_spiders();
-	load_harpies();
+    if (!alive) {
+        reset_game();
+    } else {
+        load_player();
+        load_spiders();
+        load_harpies();
+    }
 
 }
 
 void Level::load_player()
 {
 	float player_x, player_y, player_scaleX, player_scaleY;
+	bool alive;
 
 	Value& player = GameSave::document["player"];
 
-	Value::ConstMemberIterator itr = player.GetObject().FindMember("pos_x");
+    Value::ConstMemberIterator itr = player.GetObject().FindMember("pos_x");
 	player_x = itr->value.GetFloat();
 
 	itr = player.GetObject().FindMember("pos_y");
@@ -705,6 +705,19 @@ void Level::load_player()
 
 	m_player.set_position(vec2({player_x, player_y}));
 	m_player.set_scale(vec2({player_scaleX, player_scaleY}));
+	m_player.set_world_vertex_coord();
+
+    int w, h;
+    glfwGetWindowSize(m_window, &w, &h);
+    initialize_camera_position(w, h);
+
+    rotation = GameSave::document["rotation"].GetFloat();
+    rotationDeg = GameSave::document["rotationDeg"].GetFloat();
+    rotationEnergy = GameSave::document["rotationEnergy"].GetFloat();
+
+    if (rotationEnergy < maxRotationEnergy)
+    	m_water.set_rotation_end_time();
+    
 }
 
 void Level::load_spiders()
