@@ -54,6 +54,7 @@ void LevelLoader::generate_maze()
 	vec2 enemy_start_pos;
 	floors.init(m_tile_width, m_tile_height);
 	ices.init(m_tile_width, m_tile_height);
+	spiders.init(physicsHandler);
 
     float i = 0.f;
 	float j = 0.f;
@@ -71,7 +72,7 @@ void LevelLoader::generate_maze()
 
 				float last_x_pos = x_pos - m_tile_width;
 				float distance = abs(last_x_pos - enemy_start_pos.x);
-				spawn_spider_enemy(enemy_start_pos, distance, setting_rotated_enemy);
+				spiders.spawn_spider_enemy(enemy_start_pos, distance, setting_rotated_enemy);
 				setting_enemy = false;
 				setting_rotated_enemy = false;
 			}
@@ -129,27 +130,6 @@ void LevelLoader::store_platform_coords(vec2 coords, int platform_key) {
 	std::string platformType = platform_types.find(platform_key)->second;
 	std::pair <float,float> coords_pair (coords.x,coords.y);
 	m_platforms_by_coords.emplace(coords_pair, platformType);
-}
-
-bool LevelLoader::spawn_spider_enemy(vec2 position, float bound, bool upsideDown)
-{
-	Spider enemy;
-
-	if (enemy.init(position, physicsHandler))
-	{
-		if (upsideDown) {
-			enemy.set_rotation(M_PI);
-			vec2 enemy_scale = enemy.get_scale();
-			enemy.set_scale({enemy_scale.x * -1.f, enemy_scale.y});
-		}
-
-		enemy.set_bound(bound);
-		m_spiders.emplace_back(enemy);
-
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn enemy");
-	return false;
 }
 
 bool LevelLoader::spawn_harpy_enemy(vec2 position)
@@ -254,7 +234,7 @@ Exit LevelLoader::get_exit()
 
 std::vector<Spider> LevelLoader::get_spiders()
 {
-    return m_spiders;
+	return spiders.get_spider_vector();
 }
 
 std::vector<Harpy> LevelLoader::get_harpies()
