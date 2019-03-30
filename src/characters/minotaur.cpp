@@ -35,7 +35,7 @@ bool Minotaur::init(vec2 initialPosition, Physics * physicsHandler)
 	spriteSheet.set_render_data(this, 0);
 
 	initStateTreeMinotaur();
-	set_properties(initialPosition, 1.0f, speed);
+	set_properties(initialPosition, 2.2f, speed);
 	m_frozen = false;
 	set_dimensions(&minotaur_texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
 	characterState->changeState(idle);
