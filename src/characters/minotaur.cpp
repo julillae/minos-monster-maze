@@ -150,15 +150,22 @@ void Minotaur::set_bound(float bound)
 void Minotaur::handleBossRotation()
 {
     float timeElapsed = getTimeElapsed();
-    if (rotating && (timeElapsed >= rotate_duration)) {
+    if (rotating && abs(world->get_rotation_deg()) >= rotate_max_degree) {
+        float rotationDegree = world->get_rotation_deg();
+        printf("Rotation degree is %lf\n", rotationDegree);
         printf("Stopping boss rotation\n");
-        world->boss_rotation_set(false);
+        world->boss_rotation_set(false, rotate_cw);
         rotating = false;
-        resetCycleStart();
+        if (rotate_cw) {
+            rotate_cw = false;
+        } else {
+            rotate_cw = true;
+        }
     } else
      if (timeElapsed >= rotate_cycle_time) {
         printf("Starting boss rotation\n");
-        world->boss_rotation_set(true);
+        printf("Rotation clockwise is %d\n", rotate_cw);
+        world->boss_rotation_set(true, rotate_cw);
         rotating = true;
         resetCycleStart();
     }
