@@ -67,6 +67,8 @@ set(SOURCE_FILES
     src/menus/levelSelectMenu.cpp
     src/menus/levelButton.cpp
     src/menus/mainButton.cpp
+    src/menus/pauseMenu.cpp
+    src/menus/savePopup.cpp
     src/levelLoader.cpp
     src/gameSave.cpp
 
@@ -107,6 +109,8 @@ set(SOURCE_FILES
     include/menus/levelSelectMenu.hpp
     include/menus/levelButton.hpp
     include/menus/mainButton.hpp
+    include/menus/pauseMenu.hpp
+    include/menus/savePopup.hpp
     include/levelLoader.hpp
     include/gameSave.hpp
 

@@ -158,17 +158,22 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
                     }
                     case LOAD:
                     {
-                        if (saved_file) {
-                            GameSave::load_game();
-                            int startLevel = GameSave::document["level"].GetInt();
+                        Level* level = (Level*) game->get_state(LEVEL);
+                        GameSave::load_game();
+                        int startLevel = GameSave::document["level"].GetInt();
+
+                        if (level == NULL)
+                        {
                             Physics *physicsHandler = new Physics();
-                            Level* level = new Level(game);
+                            level = new Level(game);
                             level->init(m_screen, physicsHandler, startLevel);
-                            level->load_saved_game();
-                            game->push_state(level);
-                            game->set_current_state(level);
-                            world = level;
+
                         }
+
+                        level->load_saved_game();
+                        game->push_state(level);
+                        game->set_current_state(level);
+                        world = level;
                         break;
                     }
                     default:
@@ -239,7 +244,7 @@ void MainMenuState::init_buttons()
     float buttonY = initialPosition.y + 40;
     float buttonOffset = 75.f;
 
-    const char* continueText = textures_path("continue-button.png");
+    const char* continueText = textures_path("load-button.png");
     const char* newGameText = textures_path("new-game-button.png");
     const char* controlsText = textures_path("controls-button.png");
     const char* quitText = textures_path("quit-button.png");
@@ -285,10 +290,13 @@ void MainMenuState::set_currentButton(MainButton* button)
 
 void MainMenuState::reset_buttons()
 {
-    if (saved_file)
+    if (saved_file) {
+        buttonIndex = 3;
         set_currentButton(&loadButton);
-    else
+    } else {
+        buttonIndex = 0;
         set_currentButton(&newGameButton);
+    }
 }
 
 void MainMenuState::show_load_button()

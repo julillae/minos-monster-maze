@@ -1,10 +1,11 @@
 #pragma once
 
 #include "gameState.hpp"
-#include "../menus/mainMenu.hpp"
+#include "../menus/pauseMenu.hpp"
 #include "../level.hpp"
 #include "../menus/button.hpp"
 #include "../menus/mainButton.hpp"
+#include "../menus/savePopup.hpp"
 #include "../gameSave.hpp"
 #include "mainMenuState.hpp"
 
@@ -25,13 +26,15 @@ public:
     void on_key(GLFWwindow*, int key, int, int action, int mod)override;
     bool is_over()override;
     void destroy()override;
-
-    void init_buttons();
-    void set_currentButton(MainButton* button);
     void reset_buttons();
 
 private:
-    MainMenu mainMenu;
+    void init_buttons();
+    void set_currentButton(MainButton* button);
+
+    PauseMenu pauseMenu;
+    SavePopup savePopup;
+
     MainButton* currentButton;
     int buttonIndex = 0;
 
@@ -48,6 +51,4 @@ private:
     HelpMenu m_help_menu;
 
     vec2 initialPosition;
-
-    bool close = false;
 };
