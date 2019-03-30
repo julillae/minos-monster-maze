@@ -157,8 +157,6 @@ void Minotaur::handleBossRotation()
     float rotation_degree = world->get_rotation_deg();
     if (rotating) {
         if ((!rotate_cw && (rotation_degree >= rotate_max_degree)) || (rotate_cw && (rotation_degree <= rotate_max_degree*-1))) {
-            printf("Rotation degree is %lf\n", rotation_degree);
-            printf("Stopping boss rotation\n");
             world->boss_rotation_set(false, rotate_cw);
             rotating = false;
             if (rotate_cw) {
@@ -170,15 +168,11 @@ void Minotaur::handleBossRotation()
     } else {
         if (characterState->currentState != preparing) {
             if (timeElapsed >= rotate_cycle_time) {
-                printf("Set preparing\n");
                 previous_state = characterState->currentState;
-                bool isPreparing = characterState->changeState(preparing);\
-                printf("Is preparing %d\n", isPreparing);
+                characterState->changeState(preparing);
                 resetCycleStart();
             }
         } else if (characterState->currentState == preparing && timeElapsed >= prep_time) {
-            printf("Starting boss rotation\n");
-            printf("Rotation clockwise is %d\n", rotate_cw);
             world->boss_rotation_set(true, rotate_cw);
             rotating = true;
             characterState->changeState(previous_state);
