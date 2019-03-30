@@ -19,7 +19,6 @@ public:
 class Ices : public FixedComponents
 {
 public:
-	bool init(float tile_width, float tile_height);
 	bool spawn_ice(vec2 position);
 	std::vector<Ice> get_ice_vector();
 
@@ -28,7 +27,5 @@ public:
 
 	void destroy();
 private:
-	float m_tile_width;
-	float m_tile_height;
 	std::vector<Ice> m_ices;
 };

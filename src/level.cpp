@@ -127,9 +127,9 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 void Level::check_platform_collisions() {
 	if (m_player.is_alive()) {
 		m_player.set_world_vertex_coord();
-		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes);
+		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes.get_spike_vector());
 		physicsHandler->characterCollisionsWithFloors(&m_player, m_floors.get_floor_vector());
-		physicsHandler->characterCollisionsWithIce(&m_player, m_ice);
+		physicsHandler->characterCollisionsWithIce(&m_player, m_ice.get_ice_vector());
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
@@ -505,25 +505,14 @@ void Level::destroy_enemies() {
 
 void Level::draw_platforms(mat3 projection_2D) {
 	m_floors.draw(projection_2D);
-
-	for (auto& ice: m_ice)
-        ice.draw(projection_2D);
-
-	for (auto& spikes: m_spikes)
-        spikes.draw(projection_2D);
+	m_ice.draw(projection_2D);
+	m_spikes.draw(projection_2D);
 }
 
 void Level::destroy_platforms() {
 	m_floors.destroy();
-
-	for (auto& spike : m_spikes)
-		spike.destroy();
-
-	for (auto& ice : m_ice)
-		ice.destroy();
-
-	m_spikes.clear();
-	m_ice.clear();
+	m_spikes.destroy();
+	m_ice.destroy();
 }
 
 void Level::call_level_loader()

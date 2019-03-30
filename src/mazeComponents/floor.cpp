@@ -33,14 +33,6 @@ vec2 Floor::get_texture_size()
 	return vec2({static_cast<float>(texture.width), static_cast<float>(texture.height)});
 }
 
-bool Floors::init(float tile_width, float tile_height)
-{
-	m_tile_width = tile_width;
-	m_tile_height = tile_height;
-
-	return false;
-}
-
 bool Floors::spawn_floor(vec2 position)
 {
 	Floor floor;

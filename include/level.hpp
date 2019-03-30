@@ -12,7 +12,7 @@
 #include "mazeComponents/floor.hpp"
 #include "mazeComponents/exit.hpp"
 #include "mazeComponents/ice.hpp"
-#include "mazeComponents/spikes.hpp"
+#include "mazeComponents/spike.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
 #include "menus/helpMenu.hpp"
@@ -110,10 +110,9 @@ private:
 	std::vector<Harpy> m_harpies;
 
 	Exit m_exit;
-	//std::vector<Floor> m_floors;
 	Floors m_floors;
-	std::vector<Spikes> m_spikes;
-	std::vector<Ice> m_ice;
+	Spikes m_spikes;
+	Ices m_ice;
 
     HelpMenu m_help_menu;
 

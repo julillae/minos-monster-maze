@@ -5,7 +5,7 @@
 #include "mazeComponents/floor.hpp"
 #include "mazeComponents/exit.hpp"
 #include "mazeComponents/ice.hpp"
-#include "mazeComponents/spikes.hpp"
+#include "mazeComponents/spike.hpp"
 #include "physics.hpp"
 #include "characters/spider.hpp"
 #include "characters/harpy.hpp"
@@ -20,8 +20,6 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <time.h>
-
-enum SpikeDir { UP, DOWN, LEFT, RIGHT};
 
 class LevelLoader
 {
@@ -41,10 +39,9 @@ public:
 
     std::vector<Spider> get_spiders();
 	std::vector<Harpy> get_harpies();
-
 	Floors get_floors();
-	std::vector<Spikes> get_spikes();
-	std::vector<Ice> get_ice();
+	Spikes get_spikes();
+	Ices get_ice();
 private:
     void read_level_data(int levelNumber);
     void generate_maze();
@@ -53,7 +50,6 @@ private:
 
     bool spawn_spider_enemy(vec2 position, float bound, bool upsideDown);
     bool spawn_harpy_enemy(vec2 position);
-    bool spawn_spikes(vec2 position, SpikeDir dir);
     void load_spikes(int cell, vec2 position);
 
     void print_maze();
@@ -90,6 +86,6 @@ private:
 
 	std::vector<Floor> m_floors;
 	Floors floors;
-	std::vector<Spikes> m_spikes;
+	Spikes spikes;
 	Ices ices;
 };
