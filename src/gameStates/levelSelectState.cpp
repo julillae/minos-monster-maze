@@ -183,6 +183,9 @@ void LevelSelectState::init_buttons()
     const char* level8Text = textures_path("level8.png");
     const char* level9Text = textures_path("level9.png");
     const char* level10Text = textures_path("level10.png");
+    const char* level11Text = textures_path("level11.png");
+    const char* level12Text = textures_path("level12.png");
+
 
     level1Button.init(vec2({buttonX, buttonY}), level1Text, 0 );
     level1Button.set_selected(true);
@@ -199,6 +202,8 @@ void LevelSelectState::init_buttons()
     level8Button.init(vec2({buttonX + buttonOffset_x * 1, buttonY }), level8Text, 7);
     level9Button.init(vec2({buttonX + buttonOffset_x * 2, buttonY }), level9Text, 8);
     level10Button.init(vec2({buttonX + buttonOffset_x * 3, buttonY }), level10Text, 9);
+    level11Button.init(vec2({buttonX + buttonOffset_x * 4, buttonY }), level11Text, 10);
+    level12Button.init(vec2({buttonX + buttonOffset_x * 5, buttonY }), level12Text, 10);
 
     levelButtons[0] = &level1Button;
     levelButtons[1] = &level2Button;
@@ -210,7 +215,8 @@ void LevelSelectState::init_buttons()
     levelButtons[7] = &level8Button;
     levelButtons[8] = &level9Button;
     levelButtons[9] = &level10Button;
-
+    levelButtons[10] = &level11Button;
+    levelButtons[11] = &level12Button;
 }
 
 void LevelSelectState::set_currentButton(LevelButton* button)
