@@ -109,6 +109,7 @@ private:
 	void load_player();
 	void load_spiders();
 	void load_harpies();
+	void load_minotaur();
 private:
 
 	// Water effect
