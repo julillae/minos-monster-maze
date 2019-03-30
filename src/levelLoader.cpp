@@ -232,9 +232,9 @@ Exit LevelLoader::get_exit()
     return m_exit;
 }
 
-std::vector<Spider> LevelLoader::get_spiders()
+Spiders LevelLoader::get_spiders()
 {
-	return spiders.get_spider_vector();
+	return spiders;
 }
 
 std::vector<Harpy> LevelLoader::get_harpies()

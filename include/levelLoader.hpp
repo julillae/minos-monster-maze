@@ -37,7 +37,7 @@ public:
     vec2 get_player_position();
     Exit get_exit();
 
-    std::vector<Spider> get_spiders();
+    Spiders get_spiders();
 	std::vector<Harpy> get_harpies();
 	Floors get_floors();
 	Spikes get_spikes();
