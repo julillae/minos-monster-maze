@@ -211,7 +211,7 @@ bool Level::update(float elapsed_ms)
 	}
 
 	// Checking Player - Spider Collision
-	for (auto& enemy : m_spiders) {
+	for (auto& enemy : m_spiders.get_spider_vector()) {
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy))
 		{
 			set_player_death();
@@ -471,19 +471,14 @@ void Level::initialize_camera_position(int w, int h)
 }
 
 void Level::draw_enemies(mat3 projection_2D) {
-    for (auto& spider: m_spiders)
-        spider.draw(projection_2D);
+	m_spiders.draw(projection_2D);
 
 	for (auto& harpy: m_harpies)
         harpy.draw(projection_2D);
 }
 
 void Level::reset_enemies() {
-	for (auto& spider : m_spiders) {
-		spider.freeze();
-		spider.reset_position();
-		spider.unfreeze();
-	};
+	m_spiders.reset();
 
 	for (auto& harpy : m_harpies) {
 		harpy.freeze();
@@ -493,13 +488,11 @@ void Level::reset_enemies() {
 }
 
 void Level::destroy_enemies() {
-	for (auto& spider : m_spiders)
-		spider.destroy();
+	m_spiders.destroy();
 
 	for (auto& harpy : m_harpies)
 		harpy.destroy();
 
-	m_spiders.clear();
 	m_harpies.clear();
 }
 
@@ -583,19 +576,19 @@ void Level::reset_player_camera()
 
 void Level::freeze_all_enemies()
 {
-	for (auto& s : m_spiders) s.freeze();
+	m_spiders.freeze();
 	for (auto& h : m_harpies) h.freeze();
 }
 
 void Level::unfreeze_all_enemies()
 {
-	for (auto& s : m_spiders) s.unfreeze();
+	m_spiders.unfreeze();
 	for (auto& h : m_harpies) h.unfreeze();
 }
 
 void Level::update_all_enemies(float elapsed_ms)
 {
-	for (auto& s : m_spiders) s.update(elapsed_ms);
+	m_spiders.update(elapsed_ms);
 	for (auto& h : m_harpies) h.update(elapsed_ms);
 }
 
@@ -662,7 +655,7 @@ float Level::get_rotationDeg() { return rotationDeg; }
 
 float Level::get_rotationEnergy() { return rotationEnergy; }
 
-std::vector<Spider> Level::get_spiders() { return m_spiders; }
+std::vector<Spider> Level::get_spiders() { return m_spiders.get_spider_vector(); }
 
 std::vector<Harpy> Level::get_harpies() { return m_harpies; }
 
@@ -742,11 +735,13 @@ void Level::load_spiders()
 		itr = spiders[i].GetObject().FindMember("scale_x");
 		scale_x = itr->value.GetFloat();
 
-		scale_y = m_spiders[i].get_scale().y;
+		scale_y = m_spiders.get_spider_vector()[i].get_scale().y;
 
-		m_spiders[i].set_position(vec2({pos_x, pos_y}));
-		m_spiders[i].set_velocity(vec2({vel_x, vel_y}));
-		m_spiders[i].set_scale(vec2({scale_x, scale_y}));
+		vec2 position = vec2({ pos_x, pos_y });
+		vec2 velocity = vec2({ vel_x, vel_y });
+		vec2 scale = vec2({ scale_x, scale_y });
+
+		m_spiders.setSpiderProperties(i, position, velocity, scale);
 	}
 }
 
