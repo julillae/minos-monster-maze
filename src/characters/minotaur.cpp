@@ -154,7 +154,7 @@ void Minotaur::set_bound(float bound)
 void Minotaur::handleBossRotation()
 {
     float timeElapsed = getTimeElapsed();
-    float rotation_degree = world->get_rotation_deg();
+    float rotation_degree = world->get_rotationDeg();
     if (rotating) {
         if ((!rotate_cw && (rotation_degree >= rotate_max_degree)) || (rotate_cw && (rotation_degree <= rotate_max_degree*-1))) {
             world->boss_rotation_set(false, rotate_cw);
