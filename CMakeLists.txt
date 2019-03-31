@@ -61,13 +61,17 @@ set(SOURCE_FILES
     src/gameStates/gameState.cpp
     src/gameStates/mainMenuState.cpp
     src/gameStates/levelSelectState.cpp
+    src/gameStates/pauseMenuState.cpp
     src/menus/mainMenu.cpp
     src/menus/menu.cpp
     src/menus/button.cpp
     src/menus/levelSelectMenu.cpp
     src/menus/levelButton.cpp
     src/menus/mainButton.cpp
+    src/menus/pauseMenu.cpp
+    src/menus/savePopup.cpp
     src/levelLoader.cpp
+    src/gameSave.cpp
 
 
     include/project_path.hpp
@@ -100,13 +104,17 @@ set(SOURCE_FILES
     include/gameStates/gameState.hpp
     include/gameStates/mainMenuState.hpp
     include/gameStates/levelSelectState.hpp
+    include/gameStates/pauseMenuState.hpp
     include/menus/mainMenu.hpp
     include/menus/menu.hpp
     include/menus/button.hpp
     include/menus/levelSelectMenu.hpp
     include/menus/levelButton.hpp
     include/menus/mainButton.hpp
+    include/menus/pauseMenu.hpp
+    include/menus/savePopup.hpp
     include/levelLoader.hpp
+    include/gameSave.hpp
 
 	)
 
@@ -124,6 +132,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS 0)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_image/)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/gl3w)
+target_include_directories(${PROJECT_NAME} PUBLIC ext/rapidjson)
 
 # Find OpenGL
 find_package(OpenGL REQUIRED)
