@@ -127,13 +127,13 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
             set_currentButton(levelButtons[nextButton]);
         }
 
-        if (key == GLFW_KEY_DOWN && currentButton->level < 4)
+        if (key == GLFW_KEY_DOWN && currentButton->level < 6)
         {
             int nextButton = (currentButton->level + 6) % numButtons;
             set_currentButton(levelButtons[nextButton]);
         }
 
-        if (key == GLFW_KEY_UP && currentButton->level >=5)
+        if (key == GLFW_KEY_UP && currentButton->level >=6)
         {
             int nextButton = (currentButton->level - 6);
             set_currentButton(levelButtons[nextButton]);
@@ -203,7 +203,7 @@ void LevelSelectState::init_buttons()
     level9Button.init(vec2({buttonX + buttonOffset_x * 2, buttonY }), level9Text, 8);
     level10Button.init(vec2({buttonX + buttonOffset_x * 3, buttonY }), level10Text, 9);
     level11Button.init(vec2({buttonX + buttonOffset_x * 4, buttonY }), level11Text, 10);
-    level12Button.init(vec2({buttonX + buttonOffset_x * 5, buttonY }), level12Text, 10);
+    level12Button.init(vec2({buttonX + buttonOffset_x * 5, buttonY }), level12Text, 11);
 
     levelButtons[0] = &level1Button;
     levelButtons[1] = &level2Button;
