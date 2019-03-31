@@ -412,6 +412,7 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 		if (key == GLFW_KEY_ESCAPE) {
             isRotating = false;
+			m_player.set_direction(Direction::none);
 
             PauseMenuState* pauseMenuState = (PauseMenuState*) game->get_state(PAUSE);
             pauseMenuState->reset_buttons();
