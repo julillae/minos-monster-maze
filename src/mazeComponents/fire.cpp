@@ -92,7 +92,7 @@ void Fire::draw(const mat3& projection)
     //glEnableVertexAttribArray(in_position_loc);
     //glEnableVertexAttribArray(in_texcoord_loc);
     glUniform1i(screen_text_uloc, 0);
-    float l_position[] = {0.0f, 0.0f};
+    float l_position[] = {1000.0f, 1000.0f};
     glUniform2fv(light_pos, 1, l_position);
     //glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
     //glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
@@ -121,6 +121,9 @@ void Fire::draw(const mat3& projection)
     //float color[] = { 1.f, 1.f, 1.f};
     //glUniform3fv(color_uloc, 1, color);
     //glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+
+    glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     // magnifies texture to avoid it being blurry when scaled
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
