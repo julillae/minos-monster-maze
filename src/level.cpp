@@ -383,12 +383,14 @@ void Level::draw()
 	draw_platforms(projection_2D);
 	draw_enemies(projection_2D);
 	m_exit.draw(projection_2D);
-	m_fire.draw(projection_2D);
 	m_player.draw(projection_2D);
+	//m_fire.draw(projection_2D);
 
 	render_to_screen(w, h);
 
+	//m_fire.draw(projection_2D);
 	m_water.draw(projection_2D);
+
 
 	m_help_menu.draw(projection_2D);
 

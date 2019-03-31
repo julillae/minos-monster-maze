@@ -50,12 +50,16 @@
 layout(location = 0) in vec4 in_position;
 
 uniform vec2 light_pos;
+//uniform mat3 transform;
+//uniform mat3 projection;
 
 
 out vec2 uv;
 
 void main()
 {
+    //vec3 pos = projection*vec3(in_position.xy, 1.0);
+    //gl_Position = vec4(pos.xy, in_position.z, 1.0);
     gl_Position = in_position;
     // Convert to the [0, 1] range of UV coordinate
     uv = (in_position.xy + vec2(1.05, 1.05)) / 2.1;
