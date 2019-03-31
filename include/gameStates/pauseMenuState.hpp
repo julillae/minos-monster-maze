@@ -1,20 +1,22 @@
 #pragma once
 
 #include "gameState.hpp"
-#include "../menus/mainMenu.hpp"
+#include "../menus/pauseMenu.hpp"
 #include "../level.hpp"
 #include "../menus/button.hpp"
 #include "../menus/mainButton.hpp"
+#include "../menus/savePopup.hpp"
 #include "../gameSave.hpp"
+#include "mainMenuState.hpp"
 
 extern Level* world;
 
 class LevelSelectState;
 
-class MainMenuState : public GameState
+class PauseMenuState : public GameState
 {
 public:
-    MainMenuState(Game* game);
+    PauseMenuState(Game* game);
 
     void init(vec2 screen);
 
@@ -24,34 +26,29 @@ public:
     void on_key(GLFWwindow*, int key, int, int action, int mod)override;
     bool is_over()override;
     void destroy()override;
-
-    void init_buttons();
-    void set_currentButton(MainButton* button);
     void reset_buttons();
-    void show_load_button();
 
 private:
-    MainMenu mainMenu;
+    void init_buttons();
+    void set_currentButton(MainButton* button);
+
+    PauseMenu pauseMenu;
+    SavePopup savePopup;
+
     MainButton* currentButton;
     int buttonIndex = 0;
-    int numButtons;
 
     // menu buttons
-    MainButton* mainButtons[4];
+    MainButton* pauseButtons[5];
 
-    MainButton loadButton;
-    MainButton newGameButton;
+    MainButton continueButton;
+    MainButton restartButton;
+    MainButton saveButton;
     MainButton controlsButton;
-    MainButton quitButton;
+    MainButton mainMenuButton;
     bool show_help_menu = false;
-    bool show_continue = false;
 
     HelpMenu m_help_menu;
 
-    Mix_Music* m_background_music;
     vec2 initialPosition;
-
-    bool close = false;
-    bool saved_file;
-
 };

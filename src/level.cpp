@@ -411,9 +411,12 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		}
 
 		if (key == GLFW_KEY_ESCAPE) {
-            MainMenuState* mainMenuState = (MainMenuState*) game->get_state(MAIN);
-            mainMenuState->reset_buttons();
-		    game->set_current_state(mainMenuState);
+            isRotating = false;
+			m_player.set_direction(Direction::none);
+
+            PauseMenuState* pauseMenuState = (PauseMenuState*) game->get_state(PAUSE);
+            pauseMenuState->reset_buttons();
+            game->set_current_state(pauseMenuState);
 		}
 	}
 
@@ -434,20 +437,6 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		if (((key == rotateCCWKey && !rotateCW) || (key == rotateCWKey && rotateCW))) {
 				isRotating = false;
 			}
-	}
-
-	if (action == GLFW_PRESS && key == GLFW_KEY_H) {
-		show_help_menu = !show_help_menu;
-		if (show_help_menu) {
-			m_help_menu.set_position(cameraCenter);
-		}
-
-	}
-
-	// Resetting game
-	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
-	{
-		reset_game();
 	}
 
 }
@@ -720,6 +709,8 @@ void Level::load_player()
 	m_player.set_position(vec2({player_x, player_y}));
 	m_player.set_scale(vec2({player_scaleX, player_scaleY}));
 	m_player.set_world_vertex_coord();
+
+	initialPosition = m_player.get_position();
 
     int w, h;
     glfwGetWindowSize(m_window, &w, &h);
