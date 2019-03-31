@@ -167,11 +167,12 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
                             Physics *physicsHandler = new Physics();
                             level = new Level(game);
                             level->init(m_screen, physicsHandler, startLevel);
-
+                            level->load_saved_game();
+                            game->push_state(level);
+                        } else {
+                            level->load_select_level(startLevel);
+                            level->load_saved_game();
                         }
-
-                        level->load_saved_game();
-                        game->push_state(level);
                         game->set_current_state(level);
                         world = level;
                         break;
