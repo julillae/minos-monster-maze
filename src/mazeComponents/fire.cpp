@@ -92,7 +92,7 @@ void Fire::draw(const mat3& projection)
     glEnableVertexAttribArray(in_position_loc);
     //glEnableVertexAttribArray(in_texcoord_loc);
     glUniform1i(screen_text_uloc, 0);
-    float l_position[] = {1000.0f, 1000.0f};
+    float l_position[] = {1200.0f, 700.0f};
     glUniform2fv(light_pos, 1, l_position);
     //glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
     //glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);

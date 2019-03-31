@@ -388,8 +388,8 @@ void Level::draw()
 
 	render_to_screen(w, h);
 
-	//m_fire.draw(projection_2D);
-	m_water.draw(projection_2D);
+	m_fire.draw(projection_2D);
+	//m_water.draw(projection_2D);
 
 
 	m_help_menu.draw(projection_2D);
