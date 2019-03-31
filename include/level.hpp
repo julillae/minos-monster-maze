@@ -17,7 +17,7 @@
 #include "physics.hpp"
 #include "menus/helpMenu.hpp"
 #include "gameStates/gameState.hpp"
-#include "gameStates/mainMenuState.hpp"
+#include "gameStates/pauseMenuState.hpp"
 #include "levelLoader.hpp"
 
 // stlib
@@ -74,6 +74,7 @@ public:
     std::vector<Harpy> get_harpies();
 
     void load_saved_game();
+    void reset_game();
 private:
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
@@ -90,7 +91,6 @@ private:
 	void initialize_camera_position(int w, int h);
 	void call_level_loader();
 	void load_new_level();
-	void reset_game();
 	void reset_player_camera();
 	void freeze_all_enemies();
 	void unfreeze_all_enemies();
