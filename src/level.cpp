@@ -11,7 +11,6 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
-#include <vld.h>
 
 namespace
 {
