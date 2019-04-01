@@ -120,10 +120,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 
 	m_help_menu.init(initialPosition);
 	initialize_camera_position(w, h);
-
-	if (hasPrompt) {
-		m_message.init(current_level);
-	}
+	initialize_message_prompt();
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -478,6 +475,24 @@ void Level::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 
 }
 
+void Level::initialize_message_prompt() {
+	if (hasPrompt) {
+		int messageNumber = current_level;
+		if (current_level == 4) {
+			std::string newMessageNumber = std::to_string(current_level);
+			if (rotateCWKey == GLFW_KEY_X) {
+				newMessageNumber.append("1");
+				messageNumber = std::atoi(newMessageNumber.c_str());
+			} else {
+				newMessageNumber.append("2");
+				messageNumber = std::atoi(newMessageNumber.c_str());
+			}
+		}
+
+		m_message.init(messageNumber);
+	}
+}
+
 void Level::initialize_camera_position(int w, int h)
 {
 	if (cameraTracking) {
@@ -585,8 +600,7 @@ void Level::load_new_level()
 		current_level = 0;
 
 	call_level_loader();
-	if (hasPrompt)
-		m_message.init(current_level);
+	initialize_message_prompt();
 }
 
 void Level::reset_game()
@@ -691,6 +705,5 @@ void Level::load_select_level(int level)
 
 	reset_player_camera();
 
-	if (hasPrompt)
-		m_message.init(current_level);
+	initialize_message_prompt();
 }
