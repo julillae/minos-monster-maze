@@ -156,7 +156,12 @@ void Minotaur::handleBossRotation()
     float timeElapsed = getTimeElapsed();
     float rotation_degree = world->get_rotationDeg();
     if (rotating) {
-        if ((!rotate_cw && (rotation_degree >= rotate_max_degree)) || (rotate_cw && (rotation_degree <= rotate_max_degree*-1))) {
+        if (rotate_to_zero && (rotation_degree >= -1.0f && rotation_degree <= 1.0f)) {
+            rotate_to_zero = false;
+            world->boss_rotation_set(false, rotate_cw);
+            rotating = false;
+        } else if ((!rotate_cw && (rotation_degree >= rotate_max_degree)) || (rotate_cw && (rotation_degree <= rotate_max_degree*-1))) {
+            rotate_to_zero = true;
             world->boss_rotation_set(false, rotate_cw);
             rotating = false;
             if (rotate_cw) {
