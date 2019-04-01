@@ -21,3 +21,11 @@ protected:
 	float speed = 2.0f;
 	vec2 m_initialPosition;
 };
+
+class Enemies : public Renderable
+{
+public:
+	bool init(Physics* physicsHandler);
+protected:
+	Physics* physicsHandler;
+};
