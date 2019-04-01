@@ -181,6 +181,10 @@ void Minotaur::handleBossRotation()
     }
 }
 
+void Minotaur::setPreviousState(State s) {
+    previous_state = s;
+}
+
 // bool Minotaur::isRotating() 
 // {
 //     return rotating;

@@ -51,6 +51,10 @@ void GameSave::save_minotaur()
     Document::AllocatorType& allocator = document.GetAllocator();
     Minotaur m_minotaur = gameLevel->get_minotaur();
     m_minotaur.stopRotating();
+    if (m_minotaur.characterState->currentState == preparing) {
+        m_minotaur.characterState->changeState(m_minotaur.previous_state);
+        m_minotaur.update(0.f);
+    }
 
     Value pos_x, pos_y, scale_x, alive, vel_x;
     pos_x.SetFloat(m_minotaur.m_position.x);
