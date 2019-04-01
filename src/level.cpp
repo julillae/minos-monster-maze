@@ -437,10 +437,16 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		if (key == rotateCCWKey) {
 			isRotating = true;
 			rotateCW = false;
+
+			if (hasPrompt)
+				m_message.set_visibility(false);
 		}
 		if (key == rotateCWKey) {
 			isRotating = true;
 			rotateCW = true;
+
+			if (hasPrompt)
+				m_message.set_visibility(false);
 		}
 	}
 
