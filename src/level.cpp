@@ -201,7 +201,10 @@ bool Level::update(float elapsed_ms)
 			previouslyFrozen = true;
 		}
 
-		rotationEnergy -= fabs(rotationSpeed);
+		// Don't decrease the rotation energy if minotaur is rotating maze
+		if (!minotaurPresent) {
+			rotationEnergy -= fabs(rotationSpeed);
+		}
 	}
 	else if (previouslyFrozen) {
 		applyThaw = true;
@@ -758,16 +761,9 @@ void Level::load_minotaur()
 
 	m_minotaur.set_velocity(vec2{minotaur_velx, 0.f});
 
-	if (minotaur_velx > 0) {
-		m_minotaur.set_direction(Direction::right);
-	} else {
-		m_minotaur.set_direction(Direction::left);
-	}
-
 	m_minotaur.set_position(vec2({minotaur_x, minotaur_y}));
 	m_minotaur.set_scale(vec2({minotaur_scaleX, minotaur_scaleY}));
 
-    
 }
 
 void Level::load_spiders()

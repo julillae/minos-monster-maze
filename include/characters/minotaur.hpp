@@ -54,6 +54,7 @@ class Minotaur: public Smart
         std::chrono::high_resolution_clock::time_point cycle_start;
         float rotate_cycle_time = 5000.f;
         float rotate_max_degree = 45.0f;
+        bool rotate_to_zero = false;
         bool rotate_cw = false;
         bool rotating = false;
         float prep_time = 1000.0f;
