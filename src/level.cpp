@@ -517,7 +517,7 @@ void Level::call_level_loader()
 	m_ice = levelLoader.get_ice();
 	m_spikes = levelLoader.get_spikes();
 
-	m_quad = QuadTreeNode(0, { 0.f, 0.f }, m_maze_width*m_tile_width, m_maze_height*m_tile_height);
+	m_quad = QuadTreeNode(0, { 0.f, 0.f }, ((m_maze_width+3)*m_tile_width), ((m_maze_height+3)*m_tile_height));
 	for (auto& floor: m_floors.get_floor_vector()) {
 		m_quad.insert(floor);
 	}
