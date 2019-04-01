@@ -64,6 +64,7 @@ void LevelLoader::generate_maze()
 
 	bool setting_enemy = false;
 	bool setting_rotated_enemy = false;
+	bool setting_minotaur = false;
 	vec2 enemy_start_pos;
 
     float i = 0.f;
@@ -76,15 +77,22 @@ void LevelLoader::generate_maze()
 			float x_pos = (j * m_tile_width);
 			float y_pos = (i * m_tile_height);
 
-			if ((setting_enemy && cell != 52) || (setting_rotated_enemy && cell != 53)) {
+			if ((setting_enemy && cell != 52) || (setting_rotated_enemy && cell != 53) || (setting_minotaur && cell != 69)) {
 				// If we were setting enemy positions, and we hit a cell with no enemy,
 				// Spawn the enemy we were setting
 
 				float last_x_pos = x_pos - m_tile_width;
 				float distance = abs(last_x_pos - enemy_start_pos.x);
-				spiders.spawn_spider_enemy(enemy_start_pos, distance, setting_rotated_enemy);
-				setting_enemy = false;
-				setting_rotated_enemy = false;
+
+				if (setting_enemy || setting_rotated_enemy) {
+					spiders.spawn_spider_enemy(enemy_start_pos, distance, setting_rotated_enemy);
+					setting_enemy = false;
+					setting_rotated_enemy = false;
+				} else if (setting_minotaur) {
+					spawn_minotaur(enemy_start_pos, distance);
+					minotaurPresent = true;
+					setting_minotaur = false;
+				}
 			}
 
 			if (cell == 49) {
@@ -126,8 +134,10 @@ void LevelLoader::generate_maze()
 			} else if (cell == 57) {
 				harpies.spawn_harpy_enemy(vec2({x_pos, y_pos}));
 			} else if (cell == 69) {
-				spawn_minotaur(vec2({x_pos, y_pos}), 400.f);
-				minotaurPresent = true;
+				if (!setting_minotaur) {
+					setting_minotaur = true;
+					enemy_start_pos = {x_pos, y_pos};
+				}
 			}
 
             j = j + 1.f;
