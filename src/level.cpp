@@ -38,7 +38,9 @@ namespace
 }
 
 
-Level::Level(Game* game) : m_seed_rng(0.f)
+Level::Level(Game* game) : 
+	m_seed_rng(0.f),
+	m_quad(0, {}, 0.f, 0.f)
 {
 // Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -124,19 +126,14 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	m_help_menu.init(initialPosition);
 	initialize_camera_position(w, h);
 
-	m_quad = QuadTreeNode(0, {0.f, 0.f}, w+500, h+500);
-    for (auto& floor: m_floors) {
-        m_quad.insert(floor);
-    }
-
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
-void Level::check_platform_collisions(std::vector<Floor> nearbyFloors) {
+void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) {
 	if (m_player.is_alive()) {
 		m_player.set_world_vertex_coord();
 		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes);
-		physicsHandler->characterCollisionsWithFloors(&m_player, std::move(nearbyFloors));
+		physicsHandler->characterCollisionsWithFloors(&m_player, nearbyFloorComponents);
 		physicsHandler->characterCollisionsWithIce(&m_player, m_ice);
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
@@ -170,6 +167,7 @@ void Level::destroy()
 	destroy_enemies();
 	destroy_platforms();
 	m_help_menu.destroy();
+	m_quad.clear();
 
 	glfwDestroyWindow(m_window);
 }
@@ -560,6 +558,11 @@ void Level::call_level_loader()
 	m_floors = levelLoader.get_floors();
 	m_ice = levelLoader.get_ice();
 	m_spikes = levelLoader.get_spikes();
+
+	m_quad = QuadTreeNode(0, { 0.f, 0.f }, m_maze_width*m_tile_width, m_maze_height*m_tile_height);
+	for (auto& floor: m_floors) {
+		m_quad.insert(floor);
+	}
 }
 
 void Level::load_new_level()
@@ -669,6 +672,7 @@ void Level::load_select_level(int level)
 	destroy_platforms();
 	destroy_enemies();
 	m_maze.clear();
+	m_quad.clear();
 
 	current_level = level;
 	call_level_loader();

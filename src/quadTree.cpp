@@ -10,7 +10,7 @@
 const int QuadTreeNode::MAX_ENTITIES = 5;
 const int QuadTreeNode::MAX_LEVELS = 3;
 
-QuadTreeNode::QuadTreeNode(const int &level, vec2 initialPosition, float width, float height):
+QuadTreeNode::QuadTreeNode(const int &level, const vec2 &initialPosition, const float &width, const float &height):
         m_level(level), init_position(initialPosition), m_width(width), m_height(height) {};
 
 void QuadTreeNode::clear() {
