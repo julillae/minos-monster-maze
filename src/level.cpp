@@ -201,7 +201,10 @@ bool Level::update(float elapsed_ms)
 			previouslyFrozen = true;
 		}
 
-		rotationEnergy -= fabs(rotationSpeed);
+		// Don't decrease the rotation energy if minotaur is rotating maze
+		if (!minotaurPresent) {
+			rotationEnergy -= fabs(rotationSpeed);
+		}
 	}
 	else if (previouslyFrozen) {
 		applyThaw = true;
