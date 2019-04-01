@@ -116,6 +116,9 @@ void Game::game_loop()
 		while (timeAcc >= dt) {
 			current_state()->update(timeAcc/dt);
 			timeAcc -= dt;
+			// Hotfix for loading large levels and from saved game
+			if (timeAcc > 100.f)
+			    timeAcc = 100.f;
 		}
 		current_state()->draw();
 	}

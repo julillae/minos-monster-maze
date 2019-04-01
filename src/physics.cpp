@@ -198,8 +198,8 @@ void Physics::characterCollisionsWithFloors(Player* c, std::vector<Floor> floors
         }
 }
 
-void Physics::characterCollisionsWithSpikes(Player* c, std::vector<Spikes> spikes) {
-    for (Spikes s : spikes) {
+void Physics::characterCollisionsWithSpikes(Player* c, std::vector<Spike> spikes) {
+    for (Spike s : spikes) {
         characterCollisionsWithFixedComponent(c, &s);
 
         if (!c->is_alive()) return;

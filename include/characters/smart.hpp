@@ -19,3 +19,8 @@ class Smart: public Enemy
         void set_animation()override;
 
 };
+
+class Smarts : public Enemies
+{
+
+};

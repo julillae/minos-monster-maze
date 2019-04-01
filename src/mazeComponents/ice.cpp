@@ -33,3 +33,40 @@ vec2 Ice::get_texture_size()
 {
 	return vec2({static_cast<float>(texture.width), static_cast<float>(texture.height)});
 }
+
+bool Ices::spawn_ice(vec2 position)
+{
+	Ice ice;
+
+	if (ice.init(position))
+	{
+		vec2 textureSize = ice.get_texture_size();
+		float x_scale = m_tile_width / textureSize.x;
+		float y_scale = m_tile_height / textureSize.y;
+		ice.set_scale(vec2({ x_scale, y_scale }));
+		ice.set_size(vec2({ m_tile_width, m_tile_height }));
+		ice.set_collision_properties();
+		m_ices.emplace_back(ice);
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn ice");
+	return false;
+}
+
+std::vector<Ice> Ices::get_ice_vector()
+{
+	return m_ices;
+}
+
+void Ices::draw(const mat3 & projection)
+{
+	for (auto& ice : m_ices)
+		ice.draw(projection);
+}
+
+void Ices::destroy()
+{
+	for (auto& ice : m_ices)
+		ice.destroy();
+	m_ices.clear();
+}

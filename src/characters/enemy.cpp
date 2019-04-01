@@ -19,3 +19,9 @@ vec2 Enemy::get_bounding_box()const
 {
     return { width, height };
 }
+
+bool Enemies::init(Physics * physicsHandler)
+{
+	this->physicsHandler = physicsHandler;
+	return true;
+}
