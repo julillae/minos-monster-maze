@@ -181,6 +181,17 @@ void Minotaur::handleBossRotation()
     }
 }
 
+// bool Minotaur::isRotating() 
+// {
+//     return rotating;
+// }
+
+void Minotaur::stopRotating() 
+{
+    rotating = false;
+    world->boss_rotation_set(false, rotate_cw);
+}
+
 float Minotaur::getTimeElapsed() 
 {
     auto now = Clock::now();

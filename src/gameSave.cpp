@@ -50,6 +50,7 @@ void GameSave::save_minotaur()
     // must pass an allocator when the object may need to allocate memory
     Document::AllocatorType& allocator = document.GetAllocator();
     Minotaur m_minotaur = gameLevel->get_minotaur();
+    m_minotaur.stopRotating();
 
     Value pos_x, pos_y, scale_x, alive, vel_x;
     pos_x.SetFloat(m_minotaur.m_position.x);
