@@ -12,7 +12,7 @@
 
 class QuadTreeNode {
 public:
-    QuadTreeNode(const int &level, vec2 initialPosition, float width, float height);
+    QuadTreeNode(const int &level, const vec2 &initialPosition, const float &width, const float &height);
 
     /**
      * Clears out the tree

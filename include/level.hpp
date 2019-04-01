@@ -71,7 +71,7 @@ private:
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-	void check_platform_collisions(std::vector<Floor> nearbyFloors);
+	void check_platform_collisions(std::vector<Floor> nearbyFloorComponents);
 
 	void draw_enemies(mat3 projection_2D);
 	void reset_enemies();
@@ -158,6 +158,6 @@ private:
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;
 
-	QuadTreeNode m_quad = QuadTreeNode(0, {0.f, 0.f}, 0, 0);
+	QuadTreeNode m_quad;
 
 };
