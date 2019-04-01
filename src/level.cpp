@@ -520,6 +520,7 @@ void Level::destroy_enemies() {
 	m_harpies.clear();
 
 	if (minotaurPresent) {
+		m_minotaur.stopRotating();
 		m_minotaur.destroy();
 	}
 }

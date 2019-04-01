@@ -40,6 +40,8 @@ class Minotaur: public Smart
 
         void resetCycleStart();
 
+        void stopRotating();
+
     private:
         float maxVerticalSpeed = 1.f;
         float maxHorzSpeed = 1.f;
