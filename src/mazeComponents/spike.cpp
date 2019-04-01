@@ -1,11 +1,11 @@
-#include "../include/mazeComponents/spikes.hpp"
+#include "../include/mazeComponents/spike.hpp"
 
 #include <string>
 #include <algorithm>
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-bool Spikes::init(vec2 position)
+bool Spike::init(vec2 position)
 {
     // Reads the spikes mesh from a file, which contains a list of vertices and indices
     FILE* mesh_file = fopen(mesh_path("spike.mesh"), "r");
@@ -80,7 +80,7 @@ bool Spikes::init(vec2 position)
 }
 
 
-void Spikes::draw(const mat3& projection)
+void Spike::draw(const mat3& projection)
 {
     float color[] = { 0.8, 0.15, 0.15 };
     RenderManager::draw_mesh(projection, m_position, m_rotation, m_scale, this,
@@ -88,26 +88,73 @@ void Spikes::draw(const mat3& projection)
 
 }
 
-void Spikes::set_left()
+void Spike::set_left()
 {
 	set_rotation(-M_PI/2);
 	set_collision_properties();
 }
 
-void Spikes::set_right()
+void Spike::set_right()
 {
     set_rotation(M_PI / 2);
 	set_collision_properties();
 }
 
-void Spikes::set_down()
+void Spike::set_down()
 {
     set_rotation(M_PI);
 	set_collision_properties();
 }
 
-void Spikes::set_up()
+void Spike::set_up()
 {
 	set_rotation(0);
 	set_collision_properties();
+}
+
+bool Spikes::spawn_spike(vec2 position, SpikeDir dir)
+{
+	Spike spike;
+
+	if (spike.init(position))
+	{
+		switch (dir)
+		{
+		case DOWN:
+			spike.set_down();
+			break;
+		case LEFT:
+			spike.set_left();
+			break;
+		case RIGHT:
+			spike.set_right();
+			break;
+		default:
+			spike.set_up();
+			break;
+		}
+
+		m_spikes.emplace_back(spike);
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn spikes");
+	return false;
+}
+
+std::vector<Spike> Spikes::get_spike_vector()
+{
+	return m_spikes;
+}
+
+void Spikes::draw(const mat3 & projection)
+{
+	for (auto& spike : m_spikes)
+		spike.draw(projection);
+}
+
+void Spikes::destroy()
+{
+	for (auto& spike : m_spikes)
+		spike.destroy();
+	m_spikes.clear();
 }
