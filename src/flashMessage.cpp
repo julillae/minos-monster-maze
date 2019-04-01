@@ -3,6 +3,7 @@
 // stlib
 #include <stdio.h>
 #include <string.h>
+#include <sstream>
 
 bool FlashMessage::init(int levelNumber)
 {
