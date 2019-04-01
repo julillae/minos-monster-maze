@@ -234,7 +234,9 @@ bool Level::update(float elapsed_ms)
 		is_player_at_goal = true;
 		m_player.freeze();
 		m_player.set_invincibility(true);
-		m_message.destroy();
+
+		if (hasPrompt)
+			m_message.destroy();
 	}
 
 	// checking player - platform collision
