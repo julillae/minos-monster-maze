@@ -517,7 +517,17 @@ void Level::call_level_loader()
 	m_ice = levelLoader.get_ice();
 	m_spikes = levelLoader.get_spikes();
 
-	m_quad = QuadTreeNode(0, { 0.f, 0.f }, ((m_maze_width+3)*m_tile_width), ((m_maze_height+3)*m_tile_height));
+    int w, h;
+    glfwGetWindowSize(m_window, &w, &h);
+    // if camera tracking is off, initialize the quad tree with the screen size
+    if (!cameraTracking) {
+        m_quad = QuadTreeNode(0, {0.f, 0.f}, (float)w, (float)h);
+    } else {
+        // if camera tracking is on, initialize the tree based on the maze
+        m_quad = QuadTreeNode(0, {0.f, 0.f}, ((m_maze_width+5)*m_tile_width),
+                              ((m_maze_height+5)*m_tile_height));
+    }
+
 	for (auto& floor: m_floors.get_floor_vector()) {
 		m_quad.insert(floor);
 	}
