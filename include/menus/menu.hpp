@@ -3,7 +3,7 @@
 #include "../common.hpp"
 #include "../renderManager.hpp"
 
-enum button { CONTINUE, NEWGAME, CONTROLS, QUIT};
+enum button { CONTINUE, NEWGAME, CONTROLS, QUIT, RESTART, SAVE, MAIN_MENU, LOAD};
 
 class Menu : public Renderable
 {

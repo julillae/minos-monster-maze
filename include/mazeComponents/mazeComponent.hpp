@@ -45,3 +45,8 @@ protected:
 	float m_height;
     float drag;
 };
+
+class MazeComponents : public Renderable
+{
+
+};

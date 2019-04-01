@@ -24,3 +24,8 @@ class Simple: public Enemy
         float m_stopBound;
 	
 };
+
+class Simples : public Enemies
+{
+
+};

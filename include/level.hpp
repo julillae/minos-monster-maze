@@ -13,12 +13,12 @@
 #include "mazeComponents/floor.hpp"
 #include "mazeComponents/exit.hpp"
 #include "mazeComponents/ice.hpp"
-#include "mazeComponents/spikes.hpp"
+#include "mazeComponents/spike.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
 #include "menus/helpMenu.hpp"
 #include "gameStates/gameState.hpp"
-#include "gameStates/mainMenuState.hpp"
+#include "gameStates/pauseMenuState.hpp"
 #include "levelLoader.hpp"
 
 // stlib
@@ -76,13 +76,12 @@ public:
 	Minotaur get_minotaur();
 
     void load_saved_game();
-
 	// Boss controls
 	void boss_rotation_set(bool enable, bool ccw);
 
 	bool minotaurPresent = false;
 
-private:
+    void reset_game();
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
@@ -98,7 +97,6 @@ private:
 	void initialize_camera_position(int w, int h);
 	void call_level_loader();
 	void load_new_level();
-	void reset_game();
 	void reset_player_camera();
 	void freeze_all_enemies();
 	void unfreeze_all_enemies();
@@ -115,14 +113,14 @@ private:
 	// Water effect
 	RenderEffects m_water;
 
-	std::vector<Spider> m_spiders;
-	std::vector<Harpy> m_harpies;
 	Minotaur m_minotaur;
+	Spiders m_spiders;
+	Harpies m_harpies;
 
 	Exit m_exit;
-	std::vector<Floor> m_floors;
-	std::vector<Spikes> m_spikes;
-	std::vector<Ice> m_ice;
+	Floors m_floors;
+	Spikes m_spikes;
+	Ices m_ice;
 
     HelpMenu m_help_menu;
 

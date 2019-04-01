@@ -28,3 +28,10 @@ std::vector<vec2> FixedComponent::get_vertex_coord()
 {
 	return vertex_coords;
 }
+
+bool FixedComponents::init(float tile_width, float tile_height)
+{
+	m_tile_width = tile_width;
+	m_tile_height = tile_height;
+	return true;
+}

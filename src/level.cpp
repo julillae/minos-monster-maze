@@ -127,9 +127,9 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 void Level::check_platform_collisions() {
 	if (m_player.is_alive()) {
 		m_player.set_world_vertex_coord();
-		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes);
-		physicsHandler->characterCollisionsWithFloors(&m_player, m_floors);
-		physicsHandler->characterCollisionsWithIce(&m_player, m_ice);
+		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes.get_spike_vector());
+		physicsHandler->characterCollisionsWithFloors(&m_player, m_floors.get_floor_vector());
+		physicsHandler->characterCollisionsWithIce(&m_player, m_ice.get_ice_vector());
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
@@ -211,14 +211,14 @@ bool Level::update(float elapsed_ms)
 	}
 
 	// Checking Player - Spider Collision
-	for (auto& enemy : m_spiders) {
+	for (auto& enemy : m_spiders.get_spider_vector()) {
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy))
 		{
 			set_player_death();
 		}
 	}
 
-	for (auto& enemy : m_harpies) {
+	for (auto& enemy : m_harpies.get_harpy_vector()) {
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy))
 		{
 			set_player_death();
@@ -299,8 +299,11 @@ void Level::draw()
 	// Updating window title with points
 	std::stringstream title_ss;
 	title_ss << "Minos' Monster Maze";
-	if (canRotate)
-		title_ss << " || Energy left to rotate: " << rotationEnergy << " / " << maxRotationEnergy;
+	if (canRotate) {
+		// Round energy to two decimal places for printing
+		float roundedEnergy = roundf(rotationEnergy * 100.f) / 100.f;
+		title_ss << " || Energy left to rotate: " << roundedEnergy << " / " << maxRotationEnergy;
+	}
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
 	if (is_player_at_goal)
@@ -418,9 +421,12 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		}
 
 		if (key == GLFW_KEY_ESCAPE) {
-            MainMenuState* mainMenuState = (MainMenuState*) game->get_state(MAIN);
-            mainMenuState->reset_buttons();
-		    game->set_current_state(mainMenuState);
+            isRotating = false;
+			m_player.set_direction(Direction::none);
+
+            PauseMenuState* pauseMenuState = (PauseMenuState*) game->get_state(PAUSE);
+            pauseMenuState->reset_buttons();
+            game->set_current_state(pauseMenuState);
 		}
 	}
 
@@ -441,20 +447,6 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		if (((key == rotateCCWKey && !rotateCW) || (key == rotateCWKey && rotateCW))) {
 				isRotating = false;
 			}
-	}
-
-	if (action == GLFW_PRESS && key == GLFW_KEY_H) {
-		show_help_menu = !show_help_menu;
-		if (show_help_menu) {
-			m_help_menu.set_position(cameraCenter);
-		}
-
-	}
-
-	// Resetting game
-	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
-	{
-		reset_game();
 	}
 
 }
@@ -478,30 +470,16 @@ void Level::initialize_camera_position(int w, int h)
 }
 
 void Level::draw_enemies(mat3 projection_2D) {
-    for (auto& spider: m_spiders)
-        spider.draw(projection_2D);
-
-	for (auto& harpy: m_harpies)
-        harpy.draw(projection_2D);
-	
+	m_spiders.draw(projection_2D);
+	m_harpies.draw(projection_2D);
 	if (minotaurPresent) {
 		m_minotaur.draw(projection_2D);
 	}
 }
 
 void Level::reset_enemies() {
-	for (auto& spider : m_spiders) {
-		spider.freeze();
-		spider.reset_position();
-		spider.unfreeze();
-	};
-
-	for (auto& harpy : m_harpies) {
-		harpy.freeze();
-		harpy.reset_position();
-		harpy.unfreeze();
-	};
-
+	m_spiders.reset();
+	m_harpies.reset();
 	if (minotaurPresent) {
 		m_minotaur.freeze();
 		m_minotaur.reset_position();
@@ -510,15 +488,8 @@ void Level::reset_enemies() {
 }
 
 void Level::destroy_enemies() {
-	for (auto& spider : m_spiders)
-		spider.destroy();
-
-	for (auto& harpy : m_harpies)
-		harpy.destroy();
-
-	m_spiders.clear();
-	m_harpies.clear();
-
+	m_spiders.destroy();
+	m_harpies.destroy();
 	if (minotaurPresent) {
 		m_minotaur.stopRotating();
 		m_minotaur.destroy();
@@ -526,29 +497,15 @@ void Level::destroy_enemies() {
 }
 
 void Level::draw_platforms(mat3 projection_2D) {
-    for (auto& floor: m_floors)
-        floor.draw(projection_2D);
-
-	for (auto& ice: m_ice)
-        ice.draw(projection_2D);
-
-	for (auto& spikes: m_spikes)
-        spikes.draw(projection_2D);
+	m_floors.draw(projection_2D);
+	m_ice.draw(projection_2D);
+	m_spikes.draw(projection_2D);
 }
 
 void Level::destroy_platforms() {
-	for (auto& floor : m_floors)
-		floor.destroy();
-
-	for (auto& spike : m_spikes)
-		spike.destroy();
-
-	for (auto& ice : m_ice)
-		ice.destroy();
-
-	m_floors.clear();
-	m_spikes.clear();
-	m_ice.clear();
+	m_floors.destroy();
+	m_spikes.destroy();
+	m_ice.destroy();
 }
 
 void Level::call_level_loader()
@@ -624,8 +581,8 @@ void Level::reset_player_camera()
 
 void Level::freeze_all_enemies()
 {
-	for (auto& s : m_spiders) s.freeze();
-	for (auto& h : m_harpies) h.freeze();
+	m_spiders.freeze();
+	m_harpies.freeze();
 	if (minotaurPresent){
 		m_minotaur.freeze();
 	}
@@ -633,8 +590,8 @@ void Level::freeze_all_enemies()
 
 void Level::unfreeze_all_enemies()
 {
-	for (auto& s : m_spiders) s.unfreeze();
-	for (auto& h : m_harpies) h.unfreeze();
+	m_spiders.unfreeze();
+	m_harpies.unfreeze();
 	if (minotaurPresent){
 		m_minotaur.unfreeze();
 	}
@@ -642,11 +599,12 @@ void Level::unfreeze_all_enemies()
 
 void Level::update_all_enemies(float elapsed_ms)
 {
-	for (auto& s : m_spiders) s.update(elapsed_ms);
-	for (auto& h : m_harpies) h.update(elapsed_ms);
+	m_spiders.update(elapsed_ms);
+	m_harpies.update(elapsed_ms);
 	if (minotaurPresent){
 		m_minotaur.update(elapsed_ms);
 	}
+
 }
 
 bool Level::maze_is_platform(std::pair<int,int> coords){
@@ -712,9 +670,9 @@ float Level::get_rotationDeg() { return rotationDeg; }
 
 float Level::get_rotationEnergy() { return rotationEnergy; }
 
-std::vector<Spider> Level::get_spiders() { return m_spiders; }
+std::vector<Spider> Level::get_spiders() { return m_spiders.get_spider_vector(); }
 
-std::vector<Harpy> Level::get_harpies() { return m_harpies; }
+std::vector<Harpy> Level::get_harpies() { return m_harpies.get_harpy_vector(); }
 
 Minotaur Level::get_minotaur() { return m_minotaur; }
 
@@ -761,6 +719,8 @@ void Level::load_player()
 	m_player.set_position(vec2({player_x, player_y}));
 	m_player.set_scale(vec2({player_scaleX, player_scaleY}));
 	m_player.set_world_vertex_coord();
+
+	initialPosition = m_player.get_position();
 
     int w, h;
     glfwGetWindowSize(m_window, &w, &h);
@@ -832,11 +792,13 @@ void Level::load_spiders()
 		itr = spiders[i].GetObject().FindMember("scale_x");
 		scale_x = itr->value.GetFloat();
 
-		scale_y = m_spiders[i].get_scale().y;
+		scale_y = m_spiders.get_spider_vector()[i].get_scale().y;
 
-		m_spiders[i].set_position(vec2({pos_x, pos_y}));
-		m_spiders[i].set_velocity(vec2({vel_x, vel_y}));
-		m_spiders[i].set_scale(vec2({scale_x, scale_y}));
+		vec2 position = vec2({ pos_x, pos_y });
+		vec2 velocity = vec2({ vel_x, vel_y });
+		vec2 scale = vec2({ scale_x, scale_y });
+
+		m_spiders.setSpiderProperties(i, position, velocity, scale);
 	}
 }
 
@@ -862,11 +824,13 @@ void Level::load_harpies()
 		itr = harpies[i].GetObject().FindMember("scale_x");
 		scale_x = itr->value.GetFloat();
 
-		scale_y = m_harpies[i].get_scale().y;
+		scale_y = m_harpies.get_harpy_vector()[i].get_scale().y;
 
-		m_harpies[i].set_position(vec2({pos_x, pos_y}));
-		m_harpies[i].set_velocity(vec2({vel_x, vel_y}));
-		m_harpies[i].set_scale(vec2({scale_x, scale_y}));
+		vec2 position = vec2({ pos_x, pos_y });
+		vec2 velocity = vec2({ vel_x, vel_y });
+		vec2 scale = vec2({ scale_x, scale_y });
+		
+		m_harpies.setHarpyProperties(i, position, velocity, scale);
 	}
 }
 
