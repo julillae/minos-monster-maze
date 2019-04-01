@@ -79,6 +79,7 @@ private:
 	void draw_platforms(mat3 projection_2D);
 	void destroy_platforms();
 
+	void initialize_message_prompt();
 	void initialize_camera_position(int w, int h);
 	void call_level_loader();
 	void load_new_level();
