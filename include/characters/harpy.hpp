@@ -41,3 +41,21 @@ class Harpy: public Smart
         float maxHorzSpeed = 1.f;
 	
 };
+
+class Harpies : public Smarts
+{
+public:
+	bool spawn_harpy_enemy(vec2 position);
+	std::vector<Harpy> get_harpy_vector();
+	// Renders the component
+	void draw(const mat3& projection)override;
+	void reset();
+	void freeze();
+	void unfreeze();
+	void update(float elapsed_ms);
+	void setHarpyProperties(size_t index, vec2 position, vec2 velocity, vec2 scale);
+
+	void destroy();
+private:
+	std::vector<Harpy> m_harpies;
+};

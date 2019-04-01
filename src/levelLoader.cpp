@@ -11,6 +11,10 @@
 
 std::vector<std::vector <int>> LevelLoader::load_level(int levelNumber, Physics* physicsHandler) {
     this->physicsHandler = physicsHandler;
+	floors.init(m_tile_width, m_tile_height);
+	ices.init(m_tile_width, m_tile_height);
+	spiders.init(physicsHandler);
+	harpies.init(physicsHandler);
     
     read_level_data(levelNumber);
 
@@ -69,15 +73,15 @@ void LevelLoader::generate_maze()
 
 				float last_x_pos = x_pos - m_tile_width;
 				float distance = abs(last_x_pos - enemy_start_pos.x);
-				spawn_spider_enemy(enemy_start_pos, distance, setting_rotated_enemy);
+				spiders.spawn_spider_enemy(enemy_start_pos, distance, setting_rotated_enemy);
 				setting_enemy = false;
 				setting_rotated_enemy = false;
 			}
 
 			if (cell == 49) {
 				// Spawn platform
-				if ( spawn_floor({x_pos, y_pos}) ) {
-					store_platform_coords({x_pos, y_pos}, cell);
+				if (floors.spawn_floor({ x_pos, y_pos })) {
+					store_platform_coords({ x_pos, y_pos }, cell);
 				}
 			} else if (cell == 50) {
 				// Add exit
@@ -105,20 +109,19 @@ void LevelLoader::generate_maze()
 				}
 			} else if (cell == 54) {
 
-                if (spawn_ice({x_pos, y_pos}))
+                if (ices.spawn_ice({x_pos, y_pos}))
                 	store_platform_coords({x_pos, y_pos}, cell);
 
             } else if (cell >= 65 && cell <= 68) {
                 load_spikes(cell, vec2({x_pos, y_pos}));
 			} else if (cell == 57) {
-				spawn_harpy_enemy(vec2({x_pos, y_pos}));
+				harpies.spawn_harpy_enemy(vec2({x_pos, y_pos}));
 			}
 
             j = j + 1.f;
 		}
         i = i + 1.f;
 	}
-
     // Set global variables
     m_maze_width = j;
     m_maze_height = i;
@@ -130,106 +133,6 @@ void LevelLoader::store_platform_coords(vec2 coords, int platform_key) {
 	m_platforms_by_coords.emplace(coords_pair, platformType);
 }
 
-bool LevelLoader::spawn_spider_enemy(vec2 position, float bound, bool upsideDown)
-{
-	Spider enemy;
-
-	if (enemy.init(position, physicsHandler))
-	{
-		if (upsideDown) {
-			enemy.set_rotation(M_PI);
-			vec2 enemy_scale = enemy.get_scale();
-			enemy.set_scale({enemy_scale.x * -1.f, enemy_scale.y});
-		}
-
-		enemy.set_bound(bound);
-		m_spiders.emplace_back(enemy);
-
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn enemy");
-	return false;
-}
-
-bool LevelLoader::spawn_harpy_enemy(vec2 position)
-{
-	Harpy enemy;
-	if (enemy.init(position, physicsHandler))
-	{	
-		m_harpies.emplace_back(enemy);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn harpy");
-	return false;
-}
-
-bool LevelLoader::spawn_floor(vec2 position)
-{
-	Floor floor;
-
-	if (floor.init(position))
-	{
-		vec2 textureSize = floor.get_texture_size();
-		float x_scale = m_tile_width / textureSize.x;
-		float y_scale = m_tile_height / textureSize.y;
-		floor.set_scale(vec2({x_scale, y_scale}));
-		floor.set_size(vec2({m_tile_width, m_tile_height}));
-		floor.set_collision_properties();
-		m_floors.emplace_back(floor);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn floor");
-	return false;
-}
-
-bool LevelLoader::spawn_ice(vec2 position)
-{
-	Ice ice;
-
-	if (ice.init(position))
-	{
-		vec2 textureSize = ice.get_texture_size();
-		float x_scale = m_tile_width / textureSize.x;
-		float y_scale = m_tile_height / textureSize.y;
-		ice.set_scale(vec2({x_scale, y_scale}));
-		ice.set_size(vec2({m_tile_width, m_tile_height}));
-		ice.set_collision_properties();
-		m_ice.emplace_back(ice);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn ice");
-	return false;
-}
-
-bool LevelLoader::spawn_spikes(vec2 position, SpikeDir dir)
-{
-    Spikes spikes;
-
-    if (spikes.init(position))
-    {
-    	switch (dir)
-		{
-			case DOWN:
-				spikes.set_down();
-				break;
-			case LEFT:
-				spikes.set_left();
-				break;
-			case RIGHT:
-				spikes.set_right();
-				break;
-			default:
-				spikes.set_up();
-				break;
-		}
-
-        m_spikes.emplace_back(spikes);
-        return true;
-    }
-    fprintf(stderr, "Failed to spawn spikes");
-    return false;
-}
-
 void LevelLoader::load_spikes(int cell, vec2 position)
 {
 	std::string platformType = platform_types.find(cell)->second;
@@ -237,25 +140,25 @@ void LevelLoader::load_spikes(int cell, vec2 position)
     if (platformType == "SPIKE LEFT") {
         float spike_x = position.x - m_tile_width / 2;
 
-        if (spawn_spikes({spike_x, position.y}, LEFT))
+        if (spikes.spawn_spike({spike_x, position.y}, LEFT))
             store_platform_coords({spike_x, position.y}, cell);
 
     } else if (platformType == "SPIKE UP") {
 
         float spike_y = position.y - m_tile_height / 2;
-        if (spawn_spikes({position.x, spike_y}, UP))
+        if (spikes.spawn_spike({position.x, spike_y}, UP))
             store_platform_coords({position.x, spike_y}, cell);
 
     } else if (platformType == "SPIKE DOWN") {
 
         float spike_y = position.y + m_tile_height / 2;
-        if (spawn_spikes({position.x, spike_y}, DOWN))
+        if (spikes.spawn_spike({position.x, spike_y}, DOWN))
             store_platform_coords({position.x, spike_y}, cell);
 
     } else {
         float spike_x = position.x + m_tile_width / 2;
 
-        if (spawn_spikes({spike_x, position.y}, RIGHT))
+        if (spikes.spawn_spike({spike_x, position.y}, RIGHT))
             store_platform_coords({spike_x, position.y}, cell);
     }
 }
@@ -318,27 +221,28 @@ Exit LevelLoader::get_exit()
     return m_exit;
 }
 
-std::vector<Spider> LevelLoader::get_spiders()
+Spiders LevelLoader::get_spiders()
 {
-    return m_spiders;
+	return spiders;
 }
 
-std::vector<Harpy> LevelLoader::get_harpies()
+Harpies LevelLoader::get_harpies()
 {
-    return m_harpies;
+    return harpies;
 }
 
-std::vector<Floor> LevelLoader::get_floors()
+Floors LevelLoader::get_floors()
 {
-    return m_floors;
+	return floors;
 }
 
-std::vector<Spikes> LevelLoader::get_spikes()
+
+Spikes LevelLoader::get_spikes()
 {
-    return m_spikes;
+    return spikes;
 }
 
-std::vector<Ice> LevelLoader::get_ice()
+Ices LevelLoader::get_ice()
 {
-    return m_ice;
+    return ices;
 }
