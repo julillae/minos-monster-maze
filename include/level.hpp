@@ -12,12 +12,12 @@
 #include "mazeComponents/floor.hpp"
 #include "mazeComponents/exit.hpp"
 #include "mazeComponents/ice.hpp"
-#include "mazeComponents/spikes.hpp"
+#include "mazeComponents/spike.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
 #include "menus/helpMenu.hpp"
 #include "gameStates/gameState.hpp"
-#include "gameStates/mainMenuState.hpp"
+#include "gameStates/pauseMenuState.hpp"
 #include "levelLoader.hpp"
 #include "flashMessage.hpp"
 
@@ -66,6 +66,16 @@ public:
 	float get_tile_height();
 
 	void load_select_level(int level);
+    int get_current_level();
+    float get_rotation();
+    float get_rotationDeg();
+    float get_rotationEnergy();
+
+    std::vector<Spider> get_spiders();
+    std::vector<Harpy> get_harpies();
+
+    void load_saved_game();
+    void reset_game();
 private:
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
@@ -83,25 +93,28 @@ private:
 	void initialize_camera_position(int w, int h);
 	void call_level_loader();
 	void load_new_level();
-	void reset_game();
 	void reset_player_camera();
 	void freeze_all_enemies();
 	void unfreeze_all_enemies();
 	void update_all_enemies(float elapsed_ms);
 
 	void set_player_death();
+
+	void load_player();
+	void load_spiders();
+	void load_harpies();
 private:
 
 	// Water effect
 	RenderEffects m_water;
 
-	std::vector<Spider> m_spiders;
-	std::vector<Harpy> m_harpies;
+	Spiders m_spiders;
+	Harpies m_harpies;
 
 	Exit m_exit;
-	std::vector<Floor> m_floors;
-	std::vector<Spikes> m_spikes;
-	std::vector<Ice> m_ice;
+	Floors m_floors;
+	Spikes m_spikes;
+	Ices m_ice;
 
     HelpMenu m_help_menu;
 
