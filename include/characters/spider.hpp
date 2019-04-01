@@ -18,3 +18,21 @@ class Spider: public Simple
         void set_animation()override;
 	
 };
+
+class Spiders : public Simples
+{
+public:
+	bool spawn_spider_enemy(vec2 position, float bound, bool upsideDown);
+	std::vector<Spider> get_spider_vector();
+	// Renders the component
+	void draw(const mat3& projection)override;
+	void reset();
+	void freeze();
+	void unfreeze();
+	void update(float elapsed_ms);
+	void setSpiderProperties(size_t index, vec2 position, vec2 velocity, vec2 scale);
+
+	void destroy();
+private:
+	std::vector<Spider> m_spiders;
+};

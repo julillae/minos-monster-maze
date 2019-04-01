@@ -222,3 +222,63 @@ void Harpy::set_animation()
 
     spriteSheet.update_render_data(this, tileIndex);
 }
+
+bool Harpies::spawn_harpy_enemy(vec2 position)
+{
+	Harpy enemy;
+	if (enemy.init(position, physicsHandler))
+	{
+		m_harpies.emplace_back(enemy);
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn harpy");
+	return false;
+}
+
+std::vector<Harpy> Harpies::get_harpy_vector()
+{
+	return m_harpies;
+}
+
+void Harpies::draw(const mat3 & projection)
+{
+	for (auto& harpy : m_harpies)
+		harpy.draw(projection);
+}
+
+void Harpies::reset()
+{
+	for (auto& harpy : m_harpies) {
+		harpy.freeze();
+		harpy.reset_position();
+		harpy.unfreeze();
+	};
+}
+
+void Harpies::freeze()
+{
+	for (auto& h : m_harpies) h.freeze();
+}
+
+void Harpies::unfreeze()
+{
+	for (auto& h : m_harpies) h.unfreeze();
+}
+
+void Harpies::update(float elapsed_ms)
+{
+	for (auto& h : m_harpies) h.update(elapsed_ms);
+}
+
+void Harpies::setHarpyProperties(size_t index, vec2 position, vec2 velocity, vec2 scale)
+{
+	m_harpies[index].set_position(position);
+	m_harpies[index].set_velocity(velocity);
+	m_harpies[index].set_scale(scale);
+}
+
+void Harpies::destroy()
+{
+	for (auto& harpy : m_harpies)
+		harpy.destroy();
+}

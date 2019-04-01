@@ -50,7 +50,7 @@ set(SOURCE_FILES
     src/mazeComponents/floor.cpp
     src/mazeComponents/ice.cpp
     src/mazeComponents/exit.cpp
-    src/mazeComponents/spikes.cpp
+    src/mazeComponents/spike.cpp
     src/gameAI.cpp
     src/physics.cpp
     src/level.cpp
@@ -92,7 +92,7 @@ set(SOURCE_FILES
     include/mazeComponents/floor.hpp
     include/mazeComponents/ice.hpp
     include/mazeComponents/exit.hpp
-    include/mazeComponents/spikes.hpp
+    include/mazeComponents/spike.hpp
     include/gameAI.hpp
     include/physics.hpp
     include/level.hpp
