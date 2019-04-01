@@ -42,6 +42,10 @@ class Minotaur: public Smart
 
         void stopRotating();
 
+        void setPreviousState(State s);
+
+        State previous_state = idle;
+
     private:
         float maxVerticalSpeed = 1.f;
         float maxHorzSpeed = 1.f;
@@ -52,7 +56,6 @@ class Minotaur: public Smart
         float rotate_max_degree = 45.0f;
         bool rotate_cw = false;
         bool rotating = false;
-        State previous_state;
         float prep_time = 1000.0f;
 	
 };
