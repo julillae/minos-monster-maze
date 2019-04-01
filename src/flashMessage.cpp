@@ -16,7 +16,8 @@ bool FlashMessage::init(int levelNumber)
     fprintf(stderr, "%s\n", fileName.c_str());
 
     std::string texturePath(textures_path());
-    const char* textureFile = (texturePath + fileName).c_str();
+    std::string fullPath = texturePath + fileName;
+    const char* textureFile = fullPath.c_str();
 
     if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
 
