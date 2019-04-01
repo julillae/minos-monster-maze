@@ -1,5 +1,3 @@
-#include <utility>
-
 // Header
 #include "../include/level.hpp"
 #include "../include/physics.hpp"
@@ -13,7 +11,7 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
-#include <utility>
+#include <vld.h>
 
 namespace
 {
@@ -38,7 +36,7 @@ namespace
 }
 
 
-Level::Level(Game* game) : 
+Level::Level(Game* game) :
 	m_seed_rng(0.f),
 	m_quad(0, {}, 0.f, 0.f)
 {
@@ -125,16 +123,16 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 
 	m_help_menu.init(initialPosition);
 	initialize_camera_position(w, h);
-
+	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
 void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) {
 	if (m_player.is_alive()) {
 		m_player.set_world_vertex_coord();
-		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes);
-		physicsHandler->characterCollisionsWithFloors(&m_player, nearbyFloorComponents);
-		physicsHandler->characterCollisionsWithIce(&m_player, m_ice);
+		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes.get_spike_vector());
+        physicsHandler->characterCollisionsWithFloors(&m_player, nearbyFloorComponents);
+		physicsHandler->characterCollisionsWithIce(&m_player, m_ice.get_ice_vector());
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
@@ -217,14 +215,14 @@ bool Level::update(float elapsed_ms)
 	}
 
 	// Checking Player - Spider Collision
-	for (auto& enemy : m_spiders) {
+	for (auto& enemy : m_spiders.get_spider_vector()) {
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy))
 		{
 			set_player_death();
 		}
 	}
 
-	for (auto& enemy : m_harpies) {
+	for (auto& enemy : m_harpies.get_harpy_vector()) {
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy))
 		{
 			set_player_death();
@@ -237,6 +235,7 @@ bool Level::update(float elapsed_ms)
 		Mix_PlayChannel(-1, level_complete_sound, 0);
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
+		m_player.freeze();
 		m_player.set_invincibility(true);
 	}
 
@@ -301,8 +300,11 @@ void Level::draw()
 	// Updating window title with points
 	std::stringstream title_ss;
 	title_ss << "Minos' Monster Maze";
-	if (canRotate)
-		title_ss << " || Energy left to rotate: " << rotationEnergy << " / " << maxRotationEnergy;
+	if (canRotate) {
+		// Round energy to two decimal places for printing
+		float roundedEnergy = roundf(rotationEnergy * 100.f) / 100.f;
+		title_ss << " || Energy left to rotate: " << roundedEnergy << " / " << maxRotationEnergy;
+	}
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
 	if (is_player_at_goal)
@@ -420,9 +422,12 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		}
 
 		if (key == GLFW_KEY_ESCAPE) {
-            MainMenuState* mainMenuState = (MainMenuState*) game->get_state(MAIN);
-            mainMenuState->reset_buttons();
-		    game->set_current_state(mainMenuState);
+            isRotating = false;
+			m_player.set_direction(Direction::none);
+
+            PauseMenuState* pauseMenuState = (PauseMenuState*) game->get_state(PAUSE);
+            pauseMenuState->reset_buttons();
+            game->set_current_state(pauseMenuState);
 		}
 	}
 
@@ -443,20 +448,6 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		if (((key == rotateCCWKey && !rotateCW) || (key == rotateCWKey && rotateCW))) {
 				isRotating = false;
 			}
-	}
-
-	if (action == GLFW_PRESS && key == GLFW_KEY_H) {
-		show_help_menu = !show_help_menu;
-		if (show_help_menu) {
-			m_help_menu.set_position(cameraCenter);
-		}
-
-	}
-
-	// Resetting game
-	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
-	{
-		reset_game();
 	}
 
 }
@@ -480,62 +471,30 @@ void Level::initialize_camera_position(int w, int h)
 }
 
 void Level::draw_enemies(mat3 projection_2D) {
-    for (auto& spider: m_spiders)
-        spider.draw(projection_2D);
-
-	for (auto& harpy: m_harpies)
-        harpy.draw(projection_2D);
+	m_spiders.draw(projection_2D);
+	m_harpies.draw(projection_2D);
 }
 
 void Level::reset_enemies() {
-	for (auto& spider : m_spiders) {
-		spider.freeze();
-		spider.reset_position();
-		spider.unfreeze();
-	};
-
-	for (auto& harpy : m_harpies) {
-		harpy.freeze();
-		harpy.reset_position();
-		harpy.unfreeze();
-	};
+	m_spiders.reset();
+	m_harpies.reset();
 }
 
 void Level::destroy_enemies() {
-	for (auto& spider : m_spiders)
-		spider.destroy();
-
-	for (auto& harpy : m_harpies)
-		harpy.destroy();
-
-	m_spiders.clear();
-	m_harpies.clear();
+	m_spiders.destroy();
+	m_harpies.destroy();
 }
 
 void Level::draw_platforms(mat3 projection_2D) {
-    for (auto& floor: m_floors)
-        floor.draw(projection_2D);
-
-	for (auto& ice: m_ice)
-        ice.draw(projection_2D);
-
-	for (auto& spikes: m_spikes)
-        spikes.draw(projection_2D);
+	m_floors.draw(projection_2D);
+	m_ice.draw(projection_2D);
+	m_spikes.draw(projection_2D);
 }
 
 void Level::destroy_platforms() {
-	for (auto& floor : m_floors)
-		floor.destroy();
-
-	for (auto& spike : m_spikes)
-		spike.destroy();
-
-	for (auto& ice : m_ice)
-		ice.destroy();
-
-	m_floors.clear();
-	m_spikes.clear();
-	m_ice.clear();
+	m_floors.destroy();
+	m_spikes.destroy();
+	m_ice.destroy();
 }
 
 void Level::call_level_loader()
@@ -560,7 +519,7 @@ void Level::call_level_loader()
 	m_spikes = levelLoader.get_spikes();
 
 	m_quad = QuadTreeNode(0, { 0.f, 0.f }, m_maze_width*m_tile_width, m_maze_height*m_tile_height);
-	for (auto& floor: m_floors) {
+	for (auto& floor: m_floors.get_floor_vector()) {
 		m_quad.insert(floor);
 	}
 }
@@ -570,7 +529,7 @@ void Level::load_new_level()
 	destroy_platforms();
 	destroy_enemies();
 	m_quad.clear();
-	
+
 	m_maze.clear();
 
 	current_level++;
@@ -612,20 +571,20 @@ void Level::reset_player_camera()
 
 void Level::freeze_all_enemies()
 {
-	for (auto& s : m_spiders) s.freeze();
-	for (auto& h : m_harpies) h.freeze();
+	m_spiders.freeze();
+	m_harpies.freeze();
 }
 
 void Level::unfreeze_all_enemies()
 {
-	for (auto& s : m_spiders) s.unfreeze();
-	for (auto& h : m_harpies) h.unfreeze();
+	m_spiders.unfreeze();
+	m_harpies.unfreeze();
 }
 
 void Level::update_all_enemies(float elapsed_ms)
 {
-	for (auto& s : m_spiders) s.update(elapsed_ms);
-	for (auto& h : m_harpies) h.update(elapsed_ms);
+	m_spiders.update(elapsed_ms);
+	m_harpies.update(elapsed_ms);
 }
 
 bool Level::maze_is_platform(std::pair<int,int> coords){
@@ -682,4 +641,138 @@ void Level::load_select_level(int level)
 	initialize_camera_position(w, h);
 
 	reset_player_camera();
+}
+
+int Level::get_current_level() { return current_level; }
+
+float Level::get_rotation() { return rotation; }
+
+float Level::get_rotationDeg() { return rotationDeg; }
+
+float Level::get_rotationEnergy() { return rotationEnergy; }
+
+std::vector<Spider> Level::get_spiders() { return m_spiders.get_spider_vector(); }
+
+std::vector<Harpy> Level::get_harpies() { return m_harpies.get_harpy_vector(); }
+
+std::vector<Floor> Level::get_floors() { return m_floors.get_floor_vector(); }
+
+void Level::load_saved_game()
+{
+	fprintf(stderr, "loading saved game\n");
+
+    Value& player = GameSave::document["player"];
+
+    Value::ConstMemberIterator itr = player.GetObject().FindMember("alive");
+    bool alive = itr->value.GetBool();
+
+    if (!alive) {
+        reset_game();
+    } else {
+        load_player();
+        load_spiders();
+        load_harpies();
+    }
+
+}
+
+void Level::load_player()
+{
+	float player_x, player_y, player_scaleX, player_scaleY;
+	bool alive;
+
+	Value& player = GameSave::document["player"];
+
+    Value::ConstMemberIterator itr = player.GetObject().FindMember("pos_x");
+	player_x = itr->value.GetFloat();
+
+	itr = player.GetObject().FindMember("pos_y");
+	player_y = itr->value.GetFloat();
+
+	itr = player.GetObject().FindMember("scale_x");
+	player_scaleX = itr->value.GetFloat();
+
+	player_scaleY = m_player.get_scale().y;
+
+	m_player.set_position(vec2({player_x, player_y}));
+	m_player.set_scale(vec2({player_scaleX, player_scaleY}));
+	m_player.set_world_vertex_coord();
+
+	initialPosition = m_player.get_position();
+
+    int w, h;
+    glfwGetWindowSize(m_window, &w, &h);
+    initialize_camera_position(w, h);
+
+    rotation = GameSave::document["rotation"].GetFloat();
+    rotationDeg = GameSave::document["rotationDeg"].GetFloat();
+    rotationEnergy = GameSave::document["rotationEnergy"].GetFloat();
+
+    if (rotationEnergy < maxRotationEnergy)
+    	m_water.set_rotation_end_time();
+
+}
+
+void Level::load_spiders()
+{
+	const Value& spiders = GameSave::document["spiders"];
+
+	for (SizeType i = 0; i < spiders.Size(); i++) // Uses SizeType instead of size_t
+	{
+		float pos_x, pos_y, vel_x, vel_y, scale_x, scale_y;
+		Value::ConstMemberIterator itr = spiders[i].GetObject().FindMember("pos_x");
+		pos_x = itr->value.GetFloat();
+
+		itr = spiders[i].GetObject().FindMember("pos_y");
+		pos_y = itr->value.GetFloat();
+
+		itr = spiders[i].GetObject().FindMember("vel_x");
+		vel_x = itr->value.GetFloat();
+
+		itr = spiders[i].GetObject().FindMember("vel_y");
+		vel_y = itr->value.GetFloat();
+
+		itr = spiders[i].GetObject().FindMember("scale_x");
+		scale_x = itr->value.GetFloat();
+
+		scale_y = m_spiders.get_spider_vector()[i].get_scale().y;
+
+		vec2 position = vec2({ pos_x, pos_y });
+		vec2 velocity = vec2({ vel_x, vel_y });
+		vec2 scale = vec2({ scale_x, scale_y });
+
+		m_spiders.setSpiderProperties(i, position, velocity, scale);
+	}
+}
+
+void Level::load_harpies()
+{
+	const Value& harpies = GameSave::document["harpies"];
+
+	for (SizeType i = 0; i < harpies.Size(); i++) // Uses SizeType instead of size_t
+	{
+		float pos_x, pos_y, vel_x, vel_y, scale_x, scale_y;
+		Value::ConstMemberIterator itr = harpies[i].GetObject().FindMember("pos_x");
+		pos_x = itr->value.GetFloat();
+
+		itr = harpies[i].GetObject().FindMember("pos_y");
+		pos_y = itr->value.GetFloat();
+
+		itr = harpies[i].GetObject().FindMember("vel_x");
+		vel_x = itr->value.GetFloat();
+
+		itr = harpies[i].GetObject().FindMember("vel_y");
+		vel_y = itr->value.GetFloat();
+
+		itr = harpies[i].GetObject().FindMember("scale_x");
+		scale_x = itr->value.GetFloat();
+
+		scale_y = m_harpies.get_harpy_vector()[i].get_scale().y;
+
+		vec2 position = vec2({ pos_x, pos_y });
+		vec2 velocity = vec2({ vel_x, vel_y });
+		vec2 scale = vec2({ scale_x, scale_y });
+
+		m_harpies.setHarpyProperties(i, position, velocity, scale);
+	}
 }

@@ -14,3 +14,8 @@ protected:
 	std::vector<Vertex> vertices;
 	std::vector<uint16_t> indices;
 };
+
+class GeometricComponents : public FixedComponents
+{
+
+};

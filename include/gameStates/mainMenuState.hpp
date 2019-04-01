@@ -5,7 +5,11 @@
 #include "../level.hpp"
 #include "../menus/button.hpp"
 #include "../menus/mainButton.hpp"
-#include "levelSelectState.hpp"
+#include "../gameSave.hpp"
+
+extern Level* world;
+
+class LevelSelectState;
 
 class MainMenuState : public GameState
 {
@@ -24,13 +28,18 @@ public:
     void init_buttons();
     void set_currentButton(MainButton* button);
     void reset_buttons();
+    void show_load_button();
 
 private:
     MainMenu mainMenu;
     MainButton* currentButton;
+    int buttonIndex = 0;
+    int numButtons;
 
     // menu buttons
-    MainButton continueButton;
+    MainButton* mainButtons[4];
+
+    MainButton loadButton;
     MainButton newGameButton;
     MainButton controlsButton;
     MainButton quitButton;
@@ -43,5 +52,6 @@ private:
     vec2 initialPosition;
 
     bool close = false;
+    bool saved_file;
 
 };
