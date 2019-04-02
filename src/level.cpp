@@ -256,6 +256,11 @@ bool Level::update(float elapsed_ms)
     std::vector<Floor> nearbyFloorComponents =
 			m_quad.getNearbyFloorComponents(m_player.get_position(), m_player.get_bounding_box());
 
+	if (current_level == 11) {
+		// deallocate quad tree memory for boss
+		nearbyFloorComponents = m_floors.get_floor_vector();
+	}
+
     // checking player - platform collision
 	check_platform_collisions(nearbyFloorComponents);
 
@@ -601,6 +606,10 @@ void Level::call_level_loader()
 
 	for (auto& floor: m_floors.get_floor_vector()) {
 		m_quad.insert(floor);
+	}
+
+	if (current_level == 11) {
+	    m_quad.clear();
 	}
 }
 
