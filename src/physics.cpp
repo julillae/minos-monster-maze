@@ -325,6 +325,7 @@ void Physics::characterVelocityUpdate(Character* c)
         if (c->characterState->currentState == jumping) {
 			cVelocity.y += c->jumpVel;
 			c->characterState->changeState(rising);
+			c->isOnPlatform = false;
 		}
 
 		if (c->isOnPlatform) {
