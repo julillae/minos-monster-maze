@@ -38,7 +38,7 @@ vec3 calculatePointLight(vec2 lightPosition, vec3 Color)
 ////////////////////////////////////////////////////////////////////////////////
 void main(void)
 {
-    vec2 l_p = light_pos-origin_pos;
+    vec2 l_p = light_pos+origin_pos;
     vec4 texturecolor = texture(screen_texture, uv);
     outputColor = vec4(calculatePointLight(l_p, vec3(1,1,1)), 1.0)*texturecolor;
     //outputColor = vec4(calculatePointLight(light_pos, vec3(1,1,1)), 1.0)*texturecolor;

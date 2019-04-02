@@ -64,7 +64,8 @@ void main()
     //gl_Position = vec4(pos.xy, in_position.z, 1.0);
     gl_Position = in_position;
     // Convert to the [0, 1] range of UV coordinate
-    origin_pos[0] = projection[2][0];
-    origin_pos[1] = projection[2][1];
+    vec3 move_frame = projection[2];
+    
+    origin_pos = vec2(move_frame.xy);
     uv = (in_position.xy + vec2(1.05, 1.05)) / 2.1;
 }
