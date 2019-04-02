@@ -746,6 +746,8 @@ void Level::load_player()
 
 	player_scaleY = m_player.get_scale().y;
 
+    vec2 originalPosition = m_player.get_position();
+
 	m_player.set_position(vec2({player_x, player_y}));
 	m_player.set_scale(vec2({player_scaleX, player_scaleY}));
 	m_player.set_world_vertex_coord();
@@ -762,6 +764,9 @@ void Level::load_player()
 
     if (rotationEnergy < maxRotationEnergy)
     	m_water.set_rotation_end_time();
+
+    // reset initialPosition for restarting game
+    initialPosition = originalPosition;
 
 }
 
