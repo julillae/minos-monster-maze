@@ -561,7 +561,7 @@ void Level::call_level_loader()
     glfwGetWindowSize(m_window, &w, &h);
     // if camera tracking is off, initialize the quad tree with the screen size
     if (!cameraTracking) {
-        m_quad = QuadTreeNode(0, {0.f, 0.f}, (float)w, (float)h);
+        m_quad = QuadTreeNode(0, {0.f, 0.f}, (float)w + 2*m_maze_width, (float)h + 2*m_maze_height);
     } else {
         // if camera tracking is on, initialize the tree based on the maze
         m_quad = QuadTreeNode(0, {0.f, 0.f}, ((m_maze_width+7)*m_tile_width),
