@@ -1,0 +1,24 @@
+Milestone 4 Requirements:
+1. Sustain progressive, non-repetitive gameplay for 6 min or more including all new features. The game should not terminate early and should allow infinite even if repetitive gameplay
+    - We still have the introductory levels to teach the player about the features of the game. However, in this milestone, we added prompts for the user to help them as they learn.
+    - Added 2 new levels, including a boss level with a showdown between the minotaur and the player. 
+    - Gameplay moves continuously through all 12 levels. Once the player finishes the 12th level, they restart at level 1. If they die while playing a level, they are reset to the beginning of that level, not the beginning of the game.
+2. Support real-time response rate (i.e. lag-free input).
+3. Include proper memory management (no excessive allocation or leaks). The game should not have any undefined behavior, memory leaks or random crashes. The game should not hog memory even after extended play time. 
+    - Allocated objects are destroyed after use 
+4. The game should robustly handle any user input. Unexpected inputs or environment settings should be correctly handled and reported. 
+5. The gameplay should be real-time (no lag). This included improving your collision handling using effective detection strategies. You should support dozens simultaneously moving main or background assets.
+    - Improved efficiency of collision detection by implementing a quad tree.
+    - Upper levels of the game include multiple moving assets, including the player, multiple spider enemies (pacing), harpy enemies (flying after player), and (in the boss level) a minotaur.
+6. The game should allow for some form of state saving for play “reload”. Users should be able to pause and restart in a graceful (if not perfect) manner. 
+    - Added module to save game state. When a user pauses the game, they can choose to save their progress. Later, they can choose to reload their saved game and will start playing at the point in the level they stopped. The player, as well as all other assets in the game, will reload to the same state/position they were in when the game was saved.
+7. The physical effects should be correctly integrated in time and should not be locked to the machine’s speed by correctly handling the simulation time step and integration.
+    - This was already implemented in a previous milestone (changed updated loop to work on fixed time-step rather than the variable time-step that came with assignment1)
+8. Stable game code supporting continuing execution and graceful termination.
+    -Added a main menu page which allows the player to pause, restart, save, load, and quit the game gracefully. From the menu, a player can also select the level they want to start at.
+9. Creative
+    - Added a ‘boss’ enemy (the minotaur). He paces a platform by the exit door in the final level. In this this level, the minotaur has taken the ability to rotate the world away from the player. Instead, he rotates the world himself. When the player is close, the minotaur will follow the player at a quicker pace. Once he is close enough to the player, he will attempt to swing his axe to kill the player.  We added animations for swinging the axe, a sweeping animation to indicate the minotaur is about to rotate the world, and an ‘idling’ animation when the minotaur detects the player is close but cannot reach them.
+    - Designed a multi-stage menu. In the main menu, a player can load a previously saved game, start a new game, learn about game controls, or quit the game. In the ‘paused state’ menu, the player can continue, restart, save the game, learn about the controls, or return to the main menu. The menu is stylized to suit the retro-theme of the game and we designed a logo of a minotaur head for the game.
+    - Player now freezes when reaching the exit until the next level loads (instead of running right past the exit in previous milestones)
+    - Added message prompts in tutorial levels alerting users to the skill they should be practicing in these levels
+    - Levels have been redesigned to improve gameplay based on feedback from crossplay
