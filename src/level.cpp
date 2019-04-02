@@ -122,6 +122,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 
 	m_help_menu.init(initialPosition);
 	initialize_camera_position(w, h);
+	initialize_message_prompt();
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -236,6 +237,9 @@ bool Level::update(float elapsed_ms)
 		is_player_at_goal = true;
 		m_player.freeze();
 		m_player.set_invincibility(true);
+
+		if (hasPrompt)
+			m_message.destroy();
 	}
 
 	// retrieve the closest floor components to player
@@ -388,6 +392,14 @@ void Level::draw()
 
 	m_help_menu.draw(projection_2D);
 
+	if (hasPrompt) {
+		float screen_height = static_cast<float>(h);
+		float message_y_shift = (screen_height / 2.f) - (m_tile_height * 3.f);
+		float message_y_pos = cameraCenter.y - message_y_shift;
+		m_message.set_position({cameraCenter.x, message_y_pos});
+		m_message.draw(projection_2D);
+	}
+
 	// Presenting
 	glfwSwapBuffers(m_window);
 }
@@ -427,6 +439,9 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
             PauseMenuState* pauseMenuState = (PauseMenuState*) game->get_state(PAUSE);
             pauseMenuState->reset_buttons();
             game->set_current_state(pauseMenuState);
+
+			if (hasPrompt)
+				m_message.destroy();
 		}
 	}
 
@@ -435,10 +450,16 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		if (key == rotateCCWKey) {
 			isRotating = true;
 			rotateCW = false;
+
+			if (hasPrompt)
+				m_message.set_visibility(false);
 		}
 		if (key == rotateCWKey) {
 			isRotating = true;
 			rotateCW = true;
+
+			if (hasPrompt)
+				m_message.set_visibility(false);
 		}
 	}
 
@@ -454,6 +475,24 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 void Level::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
 
+}
+
+void Level::initialize_message_prompt() {
+	if (hasPrompt) {
+		int messageNumber = current_level;
+		if (current_level == 4) {
+			std::string newMessageNumber = std::to_string(current_level);
+			if (rotateCWKey == GLFW_KEY_X) {
+				newMessageNumber.append("1");
+				messageNumber = std::atoi(newMessageNumber.c_str());
+			} else {
+				newMessageNumber.append("2");
+				messageNumber = std::atoi(newMessageNumber.c_str());
+			}
+		}
+
+		m_message.init(messageNumber);
+	}
 }
 
 void Level::initialize_camera_position(int w, int h)
@@ -506,6 +545,7 @@ void Level::call_level_loader()
 
 	canRotate = levelLoader.can_rotate();
 	cameraTracking = levelLoader.can_camera_track();
+	hasPrompt = levelLoader.has_prompt();
 
 	initialPosition = levelLoader.get_player_position();
 	m_exit = levelLoader.get_exit();
@@ -546,6 +586,7 @@ void Level::load_new_level()
 		current_level = 0;
 
 	call_level_loader();
+	initialize_message_prompt();
 }
 
 void Level::reset_game()
@@ -650,6 +691,8 @@ void Level::load_select_level(int level)
 	initialize_camera_position(w, h);
 
 	reset_player_camera();
+
+	initialize_message_prompt();
 }
 
 int Level::get_current_level() { return current_level; }
