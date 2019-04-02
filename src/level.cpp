@@ -388,6 +388,7 @@ void Level::draw()
 
 	render_to_screen(w, h);
 
+	//m_fire.WindowTrans(tx, ty);
 	m_fire.draw(projection_2D);
 	//m_water.draw(projection_2D);
 

@@ -23,6 +23,8 @@ public:
     //void set_size();
     void destroy();
 
+    //void WindowTrans(float tx, float ty);
+
 private:
     //Texture m_texture;
     //vec2 m_position;
@@ -31,4 +33,6 @@ private:
     //float is_hide; // 0.f if show, 1.f if hide
     //float m_width;
 	//float m_height;
+    //float tx;
+    //float ty;
 };

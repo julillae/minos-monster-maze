@@ -1,19 +1,12 @@
 #version 400
 
 uniform sampler2D screen_texture;
-//uniform float time;
-//uniform float dead_timer;
-//uniform vec2 u_resolution; 
 uniform vec2 light_pos;
+//uniform vec2 origin_pos;
 in vec2 uv;
 in vec4 gl_FragCoord;
-//layout(location = 0) out vec4 color;
+in vec2 origin_pos;
 out vec4 outputColor;
-
-//struct ShaderBufferStruct
-//{
-    //vec3 l_pos;
-//};
 
 
 
@@ -45,15 +38,10 @@ vec3 calculatePointLight(vec2 lightPosition, vec3 Color)
 ////////////////////////////////////////////////////////////////////////////////
 void main(void)
 {
-    //vec4 textureColor = texture(sampler0, texCoord);
-    //outputColor = vec4(calculatePointLight(shaderBufferStruct.l_pos, vec3(1,1,1)), 1.0) * textureColor;
-    //vec3 l_pos = vec3(light_pos, 1.0);
-
-    //vec2 coord = distort(uv);
-
+    vec2 l_p = light_pos-origin_pos;
     vec4 texturecolor = texture(screen_texture, uv);
-   
-    outputColor = vec4(calculatePointLight(light_pos, vec3(1,1,1)), 1.0)*texturecolor;
+    outputColor = vec4(calculatePointLight(l_p, vec3(1,1,1)), 1.0)*texturecolor;
+    //outputColor = vec4(calculatePointLight(light_pos, vec3(1,1,1)), 1.0)*texturecolor;
 }
 // //////////////////////
 // ////INPUT VARIABLES///
