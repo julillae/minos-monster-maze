@@ -193,9 +193,9 @@ bool Physics::collideWithExit (Player *p, Exit *e) {
 }
 
 void Physics::characterCollisionsWithFloors(Player* c, std::vector<Floor> floors) {
-    for (Floor f : floors) {
-        characterCollisionsWithFixedComponent(c, &f);
-    }
+        for (Floor f: floors) {
+            characterCollisionsWithFixedComponent(c, &f);
+        }
 }
 
 void Physics::characterCollisionsWithSpikes(Player* c, std::vector<Spike> spikes) {
