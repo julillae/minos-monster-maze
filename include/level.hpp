@@ -19,6 +19,7 @@
 #include "gameStates/gameState.hpp"
 #include "gameStates/pauseMenuState.hpp"
 #include "levelLoader.hpp"
+#include "flashMessage.hpp"
 #include "quadTree.hpp"
 
 // stlib
@@ -90,6 +91,7 @@ private:
 	void draw_platforms(mat3 projection_2D);
 	void destroy_platforms();
 
+	void initialize_message_prompt();
 	void initialize_camera_position(int w, int h);
 	void call_level_loader();
 	void load_new_level();
@@ -117,6 +119,8 @@ private:
 	Ices m_ice;
 
     HelpMenu m_help_menu;
+
+	FlashMessage m_message;
 
     float m_seed_rng;
 
@@ -168,6 +172,7 @@ private:
     bool show_help_menu = false;
 	bool cameraTracking = true;
 	bool canRotate = true;
+	bool hasPrompt = false;
 
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;
