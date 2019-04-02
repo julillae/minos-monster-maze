@@ -564,8 +564,8 @@ void Level::call_level_loader()
         m_quad = QuadTreeNode(0, {0.f, 0.f}, (float)w, (float)h);
     } else {
         // if camera tracking is on, initialize the tree based on the maze
-        m_quad = QuadTreeNode(0, {0.f, 0.f}, ((m_maze_width+5)*m_tile_width),
-                              ((m_maze_height+5)*m_tile_height));
+        m_quad = QuadTreeNode(0, {0.f, 0.f}, ((m_maze_width+7)*m_tile_width),
+                              ((m_maze_height+7)*m_tile_height));
     }
 
 	for (auto& floor: m_floors.get_floor_vector()) {
