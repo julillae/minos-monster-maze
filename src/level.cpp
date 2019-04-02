@@ -637,14 +637,19 @@ void Level::update_all_enemies(float elapsed_ms)
 	m_harpies.update(elapsed_ms);
 }
 
-bool Level::maze_is_platform(std::pair<int,int> coords){
+Level::Platform Level::maze_is_platform(std::pair<int,int> coords){
+	Platform platform = Platform{};
 	int val_at_coords = m_maze[coords.first][coords.second];
 	for (auto& p : platform_types) {
 		if (val_at_coords == p.first){
-			return true;
+			platform.isPlatform = true;
+			platform.platformType = p.first;
+			return platform;
 		}
 	}
-	return false;
+	platform.isPlatform = false;
+	platform.platformType = 0;
+	return platform;
 }
 
 std::vector<std::vector <int>> Level::get_original_maze() {
