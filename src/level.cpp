@@ -603,6 +603,7 @@ void Level::reset_game()
 	}
 	
 	reset_player_camera();
+	initialize_message_prompt();
 }
 
 void Level::reset_player_camera()
