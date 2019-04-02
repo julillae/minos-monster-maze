@@ -34,6 +34,7 @@ public:
 
     bool can_rotate();
     bool can_camera_track();
+    bool has_prompt();
 
     vec2 get_player_position();
     Exit get_exit();
@@ -77,6 +78,7 @@ private:
     bool canRotate;
     bool cameraTracking;
     bool minotaurPresent;
+    bool hasPrompt;
 
     float m_maze_width;
     float m_maze_height;

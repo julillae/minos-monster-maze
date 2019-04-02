@@ -46,6 +46,10 @@ void LevelLoader::read_level_data(int levelNumber) {
 		
 	}
 
+	std::string fourthLine;
+	std::getline(filein, fourthLine);
+	hasPrompt = fourthLine.compare("1") == 0;
+
     for (std::string line; std::getline(filein, line);) {
         std::vector <int> row;
         for(char& c : line) {
@@ -242,6 +246,11 @@ bool LevelLoader::can_rotate()
 bool LevelLoader::can_camera_track()
 {
     return cameraTracking;
+}
+
+bool LevelLoader::has_prompt()
+{
+    return hasPrompt;
 }
 
 vec2 LevelLoader::get_player_position()
