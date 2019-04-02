@@ -68,14 +68,14 @@ bool GameAI::canMoveHere(int row, int col)
 
 	if (isValid(row, col - 1)) {
 		std::pair <int, int> right = make_pair(row, col - 1);
-		if (world->maze_is_platform(right).platformType == 65) {
+		if (world->maze_is_platform(right).platformType == 68) {
 			platform.isPlatform = true;
 		}
 	}
 
 	if (isValid(row, col + 1)) {
 		std::pair <int, int> left = make_pair(row, col + 1);
-		if (world->maze_is_platform(left).platformType == 68) {
+		if (world->maze_is_platform(left).platformType == 65) {
 			platform.isPlatform = true;
 		}
 	}
