@@ -72,7 +72,7 @@ set(SOURCE_FILES
     src/levelLoader.cpp
     src/flashMessage.cpp
     src/gameSave.cpp
-
+    src/quadTree.cpp
 
     include/project_path.hpp
 	include/common.hpp
@@ -115,6 +115,7 @@ set(SOURCE_FILES
     include/levelLoader.hpp
     include/flashMessage.hpp
     include/gameSave.hpp
+    include/quadTree.hpp
 
 	)
 
