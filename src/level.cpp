@@ -205,7 +205,10 @@ bool Level::update(float elapsed_ms)
 			previouslyFrozen = true;
 		}
 
-		rotationEnergy -= fabs(rotationSpeed);
+		// Don't decrease the rotation energy if minotaur is rotating maze
+		if (!minotaurPresent) {
+			rotationEnergy -= fabs(rotationSpeed);
+		}
 	}
 	else if (previouslyFrozen) {
 		applyThaw = true;
@@ -225,6 +228,13 @@ bool Level::update(float elapsed_ms)
 	for (auto& enemy : m_harpies.get_harpy_vector()) {
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy))
 		{
+			set_player_death();
+		}
+	}
+
+	if (minotaurPresent) {
+		if (physicsHandler->collideWithEnemy(&m_player, &m_minotaur) &&
+			 m_minotaur.characterState->currentState == swinging) {
 			set_player_death();
 		}
 	}
@@ -511,16 +521,28 @@ void Level::initialize_camera_position(int w, int h)
 void Level::draw_enemies(mat3 projection_2D) {
 	m_spiders.draw(projection_2D);
 	m_harpies.draw(projection_2D);
+	if (minotaurPresent) {
+		m_minotaur.draw(projection_2D);
+	}
 }
 
 void Level::reset_enemies() {
 	m_spiders.reset();
 	m_harpies.reset();
+	if (minotaurPresent) {
+		m_minotaur.freeze();
+		m_minotaur.reset_position();
+		m_minotaur.unfreeze();
+	}
 }
 
 void Level::destroy_enemies() {
 	m_spiders.destroy();
 	m_harpies.destroy();
+	if (minotaurPresent) {
+		m_minotaur.stopRotating();
+		m_minotaur.destroy();
+	}
 }
 
 void Level::draw_platforms(mat3 projection_2D) {
@@ -552,6 +574,11 @@ void Level::call_level_loader()
 
 	m_spiders = levelLoader.get_spiders();
 	m_harpies = levelLoader.get_harpies();
+
+	minotaurPresent = levelLoader.minotaurInLevel();
+	if (minotaurPresent) {
+		m_minotaur = levelLoader.get_minotaur();
+	}
 
 	m_floors = levelLoader.get_floors();
 	m_ice = levelLoader.get_ice();
@@ -628,18 +655,28 @@ void Level::freeze_all_enemies()
 {
 	m_spiders.freeze();
 	m_harpies.freeze();
+	if (minotaurPresent){
+		m_minotaur.freeze();
+	}
 }
 
 void Level::unfreeze_all_enemies()
 {
 	m_spiders.unfreeze();
 	m_harpies.unfreeze();
+	if (minotaurPresent){
+		m_minotaur.unfreeze();
+	}
 }
 
 void Level::update_all_enemies(float elapsed_ms)
 {
 	m_spiders.update(elapsed_ms);
 	m_harpies.update(elapsed_ms);
+	if (minotaurPresent){
+		m_minotaur.update(elapsed_ms);
+	}
+
 }
 
 Level::Platform Level::maze_is_platform(std::pair<int,int> coords){
@@ -717,6 +754,8 @@ std::vector<Spider> Level::get_spiders() { return m_spiders.get_spider_vector();
 
 std::vector<Harpy> Level::get_harpies() { return m_harpies.get_harpy_vector(); }
 
+Minotaur Level::get_minotaur() { return m_minotaur; }
+
 std::vector<Floor> Level::get_floors() { return m_floors.get_floor_vector(); }
 
 void Level::load_saved_game()
@@ -734,6 +773,9 @@ void Level::load_saved_game()
         load_player();
         load_spiders();
         load_harpies();
+		if (minotaurPresent) {
+			load_minotaur();
+		}
     }
 
 }
@@ -777,6 +819,34 @@ void Level::load_player()
 
     // reset initialPosition for restarting game
     initialPosition = originalPosition;
+
+}
+
+void Level::load_minotaur()
+{
+	float minotaur_x, minotaur_y, minotaur_scaleX, minotaur_scaleY, minotaur_velx;
+	bool alive;
+
+	Value& minotaur = GameSave::document["minotaur"];
+
+    Value::ConstMemberIterator itr = minotaur.GetObject().FindMember("pos_x");
+	minotaur_x = itr->value.GetFloat();
+
+	itr = minotaur.GetObject().FindMember("pos_y");
+	minotaur_y = itr->value.GetFloat();
+
+	itr = minotaur.GetObject().FindMember("scale_x");
+	minotaur_scaleX = itr->value.GetFloat();
+
+	minotaur_scaleY = m_player.get_scale().y;
+
+	itr = minotaur.GetObject().FindMember("velocity_x");
+	minotaur_velx = itr->value.GetFloat();
+
+	m_minotaur.set_velocity(vec2{minotaur_velx, 0.f});
+
+	m_minotaur.set_position(vec2({minotaur_x, minotaur_y}));
+	m_minotaur.set_scale(vec2({minotaur_scaleX, minotaur_scaleY}));
 
 }
 
@@ -842,4 +912,10 @@ void Level::load_harpies()
 
 		m_harpies.setHarpyProperties(i, position, velocity, scale);
 	}
+}
+
+void Level::boss_rotation_set(bool enable, bool cw)
+{
+	isRotating = enable;
+	rotateCW = cw;
 }

@@ -39,7 +39,15 @@ void LevelLoader::read_level_data(int levelNumber) {
 
 	std::string thirdLine;
 	std::getline(filein, thirdLine);
-	hasPrompt = thirdLine.compare("1") == 0;
+	minotaurPresent = thirdLine.compare("1") == 0;
+	if (minotaurPresent) {
+		canRotate = false;
+		minotaurPresent = true;
+	}
+
+	std::string fourthLine;
+	std::getline(filein, fourthLine);
+	hasPrompt = fourthLine.compare("1") == 0;
 
     for (std::string line; std::getline(filein, line);) {
         std::vector <int> row;
@@ -59,6 +67,7 @@ void LevelLoader::generate_maze()
 
 	bool setting_enemy = false;
 	bool setting_rotated_enemy = false;
+	bool setting_minotaur = false;
 	vec2 enemy_start_pos;
 
     float i = 0.f;
@@ -71,15 +80,22 @@ void LevelLoader::generate_maze()
 			float x_pos = (j * m_tile_width);
 			float y_pos = (i * m_tile_height);
 
-			if ((setting_enemy && cell != 52) || (setting_rotated_enemy && cell != 53)) {
+			if ((setting_enemy && cell != 52) || (setting_rotated_enemy && cell != 53) || (setting_minotaur && cell != 69)) {
 				// If we were setting enemy positions, and we hit a cell with no enemy,
 				// Spawn the enemy we were setting
 
 				float last_x_pos = x_pos - m_tile_width;
 				float distance = abs(last_x_pos - enemy_start_pos.x);
-				spiders.spawn_spider_enemy(enemy_start_pos, distance, setting_rotated_enemy);
-				setting_enemy = false;
-				setting_rotated_enemy = false;
+
+				if (setting_enemy || setting_rotated_enemy) {
+					spiders.spawn_spider_enemy(enemy_start_pos, distance, setting_rotated_enemy);
+					setting_enemy = false;
+					setting_rotated_enemy = false;
+				} else if (setting_minotaur) {
+					spawn_minotaur(enemy_start_pos, distance);
+					minotaurPresent = true;
+					setting_minotaur = false;
+				}
 			}
 
 			if (cell == 49) {
@@ -120,6 +136,11 @@ void LevelLoader::generate_maze()
                 load_spikes(cell, vec2({x_pos, y_pos}));
 			} else if (cell == 57) {
 				harpies.spawn_harpy_enemy(vec2({x_pos, y_pos}));
+			} else if (cell == 69) {
+				if (!setting_minotaur) {
+					setting_minotaur = true;
+					enemy_start_pos = {x_pos, y_pos};
+				}
 			}
 
             j = j + 1.f;
@@ -135,6 +156,17 @@ void LevelLoader::store_platform_coords(vec2 coords, int platform_key) {
 	std::string platformType = platform_types.find(platform_key)->second;
 	std::pair <float,float> coords_pair (coords.x,coords.y);
 	m_platforms_by_coords.emplace(coords_pair, platformType);
+}
+
+bool LevelLoader::spawn_minotaur(vec2 position, float bound) 
+{
+	if (m_minotaur.init(position, physicsHandler))
+	{
+		m_minotaur.set_bound(bound);
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn minotaur");
+	return false;
 }
 
 void LevelLoader::load_spikes(int cell, vec2 position)
@@ -240,11 +272,19 @@ Harpies LevelLoader::get_harpies()
     return harpies;
 }
 
+Minotaur LevelLoader::get_minotaur()
+{
+	return m_minotaur;
+}
+
+bool LevelLoader::minotaurInLevel(){
+	return minotaurPresent;
+}
+
 Floors LevelLoader::get_floors()
 {
 	return floors;
 }
-
 
 Spikes LevelLoader::get_spikes()
 {

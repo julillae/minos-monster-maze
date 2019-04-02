@@ -7,6 +7,7 @@
 #include "characters/simple.hpp"
 #include "characters/spider.hpp"
 #include "characters/harpy.hpp"
+#include "characters/minotaur.hpp"
 #include "mazeComponents/mazeComponent.hpp"
 #include "mazeComponents/fixedComponent.hpp"
 #include "mazeComponents/floor.hpp"
@@ -79,11 +80,16 @@ public:
 
     std::vector<Spider> get_spiders();
     std::vector<Harpy> get_harpies();
+	Minotaur get_minotaur();
 	std::vector<Floor> get_floors();
 
     void load_saved_game();
+	// Boss controls
+	void boss_rotation_set(bool enable, bool ccw);
+
+	bool minotaurPresent = false;
+
     void reset_game();
-private:
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
@@ -110,11 +116,13 @@ private:
 	void load_player();
 	void load_spiders();
 	void load_harpies();
+	void load_minotaur();
 private:
 
 	// Water effect
 	RenderEffects m_water;
 
+	Minotaur m_minotaur;
 	Spiders m_spiders;
 	Harpies m_harpies;
 
@@ -145,7 +153,7 @@ private:
 	int rotateCWKey = GLFW_KEY_X;
 	int rotateCCWKey = GLFW_KEY_Z;
 
-	int num_levels = 11;
+	int num_levels = 12;
 	int current_level = 0;
 
 	const map<int, std::string> platform_types = {

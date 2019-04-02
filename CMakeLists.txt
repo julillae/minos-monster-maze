@@ -43,6 +43,7 @@ set(SOURCE_FILES
     src/characters/harpy.cpp
     src/characters/simple.cpp
     src/characters/spider.cpp
+    src/characters/minotaur.cpp
     src/mazeComponents/mazeComponent.cpp
     src/mazeComponents/fixedComponent.cpp
     src/mazeComponents/freeComponent.cpp
@@ -86,6 +87,7 @@ set(SOURCE_FILES
     include/characters/harpy.hpp
     include/characters/simple.hpp
     include/characters/spider.hpp
+    include/characters/minotaur.hpp
     include/mazeComponents/mazeComponent.hpp
     include/mazeComponents/fixedComponent.hpp
     include/mazeComponents/freeComponent.hpp
