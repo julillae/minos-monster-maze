@@ -43,6 +43,11 @@ public:
 	Level(Game* game);
 	~Level();
 
+	struct Platform {
+		bool isPlatform;
+		int platformType;
+	};
+
     // Creates a window, sets up events and begins the game
 	bool init(vec2 screen, Physics* physicsHandler, int startLevel);
 
@@ -58,7 +63,7 @@ public:
 	// Should the game be over ?
 	bool is_over()override;
 
-	bool maze_is_platform(std::pair<int,int> coords);
+	Platform maze_is_platform(std::pair<int,int> coords);
 	std::vector<std::vector <int>> get_original_maze();
 
 	float get_maze_width();

@@ -561,7 +561,7 @@ void Level::call_level_loader()
     glfwGetWindowSize(m_window, &w, &h);
     // if camera tracking is off, initialize the quad tree with the screen size
     if (!cameraTracking) {
-        m_quad = QuadTreeNode(0, {0.f, 0.f}, (float)w, (float)h);
+        m_quad = QuadTreeNode(0, {0.f, 0.f}, (float)w + 2*m_maze_width, (float)h + 2*m_maze_height);
     } else {
         // if camera tracking is on, initialize the tree based on the maze
         m_quad = QuadTreeNode(0, {0.f, 0.f}, ((m_maze_width+7)*m_tile_width),
@@ -638,14 +638,19 @@ void Level::update_all_enemies(float elapsed_ms)
 	m_harpies.update(elapsed_ms);
 }
 
-bool Level::maze_is_platform(std::pair<int,int> coords){
+Level::Platform Level::maze_is_platform(std::pair<int,int> coords){
+	Platform platform = Platform{};
 	int val_at_coords = m_maze[coords.first][coords.second];
 	for (auto& p : platform_types) {
 		if (val_at_coords == p.first){
-			return true;
+			platform.isPlatform = true;
+			platform.platformType = p.first;
+			return platform;
 		}
 	}
-	return false;
+	platform.isPlatform = false;
+	platform.platformType = 0;
+	return platform;
 }
 
 std::vector<std::vector <int>> Level::get_original_maze() {
