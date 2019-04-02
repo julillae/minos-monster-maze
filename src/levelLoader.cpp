@@ -43,7 +43,6 @@ void LevelLoader::read_level_data(int levelNumber) {
 	if (minotaurPresent) {
 		canRotate = false;
 		minotaurPresent = true;
-		
 	}
 
 	std::string fourthLine;
