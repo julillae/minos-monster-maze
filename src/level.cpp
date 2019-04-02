@@ -258,7 +258,6 @@ bool Level::update(float elapsed_ms)
 
 	if (current_level == 11) {
 		// deallocate quad tree memory for boss
-		m_quad.clear();
 		nearbyFloorComponents = m_floors.get_floor_vector();
 	}
 
@@ -607,6 +606,10 @@ void Level::call_level_loader()
 
 	for (auto& floor: m_floors.get_floor_vector()) {
 		m_quad.insert(floor);
+	}
+
+	if (current_level == 11) {
+	    m_quad.clear();
 	}
 }
 
