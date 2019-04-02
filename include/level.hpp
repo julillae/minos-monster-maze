@@ -20,6 +20,8 @@
 #include "gameStates/gameState.hpp"
 #include "gameStates/pauseMenuState.hpp"
 #include "levelLoader.hpp"
+#include "flashMessage.hpp"
+#include "quadTree.hpp"
 
 // stlib
 #include <vector>
@@ -74,6 +76,7 @@ public:
     std::vector<Spider> get_spiders();
     std::vector<Harpy> get_harpies();
 	Minotaur get_minotaur();
+	std::vector<Floor> get_floors();
 
     void load_saved_game();
 	// Boss controls
@@ -86,7 +89,7 @@ public:
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-	void check_platform_collisions();
+	void check_platform_collisions(std::vector<Floor> nearbyFloorComponents);
 
 	void draw_enemies(mat3 projection_2D);
 	void reset_enemies();
@@ -94,6 +97,7 @@ public:
 	void draw_platforms(mat3 projection_2D);
 	void destroy_platforms();
 
+	void initialize_message_prompt();
 	void initialize_camera_position(int w, int h);
 	void call_level_loader();
 	void load_new_level();
@@ -124,6 +128,8 @@ private:
 
     HelpMenu m_help_menu;
 
+	FlashMessage m_message;
+
     float m_seed_rng;
 
     Mix_Music* m_background_music;
@@ -142,7 +148,7 @@ private:
 	int rotateCWKey = GLFW_KEY_X;
 	int rotateCCWKey = GLFW_KEY_Z;
 
-	int num_levels = 11;
+	int num_levels = 12;
 	int current_level = 0;
 
 	const map<int, std::string> platform_types = {
@@ -174,7 +180,11 @@ private:
     bool show_help_menu = false;
 	bool cameraTracking = true;
 	bool canRotate = true;
+	bool hasPrompt = false;
 
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;
+
+	QuadTreeNode m_quad;
+
 };

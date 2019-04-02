@@ -113,7 +113,7 @@ bool Minotaur::atBound()
     float vel_x = m_velocity.x;
     float vel_y = m_velocity.y;
     float right_bound = m_initialPosition.x + m_stopBound;
-    float left_bound = m_initialPosition.x - m_stopBound;
+    float left_bound = m_initialPosition.x;
     float next_pos_x = m_position.x + vel_x;
 
     if ((next_pos_x >= right_bound) || (next_pos_x <= left_bound)) {
