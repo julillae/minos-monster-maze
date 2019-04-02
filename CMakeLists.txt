@@ -41,9 +41,9 @@ set(SOURCE_FILES
     src/characters/enemy.cpp
     src/characters/smart.cpp
     src/characters/harpy.cpp
-    src/characters/minotaur.cpp
     src/characters/simple.cpp
     src/characters/spider.cpp
+    src/characters/minotaur.cpp
     src/mazeComponents/mazeComponent.cpp
     src/mazeComponents/fixedComponent.cpp
     src/mazeComponents/freeComponent.cpp
@@ -71,8 +71,9 @@ set(SOURCE_FILES
     src/menus/pauseMenu.cpp
     src/menus/savePopup.cpp
     src/levelLoader.cpp
+    src/flashMessage.cpp
     src/gameSave.cpp
-
+    src/quadTree.cpp
 
     include/project_path.hpp
 	include/common.hpp
@@ -84,9 +85,9 @@ set(SOURCE_FILES
     include/characters/enemy.hpp
     include/characters/smart.hpp
     include/characters/harpy.hpp
-    include/characters/minotaur.hpp
     include/characters/simple.hpp
     include/characters/spider.hpp
+    include/characters/minotaur.hpp
     include/mazeComponents/mazeComponent.hpp
     include/mazeComponents/fixedComponent.hpp
     include/mazeComponents/freeComponent.hpp
@@ -114,7 +115,9 @@ set(SOURCE_FILES
     include/menus/pauseMenu.hpp
     include/menus/savePopup.hpp
     include/levelLoader.hpp
+    include/flashMessage.hpp
     include/gameSave.hpp
+    include/quadTree.hpp
 
 	)
 
