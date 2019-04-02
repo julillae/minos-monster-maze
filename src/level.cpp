@@ -778,6 +778,10 @@ void Level::load_saved_game()
 		}
     }
 
+    if (hasPrompt) {
+        m_message.set_visibility(false);
+    }
+
 }
 
 void Level::load_player()
