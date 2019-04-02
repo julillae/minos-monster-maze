@@ -19,6 +19,7 @@
 #include "gameStates/gameState.hpp"
 #include "gameStates/pauseMenuState.hpp"
 #include "levelLoader.hpp"
+#include "quadTree.hpp"
 
 // stlib
 #include <vector>
@@ -72,6 +73,7 @@ public:
 
     std::vector<Spider> get_spiders();
     std::vector<Harpy> get_harpies();
+	std::vector<Floor> get_floors();
 
     void load_saved_game();
     void reset_game();
@@ -80,7 +82,7 @@ private:
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-	void check_platform_collisions();
+	void check_platform_collisions(std::vector<Floor> nearbyFloorComponents);
 
 	void draw_enemies(mat3 projection_2D);
 	void reset_enemies();
@@ -169,4 +171,7 @@ private:
 
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;
+
+	QuadTreeNode m_quad;
+
 };
