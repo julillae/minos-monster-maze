@@ -9,6 +9,7 @@
 #include "physics.hpp"
 #include "characters/spider.hpp"
 #include "characters/harpy.hpp"
+#include "characters/minotaur.hpp"
 
 // stlib
 #include <vector>
@@ -38,16 +39,23 @@ public:
     vec2 get_player_position();
     Exit get_exit();
 
+
+    Minotaur get_minotaur();
+    bool minotaurInLevel();
     Spiders get_spiders();
 	Harpies get_harpies();
 	Floors get_floors();
 	Spikes get_spikes();
 	Ices get_ice();
+
 private:
     void read_level_data(int levelNumber);
     void generate_maze();
 
     void store_platform_coords(vec2 coords, int platform_key);
+
+    bool spawn_minotaur(vec2 position, float bound);
+
     void load_spikes(int cell, vec2 position);
 
     void print_maze();
@@ -69,6 +77,7 @@ private:
 
     bool canRotate;
     bool cameraTracking;
+    bool minotaurPresent;
     bool hasPrompt;
 
     float m_maze_width;
@@ -80,6 +89,8 @@ private:
     vec2 m_initial_position;
     Exit m_exit;
 
+
+    Minotaur m_minotaur;
 	Spiders spiders;
 	Harpies harpies;
 	Floors floors;

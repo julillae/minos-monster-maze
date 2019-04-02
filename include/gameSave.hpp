@@ -32,5 +32,6 @@ private:
     void static save_enemies();
     void static save_spiders();
     void static save_harpies();
+    void static save_minotaur();
 
 };
