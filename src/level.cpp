@@ -35,7 +35,9 @@ namespace
 }
 
 
-Level::Level(Game* game) : m_seed_rng(0.f)
+Level::Level(Game* game) :
+	m_seed_rng(0.f),
+	m_quad(0, {}, 0.f, 0.f)
 {
 // Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -120,15 +122,16 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 
 	m_help_menu.init(initialPosition);
 	initialize_camera_position(w, h);
+	initialize_message_prompt();
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
-void Level::check_platform_collisions() {
+void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) {
 	if (m_player.is_alive()) {
 		m_player.set_world_vertex_coord();
 		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes.get_spike_vector());
-		physicsHandler->characterCollisionsWithFloors(&m_player, m_floors.get_floor_vector());
+        physicsHandler->characterCollisionsWithFloors(&m_player, nearbyFloorComponents);
 		physicsHandler->characterCollisionsWithIce(&m_player, m_ice.get_ice_vector());
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
@@ -162,6 +165,7 @@ void Level::destroy()
 	destroy_enemies();
 	destroy_platforms();
 	m_help_menu.destroy();
+	m_quad.clear();
 
 	glfwDestroyWindow(m_window);
 }
@@ -243,10 +247,17 @@ bool Level::update(float elapsed_ms)
 		is_player_at_goal = true;
 		m_player.freeze();
 		m_player.set_invincibility(true);
+
+		if (hasPrompt)
+			m_message.destroy();
 	}
 
-	// checking player - platform collision
-	check_platform_collisions();
+	// retrieve the closest floor components to player
+    std::vector<Floor> nearbyFloorComponents =
+			m_quad.getNearbyFloorComponents(m_player.get_position(), m_player.get_bounding_box());
+
+    // checking player - platform collision
+	check_platform_collisions(nearbyFloorComponents);
 
 	if (applyFreeze) {
 		m_player.freeze();
@@ -273,7 +284,7 @@ bool Level::update(float elapsed_ms)
 
 	if (m_player.is_alive() && is_player_at_goal && m_water.get_time_since_level_complete() > 1.5)
 		reset_game();
-	
+
 	float timeToLoadRotationEnergy = 4.f;
 	if (m_water.get_time_since_rotation_end() > timeToLoadRotationEnergy) {
 		rotationEnergy += rotationEnergyIncrement;
@@ -391,6 +402,14 @@ void Level::draw()
 
 	m_help_menu.draw(projection_2D);
 
+	if (hasPrompt) {
+		float screen_height = static_cast<float>(h);
+		float message_y_shift = (screen_height / 2.f) - (m_tile_height * 3.f);
+		float message_y_pos = cameraCenter.y - message_y_shift;
+		m_message.set_position({cameraCenter.x, message_y_pos});
+		m_message.draw(projection_2D);
+	}
+
 	// Presenting
 	glfwSwapBuffers(m_window);
 }
@@ -430,6 +449,9 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
             PauseMenuState* pauseMenuState = (PauseMenuState*) game->get_state(PAUSE);
             pauseMenuState->reset_buttons();
             game->set_current_state(pauseMenuState);
+
+			if (hasPrompt)
+				m_message.destroy();
 		}
 	}
 
@@ -438,10 +460,16 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		if (key == rotateCCWKey) {
 			isRotating = true;
 			rotateCW = false;
+
+			if (hasPrompt)
+				m_message.set_visibility(false);
 		}
 		if (key == rotateCWKey) {
 			isRotating = true;
 			rotateCW = true;
+
+			if (hasPrompt)
+				m_message.set_visibility(false);
 		}
 	}
 
@@ -457,6 +485,24 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 void Level::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 {
 
+}
+
+void Level::initialize_message_prompt() {
+	if (hasPrompt) {
+		int messageNumber = current_level;
+		if (current_level == 4) {
+			std::string newMessageNumber = std::to_string(current_level);
+			if (rotateCWKey == GLFW_KEY_X) {
+				newMessageNumber.append("1");
+				messageNumber = std::atoi(newMessageNumber.c_str());
+			} else {
+				newMessageNumber.append("2");
+				messageNumber = std::atoi(newMessageNumber.c_str());
+			}
+		}
+
+		m_message.init(messageNumber);
+	}
 }
 
 void Level::initialize_camera_position(int w, int h)
@@ -521,6 +567,7 @@ void Level::call_level_loader()
 
 	canRotate = levelLoader.can_rotate();
 	cameraTracking = levelLoader.can_camera_track();
+	hasPrompt = levelLoader.has_prompt();
 
 	initialPosition = levelLoader.get_player_position();
 	m_exit = levelLoader.get_exit();
@@ -536,13 +583,29 @@ void Level::call_level_loader()
 	m_floors = levelLoader.get_floors();
 	m_ice = levelLoader.get_ice();
 	m_spikes = levelLoader.get_spikes();
+
+    int w, h;
+    glfwGetWindowSize(m_window, &w, &h);
+    // if camera tracking is off, initialize the quad tree with the screen size
+    if (!cameraTracking) {
+        m_quad = QuadTreeNode(0, {0.f, 0.f}, (float)w, (float)h);
+    } else {
+        // if camera tracking is on, initialize the tree based on the maze
+        m_quad = QuadTreeNode(0, {0.f, 0.f}, ((m_maze_width+5)*m_tile_width),
+                              ((m_maze_height+5)*m_tile_height));
+    }
+
+	for (auto& floor: m_floors.get_floor_vector()) {
+		m_quad.insert(floor);
+	}
 }
 
 void Level::load_new_level()
 {
 	destroy_platforms();
 	destroy_enemies();
-	
+	m_quad.clear();
+
 	m_maze.clear();
 
 	current_level++;
@@ -550,6 +613,7 @@ void Level::load_new_level()
 		current_level = 0;
 
 	call_level_loader();
+	initialize_message_prompt();
 }
 
 void Level::reset_game()
@@ -654,6 +718,7 @@ void Level::load_select_level(int level)
 	destroy_platforms();
 	destroy_enemies();
 	m_maze.clear();
+	m_quad.clear();
 
 	current_level = level;
 	call_level_loader();
@@ -663,6 +728,8 @@ void Level::load_select_level(int level)
 	initialize_camera_position(w, h);
 
 	reset_player_camera();
+
+	initialize_message_prompt();
 }
 
 int Level::get_current_level() { return current_level; }
@@ -678,6 +745,8 @@ std::vector<Spider> Level::get_spiders() { return m_spiders.get_spider_vector();
 std::vector<Harpy> Level::get_harpies() { return m_harpies.get_harpy_vector(); }
 
 Minotaur Level::get_minotaur() { return m_minotaur; }
+
+std::vector<Floor> Level::get_floors() { return m_floors.get_floor_vector(); }
 
 void Level::load_saved_game()
 {
@@ -719,6 +788,8 @@ void Level::load_player()
 
 	player_scaleY = m_player.get_scale().y;
 
+    vec2 originalPosition = m_player.get_position();
+
 	m_player.set_position(vec2({player_x, player_y}));
 	m_player.set_scale(vec2({player_scaleX, player_scaleY}));
 	m_player.set_world_vertex_coord();
@@ -735,7 +806,10 @@ void Level::load_player()
 
     if (rotationEnergy < maxRotationEnergy)
     	m_water.set_rotation_end_time();
-    
+
+    // reset initialPosition for restarting game
+    initialPosition = originalPosition;
+
 }
 
 void Level::load_minotaur()
@@ -825,7 +899,7 @@ void Level::load_harpies()
 		vec2 position = vec2({ pos_x, pos_y });
 		vec2 velocity = vec2({ vel_x, vel_y });
 		vec2 scale = vec2({ scale_x, scale_y });
-		
+
 		m_harpies.setHarpyProperties(i, position, velocity, scale);
 	}
 }
