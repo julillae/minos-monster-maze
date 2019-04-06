@@ -39,6 +39,11 @@ bool Ices::renderSetup()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
+	vec2 textureSize = get_texture_size();
+	float x_scale = m_tile_width / textureSize.x;
+	float y_scale = m_tile_height / textureSize.y;
+	m_scale = vec2({ x_scale, y_scale });
+
 	return true;
 }
 
@@ -48,11 +53,8 @@ bool Ices::spawn_ice(vec2 position)
 
 	if (ice.init(position))
 	{
-		vec2 textureSize = get_texture_size();
-		float x_scale = m_tile_width / textureSize.x;
-		float y_scale = m_tile_height / textureSize.y;
-		ice.set_scale(vec2({ x_scale, y_scale }));
-		ice.set_size(vec2({ m_tile_width, m_tile_height }));
+		ice.set_scale(m_scale);
+		ice.set_size(m_size);
 		ice.set_collision_properties();
 		m_ices.emplace_back(ice);
 		return true;

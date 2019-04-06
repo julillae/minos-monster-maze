@@ -34,6 +34,7 @@ bool FixedComponents::init(float tile_width, float tile_height)
 {
 	m_tile_width = tile_width;
 	m_tile_height = tile_height;
+	m_size = vec2({ m_tile_width, m_tile_height });
 	renderSetup();
 	return true;
 }
