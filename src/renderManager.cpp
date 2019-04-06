@@ -140,11 +140,7 @@ void RenderManager::draw_mesh(const mat3& projection, vec2 position, float rotat
 
 void RenderManager::init_drawing_data(vec2 position, float rotation, vec2 scale, Renderable* renderable)
 {
-    renderable->transform_begin();
-    renderable->transform_translate(position);
-    renderable->transform_rotate(rotation);
-    renderable->transform_scale(scale);
-    renderable->transform_end();
+	renderable->apply_transformations(position, rotation, scale);
 
     // Setting shaders
     glUseProgram(renderable->effect.program);
