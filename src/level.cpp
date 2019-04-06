@@ -517,8 +517,8 @@ void Level::initialize_camera_position(int w, int h)
 		prevCameraCenter = cameraCenter;
 	}
 	else {
-		float txOffset = w / 2;
-		float tyOffset = h / 2;
+		float txOffset = static_cast<float> (w / 2);
+		float tyOffset = static_cast<float> (h / 2);
 		cameraCenter = vec2({ txOffset, tyOffset});
 	}
 }
@@ -796,7 +796,6 @@ void Level::load_saved_game()
 void Level::load_player()
 {
 	float player_x, player_y, player_scaleX, player_scaleY;
-	bool alive;
 
 	Value& player = GameSave::document["player"];
 
@@ -838,7 +837,6 @@ void Level::load_player()
 void Level::load_minotaur()
 {
 	float minotaur_x, minotaur_y, minotaur_scaleX, minotaur_scaleY, minotaur_velx;
-	bool alive;
 
 	Value& minotaur = GameSave::document["minotaur"];
 

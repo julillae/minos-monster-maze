@@ -216,10 +216,10 @@ std::string LevelLoader::get_platform_by_coordinates(std::pair<float, float> coo
 // 4 = enemy path
 // 5 = upside down enemy path
 void LevelLoader::print_maze() {
-	for (int i = 0; i < m_maze.size(); i++)
+	for (size_t i = 0; i < m_maze.size(); i++)
 	{
 		cout << "\n";
-		for (int j = 0; j < m_maze[i].size(); j++)
+		for (size_t j = 0; j < m_maze[i].size(); j++)
 		{
 			cout << m_maze[i][j];
 		}
