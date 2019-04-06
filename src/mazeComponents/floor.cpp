@@ -24,12 +24,6 @@ void Floor::draw(const mat3& projection)
 	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
 }
 
-
-vec2 Floor::get_texture_size()
-{
-	return vec2({static_cast<float>(texture.width), static_cast<float>(texture.height)});
-}
-
 Texture Floors::texture;
 
 bool Floors::renderSetup()
@@ -52,7 +46,7 @@ bool Floors::spawn_floor(vec2 position)
 
 	if (floor.init(position))
 	{
-		vec2 textureSize = floor.get_texture_size();
+		vec2 textureSize = get_texture_size();
 		float x_scale = m_tile_width / textureSize.x;
 		float y_scale = m_tile_height / textureSize.y;
 		floor.set_scale(vec2({ x_scale, y_scale }));
@@ -86,4 +80,9 @@ void Floors::destroy()
 	for (auto& floor : m_floors)
 		floor.destroy();
 	m_floors.clear();
+}
+
+vec2 Floors::get_texture_size()
+{
+	return vec2({ static_cast<float>(texture.width), static_cast<float>(texture.height) });
 }
