@@ -19,7 +19,10 @@ public:
 
 class Floors : public FixedComponents
 {
+	static Texture texture;
+
 public:
+	bool renderSetup();
 	bool spawn_floor(vec2 position);
 	std::vector<Floor> get_floor_vector();
 
