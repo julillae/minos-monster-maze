@@ -17,6 +17,20 @@ bool RenderManager::load_texture(const char* fileName, Texture* texture, Rendera
 
 }
 
+bool RenderManager::set_vertex_data(Texture *texture, Renderable *renderable)
+{
+	// The position corresponds to the center of the texture
+	float wr = texture->width * 0.5f;
+	float hr = texture->height * 0.5f;
+
+	renderable->local_vertex_coords.push_back({ -wr, +hr, -0.02f });
+	renderable->local_vertex_coords.push_back({ +wr, +hr, -0.02f });
+	renderable->local_vertex_coords.push_back({ +wr, -hr, -0.02f });
+	renderable->local_vertex_coords.push_back({ -wr, -hr, -0.02f });
+
+	return true;
+}
+
 bool RenderManager::set_render_data(Texture *texture, Renderable *renderable)
 {
     // The position corresponds to the center of the texture

@@ -4,11 +4,10 @@
 
 class Floor : public FixedComponent
 {
-    static Texture texture;
-
 public:
 
     bool init(vec2 position)override;
+	bool set_texture_properties(Texture *texture);
 
     // Renders the component
 	void draw(const mat3& projection)override;

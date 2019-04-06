@@ -68,13 +68,10 @@ bool Spike::init(vec2 position)
     // Setting initial values
     m_scale.x = 10.f;
 	m_scale.y = 25.f;
-    m_rotation = 0.f;
     m_num_indices = indices.size();
     m_position = position;
     can_kill = true;
-	drag = 0.75f;
     set_dimensions();
-    set_collision_properties();
 
     return true;
 }
@@ -88,30 +85,6 @@ void Spike::draw(const mat3& projection)
 
 }
 
-void Spike::set_left()
-{
-	set_rotation(-M_PI/2);
-	set_collision_properties();
-}
-
-void Spike::set_right()
-{
-    set_rotation(M_PI / 2);
-	set_collision_properties();
-}
-
-void Spike::set_down()
-{
-    set_rotation(M_PI);
-	set_collision_properties();
-}
-
-void Spike::set_up()
-{
-	set_rotation(0);
-	set_collision_properties();
-}
-
 bool Spikes::spawn_spike(vec2 position, SpikeDir dir)
 {
 	Spike spike;
@@ -121,19 +94,19 @@ bool Spikes::spawn_spike(vec2 position, SpikeDir dir)
 		switch (dir)
 		{
 		case DOWN:
-			spike.set_down();
+			spike.set_rotation(M_PI);
 			break;
 		case LEFT:
-			spike.set_left();
+			spike.set_rotation(-M_PI / 2);
 			break;
 		case RIGHT:
-			spike.set_right();
+			spike.set_rotation(M_PI / 2);
 			break;
 		default:
-			spike.set_up();
+			spike.set_rotation(0);
 			break;
 		}
-
+		spike.set_collision_properties();
 		m_spikes.emplace_back(spike);
 		return true;
 	}

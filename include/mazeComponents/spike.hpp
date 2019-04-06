@@ -15,11 +15,6 @@ public:
 
     // Renders the component
     void draw(const mat3& projection)override;
-	
-    void set_left();
-    void set_right();
-    void set_down();
-	void set_up();
 };
 
 class Spikes : public GeometricComponents
