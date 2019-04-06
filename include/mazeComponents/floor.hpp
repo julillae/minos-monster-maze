@@ -13,8 +13,6 @@ public:
     // Renders the component
 	void draw(const mat3& projection)override;
 
-	vec2 get_texture_size();
-
 };
 
 class Floors : public FixedComponents
@@ -30,6 +28,7 @@ public:
 	void draw(const mat3& projection)override;
 
 	void destroy();
+	vec2 get_texture_size();
 private:
 	std::vector<Floor> m_floors;
 };

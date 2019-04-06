@@ -12,14 +12,15 @@
 std::vector<std::vector <int>> LevelLoader::load_level(int levelNumber, Physics* physicsHandler) {
     this->physicsHandler = physicsHandler;
 	floors.init(m_tile_width, m_tile_height);
+	floors.renderSetup();
 	ices.init(m_tile_width, m_tile_height);
+	ices.renderSetup();
 	spiders.init(physicsHandler);
 	harpies.init(physicsHandler);
     
     read_level_data(levelNumber);
 
     generate_maze();
-	floors.renderSetup();
     return m_maze;
 }
 

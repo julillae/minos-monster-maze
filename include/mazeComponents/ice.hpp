@@ -12,13 +12,14 @@ public:
 
     // Renders the component
 	void draw(const mat3& projection)override;
-
-	vec2 get_texture_size();
 };
 
 class Ices : public FixedComponents
 {
+	static Texture texture;
+
 public:
+	bool renderSetup();
 	bool spawn_ice(vec2 position);
 	std::vector<Ice> get_ice_vector();
 
@@ -26,6 +27,7 @@ public:
 	void draw(const mat3& projection)override;
 
 	void destroy();
+	vec2 get_texture_size();
 private:
 	std::vector<Ice> m_ices;
 };
