@@ -19,7 +19,7 @@ class Ices : public FixedComponents
 	static Texture texture;
 
 public:
-	bool renderSetup();
+	bool renderSetup()override;
 	bool spawn_ice(vec2 position);
 	std::vector<Ice> get_ice_vector();
 

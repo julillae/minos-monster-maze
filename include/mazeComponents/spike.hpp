@@ -32,6 +32,7 @@ public:
 	void draw(const mat3& projection)override;
 
 	void destroy();
+	bool renderSetup()override;
 private:
 	std::vector<Spike> m_spikes;
 };

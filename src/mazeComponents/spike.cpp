@@ -158,3 +158,8 @@ void Spikes::destroy()
 		spike.destroy();
 	m_spikes.clear();
 }
+
+bool Spikes::renderSetup()
+{
+	return false;
+}
