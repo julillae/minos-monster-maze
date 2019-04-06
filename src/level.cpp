@@ -133,6 +133,7 @@ void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) 
 		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes.get_spike_vector());
         physicsHandler->characterCollisionsWithFloors(&m_player, nearbyFloorComponents);
 		physicsHandler->characterCollisionsWithIce(&m_player, m_ice.get_ice_vector());
+		physicsHandler->characterCollisionsWithBlades(&m_player, m_blades.get_blade_vector());
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
@@ -280,6 +281,7 @@ bool Level::update(float elapsed_ms)
 	m_player.update(elapsed_ms);
 
 	update_all_enemies(elapsed_ms);
+	update_all_platforms(elapsed_ms);
 
 	m_help_menu.set_visibility(show_help_menu);
 
@@ -554,12 +556,14 @@ void Level::draw_platforms(mat3 projection_2D) {
 	m_floors.draw(projection_2D);
 	m_ice.draw(projection_2D);
 	m_spikes.draw(projection_2D);
+	m_blades.draw(projection_2D);
 }
 
 void Level::destroy_platforms() {
 	m_floors.destroy();
 	m_spikes.destroy();
 	m_ice.destroy();
+	m_blades.destroy();
 }
 
 void Level::call_level_loader()
@@ -588,6 +592,7 @@ void Level::call_level_loader()
 	m_floors = levelLoader.get_floors();
 	m_ice = levelLoader.get_ice();
 	m_spikes = levelLoader.get_spikes();
+	m_blades = levelLoader.get_blades();
 
     int w, h;
     glfwGetWindowSize(m_window, &w, &h);
@@ -686,6 +691,11 @@ void Level::update_all_enemies(float elapsed_ms)
 		m_minotaur.update(elapsed_ms);
 	}
 
+}
+
+void Level::update_all_platforms(float elapsed_ms)
+{
+	m_blades.update();
 }
 
 Level::Platform Level::maze_is_platform(std::pair<int,int> coords){

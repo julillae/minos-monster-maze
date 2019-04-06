@@ -14,6 +14,7 @@
 #include "mazeComponents/exit.hpp"
 #include "mazeComponents/ice.hpp"
 #include "mazeComponents/spike.hpp"
+#include "mazeComponents/blade.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
 #include "menus/helpMenu.hpp"
@@ -110,6 +111,7 @@ public:
 	void freeze_all_enemies();
 	void unfreeze_all_enemies();
 	void update_all_enemies(float elapsed_ms);
+	void update_all_platforms(float elapsed_ms);
 
 	void set_player_death();
 
@@ -130,6 +132,7 @@ private:
 	Floors m_floors;
 	Spikes m_spikes;
 	Ices m_ice;
+	Blades m_blades;
 
     HelpMenu m_help_menu;
 
@@ -163,7 +166,8 @@ private:
         {65, "SPIKE LEFT"},  //A
         {66, "SPIKE UP"},    //B
         {67, "SPIKE DOWN"},  //C
-        {68, "SPIKE RIGHT"}  //D
+        {68, "SPIKE RIGHT"}, //D
+		{115, "BLADE" }	     //s
 	};
 
     // Variables determined by level data
