@@ -323,6 +323,15 @@ std::vector<vec2> Renderable::get_vertex_coord()
 	return vertex_coords;
 }
 
+void Renderable::apply_transformations(vec2 position, float rotation, vec2 scale)
+{
+	transform_begin();
+	transform_translate(position);
+	transform_rotate(rotation);
+	transform_scale(scale);
+	transform_end();
+}
+
 void Renderable::transform_begin()
 {
 	transform = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f}, { 0.f, 0.f, 1.f} };
