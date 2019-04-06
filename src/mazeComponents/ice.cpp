@@ -34,9 +34,8 @@ bool Ices::renderSetup()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
-	vec2 textureSize = get_texture_size();
-	float x_scale = m_tile_width / textureSize.x;
-	float y_scale = m_tile_height / textureSize.y;
+	float x_scale = m_tile_width / static_cast<float>(texture.width);
+	float y_scale = m_tile_height / static_cast<float>(texture.height);
 	m_scale = vec2({ x_scale, y_scale });
 
 	return true;
@@ -79,9 +78,4 @@ void Ices::destroy()
 	for (auto& ice : m_ices)
 		ice.destroy();
 	m_ices.clear();
-}
-
-vec2 Ices::get_texture_size()
-{
-	return vec2({ static_cast<float>(texture.width), static_cast<float>(texture.height) });
 }

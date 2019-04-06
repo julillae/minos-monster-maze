@@ -27,7 +27,6 @@ public:
 	void draw(const mat3& projection)override;
 
 	void destroy();
-	vec2 get_texture_size();
 private:
 	std::vector<Floor> m_floors;
 };
