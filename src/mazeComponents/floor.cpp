@@ -37,6 +37,11 @@ bool Floors::renderSetup()
 	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
 		return false;
 
+	vec2 textureSize = get_texture_size();
+	float x_scale = m_tile_width / textureSize.x;
+	float y_scale = m_tile_height / textureSize.y;
+	m_scale = vec2({ x_scale, y_scale });
+	
 	return true;
 }
 
@@ -46,11 +51,8 @@ bool Floors::spawn_floor(vec2 position)
 
 	if (floor.init(position))
 	{
-		vec2 textureSize = get_texture_size();
-		float x_scale = m_tile_width / textureSize.x;
-		float y_scale = m_tile_height / textureSize.y;
-		floor.set_scale(vec2({ x_scale, y_scale }));
-		floor.set_size(vec2({ m_tile_width, m_tile_height }));
+		floor.set_scale(m_scale);
+		floor.set_size(m_size);
 		floor.set_collision_properties();
 		m_floors.emplace_back(floor);
 		return true;
