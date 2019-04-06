@@ -96,11 +96,9 @@ void RenderManager::draw_texture(const mat3& projection, vec2 position, float ro
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void RenderManager::draw_mesh(const mat3& projection, vec2 position, float rotation, vec2 scale, Renderable* renderable,
+void RenderManager::draw_mesh(const mat3& projection, Renderable* renderable,
                               float* color, size_t num_indices)
 {
-
-    init_drawing_data(position, rotation, scale, renderable);
 
     // Getting uniform locations for glUniform* calls
     GLint transform_uloc = glGetUniformLocation(renderable->effect.program, "transform");

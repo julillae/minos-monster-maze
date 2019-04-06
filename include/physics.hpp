@@ -6,6 +6,7 @@
 #include "../include/mazeComponents/spike.hpp"
 #include "../include/mazeComponents/ice.hpp"
 #include "../include/mazeComponents/exit.hpp"
+#include "../include/mazeComponents/blade.hpp"
 
 #include <vector>
 #include <map>
@@ -50,6 +51,7 @@ public:
     void characterCollisionsWithFloors(Player *c, std::vector<Floor> floors);
     void characterCollisionsWithSpikes(Player *c, std::vector<Spike> spikes);
     void characterCollisionsWithIce(Player *c, std::vector<Ice> ice);
+    void characterCollisionsWithBlades(Player *c, std::vector<Blade> blades);
     void characterCollisionsWithFixedComponent(Player *c, FixedComponent* fc);
 
 	void characterVelocityUpdate(Character *c);

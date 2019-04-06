@@ -1,14 +1,14 @@
-#include "../include/mazeComponents/spike.hpp"
+#include "../../include/mazeComponents/blade.hpp"
 
 #include <string>
 #include <algorithm>
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-bool Spike::init(vec2 position)
+bool Blade::init(vec2 position)
 {
     // Reads the spikes mesh from a file, which contains a list of vertices and indices
-    FILE* mesh_file = fopen(mesh_path("spike.mesh"), "r");
+    FILE* mesh_file = fopen(mesh_path("blade.mesh"), "r");
     if (mesh_file == nullptr)
         return false;
 
@@ -67,12 +67,13 @@ bool Spike::init(vec2 position)
 
     // Setting initial values
     m_scale.x = 10.f;
-	m_scale.y = 25.f;
+	m_scale.y = 10.f;
     m_rotation = 0.f;
     m_num_indices = indices.size();
     m_position = position;
-    can_kill = true;
 	drag = 0.75f;
+	can_kill = true;
+    set_rotation(0);
     set_dimensions();
     set_collision_properties();
 
@@ -80,81 +81,99 @@ bool Spike::init(vec2 position)
 }
 
 
-void Spike::draw(const mat3& projection)
+void Blade::draw(const mat3& projection)
 {
-    float color[] = { 0.8, 0.15, 0.15 };
-    RenderManager::init_drawing_data(m_position, m_rotation, m_scale, this);
+    float color[] = { 1.0, 1.0, 1.0 };
+    vec2 rotation_point = vec2({m_position.x, m_position.y - m_height / 2});
+    vec2 positionDiff = vec2({0.f, m_height / 2});
+
+    transform_begin();
+    transform_translate(rotation_point);
+    transform_rotate(m_rotation);
+    transform_translate(positionDiff);
+    transform_scale(m_scale);
+    transform_end();
+
+    // Setting shaders
+    glUseProgram(effect.program);
+
+    // Enabling alpha channel for textures
+    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
+
+    // Setting vertices and indices
+    glBindVertexArray(mesh.vao);
+    glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
+
     RenderManager::draw_mesh(projection, this, color, m_num_indices);
 
 }
 
-void Spike::set_left()
+void Blade::set_pendulum_rot()
 {
-	set_rotation(-M_PI/2);
-	set_collision_properties();
+    float currRotation = get_rotation();
+
+    if (currRotation > max_rotation || currRotation < min_rotation) {
+        dr = -dr;
+    }
+
+    currRotation = currRotation + dr;
+    set_rotation(currRotation);
+    set_world_vertex_coord();
 }
 
-void Spike::set_right()
+void Blade::set_world_vertex_coord()
 {
-    set_rotation(M_PI / 2);
-	set_collision_properties();
+
+    vertex_coords.clear();
+    for (auto vert : local_vertex_coords)
+    {
+        mat3 pos_mat{ {vert.x, vert.y, 1},
+                      { 0, 0, 0 },
+                      { 0, 0, 0 } };
+        mat3 transformed = mul(transform, pos_mat);
+
+        vertex_coords.push_back(vec2({ transformed.c0.x, transformed.c0.y }));
+    }
+
 }
 
-void Spike::set_down()
+bool Blades::spawn_blades(vec2 position)
 {
-    set_rotation(M_PI);
-	set_collision_properties();
+    Blade sw;
+
+    if (sw.init(position))
+    {
+        m_blades.emplace_back(sw);
+        return true;
+    }
+    fprintf(stderr, "Failed to spawn blades");
+    return false;
 }
 
-void Spike::set_up()
+std::vector<Blade> Blades::get_blade_vector()
 {
-	set_rotation(0);
-	set_collision_properties();
+	return m_blades;
 }
 
-bool Spikes::spawn_spike(vec2 position, SpikeDir dir)
+void Blades::draw(const mat3 & projection)
 {
-	Spike spike;
-
-	if (spike.init(position))
-	{
-		switch (dir)
-		{
-		case DOWN:
-			spike.set_down();
-			break;
-		case LEFT:
-			spike.set_left();
-			break;
-		case RIGHT:
-			spike.set_right();
-			break;
-		default:
-			spike.set_up();
-			break;
-		}
-
-		m_spikes.emplace_back(spike);
-		return true;
-	}
-	fprintf(stderr, "Failed to spawn spikes");
-	return false;
+	for (auto& sw : m_blades)
+		sw.draw(projection);
 }
 
-std::vector<Spike> Spikes::get_spike_vector()
+void Blades::update()
 {
-	return m_spikes;
+    for (auto& sw : m_blades)
+        sw.set_pendulum_rot();
 }
 
-void Spikes::draw(const mat3 & projection)
+
+void Blades::destroy()
 {
-	for (auto& spike : m_spikes)
-		spike.draw(projection);
+	for (auto& sw : m_blades)
+		sw.destroy();
+	m_blades.clear();
 }
 
-void Spikes::destroy()
-{
-	for (auto& spike : m_spikes)
-		spike.destroy();
-	m_spikes.clear();
-}
