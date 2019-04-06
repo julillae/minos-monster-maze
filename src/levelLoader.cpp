@@ -141,7 +141,7 @@ void LevelLoader::generate_maze()
 					setting_minotaur = true;
 					enemy_start_pos = {x_pos, y_pos};
 				}
-			} else if (cell == 115) {
+			} else if (cell == 98) {
 				if (blades.spawn_blades(vec2({x_pos, y_pos}))) {
 					store_platform_coords({x_pos, y_pos}, cell);
 				}
