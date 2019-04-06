@@ -2,28 +2,23 @@
 
 #include <cmath>
 
- Texture Ice::texture;
-
 bool Ice::init(vec2 position)
 {
-	const char* textureFile = textures_path("ice2.png");
-
-	if (!RenderManager::load_texture(textureFile, &texture, this)) return false;
-
-	if (!RenderManager::set_render_data(&texture, this)) return false;
-
 	set_position(position);
-
 	m_rotation = 0.f;
 	drag = 0.96f;
-
     return true;
 }
 
+bool Ice::set_texture_properties(Texture * texture)
+{
+	if (!RenderManager::set_vertex_data(texture, this)) return false;
+	return true;
+}
 
 void Ice::draw(const mat3& projection)
 {
-	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
+	return;
 }
 
 Texture Ices::texture;
@@ -53,6 +48,7 @@ bool Ices::spawn_ice(vec2 position)
 
 	if (ice.init(position))
 	{
+		ice.set_texture_properties(&texture);
 		ice.set_scale(m_scale);
 		ice.set_size(m_size);
 		ice.set_collision_properties();
@@ -74,8 +70,7 @@ void Ices::draw(const mat3 & projection)
 	{
 		vec2 position = ice.get_position();
 		float rotation = ice.m_rotation;
-		vec2 scale = ice.m_scale;
-		RenderManager::draw_texture(projection, position, rotation, scale, &texture, this);
+		RenderManager::draw_texture(projection, position, rotation, m_scale, &texture, this);
 	}
 }
 

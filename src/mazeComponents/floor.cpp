@@ -2,26 +2,23 @@
 
 #include <cmath>
 
- Texture Floor::texture;
-
 bool Floor::init(vec2 position)
 {
-    const char* textureFile = textures_path("platform.jpg");
-
-    if (!RenderManager::load_texture(textureFile, &texture, this)) return false;
-
-	if (!RenderManager::set_render_data(&texture, this)) return false;
-
 	set_position(position);
-
 	m_rotation = 0.f;
 	drag = 0.7;
 	return true;
 }
 
+bool Floor::set_texture_properties(Texture * texture)
+{
+	if (!RenderManager::set_vertex_data(texture, this)) return false;
+	return true;
+}
+
 void Floor::draw(const mat3& projection)
 {
-	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
+	return;
 }
 
 Texture Floors::texture;
@@ -51,6 +48,7 @@ bool Floors::spawn_floor(vec2 position)
 
 	if (floor.init(position))
 	{
+		floor.set_texture_properties(&texture);
 		floor.set_scale(m_scale);
 		floor.set_size(m_size);
 		floor.set_collision_properties();
@@ -72,8 +70,7 @@ void Floors::draw(const mat3 & projection)
 	{
 		vec2 position = floor.get_position();
 		float rotation = floor.m_rotation;
-		vec2 scale = floor.m_scale;
-		RenderManager::draw_texture(projection, position, rotation, scale, &texture, this);
+		RenderManager::draw_texture(projection, position, rotation, m_scale, &texture, this);
 	}
 }
 
