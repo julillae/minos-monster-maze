@@ -22,6 +22,7 @@ class FixedComponents : public MazeComponents
 {
 public:
 	bool init(float tile_width, float tile_height);
+	virtual bool renderSetup() = 0;
 protected:
 	float m_tile_width;
 	float m_tile_height;

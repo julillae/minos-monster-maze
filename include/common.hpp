@@ -129,6 +129,7 @@ struct Renderable
 
 	// gl Immediate mode equivalent, see the Rendering and Transformations section in the
 	// specification pdf
+	void apply_transformations(vec2 position, float rotation, vec2 scale);
 	void transform_begin();
 	void transform_scale(vec2 scale);
 	void transform_rotate(float radians);

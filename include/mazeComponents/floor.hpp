@@ -4,22 +4,22 @@
 
 class Floor : public FixedComponent
 {
-    static Texture texture;
-
 public:
 
     bool init(vec2 position)override;
+	bool set_texture_properties(Texture *texture);
 
     // Renders the component
 	void draw(const mat3& projection)override;
-
-	vec2 get_texture_size();
 
 };
 
 class Floors : public FixedComponents
 {
+	static Texture texture;
+
 public:
+	bool renderSetup()override;
 	bool spawn_floor(vec2 position);
 	std::vector<Floor> get_floor_vector();
 

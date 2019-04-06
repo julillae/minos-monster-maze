@@ -48,5 +48,6 @@ protected:
 
 class MazeComponents : public Renderable
 {
-
+protected:
+	vec2 m_size;
 };

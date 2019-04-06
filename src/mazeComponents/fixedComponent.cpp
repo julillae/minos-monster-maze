@@ -6,7 +6,7 @@
 
 void FixedComponent::set_world_vertex_coord()
 {
-	RenderManager::init_drawing_data(m_position, m_rotation, m_scale, this);
+	apply_transformations(m_position, m_rotation, m_scale);
 	vertex_coords.clear();
 	for (auto vert : local_vertex_coords)
 	{
@@ -34,5 +34,7 @@ bool FixedComponents::init(float tile_width, float tile_height)
 {
 	m_tile_width = tile_width;
 	m_tile_height = tile_height;
+	m_size = vec2({ m_tile_width, m_tile_height });
+	renderSetup();
 	return true;
 }
