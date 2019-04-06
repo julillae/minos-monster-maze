@@ -12,9 +12,6 @@ bool Floor::init(vec2 position)
 
 	if (!RenderManager::set_render_data(&texture, this)) return false;
 
-    if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
-        return false;
-
 	set_position(position);
 
 	m_rotation = 0.f;
@@ -31,6 +28,22 @@ void Floor::draw(const mat3& projection)
 vec2 Floor::get_texture_size()
 {
 	return vec2({static_cast<float>(texture.width), static_cast<float>(texture.height)});
+}
+
+Texture Floors::texture;
+
+bool Floors::renderSetup()
+{
+	const char* textureFile = textures_path("platform.jpg");
+
+	if (!RenderManager::load_texture(textureFile, &texture, this)) return false;
+
+	if (!RenderManager::set_render_data(&texture, this)) return false;
+
+	if (!effect.load_from_file(shader_path("textured.vs.glsl"), shader_path("textured.fs.glsl")))
+		return false;
+
+	return true;
 }
 
 bool Floors::spawn_floor(vec2 position)
@@ -60,7 +73,12 @@ std::vector<Floor> Floors::get_floor_vector()
 void Floors::draw(const mat3 & projection)
 {
 	for (auto& floor : m_floors)
-		floor.draw(projection);
+	{
+		vec2 position = floor.get_position();
+		float rotation = floor.m_rotation;
+		vec2 scale = floor.m_scale;
+		RenderManager::draw_texture(projection, position, rotation, scale, &texture, this);
+	}
 }
 
 void Floors::destroy()

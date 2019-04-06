@@ -19,7 +19,7 @@ std::vector<std::vector <int>> LevelLoader::load_level(int levelNumber, Physics*
     read_level_data(levelNumber);
 
     generate_maze();
-
+	floors.renderSetup();
     return m_maze;
 }
 
