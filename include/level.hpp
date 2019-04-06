@@ -83,6 +83,7 @@ public:
     std::vector<Harpy> get_harpies();
 	Minotaur get_minotaur();
 	std::vector<Floor> get_floors();
+	std::vector<Blade> get_blades();
 
     void load_saved_game();
 	// Boss controls
@@ -119,6 +120,7 @@ public:
 	void load_spiders();
 	void load_harpies();
 	void load_minotaur();
+	void load_blades();
 private:
 
 	// Water effect

@@ -169,6 +169,11 @@ void Blades::update()
         sw.set_pendulum_rot();
 }
 
+void Blades::setBladeProperties(size_t index, float rotation)
+{
+    m_blades[index].set_rotation(rotation);
+}
+
 
 void Blades::destroy()
 {

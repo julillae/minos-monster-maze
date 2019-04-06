@@ -777,6 +777,8 @@ Minotaur Level::get_minotaur() { return m_minotaur; }
 
 std::vector<Floor> Level::get_floors() { return m_floors.get_floor_vector(); }
 
+std::vector<Blade> Level::get_blades() { return m_blades.get_blade_vector();}
+
 void Level::load_saved_game()
 {
 	fprintf(stderr, "loading saved game\n");
@@ -795,6 +797,7 @@ void Level::load_saved_game()
 		if (minotaurPresent) {
 			load_minotaur();
 		}
+		load_blades();
     }
 
     if (hasPrompt) {
@@ -934,6 +937,18 @@ void Level::load_harpies()
 		vec2 scale = vec2({ scale_x, scale_y });
 
 		m_harpies.setHarpyProperties(i, position, velocity, scale);
+	}
+}
+
+void Level::load_blades()
+{
+	const Value& blades = GameSave::document["blades"];
+
+	for (SizeType i = 0;  i < blades.Size(); i++)
+	{
+		float rotation = blades[i].GetFloat();
+
+		m_blades.setBladeProperties(i, rotation);
 	}
 }
 
