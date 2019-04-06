@@ -15,6 +15,7 @@ void GameSave::save_game(Level* level)
     save_level();
     save_player();
     save_enemies();
+    save_blades();
 
     StringBuffer strbuf;
     Writer<StringBuffer> writer(strbuf);
@@ -160,6 +161,27 @@ void GameSave::save_harpies()
             }
 
             document.AddMember("harpies", harpies, allocator);
+
+        }
+    }
+}
+
+void GameSave::save_blades()
+{
+    // must pass an allocator when the object may need to allocate memory
+    Document::AllocatorType& allocator = document.GetAllocator();
+    std::vector<Blade> m_blades = gameLevel->get_blades();
+
+    {
+        Value blades(kArrayType);
+        {
+            for (auto& b : m_blades) {
+                Value rotation;
+                rotation.SetFloat(b.get_rotation());
+                blades.PushBack(rotation, allocator);
+            }
+
+            document.AddMember("blades", blades, allocator);
 
         }
     }

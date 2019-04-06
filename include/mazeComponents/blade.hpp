@@ -34,6 +34,8 @@ public:
 
 	void update();
 
+	void setBladeProperties(size_t index, float rotation);
+
 	void destroy();
 private:
 	std::vector<Blade> m_blades;
