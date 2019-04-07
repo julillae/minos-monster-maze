@@ -123,6 +123,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	m_help_menu.init(initialPosition);
 	initialize_camera_position(w, h);
 	initialize_message_prompt();
+	level_timer.init();
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -325,7 +326,7 @@ void Level::draw()
 	if (canRotate) {
 		// Round energy to two decimal places for printing
 		float roundedEnergy = roundf(rotationEnergy * 100.f) / 100.f;
-		title_ss << " || Energy left to rotate: " << roundedEnergy << " / " << maxRotationEnergy;
+		title_ss << " || Energy left to rotate: " << roundedEnergy << " / " << maxRotationEnergy << " || Game timer: " << level_timer.getTime();
 	}
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
@@ -634,6 +635,7 @@ void Level::load_new_level()
 
 	call_level_loader();
 	initialize_message_prompt();
+	level_timer.reset();
 }
 
 void Level::reset_game()
@@ -761,6 +763,7 @@ void Level::load_select_level(int level)
 	reset_player_camera();
 
 	initialize_message_prompt();
+	level_timer.reset();
 }
 
 int Level::get_current_level() { return current_level; }
