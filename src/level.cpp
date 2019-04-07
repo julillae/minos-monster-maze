@@ -396,6 +396,7 @@ void Level::draw()
 	m_help_menu.draw(projection_2D);
 
 	// Presenting
+	m_fire.originUpdate(tx, ty, p_position.x, p_position.y);
 	glfwSwapBuffers(m_window);
 }
 

@@ -24,6 +24,7 @@ public:
     void destroy();
 
     //void WindowTrans(float tx, float ty);
+    void originUpdate(float ox, float oy, float p_x, float p_y);
 
 private:
     //Texture m_texture;
@@ -33,6 +34,9 @@ private:
     //float is_hide; // 0.f if show, 1.f if hide
     //float m_width;
 	//float m_height;
-    //float tx;
-    //float ty;
+    float tx = 0.f;
+    float ty = 0.f;
+    float px = 0.f;
+    float py = 0.f;
+
 };

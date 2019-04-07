@@ -52,11 +52,11 @@ layout(location = 0) in vec4 in_position;
 uniform vec2 light_pos;
 //uniform mat3 transform;
 uniform mat3 projection;
-//uniform vec2 origin_pos;
+uniform vec2 origin_pos;
 
 
 out vec2 uv;
-out vec2 origin_pos;
+out vec3 light_position;
 
 void main()
 {
@@ -64,8 +64,13 @@ void main()
     //gl_Position = vec4(pos.xy, in_position.z, 1.0);
     gl_Position = in_position;
     // Convert to the [0, 1] range of UV coordinate
-    vec3 move_frame = projection[2];
+    //vec3 move_frame = projection[2];
+    //light_position = projection*vec3(light_pos.xy, 1.0);
+    float light_inwindow_x = light_pos.x-origin_pos.x;
+    float light_inwindow_y = light_pos.y-origin_pos.y;
+    light_position = vec3(light_inwindow_x,  light_inwindow_y, 1.0);
+
     
-    origin_pos = vec2(move_frame.xy);
+    //origin_pos = vec2(move_frame.xy);
     uv = (in_position.xy + vec2(1.05, 1.05)) / 2.1;
 }

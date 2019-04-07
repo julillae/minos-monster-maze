@@ -2,10 +2,10 @@
 
 uniform sampler2D screen_texture;
 uniform vec2 light_pos;
-//uniform vec2 origin_pos;
+uniform vec2 origin_pos;
 in vec2 uv;
 in vec4 gl_FragCoord;
-in vec2 origin_pos;
+in vec3 light_position;
 out vec4 outputColor;
 
 
@@ -38,9 +38,9 @@ vec3 calculatePointLight(vec2 lightPosition, vec3 Color)
 ////////////////////////////////////////////////////////////////////////////////
 void main(void)
 {
-    vec2 l_p = light_pos+origin_pos;
+    //vec2 l_p = light_pos+origin_pos;
     vec4 texturecolor = texture(screen_texture, uv);
-    outputColor = vec4(calculatePointLight(l_p, vec3(1,1,1)), 1.0)*texturecolor;
+    outputColor = vec4(calculatePointLight(light_position.xy, vec3(1,1,1)), 1.0)*texturecolor;
     //outputColor = vec4(calculatePointLight(light_pos, vec3(1,1,1)), 1.0)*texturecolor;
 }
 // //////////////////////

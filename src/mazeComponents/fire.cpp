@@ -88,18 +88,19 @@ void Fire::draw(const mat3& projection)
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
     GLuint screen_text_uloc = glGetUniformLocation(effect.program, "screen_texture");
     GLint light_pos = glGetUniformLocation(effect.program, "light_pos");
-    //GLint origin_pos = glGetUniformLocation(effect.program, "origin_pos");
+    GLint origin_pos = glGetUniformLocation(effect.program, "origin_pos");
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
     //GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
     glEnableVertexAttribArray(in_position_loc);
     //glEnableVertexAttribArray(in_texcoord_loc);
     glUniform1i(screen_text_uloc, 0);
 
-    //float o_position[] = {tx, ty};
-    //printf("%f", projection[2][0]);
-    //glUniform2fv(origin_pos, 1, o_position);
 
-    float l_position[] = {1200.0f, 700.0f};
+    float o_position[] = {tx, ty};
+    printf("%f", o_position[0]);
+    glUniform2fv(origin_pos, 1, o_position);
+
+    float l_position[] = {0.f, 0.f};
     glUniform2fv(light_pos, 1, l_position);
     //glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
     //glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
@@ -166,3 +167,10 @@ void Fire::draw(const mat3& projection)
 //  	m_width = std::fabs(m_scale.x) * texture.width;
 //  	m_height = std::fabs(m_scale.y) * texture.height;
 //  }
+
+void Fire::originUpdate(float ox, float oy, float p_x, float p_y){
+    tx = ox;
+    ty = oy;
+    px = p_x;
+    py = p_y;
+}
