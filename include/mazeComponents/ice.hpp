@@ -4,21 +4,22 @@
 
 class Ice : public FixedComponent
 {
-    static Texture texture;
-
 public:
 
     bool init(vec2 position)override;
 
+	bool set_texture_properties(Texture * texture);
+
     // Renders the component
 	void draw(const mat3& projection)override;
-
-	vec2 get_texture_size();
 };
 
 class Ices : public FixedComponents
 {
+	static Texture texture;
+
 public:
+	bool renderSetup()override;
 	bool spawn_ice(vec2 position);
 	std::vector<Ice> get_ice_vector();
 

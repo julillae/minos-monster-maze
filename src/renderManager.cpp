@@ -17,6 +17,20 @@ bool RenderManager::load_texture(const char* fileName, Texture* texture, Rendera
 
 }
 
+bool RenderManager::set_vertex_data(Texture *texture, Renderable *renderable)
+{
+	// The position corresponds to the center of the texture
+	float wr = texture->width * 0.5f;
+	float hr = texture->height * 0.5f;
+
+	renderable->local_vertex_coords.push_back({ -wr, +hr, -0.02f });
+	renderable->local_vertex_coords.push_back({ +wr, +hr, -0.02f });
+	renderable->local_vertex_coords.push_back({ +wr, -hr, -0.02f });
+	renderable->local_vertex_coords.push_back({ -wr, -hr, -0.02f });
+
+	return true;
+}
+
 bool RenderManager::set_render_data(Texture *texture, Renderable *renderable)
 {
     // The position corresponds to the center of the texture
@@ -124,11 +138,7 @@ void RenderManager::draw_mesh(const mat3& projection, Renderable* renderable,
 
 void RenderManager::init_drawing_data(vec2 position, float rotation, vec2 scale, Renderable* renderable)
 {
-    renderable->transform_begin();
-    renderable->transform_translate(position);
-    renderable->transform_rotate(rotation);
-    renderable->transform_scale(scale);
-    renderable->transform_end();
+	renderable->apply_transformations(position, rotation, scale);
 
     // Setting shaders
     glUseProgram(renderable->effect.program);

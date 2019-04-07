@@ -7,7 +7,7 @@ void GeometricComponent::set_dimensions()
     float min_y;
     float max_y;
 
-    for (int i = 0; i < local_vertex_coords.size(); i++) {
+    for (size_t i = 0; i < local_vertex_coords.size(); i++) {
         float vert_x = local_vertex_coords[i].x;
         float vert_y = local_vertex_coords[i].y;
 
