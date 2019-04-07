@@ -23,6 +23,7 @@
 #include "levelLoader.hpp"
 #include "flashMessage.hpp"
 #include "quadTree.hpp"
+#include "timer.hpp"
 
 // stlib
 #include <vector>
@@ -197,5 +198,7 @@ private:
 	float rotationEnergy = maxRotationEnergy;
 
 	QuadTreeNode m_quad;
+
+	Timer level_timer;
 
 };
