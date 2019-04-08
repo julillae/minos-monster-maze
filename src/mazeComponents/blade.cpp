@@ -2,8 +2,6 @@
 
 #include <string>
 #include <algorithm>
-#define _USE_MATH_DEFINES
-#include <math.h>
 
 bool Blade::init(vec2 position)
 {
@@ -25,7 +23,12 @@ bool Blade::init(vec2 position)
         vertex.position = { x, y, -z };
         vertex.color = { (float)r / 255, (float)g / 255, (float)b / 255 };
         vertices.push_back(vertex);
-		local_vertex_coords.push_back(vertex.position);
+
+        // don't add tether coordinates for collision detection
+        if (i < num_vertices - 4) {
+            local_vertex_coords.push_back(vertex.position);
+        }
+
     }
 
     // Reading associated indices
@@ -123,22 +126,6 @@ void Blade::set_pendulum_rot()
     set_world_vertex_coord();
 }
 
-void Blade::set_world_vertex_coord()
-{
-
-    vertex_coords.clear();
-    for (auto vert : local_vertex_coords)
-    {
-        mat3 pos_mat{ {vert.x, vert.y, 1},
-                      { 0, 0, 0 },
-                      { 0, 0, 0 } };
-        mat3 transformed = mul(transform, pos_mat);
-
-        vertex_coords.push_back(vec2({ transformed.c0.x, transformed.c0.y }));
-    }
-
-}
-
 bool Blades::spawn_blades(vec2 position)
 {
     Blade sw;
@@ -165,8 +152,10 @@ void Blades::draw(const mat3 & projection)
 
 void Blades::update()
 {
-    for (auto& sw : m_blades)
-        sw.set_pendulum_rot();
+    if (!isFrozen) {
+        for (auto& sw : m_blades)
+            sw.set_pendulum_rot();
+    }
 }
 
 void Blades::setBladeProperties(size_t index, float rotation)
@@ -182,3 +171,14 @@ void Blades::destroy()
 	m_blades.clear();
 }
 
+void Blades::freeze()
+{
+    isFrozen = true;
+}
+
+void Blades::unfreeze()
+{
+    isFrozen = false;
+}
+
+bool Blades::renderSetup() { return false; }
