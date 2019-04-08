@@ -1,6 +1,6 @@
 #include "../../include/gameStates/levelSelectState.hpp"
 
-mat3 GameState::calculate_projection()
+mat3 GameState::calculate_projection(float osScaleFactor)
 {
     // Getting size of window
     int w, h;

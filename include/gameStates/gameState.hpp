@@ -18,7 +18,7 @@ public:
     void set_onKey();
     void initialize_camera_position(int w, int h);
 
-    mat3 calculate_projection();
+    mat3 calculate_projection(float osScaleFactor);
     void render_to_framebuffer_screen();
 
     gameStates name;

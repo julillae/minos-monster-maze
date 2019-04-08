@@ -70,7 +70,7 @@ void LevelSelectState::draw()
 
     render_to_framebuffer_screen();
 
-    mat3 projection_2D = calculate_projection();
+    mat3 projection_2D = calculate_projection(osScaleFactor);
 
     levelSelectMenu.draw(projection_2D);
 
