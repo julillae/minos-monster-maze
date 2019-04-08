@@ -69,8 +69,8 @@ void main()
     //light_position = projection*vec3(light_pos.xy, 1.0);
     //float light_inwindow_x = light_pos.x-origin_pos.x;
     //float light_inwindow_y = light_pos.y-origin_pos.y;
-    light_position = vec3(origin_pos, 1.0);
-    origin_position = vec3(origin_pos, 1.0);
+    light_position = vec3(light_pos, 1.0);
+    origin_position = vec3(light_pos, 1.0);
 
     
     //origin_pos = vec2(move_frame.xy);

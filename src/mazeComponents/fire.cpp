@@ -90,7 +90,8 @@ void Fire::draw(const mat3& projection)
     GLuint time_uloc = glGetUniformLocation(effect.program, "time");
     GLint light_pos = glGetUniformLocation(effect.program, "light_pos");
     GLint at_door = glGetUniformLocation(effect.program, "is_at_door");
-    GLint origin_pos = glGetUniformLocation(effect.program, "origin_pos");
+    //GLint origin_pos = glGetUniformLocation(effect.program, "origin_pos");
+    GLint alive = glGetUniformLocation(effect.program, "alive");
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
     //GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
     glEnableVertexAttribArray(in_position_loc);
@@ -98,11 +99,13 @@ void Fire::draw(const mat3& projection)
     glUniform1i(screen_text_uloc, 0);
 
 
-    float o_position[] = {tx/2.f, ty/2.f};
-    //printf("%f", o_position[0]);
-    glUniform2fv(origin_pos, 1, o_position);
+    // float o_position[] = {tx/2.f, ty/2.f};  isAlive
+    // //printf("%f", o_position[0]);
+    // glUniform2fv(origin_pos, 1, o_position);
 
-    float l_position[] = {isAlive, isAlive};
+    glUniform1f(alive, isAlive);
+
+    float l_position[] = {tx/2.f, ty/2.f};
     glUniform2fv(light_pos, 1, l_position);
     glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
     glUniform1i(at_door, is_At_Door);
@@ -148,29 +151,8 @@ void Fire::draw(const mat3& projection)
 	glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
 	glDisableVertexAttribArray(0);
 	
-	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
-	//RenderManager::draw(projection, m_position, m_rotation, m_scale, &texture, this);
 }
 
-
-// Returns the local bounding coordinates scaled by the current size of the component
-//vec2 Fire::get_bounding_box()const
-//{
-	// fabs is to avoid negative scale due to the facing direction
-	//return { std::fabs(m_scale.x) * texture.width, std::fabs(m_scale.y) * texture.height };
-//}
-
-// void Fire::set_position(vec2 position)
-// {
-//     m_position = position;
-// }
-
-
-//  void Fire::set_size()
-//  {
-//  	m_width = std::fabs(m_scale.x) * texture.width;
-//  	m_height = std::fabs(m_scale.y) * texture.height;
-//  }
 
 void Fire::originUpdate(float ox, float oy, float p_x, float p_y){
     tx = ox;
