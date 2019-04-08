@@ -653,6 +653,7 @@ void Level::reset_game()
 	
 	reset_player_camera();
 	initialize_message_prompt();
+	level_timer.reset();
 }
 
 void Level::reset_player_camera()
@@ -774,6 +775,8 @@ float Level::get_rotationDeg() { return rotationDeg; }
 
 float Level::get_rotationEnergy() { return rotationEnergy; }
 
+float Level::get_level_time() { return level_timer.getTime(); }
+
 std::vector<Spider> Level::get_spiders() { return m_spiders.get_spider_vector(); }
 
 std::vector<Harpy> Level::get_harpies() { return m_harpies.get_harpy_vector(); }
@@ -843,6 +846,7 @@ void Level::load_player()
     rotation = GameSave::document["rotation"].GetFloat();
     rotationDeg = GameSave::document["rotationDeg"].GetFloat();
     rotationEnergy = GameSave::document["rotationEnergy"].GetFloat();
+	level_timer.recordSavedTime(GameSave::document["levelTime"].GetFloat());
 
     if (rotationEnergy < maxRotationEnergy)
     	m_water.set_rotation_end_time();
