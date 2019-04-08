@@ -23,11 +23,7 @@ bool Blade::init(vec2 position)
         vertex.position = { x, y, -z };
         vertex.color = { (float)r / 255, (float)g / 255, (float)b / 255 };
         vertices.push_back(vertex);
-
-        // don't add tether coordinates for collision detection
-        if (i < num_vertices - 4) {
-            local_vertex_coords.push_back(vertex.position);
-        }
+        local_vertex_coords.push_back(vertex.position);
 
     }
 
@@ -78,6 +74,8 @@ bool Blade::init(vec2 position)
 	can_kill = true;
     set_rotation(0);
     set_dimensions();
+    remove_tether_coord();
+    set_rotation_properties();
     set_collision_properties();
 
     return true;
@@ -123,7 +121,28 @@ void Blade::set_pendulum_rot()
 
     currRotation = currRotation + dr;
     set_rotation(currRotation);
-    set_world_vertex_coord();
+
+    transform_begin();
+    transform_translate(rotation_point);
+    transform_rotate(m_rotation);
+    transform_translate(positionDiff);
+    transform_scale(m_scale);
+    transform_end();
+
+    transform_vertex_coord();
+}
+
+void Blade::set_rotation_properties()
+{
+    rotation_point = vec2({m_position.x, m_position.y - m_height / 2});
+    positionDiff = vec2({0.f, m_height / 2});
+}
+
+void Blade::remove_tether_coord()
+{
+    for (int i = 0; i < 4; i++) {
+        local_vertex_coords.pop_back();
+    }
 }
 
 bool Blades::spawn_blades(vec2 position)
