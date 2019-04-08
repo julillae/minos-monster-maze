@@ -322,11 +322,11 @@ void Level::draw()
 
 	// Updating window title with points
 	std::stringstream title_ss;
-	title_ss << "Minos' Monster Maze";
+	title_ss << "Minos' Monster Maze" << " || Game timer: " << level_timer.getTime();
 	if (canRotate) {
 		// Round energy to two decimal places for printing
 		float roundedEnergy = roundf(rotationEnergy * 100.f) / 100.f;
-		title_ss << " || Energy left to rotate: " << roundedEnergy << " / " << maxRotationEnergy << " || Game timer: " << level_timer.getTime();
+		title_ss << " || Energy left to rotate: " << roundedEnergy << " / " << maxRotationEnergy;
 	}
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
