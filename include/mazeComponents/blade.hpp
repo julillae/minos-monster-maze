@@ -19,6 +19,12 @@ public:
 
     void set_pendulum_rot();
 private:
+    void set_rotation_properties();
+    void remove_tether_coord();
+
+    vec2 rotation_point;
+    vec2 positionDiff;
+
     float max_rotation = (float) M_PI / 2;
     float min_rotation = (float) (- M_PI / 2);
 
