@@ -3,6 +3,7 @@
 uniform sampler2D screen_texture;
 uniform vec2 light_pos;
 uniform vec2 origin_pos;
+uniform float time;
 in vec2 uv;
 in vec4 gl_FragCoord;
 in vec3 light_position;
@@ -20,7 +21,7 @@ vec3 calculatePointLight(vec2 lightPosition, vec3 Color)
     float dist = length(l);
 
     float linear = 0;
-    float quadratic = 0.00025/30.0;
+    float quadratic = 0.00025/(30.0-0.6*sin(time*3.0));
     float constant = 0.6f;
     float atten = min(1.0/(constant + (dist*linear)+ ((dist*dist)*quadratic)), 1.0);
 

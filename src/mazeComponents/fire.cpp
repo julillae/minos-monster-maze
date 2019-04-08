@@ -87,6 +87,7 @@ void Fire::draw(const mat3& projection)
     ////GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
     GLint projection_uloc = glGetUniformLocation(effect.program, "projection");
     GLuint screen_text_uloc = glGetUniformLocation(effect.program, "screen_texture");
+    GLuint time_uloc = glGetUniformLocation(effect.program, "time");
     GLint light_pos = glGetUniformLocation(effect.program, "light_pos");
     GLint origin_pos = glGetUniformLocation(effect.program, "origin_pos");
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
@@ -102,6 +103,7 @@ void Fire::draw(const mat3& projection)
 
     float l_position[] = {isAlive, isAlive};
     glUniform2fv(light_pos, 1, l_position);
+    glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
     //glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
     //glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
     glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
