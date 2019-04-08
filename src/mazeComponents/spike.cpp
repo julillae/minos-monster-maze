@@ -1,11 +1,11 @@
-#include "../include/mazeComponents/spikes.hpp"
+#include "../include/mazeComponents/spike.hpp"
 
 #include <string>
 #include <algorithm>
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-bool Spikes::init(vec2 position)
+bool Spike::init(vec2 position)
 {
     // Reads the spikes mesh from a file, which contains a list of vertices and indices
     FILE* mesh_file = fopen(mesh_path("spike.mesh"), "r");
@@ -68,19 +68,16 @@ bool Spikes::init(vec2 position)
     // Setting initial values
     m_scale.x = 10.f;
 	m_scale.y = 25.f;
-    m_rotation = 0.f;
     m_num_indices = indices.size();
     m_position = position;
     can_kill = true;
-	drag = 0.75f;
     set_dimensions();
-    set_collision_properties();
 
     return true;
 }
 
 
-void Spikes::draw(const mat3& projection)
+void Spike::draw(const mat3& projection)
 {
     float color[] = { 0.8, 0.15, 0.15 };
     RenderManager::draw_mesh(projection, m_position, m_rotation, m_scale, this,
@@ -88,26 +85,54 @@ void Spikes::draw(const mat3& projection)
 
 }
 
-void Spikes::set_left()
+bool Spikes::spawn_spike(vec2 position, SpikeDir dir)
 {
-	set_rotation(-M_PI/2);
-	set_collision_properties();
+	Spike spike;
+
+	if (spike.init(position))
+	{
+		switch (dir)
+		{
+		case DOWN:
+			spike.set_rotation(M_PI);
+			break;
+		case LEFT:
+			spike.set_rotation(-M_PI / 2);
+			break;
+		case RIGHT:
+			spike.set_rotation(M_PI / 2);
+			break;
+		default:
+			spike.set_rotation(0);
+			break;
+		}
+		spike.set_collision_properties();
+		m_spikes.emplace_back(spike);
+		return true;
+	}
+	fprintf(stderr, "Failed to spawn spikes");
+	return false;
 }
 
-void Spikes::set_right()
+std::vector<Spike> Spikes::get_spike_vector()
 {
-    set_rotation(M_PI / 2);
-	set_collision_properties();
+	return m_spikes;
 }
 
-void Spikes::set_down()
+void Spikes::draw(const mat3 & projection)
 {
-    set_rotation(M_PI);
-	set_collision_properties();
+	for (auto& spike : m_spikes)
+		spike.draw(projection);
 }
 
-void Spikes::set_up()
+void Spikes::destroy()
 {
-	set_rotation(0);
-	set_collision_properties();
+	for (auto& spike : m_spikes)
+		spike.destroy();
+	m_spikes.clear();
+}
+
+bool Spikes::renderSetup()
+{
+	return false;
 }

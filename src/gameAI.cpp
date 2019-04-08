@@ -49,7 +49,38 @@ bool GameAI::isValid(int row, int col)
 // Helper function to check if character can move to given tile (i.e. is it occupied by a fixed component)
 bool GameAI::canMoveHere(int row, int col)
 {
-    return !world->maze_is_platform(make_pair(row, col));
+	Level::Platform platform = world->maze_is_platform(make_pair(row, col));
+	
+	if (isValid(row + 1, col)) {
+		std::pair <int, int> top = make_pair(row + 1, col);
+		// top spike 
+		if (world->maze_is_platform(top).platformType == 66) {
+			platform.isPlatform = true;
+		}
+	}
+
+	if (isValid(row - 1, col)) {
+		std::pair <int, int> bottom = make_pair(row - 1, col);
+		if (world->maze_is_platform(bottom).platformType == 67) {
+			platform.isPlatform = true;
+		}
+	}
+
+	if (isValid(row, col - 1)) {
+		std::pair <int, int> right = make_pair(row, col - 1);
+		if (world->maze_is_platform(right).platformType == 68) {
+			platform.isPlatform = true;
+		}
+	}
+
+	if (isValid(row, col + 1)) {
+		std::pair <int, int> left = make_pair(row, col + 1);
+		if (world->maze_is_platform(left).platformType == 65) {
+			platform.isPlatform = true;
+		}
+	}
+	
+	return !platform.isPlatform;
 }
 
 // Helper function to see if current tile is destination tile

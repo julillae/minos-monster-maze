@@ -17,3 +17,13 @@ public:
 	void set_collision_properties();
 	std::vector<vec2> get_vertex_coord();
 };
+
+class FixedComponents : public MazeComponents
+{
+public:
+	bool init(float tile_width, float tile_height);
+	virtual bool renderSetup() = 0;
+protected:
+	float m_tile_width;
+	float m_tile_height;
+};

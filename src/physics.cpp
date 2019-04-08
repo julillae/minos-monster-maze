@@ -43,7 +43,7 @@ std::vector<vec2> Physics::getAxes(std::vector<vec2> vertices)const
 
     std::vector<vec2> axisVector;
 
-    for (int i = 0; i < vertices.size(); i++)
+    for (size_t i = 0; i < vertices.size(); i++)
     {
         vec2 v1 = vertices[i];
         vec2 v2 = vertices[i + 1 == vertices.size() ? 0 : i + 1];
@@ -61,7 +61,7 @@ Physics::Projection Physics::getProjection(vec2 axis, std::vector<vec2> vertices
     float min = dot(axis, vertices[0]);
     float max = min;
 
-    for (int i = 1; i < vertices.size(); i++) {
+    for (size_t i = 1; i < vertices.size(); i++) {
         float p = dot(axis, vertices[i]);
         if (p < min) {
             min = p;
@@ -193,13 +193,13 @@ bool Physics::collideWithExit (Player *p, Exit *e) {
 }
 
 void Physics::characterCollisionsWithFloors(Player* c, std::vector<Floor> floors) {
-    for (Floor f : floors) {
-        characterCollisionsWithFixedComponent(c, &f);
-    }
+        for (Floor f: floors) {
+            characterCollisionsWithFixedComponent(c, &f);
+        }
 }
 
-void Physics::characterCollisionsWithSpikes(Player* c, std::vector<Spikes> spikes) {
-    for (Spikes s : spikes) {
+void Physics::characterCollisionsWithSpikes(Player* c, std::vector<Spike> spikes) {
+    for (Spike s : spikes) {
         characterCollisionsWithFixedComponent(c, &s);
 
         if (!c->is_alive()) return;
@@ -325,6 +325,7 @@ void Physics::characterVelocityUpdate(Character* c)
         if (c->characterState->currentState == jumping) {
 			cVelocity.y += c->jumpVel;
 			c->characterState->changeState(rising);
+			c->isOnPlatform = false;
 		}
 
 		if (c->isOnPlatform) {

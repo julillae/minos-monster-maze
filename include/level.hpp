@@ -7,19 +7,22 @@
 #include "characters/simple.hpp"
 #include "characters/spider.hpp"
 #include "characters/harpy.hpp"
+#include "characters/minotaur.hpp"
 #include "mazeComponents/mazeComponent.hpp"
 #include "mazeComponents/fixedComponent.hpp"
 #include "mazeComponents/floor.hpp"
 #include "mazeComponents/exit.hpp"
 #include "mazeComponents/fire.hpp"
 #include "mazeComponents/ice.hpp"
-#include "mazeComponents/spikes.hpp"
+#include "mazeComponents/spike.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
 #include "menus/helpMenu.hpp"
 #include "gameStates/gameState.hpp"
 #include "gameStates/pauseMenuState.hpp"
 #include "levelLoader.hpp"
+#include "flashMessage.hpp"
+#include "quadTree.hpp"
 
 // stlib
 #include <vector>
@@ -42,6 +45,11 @@ public:
 	Level(Game* game);
 	~Level();
 
+	struct Platform {
+		bool isPlatform;
+		int platformType;
+	};
+
     // Creates a window, sets up events and begins the game
 	bool init(vec2 screen, Physics* physicsHandler, int startLevel);
 
@@ -57,7 +65,7 @@ public:
 	// Should the game be over ?
 	bool is_over()override;
 
-	bool maze_is_platform(std::pair<int,int> coords);
+	Platform maze_is_platform(std::pair<int,int> coords);
 	std::vector<std::vector <int>> get_original_maze();
 
 	float get_maze_width();
@@ -73,15 +81,21 @@ public:
 
     std::vector<Spider> get_spiders();
     std::vector<Harpy> get_harpies();
+	Minotaur get_minotaur();
+	std::vector<Floor> get_floors();
 
     void load_saved_game();
+	// Boss controls
+	void boss_rotation_set(bool enable, bool ccw);
+
+	bool minotaurPresent = false;
+
     void reset_game();
-private:
 	// !!! INPUT CALLBACK FUNCTIONS
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-	void check_platform_collisions();
+	void check_platform_collisions(std::vector<Floor> nearbyFloorComponents);
 
 	void draw_enemies(mat3 projection_2D);
 	void reset_enemies();
@@ -89,6 +103,7 @@ private:
 	void draw_platforms(mat3 projection_2D);
 	void destroy_platforms();
 
+	void initialize_message_prompt();
 	void initialize_camera_position(int w, int h);
 	void call_level_loader();
 	void load_new_level();
@@ -102,20 +117,25 @@ private:
 	void load_player();
 	void load_spiders();
 	void load_harpies();
+	void load_minotaur();
 private:
 
 	// Water effect
 	RenderEffects m_water;
 
-	std::vector<Spider> m_spiders;
-	std::vector<Harpy> m_harpies;
+	Minotaur m_minotaur;
+	Spiders m_spiders;
+	Harpies m_harpies;
 
 	Exit m_exit;
 	Fire m_fire;
-	std::vector<Floor> m_floors;
-	std::vector<Spikes> m_spikes;
-	std::vector<Ice> m_ice;
+	Floors m_floors;
+	Spikes m_spikes;
+	Ices m_ice;
+
     HelpMenu m_help_menu;
+
+	FlashMessage m_message;
 
     float m_seed_rng;
 
@@ -135,7 +155,7 @@ private:
 	int rotateCWKey = GLFW_KEY_X;
 	int rotateCCWKey = GLFW_KEY_Z;
 
-	int num_levels = 11;
+	int num_levels = 12;
 	int current_level = 0;
 
 	const map<int, std::string> platform_types = {
@@ -167,7 +187,11 @@ private:
     bool show_help_menu = false;
 	bool cameraTracking = true;
 	bool canRotate = true;
+	bool hasPrompt = false;
 
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;
+
+	QuadTreeNode m_quad;
+
 };

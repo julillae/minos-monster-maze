@@ -35,7 +35,9 @@ namespace
 }
 
 
-Level::Level(Game* game) : m_seed_rng(0.f)
+Level::Level(Game* game) :
+	m_seed_rng(0.f),
+	m_quad(0, {}, 0.f, 0.f)
 {
 // Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -132,16 +134,17 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
  		//store_platform_coords({x_pos, y_pos}, cell);
  		//m_fire = new_fire;
  	//}
+	initialize_message_prompt();
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
-void Level::check_platform_collisions() {
+void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) {
 	if (m_player.is_alive()) {
 		m_player.set_world_vertex_coord();
-		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes);
-		physicsHandler->characterCollisionsWithFloors(&m_player, m_floors);
-		physicsHandler->characterCollisionsWithIce(&m_player, m_ice);
+		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes.get_spike_vector());
+        physicsHandler->characterCollisionsWithFloors(&m_player, nearbyFloorComponents);
+		physicsHandler->characterCollisionsWithIce(&m_player, m_ice.get_ice_vector());
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
@@ -174,7 +177,11 @@ void Level::destroy()
 	destroy_enemies();
 	destroy_platforms();
 	m_help_menu.destroy();
+<<<<<<< HEAD
 	m_fire.destroy();
+=======
+	m_quad.clear();
+>>>>>>> bcf631af91a6571e4a60d0b07fdb097d5c671593
 
 	glfwDestroyWindow(m_window);
 }
@@ -214,7 +221,10 @@ bool Level::update(float elapsed_ms)
 			previouslyFrozen = true;
 		}
 
-		rotationEnergy -= fabs(rotationSpeed);
+		// Don't decrease the rotation energy if minotaur is rotating maze
+		if (!minotaurPresent) {
+			rotationEnergy -= fabs(rotationSpeed);
+		}
 	}
 	else if (previouslyFrozen) {
 		applyThaw = true;
@@ -224,16 +234,23 @@ bool Level::update(float elapsed_ms)
 	}
 
 	// Checking Player - Spider Collision
-	for (auto& enemy : m_spiders) {
+	for (auto& enemy : m_spiders.get_spider_vector()) {
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy))
 		{
 			set_player_death();
 		}
 	}
 
-	for (auto& enemy : m_harpies) {
+	for (auto& enemy : m_harpies.get_harpy_vector()) {
 		if (physicsHandler->collideWithEnemy(&m_player, &enemy))
 		{
+			set_player_death();
+		}
+	}
+
+	if (minotaurPresent) {
+		if (physicsHandler->collideWithEnemy(&m_player, &m_minotaur) &&
+			 m_minotaur.characterState->currentState == swinging) {
 			set_player_death();
 		}
 	}
@@ -246,10 +263,22 @@ bool Level::update(float elapsed_ms)
 		is_player_at_goal = true;
 		m_player.freeze();
 		m_player.set_invincibility(true);
+
+		if (hasPrompt)
+			m_message.destroy();
 	}
 
-	// checking player - platform collision
-	check_platform_collisions();
+	// retrieve the closest floor components to player
+    std::vector<Floor> nearbyFloorComponents =
+			m_quad.getNearbyFloorComponents(m_player.get_position(), m_player.get_bounding_box());
+
+	if (current_level == 11) {
+		// deallocate quad tree memory for boss
+		nearbyFloorComponents = m_floors.get_floor_vector();
+	}
+
+    // checking player - platform collision
+	check_platform_collisions(nearbyFloorComponents);
 
 	if (applyFreeze) {
 		m_player.freeze();
@@ -276,7 +305,7 @@ bool Level::update(float elapsed_ms)
 
 	if (m_player.is_alive() && is_player_at_goal && m_water.get_time_since_level_complete() > 1.5)
 		reset_game();
-	
+
 	float timeToLoadRotationEnergy = 4.f;
 	if (m_water.get_time_since_rotation_end() > timeToLoadRotationEnergy) {
 		rotationEnergy += rotationEnergyIncrement;
@@ -305,8 +334,11 @@ void Level::draw()
 	// Updating window title with points
 	std::stringstream title_ss;
 	title_ss << "Minos' Monster Maze";
-	if (canRotate)
-		title_ss << " || Energy left to rotate: " << rotationEnergy << " / " << maxRotationEnergy;
+	if (canRotate) {
+		// Round energy to two decimal places for printing
+		float roundedEnergy = roundf(rotationEnergy * 100.f) / 100.f;
+		title_ss << " || Energy left to rotate: " << roundedEnergy << " / " << maxRotationEnergy;
+	}
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
 	if (is_player_at_goal)
@@ -395,6 +427,14 @@ void Level::draw()
 
 	m_help_menu.draw(projection_2D);
 
+	if (hasPrompt) {
+		float screen_height = static_cast<float>(h);
+		float message_y_shift = (screen_height / 2.f) - (m_tile_height * 3.f);
+		float message_y_pos = cameraCenter.y - message_y_shift;
+		m_message.set_position({cameraCenter.x, message_y_pos});
+		m_message.draw(projection_2D);
+	}
+
 	// Presenting
 	m_fire.originUpdate(w, h, p_position.x, p_position.y);
 	glfwSwapBuffers(m_window);
@@ -435,6 +475,9 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
             PauseMenuState* pauseMenuState = (PauseMenuState*) game->get_state(PAUSE);
             pauseMenuState->reset_buttons();
             game->set_current_state(pauseMenuState);
+
+			if (hasPrompt)
+				m_message.destroy();
 		}
 	}
 
@@ -443,10 +486,16 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		if (key == rotateCCWKey) {
 			isRotating = true;
 			rotateCW = false;
+
+			if (hasPrompt)
+				m_message.set_visibility(false);
 		}
 		if (key == rotateCWKey) {
 			isRotating = true;
 			rotateCW = true;
+
+			if (hasPrompt)
+				m_message.set_visibility(false);
 		}
 	}
 
@@ -464,6 +513,24 @@ void Level::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 
 }
 
+void Level::initialize_message_prompt() {
+	if (hasPrompt) {
+		int messageNumber = current_level;
+		if (current_level == 4) {
+			std::string newMessageNumber = std::to_string(current_level);
+			if (rotateCWKey == GLFW_KEY_X) {
+				newMessageNumber.append("1");
+				messageNumber = std::atoi(newMessageNumber.c_str());
+			} else {
+				newMessageNumber.append("2");
+				messageNumber = std::atoi(newMessageNumber.c_str());
+			}
+		}
+
+		m_message.init(messageNumber);
+	}
+}
+
 void Level::initialize_camera_position(int w, int h)
 {
 	if (cameraTracking) {
@@ -471,69 +538,49 @@ void Level::initialize_camera_position(int w, int h)
 		prevCameraCenter = cameraCenter;
 	}
 	else {
-		float txOffset = w / 2;
-		float tyOffset = h / 2;
+		float txOffset = static_cast<float> (w / 2);
+		float tyOffset = static_cast<float> (h / 2);
 		cameraCenter = vec2({ txOffset, tyOffset});
 	}
 }
 
 void Level::draw_enemies(mat3 projection_2D) {
-    for (auto& spider: m_spiders)
-        spider.draw(projection_2D);
-
-	for (auto& harpy: m_harpies)
-        harpy.draw(projection_2D);
+	m_spiders.draw(projection_2D);
+	m_harpies.draw(projection_2D);
+	if (minotaurPresent) {
+		m_minotaur.draw(projection_2D);
+	}
 }
 
 void Level::reset_enemies() {
-	for (auto& spider : m_spiders) {
-		spider.freeze();
-		spider.reset_position();
-		spider.unfreeze();
-	};
-
-	for (auto& harpy : m_harpies) {
-		harpy.freeze();
-		harpy.reset_position();
-		harpy.unfreeze();
-	};
+	m_spiders.reset();
+	m_harpies.reset();
+	if (minotaurPresent) {
+		m_minotaur.freeze();
+		m_minotaur.reset_position();
+		m_minotaur.unfreeze();
+	}
 }
 
 void Level::destroy_enemies() {
-	for (auto& spider : m_spiders)
-		spider.destroy();
-
-	for (auto& harpy : m_harpies)
-		harpy.destroy();
-
-	m_spiders.clear();
-	m_harpies.clear();
+	m_spiders.destroy();
+	m_harpies.destroy();
+	if (minotaurPresent) {
+		m_minotaur.stopRotating();
+		m_minotaur.destroy();
+	}
 }
 
 void Level::draw_platforms(mat3 projection_2D) {
-    for (auto& floor: m_floors)
-        floor.draw(projection_2D);
-
-	for (auto& ice: m_ice)
-        ice.draw(projection_2D);
-
-	for (auto& spikes: m_spikes)
-        spikes.draw(projection_2D);
+	m_floors.draw(projection_2D);
+	m_ice.draw(projection_2D);
+	m_spikes.draw(projection_2D);
 }
 
 void Level::destroy_platforms() {
-	for (auto& floor : m_floors)
-		floor.destroy();
-
-	for (auto& spike : m_spikes)
-		spike.destroy();
-
-	for (auto& ice : m_ice)
-		ice.destroy();
-
-	m_floors.clear();
-	m_spikes.clear();
-	m_ice.clear();
+	m_floors.destroy();
+	m_spikes.destroy();
+	m_ice.destroy();
 }
 
 void Level::call_level_loader()
@@ -546,6 +593,7 @@ void Level::call_level_loader()
 
 	canRotate = levelLoader.can_rotate();
 	cameraTracking = levelLoader.can_camera_track();
+	hasPrompt = levelLoader.has_prompt();
 
 	initialPosition = levelLoader.get_player_position();
 	m_exit = levelLoader.get_exit();
@@ -553,16 +601,45 @@ void Level::call_level_loader()
 	m_spiders = levelLoader.get_spiders();
 	m_harpies = levelLoader.get_harpies();
 
+	minotaurPresent = levelLoader.minotaurInLevel();
+	if (minotaurPresent) {
+		m_minotaur = levelLoader.get_minotaur();
+	}
+
 	m_floors = levelLoader.get_floors();
 	m_ice = levelLoader.get_ice();
 	m_spikes = levelLoader.get_spikes();
+
+    int w, h;
+    glfwGetWindowSize(m_window, &w, &h);
+    // if camera tracking is off, initialize the quad tree with the screen size
+    if (!cameraTracking) {
+    	if (current_level == 5) {
+			m_quad = QuadTreeNode(0, {0.f, 0.f}, (float) w + 3 * m_maze_width, (float) h + 3 * m_maze_height);
+		} else {
+			m_quad = QuadTreeNode(0, {0.f, 0.f}, (float) w, (float) h);
+		}
+    } else {
+        // if camera tracking is on, initialize the tree based on the maze
+        m_quad = QuadTreeNode(0, {0.f, 0.f}, ((m_maze_width+7)*m_tile_width),
+                              ((m_maze_height+7)*m_tile_height));
+    }
+
+	for (auto& floor: m_floors.get_floor_vector()) {
+		m_quad.insert(floor);
+	}
+
+	if (current_level == 11) {
+	    m_quad.clear();
+	}
 }
 
 void Level::load_new_level()
 {
 	destroy_platforms();
 	destroy_enemies();
-	
+	m_quad.clear();
+
 	m_maze.clear();
 
 	current_level++;
@@ -570,6 +647,7 @@ void Level::load_new_level()
 		current_level = 0;
 
 	call_level_loader();
+	initialize_message_prompt();
 }
 
 void Level::reset_game()
@@ -586,6 +664,7 @@ void Level::reset_game()
 	}
 	
 	reset_player_camera();
+	initialize_message_prompt();
 }
 
 void Level::reset_player_camera()
@@ -604,30 +683,45 @@ void Level::reset_player_camera()
 
 void Level::freeze_all_enemies()
 {
-	for (auto& s : m_spiders) s.freeze();
-	for (auto& h : m_harpies) h.freeze();
+	m_spiders.freeze();
+	m_harpies.freeze();
+	if (minotaurPresent){
+		m_minotaur.freeze();
+	}
 }
 
 void Level::unfreeze_all_enemies()
 {
-	for (auto& s : m_spiders) s.unfreeze();
-	for (auto& h : m_harpies) h.unfreeze();
+	m_spiders.unfreeze();
+	m_harpies.unfreeze();
+	if (minotaurPresent){
+		m_minotaur.unfreeze();
+	}
 }
 
 void Level::update_all_enemies(float elapsed_ms)
 {
-	for (auto& s : m_spiders) s.update(elapsed_ms);
-	for (auto& h : m_harpies) h.update(elapsed_ms);
+	m_spiders.update(elapsed_ms);
+	m_harpies.update(elapsed_ms);
+	if (minotaurPresent){
+		m_minotaur.update(elapsed_ms);
+	}
+
 }
 
-bool Level::maze_is_platform(std::pair<int,int> coords){
+Level::Platform Level::maze_is_platform(std::pair<int,int> coords){
+	Platform platform = Platform{};
 	int val_at_coords = m_maze[coords.first][coords.second];
 	for (auto& p : platform_types) {
 		if (val_at_coords == p.first){
-			return true;
+			platform.isPlatform = true;
+			platform.platformType = p.first;
+			return platform;
 		}
 	}
-	return false;
+	platform.isPlatform = false;
+	platform.platformType = 0;
+	return platform;
 }
 
 std::vector<std::vector <int>> Level::get_original_maze() {
@@ -664,6 +758,7 @@ void Level::load_select_level(int level)
 	destroy_platforms();
 	destroy_enemies();
 	m_maze.clear();
+	m_quad.clear();
 
 	current_level = level;
 	call_level_loader();
@@ -673,6 +768,8 @@ void Level::load_select_level(int level)
 	initialize_camera_position(w, h);
 
 	reset_player_camera();
+
+	initialize_message_prompt();
 }
 
 int Level::get_current_level() { return current_level; }
@@ -683,9 +780,13 @@ float Level::get_rotationDeg() { return rotationDeg; }
 
 float Level::get_rotationEnergy() { return rotationEnergy; }
 
-std::vector<Spider> Level::get_spiders() { return m_spiders; }
+std::vector<Spider> Level::get_spiders() { return m_spiders.get_spider_vector(); }
 
-std::vector<Harpy> Level::get_harpies() { return m_harpies; }
+std::vector<Harpy> Level::get_harpies() { return m_harpies.get_harpy_vector(); }
+
+Minotaur Level::get_minotaur() { return m_minotaur; }
+
+std::vector<Floor> Level::get_floors() { return m_floors.get_floor_vector(); }
 
 void Level::load_saved_game()
 {
@@ -702,6 +803,13 @@ void Level::load_saved_game()
         load_player();
         load_spiders();
         load_harpies();
+		if (minotaurPresent) {
+			load_minotaur();
+		}
+    }
+
+    if (hasPrompt) {
+        m_message.set_visibility(false);
     }
 
 }
@@ -709,7 +817,6 @@ void Level::load_saved_game()
 void Level::load_player()
 {
 	float player_x, player_y, player_scaleX, player_scaleY;
-	bool alive;
 
 	Value& player = GameSave::document["player"];
 
@@ -723,6 +830,8 @@ void Level::load_player()
 	player_scaleX = itr->value.GetFloat();
 
 	player_scaleY = m_player.get_scale().y;
+
+    vec2 originalPosition = m_player.get_position();
 
 	m_player.set_position(vec2({player_x, player_y}));
 	m_player.set_scale(vec2({player_scaleX, player_scaleY}));
@@ -740,7 +849,37 @@ void Level::load_player()
 
     if (rotationEnergy < maxRotationEnergy)
     	m_water.set_rotation_end_time();
-    
+
+    // reset initialPosition for restarting game
+    initialPosition = originalPosition;
+
+}
+
+void Level::load_minotaur()
+{
+	float minotaur_x, minotaur_y, minotaur_scaleX, minotaur_scaleY, minotaur_velx;
+
+	Value& minotaur = GameSave::document["minotaur"];
+
+    Value::ConstMemberIterator itr = minotaur.GetObject().FindMember("pos_x");
+	minotaur_x = itr->value.GetFloat();
+
+	itr = minotaur.GetObject().FindMember("pos_y");
+	minotaur_y = itr->value.GetFloat();
+
+	itr = minotaur.GetObject().FindMember("scale_x");
+	minotaur_scaleX = itr->value.GetFloat();
+
+	minotaur_scaleY = m_player.get_scale().y;
+
+	itr = minotaur.GetObject().FindMember("velocity_x");
+	minotaur_velx = itr->value.GetFloat();
+
+	m_minotaur.set_velocity(vec2{minotaur_velx, 0.f});
+
+	m_minotaur.set_position(vec2({minotaur_x, minotaur_y}));
+	m_minotaur.set_scale(vec2({minotaur_scaleX, minotaur_scaleY}));
+
 }
 
 void Level::load_spiders()
@@ -765,11 +904,13 @@ void Level::load_spiders()
 		itr = spiders[i].GetObject().FindMember("scale_x");
 		scale_x = itr->value.GetFloat();
 
-		scale_y = m_spiders[i].get_scale().y;
+		scale_y = m_spiders.get_spider_vector()[i].get_scale().y;
 
-		m_spiders[i].set_position(vec2({pos_x, pos_y}));
-		m_spiders[i].set_velocity(vec2({vel_x, vel_y}));
-		m_spiders[i].set_scale(vec2({scale_x, scale_y}));
+		vec2 position = vec2({ pos_x, pos_y });
+		vec2 velocity = vec2({ vel_x, vel_y });
+		vec2 scale = vec2({ scale_x, scale_y });
+
+		m_spiders.setSpiderProperties(i, position, velocity, scale);
 	}
 }
 
@@ -795,10 +936,18 @@ void Level::load_harpies()
 		itr = harpies[i].GetObject().FindMember("scale_x");
 		scale_x = itr->value.GetFloat();
 
-		scale_y = m_harpies[i].get_scale().y;
+		scale_y = m_harpies.get_harpy_vector()[i].get_scale().y;
 
-		m_harpies[i].set_position(vec2({pos_x, pos_y}));
-		m_harpies[i].set_velocity(vec2({vel_x, vel_y}));
-		m_harpies[i].set_scale(vec2({scale_x, scale_y}));
+		vec2 position = vec2({ pos_x, pos_y });
+		vec2 velocity = vec2({ vel_x, vel_y });
+		vec2 scale = vec2({ scale_x, scale_y });
+
+		m_harpies.setHarpyProperties(i, position, velocity, scale);
 	}
+}
+
+void Level::boss_rotation_set(bool enable, bool cw)
+{
+	isRotating = enable;
+	rotateCW = cw;
 }

@@ -3,7 +3,7 @@
 #include "../include/characters/enemy.hpp"
 #include "../include/characters/player.hpp"
 #include "../include/mazeComponents/floor.hpp"
-#include "../include/mazeComponents/spikes.hpp"
+#include "../include/mazeComponents/spike.hpp"
 #include "../include/mazeComponents/ice.hpp"
 #include "../include/mazeComponents/exit.hpp"
 #include "../include/mazeComponents/fire.hpp"
@@ -49,7 +49,7 @@ public:
 
 	// checks for collisions and reacts appropriately
     void characterCollisionsWithFloors(Player *c, std::vector<Floor> floors);
-    void characterCollisionsWithSpikes(Player *c, std::vector<Spikes> spikes);
+    void characterCollisionsWithSpikes(Player *c, std::vector<Spike> spikes);
     void characterCollisionsWithIce(Player *c, std::vector<Ice> ice);
     void characterCollisionsWithFixedComponent(Player *c, FixedComponent* fc);
 
