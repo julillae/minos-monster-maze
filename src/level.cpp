@@ -630,11 +630,15 @@ void Level::load_new_level()
 	m_maze.clear();
 
 	current_level++;
-	if (current_level >= num_levels)
+	if (current_level >= num_levels) {
 		current_level = 0;
-
+		level_timer.resetCumulativeTime();
+	}
+	level_timer.addCumulativeTime(level_timer.getTime());
 	call_level_loader();
 	initialize_message_prompt();
+	// if moved on to new level, reset saved time to zero.
+	level_timer.recordSavedTime(0.f);
 	level_timer.reset();
 }
 

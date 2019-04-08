@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <iostream>
 #include "../include/timer.hpp"
 
 using Clock = std::chrono::high_resolution_clock;
@@ -7,6 +8,7 @@ void Timer::init() {
     timer = Clock::now();
     savedTime = 0.f;
     pausedTime = 0.f;
+    cumulativeTime = 0.f;
 }
 
 void Timer::reset() {
@@ -27,6 +29,15 @@ void Timer::recordSavedTime(float st) {
 
 void Timer::recordPausedTime(float pt) {
     pausedTime += pt;
+}
+
+void Timer::addCumulativeTime(float toAdd) {
+    cumulativeTime += toAdd;
+    printf("Cumulative time is %lf\n", cumulativeTime);
+}
+
+void Timer::resetCumulativeTime() {
+    cumulativeTime = 0.f;
 }
 
 
