@@ -96,11 +96,11 @@ void Fire::draw(const mat3& projection)
     glUniform1i(screen_text_uloc, 0);
 
 
-    float o_position[] = {tx, ty};
+    float o_position[] = {tx/2.f, ty/2.f};
     printf("%f", o_position[0]);
     glUniform2fv(origin_pos, 1, o_position);
 
-    float l_position[] = {0.f, 0.f};
+    float l_position[] = {px, py};
     glUniform2fv(light_pos, 1, l_position);
     //glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
     //glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);

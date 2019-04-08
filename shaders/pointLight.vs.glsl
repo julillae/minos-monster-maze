@@ -57,6 +57,7 @@ uniform vec2 origin_pos;
 
 out vec2 uv;
 out vec3 light_position;
+out vec3 origin_position;
 
 void main()
 {
@@ -66,9 +67,10 @@ void main()
     // Convert to the [0, 1] range of UV coordinate
     //vec3 move_frame = projection[2];
     //light_position = projection*vec3(light_pos.xy, 1.0);
-    float light_inwindow_x = light_pos.x-origin_pos.x;
-    float light_inwindow_y = light_pos.y-origin_pos.y;
-    light_position = vec3(light_inwindow_x,  light_inwindow_y, 1.0);
+    //float light_inwindow_x = light_pos.x-origin_pos.x;
+    //float light_inwindow_y = light_pos.y-origin_pos.y;
+    light_position = vec3(origin_pos, 1.0);
+    origin_position = vec3(origin_pos, 1.0);
 
     
     //origin_pos = vec2(move_frame.xy);

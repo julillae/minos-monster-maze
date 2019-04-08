@@ -345,7 +345,7 @@ void Level::draw()
 		vec2 deviationVector = add(p_position, negateVec(prevCameraCenter));
 		vec2 shrinkingTetherVector = { 0.f,0.f };
 		if (vecLength(deviationVector) > g_tolerance) {
-			shrinkingTetherVector = scalarMultiply(deviationVector, 0.05f);
+			shrinkingTetherVector = scalarMultiply(deviationVector, 1.f);
 		}
 		cameraCenter = add(prevCameraCenter, shrinkingTetherVector);
 		prevCameraCenter = cameraCenter;
@@ -396,7 +396,7 @@ void Level::draw()
 	m_help_menu.draw(projection_2D);
 
 	// Presenting
-	m_fire.originUpdate(tx, ty, p_position.x, p_position.y);
+	m_fire.originUpdate(w, h, p_position.x, p_position.y);
 	glfwSwapBuffers(m_window);
 }
 
