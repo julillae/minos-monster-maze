@@ -41,7 +41,11 @@ void main(void)
 {
     //vec2 l_p = light_pos+origin_pos;
     vec4 texturecolor = texture(screen_texture, uv);
-    outputColor = vec4(calculatePointLight(light_position.xy, vec3(1,1,1)), 1.0)*texturecolor;
+    if(light_pos.x==0.f){
+        outputColor = vec4(calculatePointLight(light_position.xy, vec3(1,0,0)), 1.0)*texturecolor;
+    }else{
+        outputColor = vec4(calculatePointLight(light_position.xy, vec3(1,1,1)), 1.0)*texturecolor;
+    }
     //outputColor = vec4(calculatePointLight(light_pos, vec3(1,1,1)), 1.0)*texturecolor;
 }
 // //////////////////////

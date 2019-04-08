@@ -651,6 +651,7 @@ void Level::reset_game()
 	int w, h;
 	glfwGetWindowSize(m_window, &w, &h);
 	m_player.destroy();
+
 	
 	if (is_player_at_goal) {
 		load_new_level();
@@ -660,6 +661,7 @@ void Level::reset_game()
 	}
 	
 	reset_player_camera();
+	m_fire.reset_fire();
 	initialize_message_prompt();
 }
 
@@ -746,6 +748,7 @@ void Level::set_player_death()
 		Mix_PlayChannel(-1, m_player_dead_sound, 0);
 		m_player.kill();
 		m_water.set_player_dead();
+		m_fire.set_player_dead();
 	}
 }
 

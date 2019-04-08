@@ -100,7 +100,7 @@ void Fire::draw(const mat3& projection)
     //printf("%f", o_position[0]);
     glUniform2fv(origin_pos, 1, o_position);
 
-    float l_position[] = {px, py};
+    float l_position[] = {isAlive, isAlive};
     glUniform2fv(light_pos, 1, l_position);
     //glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
     //glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
@@ -173,4 +173,12 @@ void Fire::originUpdate(float ox, float oy, float p_x, float p_y){
     ty = oy;
     px = p_x;
     py = p_y;
+}
+
+void Fire::set_player_dead(){
+    isAlive = 0.f;
+}
+
+void Fire::reset_fire(){
+    isAlive = 1.f;
 }

@@ -25,6 +25,8 @@ public:
 
     //void WindowTrans(float tx, float ty);
     void originUpdate(float ox, float oy, float p_x, float p_y);
+    void set_player_dead();
+    void reset_fire();
 
 private:
     //Texture m_texture;
@@ -38,5 +40,6 @@ private:
     float ty = 0.f;
     float px = 0.f;
     float py = 0.f;
+    float isAlive = 1.f;
 
 };
