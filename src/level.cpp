@@ -177,11 +177,8 @@ void Level::destroy()
 	destroy_enemies();
 	destroy_platforms();
 	m_help_menu.destroy();
-<<<<<<< HEAD
 	m_fire.destroy();
-=======
 	m_quad.clear();
->>>>>>> bcf631af91a6571e4a60d0b07fdb097d5c671593
 
 	glfwDestroyWindow(m_window);
 }
@@ -423,7 +420,6 @@ void Level::draw()
 	//m_fire.WindowTrans(tx, ty);
 	m_fire.draw(projection_2D);
 	//m_water.draw(projection_2D);
-
 
 	m_help_menu.draw(projection_2D);
 

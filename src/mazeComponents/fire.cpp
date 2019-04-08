@@ -97,7 +97,7 @@ void Fire::draw(const mat3& projection)
 
 
     float o_position[] = {tx/2.f, ty/2.f};
-    printf("%f", o_position[0]);
+    //printf("%f", o_position[0]);
     glUniform2fv(origin_pos, 1, o_position);
 
     float l_position[] = {px, py};

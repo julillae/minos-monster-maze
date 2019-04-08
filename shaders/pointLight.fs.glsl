@@ -20,7 +20,7 @@ vec3 calculatePointLight(vec2 lightPosition, vec3 Color)
     float dist = length(l);
 
     float linear = 0;
-    float quadratic = 0.00025/20.0;
+    float quadratic = 0.00025/30.0;
     float constant = 0.6f;
     float atten = min(1.0/(constant + (dist*linear)+ ((dist*dist)*quadratic)), 1.0);
 
