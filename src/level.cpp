@@ -267,6 +267,7 @@ bool Level::update(float elapsed_ms)
 
 	if (applyFreeze) {
 		m_player.freeze();
+		m_blades.freeze();
 		freeze_all_enemies();
 		rotationStart = rotation;
 	}
@@ -274,6 +275,7 @@ bool Level::update(float elapsed_ms)
 		float rotateVelVec = rotation - rotationStart;
 		physicsHandler->updateCharacterVelocityRotation(&m_player, rotateVelVec);
 		m_player.unfreeze();
+		m_blades.unfreeze();
 		unfreeze_all_enemies();
 	}
 	if (m_player.characterState->currentState == jumping) 

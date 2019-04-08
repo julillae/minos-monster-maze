@@ -2,6 +2,9 @@
 
 #include "geometricComponent.hpp"
 #include <vector>
+#include <map>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 class Blade : public GeometricComponent
 {
@@ -15,7 +18,6 @@ public:
     void draw(const mat3& projection)override;
 
     void set_pendulum_rot();
-    void set_world_vertex_coord();
 private:
     float max_rotation = (float) M_PI / 2;
     float min_rotation = (float) (- M_PI / 2);
@@ -37,6 +39,12 @@ public:
 	void setBladeProperties(size_t index, float rotation);
 
 	void destroy();
+
+	void freeze();
+	void unfreeze();
+
+	bool renderSetup()override;
 private:
 	std::vector<Blade> m_blades;
+	bool isFrozen = false;
 };

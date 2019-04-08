@@ -169,7 +169,7 @@ private:
         {66, "SPIKE UP"},    //B
         {67, "SPIKE DOWN"},  //C
         {68, "SPIKE RIGHT"}, //D
-		{115, "BLADE" }	     //s
+		{98, "BLADE" }	     //b
 	};
 
     // Variables determined by level data
