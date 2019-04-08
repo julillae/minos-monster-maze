@@ -5,6 +5,8 @@ using Clock = std::chrono::high_resolution_clock;
 
 void Timer::init() {
     timer = Clock::now();
+    savedTime = 0.f;
+    pausedTime = 0.f;
 }
 
 void Timer::reset() {
@@ -12,10 +14,22 @@ void Timer::reset() {
 }
 
 float Timer::getTime() {
+    float result = 0.f;
     auto now = Clock::now();
 	float elapsed_sec = (float)(std::chrono::duration_cast<std::chrono::seconds>(now - timer)).count();
-    return elapsed_sec;
+    // add time from saved game and subtract paused game time
+    return result + elapsed_sec + savedTime - pausedTime;
 }
+
+void Timer::recordSavedTime(float st) {
+    savedTime = st;
+}
+
+void Timer::recordPausedTime(float pt) {
+    pausedTime += pt;
+}
+
+
 
 // void Timer::draw() {
 //     TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 24); //this opens a font style and sets a size

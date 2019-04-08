@@ -122,6 +122,9 @@ public:
 	void load_harpies();
 	void load_minotaur();
 	void load_blades();
+
+	float get_level_time();
+	float get_cumulative_time();
 private:
 
 	// Water effect
