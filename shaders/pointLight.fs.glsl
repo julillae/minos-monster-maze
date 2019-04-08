@@ -4,6 +4,7 @@ uniform sampler2D screen_texture;
 uniform vec2 light_pos;
 uniform vec2 origin_pos;
 uniform float time;
+uniform int is_at_door;
 in vec2 uv;
 in vec4 gl_FragCoord;
 in vec3 light_position;
@@ -13,7 +14,7 @@ in vec3 origin_position;
 
 
 
-vec3 calculatePointLight(vec2 lightPosition, vec3 Color)
+vec3 calculatePointLight(vec2 lightPosition, vec3 Color, float is_at_door)
 {
     vec3 finalColor = vec3(0.0);
 
@@ -22,6 +23,9 @@ vec3 calculatePointLight(vec2 lightPosition, vec3 Color)
 
     float linear = 0;
     float quadratic = 0.00025/(30.0-0.6*sin(time*3.0));
+    if(is_at_door!=0){
+        quadratic = 0.00025/(30.0-0.6*sin(time*3.0)+time/20.0);
+    }
     float constant = 0.6f;
     float atten = min(1.0/(constant + (dist*linear)+ ((dist*dist)*quadratic)), 1.0);
 
@@ -43,9 +47,9 @@ void main(void)
     //vec2 l_p = light_pos+origin_pos;
     vec4 texturecolor = texture(screen_texture, uv);
     if(light_pos.x==0.f){
-        outputColor = vec4(calculatePointLight(light_position.xy, vec3(1,0,0)), 1.0)*texturecolor;
+        outputColor = vec4(calculatePointLight(light_position.xy, vec3(1,0,0), is_at_door), 1.0)*texturecolor;
     }else{
-        outputColor = vec4(calculatePointLight(light_position.xy, vec3(1,1,1)), 1.0)*texturecolor;
+        outputColor = vec4(calculatePointLight(light_position.xy, vec3(1,1,1), is_at_door), 1.0)*texturecolor;
     }
     //outputColor = vec4(calculatePointLight(light_pos, vec3(1,1,1)), 1.0)*texturecolor;
 }

@@ -89,6 +89,7 @@ void Fire::draw(const mat3& projection)
     GLuint screen_text_uloc = glGetUniformLocation(effect.program, "screen_texture");
     GLuint time_uloc = glGetUniformLocation(effect.program, "time");
     GLint light_pos = glGetUniformLocation(effect.program, "light_pos");
+    GLint at_door = glGetUniformLocation(effect.program, "is_at_door");
     GLint origin_pos = glGetUniformLocation(effect.program, "origin_pos");
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
     //GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
@@ -104,6 +105,7 @@ void Fire::draw(const mat3& projection)
     float l_position[] = {isAlive, isAlive};
     glUniform2fv(light_pos, 1, l_position);
     glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
+    glUniform1i(at_door, is_At_Door);
     //glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
     //glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
     glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -183,4 +185,9 @@ void Fire::set_player_dead(){
 
 void Fire::reset_fire(){
     isAlive = 1.f;
+    is_At_Door = 0.f;
+}
+
+void Fire::set_success(){
+    is_At_Door = 1;
 }
