@@ -16,7 +16,7 @@
 MainMenuState::MainMenuState(Game *game)
 {
     this->game = game;
-
+	this->name = MAIN;
 }
 
 void MainMenuState::init(vec2 screen)
@@ -41,39 +41,6 @@ void MainMenuState::init(vec2 screen)
     m_frame_buffer = 0;
     glGenFramebuffers(1, &m_frame_buffer);
     glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
-
-    if (SDL_Init(SDL_INIT_AUDIO) < 0)
-    {
-        fprintf(stderr, "Failed to initialize SDL Audio");
-        return;
-    }
-
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
-    {
-        fprintf(stderr, "Failed to open audio device");
-        return;
-    }
-//
-//    //Note: the following music credits needs to be added to a credit scene at the end of the game
-//    //Secret Catacombs
-//    //by Eric Matyas
-//    //www.soundimage.org
-//
-    m_background_music = Mix_LoadMUS(audio_path("secret_catacombs.wav"));
-
-    if (m_background_music == nullptr)
-    {
-        fprintf(stderr, "Failed to load sound\n %s,%s\n make sure the data directory is present",
-                audio_path("salmon_dead.wav"),
-                audio_path("secret_catacombs.wav"));
-        return;
-    }
-
-    // Playing background music undefinitely
-    Mix_PlayMusic(m_background_music, -1);
-    Mix_VolumeMusic(50);
-
-    fprintf(stderr, "Loaded music\n");
 
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
@@ -225,10 +192,10 @@ void MainMenuState::destroy()
 {
     glDeleteFramebuffers(1, &m_frame_buffer);
 
-    if (m_background_music != nullptr)
-        Mix_FreeMusic(m_background_music);
+    //if (m_background_music != nullptr)
+    //    Mix_FreeMusic(m_background_music);
 
-    Mix_CloseAudio();
+    //Mix_CloseAudio();
 
     mainMenu.destroy();
     loadButton.destroy();

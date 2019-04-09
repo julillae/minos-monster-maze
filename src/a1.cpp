@@ -25,7 +25,6 @@ const int height = 720;
 // Entry point
 int main(int argc, char* argv[])
 {
-
     vec2 screen = { (float)width, (float)height };
     game.init(screen);
 
