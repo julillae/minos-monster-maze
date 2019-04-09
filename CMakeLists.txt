@@ -52,6 +52,7 @@ set(SOURCE_FILES
     src/mazeComponents/ice.cpp
     src/mazeComponents/exit.cpp
     src/mazeComponents/spike.cpp
+    src/mazeComponents/blade.cpp
     src/gameAI.cpp
     src/physics.cpp
     src/level.cpp
@@ -96,6 +97,7 @@ set(SOURCE_FILES
     include/mazeComponents/ice.hpp
     include/mazeComponents/exit.hpp
     include/mazeComponents/spike.hpp
+    include/mazeComponents/blade.hpp
     include/gameAI.hpp
     include/physics.hpp
     include/level.hpp

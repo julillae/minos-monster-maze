@@ -133,6 +133,7 @@ void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) 
 		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes.get_spike_vector());
         physicsHandler->characterCollisionsWithFloors(&m_player, nearbyFloorComponents);
 		physicsHandler->characterCollisionsWithIce(&m_player, m_ice.get_ice_vector());
+		physicsHandler->characterCollisionsWithBlades(&m_player, m_blades.get_blade_vector());
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
@@ -266,6 +267,7 @@ bool Level::update(float elapsed_ms)
 
 	if (applyFreeze) {
 		m_player.freeze();
+		m_blades.freeze();
 		freeze_all_enemies();
 		rotationStart = rotation;
 	}
@@ -273,6 +275,7 @@ bool Level::update(float elapsed_ms)
 		float rotateVelVec = rotation - rotationStart;
 		physicsHandler->updateCharacterVelocityRotation(&m_player, rotateVelVec);
 		m_player.unfreeze();
+		m_blades.unfreeze();
 		unfreeze_all_enemies();
 	}
 	if (m_player.characterState->currentState == jumping) 
@@ -280,6 +283,7 @@ bool Level::update(float elapsed_ms)
 	m_player.update(elapsed_ms);
 
 	update_all_enemies(elapsed_ms);
+	update_all_platforms(elapsed_ms);
 
 	m_help_menu.set_visibility(show_help_menu);
 
@@ -554,12 +558,14 @@ void Level::draw_platforms(mat3 projection_2D) {
 	m_floors.draw(projection_2D);
 	m_ice.draw(projection_2D);
 	m_spikes.draw(projection_2D);
+	m_blades.draw(projection_2D);
 }
 
 void Level::destroy_platforms() {
 	m_floors.destroy();
 	m_spikes.destroy();
 	m_ice.destroy();
+	m_blades.destroy();
 }
 
 void Level::call_level_loader()
@@ -588,6 +594,7 @@ void Level::call_level_loader()
 	m_floors = levelLoader.get_floors();
 	m_ice = levelLoader.get_ice();
 	m_spikes = levelLoader.get_spikes();
+	m_blades = levelLoader.get_blades();
 
     int w, h;
     glfwGetWindowSize(m_window, &w, &h);
@@ -688,6 +695,11 @@ void Level::update_all_enemies(float elapsed_ms)
 
 }
 
+void Level::update_all_platforms(float elapsed_ms)
+{
+	m_blades.update();
+}
+
 Level::Platform Level::maze_is_platform(std::pair<int,int> coords){
 	Platform platform = Platform{};
 	int val_at_coords = m_maze[coords.first][coords.second];
@@ -767,6 +779,8 @@ Minotaur Level::get_minotaur() { return m_minotaur; }
 
 std::vector<Floor> Level::get_floors() { return m_floors.get_floor_vector(); }
 
+std::vector<Blade> Level::get_blades() { return m_blades.get_blade_vector();}
+
 void Level::load_saved_game()
 {
 	fprintf(stderr, "loading saved game\n");
@@ -785,6 +799,7 @@ void Level::load_saved_game()
 		if (minotaurPresent) {
 			load_minotaur();
 		}
+		load_blades();
     }
 
     if (hasPrompt) {
@@ -922,6 +937,18 @@ void Level::load_harpies()
 		vec2 scale = vec2({ scale_x, scale_y });
 
 		m_harpies.setHarpyProperties(i, position, velocity, scale);
+	}
+}
+
+void Level::load_blades()
+{
+	const Value& blades = GameSave::document["blades"];
+
+	for (SizeType i = 0;  i < blades.Size(); i++)
+	{
+		float rotation = blades[i].GetFloat();
+
+		m_blades.setBladeProperties(i, rotation);
 	}
 }
 
