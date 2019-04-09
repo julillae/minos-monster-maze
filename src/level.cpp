@@ -370,7 +370,7 @@ void Level::draw()
 
 	float sx = 2.f * osScaleFactor / (right - left);
 	float sy = 2.f * osScaleFactor / (top - bottom); //this is where you play around with the camera
-	
+	vec2 deviationVector = { 0.f, 0.f };
 	if (cameraTracking && !show_help_menu){
 		vec2 deviationVector = add(p_position, negateVec(prevCameraCenter));
 		vec2 shrinkingTetherVector = { 0.f,0.f };
@@ -433,7 +433,10 @@ void Level::draw()
 	}
 
 	// Presenting
-	m_fire.originUpdate(w, h, p_position.x, p_position.y);
+	//m_fire.originUpdate(w, h, p_position.x, p_position.y);
+	vec2 deviationVector2 = add(p_position, negateVec(cameraCenter));
+	deviationVector2 = rotateVec(deviationVector2, rotation);
+	m_fire.originUpdate(w, h, deviationVector2.x, -deviationVector2.y);
 	glfwSwapBuffers(m_window);
 }
 

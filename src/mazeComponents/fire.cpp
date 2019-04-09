@@ -105,7 +105,7 @@ void Fire::draw(const mat3& projection)
 
     glUniform1f(alive, isAlive);
 
-    float l_position[] = {tx/2.f, ty/2.f};
+    float l_position[] = {tx/2.f + px, ty/2.f + py};
     glUniform2fv(light_pos, 1, l_position);
     glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
     glUniform1i(at_door, is_At_Door);
