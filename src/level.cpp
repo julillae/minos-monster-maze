@@ -42,6 +42,7 @@ Level::Level(Game* game) :
 // Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
 	this->game = game;
+	soundManager = game->soundManager;
 }
 
 Level::~Level()
@@ -74,44 +75,6 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	// Initialize the screen texture
 	m_screen_tex.create_from_screen(m_window);
 
-	//-------------------------------------------------------------------------
-	// Loading music and sounds
-	if (SDL_Init(SDL_INIT_AUDIO) < 0)
-	{
-		fprintf(stderr, "Failed to initialize SDL Audio");
-		return false;
-	}
-
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
-	{
-		fprintf(stderr, "Failed to open audio device");
-		return false;
-	}
-
-	//Note: the following music credits needs to be added to a credit scene at the end of the game
-	//Secret Catacombs
-	//by Eric Matyas
-	//www.soundimage.org
-
-	m_background_music = Mix_LoadMUS(audio_path("secret_catacombs.wav"));
-	m_player_dead_sound = Mix_LoadWAV(audio_path("death.wav"));
-	m_player_jump_sound = Mix_LoadWAV(audio_path("jump.wav"));
-	level_complete_sound = Mix_LoadWAV(audio_path("nextLevel.wav"));
-
-	if (m_background_music == nullptr)
-	{
-		fprintf(stderr, "Failed to load sound\n %s,%s\n make sure the data directory is present",
-			audio_path("salmon_dead.wav"),
-			audio_path("secret_catacombs.wav"));
-		return false;
-	}
-
-	// Playing background music undefinitely
-	Mix_PlayMusic(m_background_music, -1);
-	Mix_VolumeMusic(50);
-	
-	fprintf(stderr, "Loaded music\n");
-
 	is_player_at_goal = false;
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
@@ -138,7 +101,7 @@ void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
 		if (!m_player.is_alive()) {
-			Mix_PlayChannel(-1, m_player_dead_sound, 0);
+			soundManager.play_dead_sound();
 			m_water.set_player_dead();
 		}
 
@@ -150,17 +113,6 @@ void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) 
 void Level::destroy()
 {
 	glDeleteFramebuffers(1, &m_frame_buffer);
-
-	if (m_background_music != nullptr)
-		Mix_FreeMusic(m_background_music);
-	if (m_player_dead_sound != nullptr)
-		Mix_FreeChunk(m_player_dead_sound);
-	if (m_player_jump_sound != nullptr)
-		Mix_FreeChunk(m_player_jump_sound);
-	if (level_complete_sound != nullptr)
-		Mix_FreeChunk(level_complete_sound);
-
-	Mix_CloseAudio();
 
 	m_player.destroy();
 	destroy_enemies();
@@ -243,7 +195,7 @@ bool Level::update(float elapsed_ms)
 //	 Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit) && !is_player_at_goal)
 	{
-		Mix_PlayChannel(-1, level_complete_sound, 0);
+		soundManager.play_level_complete_sound();
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
 		m_player.freeze();
@@ -278,8 +230,8 @@ bool Level::update(float elapsed_ms)
 		m_blades.unfreeze();
 		unfreeze_all_enemies();
 	}
-	if (m_player.characterState->currentState == jumping) 
-		Mix_PlayChannel(-1, m_player_jump_sound, 0);
+	if (m_player.characterState->currentState == jumping)
+		soundManager.play_jump_sound();
 	m_player.update(elapsed_ms);
 
 	update_all_enemies(elapsed_ms);
@@ -738,7 +690,7 @@ float Level::get_tile_height() {
 void Level::set_player_death()
 {
 	if (!m_player.is_invincible() && m_player.is_alive()) {
-		Mix_PlayChannel(-1, m_player_dead_sound, 0);
+		soundManager.play_dead_sound();
 		m_player.kill();
 		m_water.set_player_dead();
 	}

@@ -70,7 +70,7 @@ bool Game::init(vec2 screen)
     m_frame_buffer = 0;
     glGenFramebuffers(1, &m_frame_buffer);
     glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
-
+	soundManager.init();
     return true;
 }
 
@@ -131,6 +131,16 @@ std::map<gameStates, GameState*> Game::get_states()
 
 void Game::set_current_state(GameState* currState)
 {
+	if (currentState == NULL) {
+		soundManager.play_menu_bg_music();
+	} else if (currentState->name == LEVEL || currentState->name == PAUSE) {
+		if (currState->name == MAIN || currState->name == LEVELSELECT)
+			soundManager.play_menu_bg_music();
+	}
+	else {
+		if (currState->name == LEVEL || currState->name == PAUSE)
+			soundManager.play_level_bg_music();
+	}
     currentState = currState;
     currentState->set_onKey();
 }
