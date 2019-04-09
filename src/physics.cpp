@@ -212,6 +212,14 @@ void Physics::characterCollisionsWithIce(Player* c, std::vector<Ice> ice) {
     }
 }
 
+void Physics::characterCollisionsWithBlades(Player* c, std::vector<Blade> blades) {
+	for (Blade b : blades) {
+		characterCollisionsWithFixedComponent(c, &b);
+
+		if (!c->is_alive()) return;
+	}
+}
+
 void mtvAdjustment(Character* c, MTV mtv) {
 	vec2 normal = mtv.normal;
 	float magnitude = mtv.magnitude;

@@ -80,8 +80,8 @@ bool Spike::init(vec2 position)
 void Spike::draw(const mat3& projection)
 {
     float color[] = { 0.8, 0.15, 0.15 };
-    RenderManager::draw_mesh(projection, m_position, m_rotation, m_scale, this,
-                             color, m_num_indices);
+    RenderManager::init_drawing_data(m_position, m_rotation, m_scale, this);
+    RenderManager::draw_mesh(projection, this, color, m_num_indices);
 
 }
 

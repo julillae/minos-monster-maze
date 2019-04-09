@@ -7,16 +7,21 @@
 void FixedComponent::set_world_vertex_coord()
 {
 	apply_transformations(m_position, m_rotation, m_scale);
-	vertex_coords.clear();
-	for (auto vert : local_vertex_coords)
-	{
-		mat3 max_mat{ {vert.x, vert.y, 1},
-					  { 0, 0, 0 },
-					  { 0, 0, 0 } };
-		mat3 transformed = mul(transform, max_mat);
+	transform_vertex_coord();
+}
 
-		vertex_coords.push_back(vec2({ transformed.c0.x, transformed.c0.y }));
-	}
+void FixedComponent::transform_vertex_coord()
+{
+    vertex_coords.clear();
+    for (auto vert : local_vertex_coords)
+    {
+        mat3 pos_mat{ {vert.x, vert.y, 1},
+                      { 0, 0, 0 },
+                      { 0, 0, 0 } };
+        mat3 transformed = mul(transform, pos_mat);
+
+        vertex_coords.push_back(vec2({ transformed.c0.x, transformed.c0.y }));
+    }
 }
 
 void FixedComponent::set_collision_properties()

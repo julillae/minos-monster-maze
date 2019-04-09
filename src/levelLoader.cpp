@@ -140,6 +140,10 @@ void LevelLoader::generate_maze()
 					setting_minotaur = true;
 					enemy_start_pos = {x_pos, y_pos};
 				}
+			} else if (cell == 98) {
+				if (blades.spawn_blades(vec2({x_pos, y_pos}))) {
+					store_platform_coords({x_pos, y_pos}, cell);
+				}
 			}
 
             j = j + 1.f;
@@ -226,71 +230,32 @@ void LevelLoader::print_maze() {
 	}
 }
 
-float LevelLoader::get_maze_width()
-{
-    return m_maze_width;
-}
+float LevelLoader::get_maze_width() { return m_maze_width; }
 
-float LevelLoader::get_maze_height()
-{
-    return m_maze_height;
-}
+float LevelLoader::get_maze_height() { return m_maze_height; }
 
-bool LevelLoader::can_rotate()
-{
-    return canRotate;
-}
+bool LevelLoader::can_rotate() { return canRotate; }
 
-bool LevelLoader::can_camera_track()
-{
-    return cameraTracking;
-}
+bool LevelLoader::can_camera_track() { return cameraTracking; }
 
-bool LevelLoader::has_prompt()
-{
-    return hasPrompt;
-}
+bool LevelLoader::has_prompt() { return hasPrompt; }
 
-vec2 LevelLoader::get_player_position()
-{
-    return m_initial_position;
-}
+vec2 LevelLoader::get_player_position() { return m_initial_position; }
 
-Exit LevelLoader::get_exit()
-{
-    return m_exit;
-}
+Exit LevelLoader::get_exit() { return m_exit; }
 
-Spiders LevelLoader::get_spiders()
-{
-	return spiders;
-}
+Spiders LevelLoader::get_spiders() { return spiders; }
 
-Harpies LevelLoader::get_harpies()
-{
-    return harpies;
-}
+Harpies LevelLoader::get_harpies() { return harpies; }
 
-Minotaur LevelLoader::get_minotaur()
-{
-	return m_minotaur;
-}
+Minotaur LevelLoader::get_minotaur() { return m_minotaur; }
 
-bool LevelLoader::minotaurInLevel(){
-	return minotaurPresent;
-}
+bool LevelLoader::minotaurInLevel() { return minotaurPresent; }
 
-Floors LevelLoader::get_floors()
-{
-	return floors;
-}
+Floors LevelLoader::get_floors() { return floors; }
 
-Spikes LevelLoader::get_spikes()
-{
-    return spikes;
-}
+Spikes LevelLoader::get_spikes() { return spikes; }
 
-Ices LevelLoader::get_ice()
-{
-    return ices;
-}
+Ices LevelLoader::get_ice() { return ices; }
+
+Blades LevelLoader::get_blades() { return blades; }

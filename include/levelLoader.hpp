@@ -6,6 +6,7 @@
 #include "mazeComponents/exit.hpp"
 #include "mazeComponents/ice.hpp"
 #include "mazeComponents/spike.hpp"
+#include "mazeComponents/blade.hpp"
 #include "physics.hpp"
 #include "characters/spider.hpp"
 #include "characters/harpy.hpp"
@@ -47,6 +48,7 @@ public:
 	Floors get_floors();
 	Spikes get_spikes();
 	Ices get_ice();
+	Blades get_blades();
 
 private:
     void read_level_data(int levelNumber);
@@ -72,7 +74,8 @@ private:
         {65, "SPIKE LEFT"},  //A
         {66, "SPIKE UP"},    //B
         {67, "SPIKE DOWN"},  //C
-        {68, "SPIKE RIGHT"}  //D
+        {68, "SPIKE RIGHT"}, //D
+		{98, "BLADE" }	     //b
 	};
 
     bool canRotate;
@@ -96,4 +99,5 @@ private:
 	Floors floors;
 	Spikes spikes;
 	Ices ices;
+	Blades blades;
 };
