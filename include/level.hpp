@@ -23,6 +23,7 @@
 #include "levelLoader.hpp"
 #include "flashMessage.hpp"
 #include "quadTree.hpp"
+#include "timer.hpp"
 
 // stlib
 #include <vector>
@@ -121,6 +122,13 @@ public:
 	void load_harpies();
 	void load_minotaur();
 	void load_blades();
+
+	float get_level_time();
+	float get_cumulative_time();
+	float get_pause_start();
+	void reset_pause_start();
+	void return_from_pause();
+	void record_pause_time();
 private:
 
 	// Water effect
@@ -197,5 +205,9 @@ private:
 	float rotationEnergy = maxRotationEnergy;
 
 	QuadTreeNode m_quad;
+
+	Timer level_timer;
+	float timer_pause_start = -1.0f;
+	float timer_pause_end = -1.0f;
 
 };
