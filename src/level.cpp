@@ -455,6 +455,7 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		if (key == GLFW_KEY_ESCAPE) {
             isRotating = false;
 			m_player.set_direction(Direction::none);
+			timer_pause_start = level_timer.getTime();
 
             PauseMenuState* pauseMenuState = (PauseMenuState*) game->get_state(PAUSE);
             pauseMenuState->reset_buttons();
@@ -657,7 +658,8 @@ void Level::reset_game()
 	
 	reset_player_camera();
 	initialize_message_prompt();
-	level_timer.reset();
+	reset_pause_start();
+	level_timer.cleanSlate();
 }
 
 void Level::reset_player_camera()
@@ -768,7 +770,8 @@ void Level::load_select_level(int level)
 	reset_player_camera();
 
 	initialize_message_prompt();
-	level_timer.reset();
+	reset_pause_start();
+	level_timer.cleanSlate();
 }
 
 int Level::get_current_level() { return current_level; }
@@ -968,3 +971,17 @@ void Level::boss_rotation_set(bool enable, bool cw)
 	isRotating = enable;
 	rotateCW = cw;
 }
+
+float Level::get_pause_start() {
+	return timer_pause_start;
+}
+
+void Level::return_from_pause() {
+	level_timer.recordPausedTime(timer_pause_start, level_timer.getTime());
+	reset_pause_start();
+}
+
+void Level::reset_pause_start() {
+	timer_pause_start = -1.0f;
+}
+

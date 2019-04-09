@@ -27,16 +27,27 @@ void Timer::recordSavedTime(float st) {
     savedTime = st;
 }
 
-void Timer::recordPausedTime(float pt) {
+void Timer::recordPausedTime(float start, float end) {
+    float pt = end - start;
     pausedTime += pt;
 }
 
 void Timer::addCumulativeTime(float toAdd) {
     cumulativeTime += toAdd;
-    printf("Cumulative time is %lf\n", cumulativeTime);
 }
 
 void Timer::resetCumulativeTime() {
+    cumulativeTime = 0.f;
+}
+
+void Timer::resetPausedTime() {
+    pausedTime = 0.f;
+}
+
+void Timer::cleanSlate() {
+    reset();
+    savedTime = 0.f;
+    pausedTime = 0.f;
     cumulativeTime = 0.f;
 }
 

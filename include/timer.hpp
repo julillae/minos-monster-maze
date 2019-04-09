@@ -8,9 +8,11 @@ class Timer {
         void reset();
         float getTime();
         void recordSavedTime(float st);
-        void recordPausedTime(float pt);
+        void recordPausedTime(float start, float end);
         void addCumulativeTime(float toAdd);
         void resetCumulativeTime();
+        void resetPausedTime();
+        void cleanSlate();
 
     private:
         void draw();
