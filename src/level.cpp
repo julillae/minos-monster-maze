@@ -647,6 +647,11 @@ void Level::reset_game()
 {
 	int w, h;
 	glfwGetWindowSize(m_window, &w, &h);
+	// if the player died, don't want to reset timer stuff
+	if (m_player.is_alive()) {
+		reset_pause_start();
+		level_timer.cleanSlate();
+	}
 	m_player.destroy();
 	
 	if (is_player_at_goal) {
@@ -658,8 +663,6 @@ void Level::reset_game()
 	
 	reset_player_camera();
 	initialize_message_prompt();
-	reset_pause_start();
-	level_timer.cleanSlate();
 }
 
 void Level::reset_player_camera()
