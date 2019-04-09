@@ -80,15 +80,18 @@ void GameSave::save_level()
     // must pass an allocator when the object may need to allocate memory
     Document::AllocatorType& allocator = document.GetAllocator();
 
-    Value level, rotation, rotationDeg, rotationEnergy;
+    Value level, rotation, rotationDeg, rotationEnergy, levelTime;
     level.SetInt(gameLevel->get_current_level());
     rotation.SetFloat(gameLevel->get_rotation());
     rotationDeg.SetFloat(gameLevel->get_rotationDeg());
     rotationEnergy.SetFloat(gameLevel->get_rotationEnergy());
+    levelTime.SetFloat(gameLevel->get_level_time());
     document.AddMember("level", level, allocator);
     document.AddMember("rotation", rotation, allocator);
     document.AddMember("rotationDeg", rotationDeg, allocator);
     document.AddMember("rotationEnergy", rotationEnergy, allocator);
+    document.AddMember("levelTime", levelTime, allocator);
+
 }
 
 void GameSave::save_enemies()
