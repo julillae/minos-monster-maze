@@ -129,6 +129,9 @@ void PauseMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
                 {
                     case CONTINUE:
                         game->set_current_state(level);
+                        if (level->get_pause_start() > 0) {
+                            level->return_from_pause();
+                        }
                         break;
                     case RESTART:
                         level->reset_game();

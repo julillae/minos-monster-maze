@@ -76,12 +76,13 @@ set(SOURCE_FILES
     src/gameSave.cpp
     src/quadTree.cpp
     src/soundManager.cpp
+    src/timer.cpp
 
     include/project_path.hpp
-	include/common.hpp
+  	include/common.hpp
     include/renderManager.hpp
     include/spriteSheet.hpp
-	include/renderEffects.hpp
+  	include/renderEffects.hpp
     include/characters/character.hpp
     include/characters/player.hpp
     include/characters/enemy.hpp
@@ -122,6 +123,7 @@ set(SOURCE_FILES
     include/gameSave.hpp
     include/quadTree.hpp
     include/soundManager.hpp
+    include/timer.hpp
 
 	)
 
