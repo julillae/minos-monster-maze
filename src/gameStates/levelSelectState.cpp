@@ -15,7 +15,7 @@ Level* world;
 LevelSelectState::LevelSelectState(Game *game)
 {
     this->game = game;
-
+	soundManager = &game->soundManager;
 }
 
 void LevelSelectState::init(vec2 screen)
@@ -92,6 +92,7 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
     if (action == GLFW_PRESS) {
         if (key == GLFW_KEY_ENTER)
         {
+			soundManager->play_level_select_sound();
             Level* level = (Level*) game->get_state(LEVEL);
             if (level != NULL)
             {
@@ -111,6 +112,10 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
         }
 
         int numButtons = sizeof(levelButtons)/sizeof(*levelButtons);
+
+		if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_LEFT ||
+			key == GLFW_KEY_UP || key == GLFW_KEY_DOWN)
+			soundManager->play_button_select_sound();
 
         if (key == GLFW_KEY_RIGHT)
         {
