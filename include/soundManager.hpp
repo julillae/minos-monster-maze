@@ -22,6 +22,12 @@ public:
 
 	void play_level_complete_sound();
 
+	void play_button_select_sound();
+
+	void play_button_enter_sound();
+
+	void play_level_select_sound();
+
 	void destroy();
 
 private:
@@ -30,4 +36,7 @@ private:
 	Mix_Chunk* m_player_dead_sound;
 	Mix_Chunk* m_player_jump_sound;
 	Mix_Chunk* level_complete_sound;
+	Mix_Chunk* button_select_sound;
+	Mix_Chunk* button_enter_sound;
+	Mix_Chunk* level_select_sound;
 };

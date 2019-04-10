@@ -17,8 +17,15 @@ bool SoundManager::init()
 	}
 
 	//Note: the following music credits needs to be added to a credit scene at the end of the game
+	
+	//UI Confirmation Alert, B4.wav by InspectorJ
+
+	//Click_Soft_01.wav
+	//Menu_Navigate_03.wav
+	//by LittleRobotSoundFactory
+	
 	//Strange Game Menu
-	//Secret Catacombs
+	//Secret Catacombs
 	//by Eric Matyas
 	//www.soundimage.org
 
@@ -27,6 +34,10 @@ bool SoundManager::init()
 	m_player_dead_sound = Mix_LoadWAV(audio_path("death.wav"));
 	m_player_jump_sound = Mix_LoadWAV(audio_path("jump.wav"));
 	level_complete_sound = Mix_LoadWAV(audio_path("nextLevel.wav"));
+	button_select_sound = Mix_LoadWAV(audio_path("button_select.wav"));
+	button_enter_sound = Mix_LoadWAV(audio_path("button_enter.wav"));
+	level_select_sound = Mix_LoadWAV(audio_path("level_select.wav"));
+
 
 	if (m_background_music == nullptr)
 	{
@@ -35,7 +46,7 @@ bool SoundManager::init()
 		return false;
 	}
 
-	Mix_VolumeMusic(50);
+	Mix_VolumeMusic(20);
 	fprintf(stderr, "Loaded music\n");
 	return true;
 }
@@ -47,7 +58,7 @@ void SoundManager::play_level_bg_music()
 
 void SoundManager::play_menu_bg_music()
 {
-	Mix_FadeInMusic(menu_background_music, -1, 1000);
+	 Mix_FadeInMusic(menu_background_music, -1, 1000);
 }
 
 void SoundManager::play_dead_sound()
@@ -65,6 +76,21 @@ void SoundManager::play_level_complete_sound()
 	Mix_PlayChannel(-1, level_complete_sound, 0);
 }
 
+void SoundManager::play_button_select_sound()
+{
+	Mix_PlayChannel(-1, button_select_sound, 0);
+}
+
+void SoundManager::play_button_enter_sound()
+{
+	Mix_PlayChannel(-1, button_enter_sound, 0);
+}
+
+void SoundManager::play_level_select_sound()
+{
+	Mix_PlayChannel(-1, level_select_sound, 0);
+}
+
 void SoundManager::destroy()
 {
 	if (m_background_music != nullptr)
@@ -77,6 +103,12 @@ void SoundManager::destroy()
 		Mix_FreeChunk(m_player_jump_sound);
 	if (level_complete_sound != nullptr)
 		Mix_FreeChunk(level_complete_sound);
+	if (button_select_sound != nullptr)
+		Mix_FreeChunk(button_select_sound);
+	if (button_enter_sound != nullptr)
+		Mix_FreeChunk(button_enter_sound);
+	if (level_select_sound != nullptr)
+		Mix_FreeChunk(level_select_sound);
 
 	Mix_CloseAudio();
 }
