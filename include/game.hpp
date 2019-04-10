@@ -2,6 +2,7 @@
 
 // internal
 #include "common.hpp"
+#include "soundManager.hpp"
 
 // stlib
 #include <vector>
@@ -39,6 +40,7 @@ public:
 
     // Window handle
     GLFWwindow* m_window;
+	SoundManager soundManager;
 
 private:
 
@@ -47,5 +49,4 @@ private:
     std::map<gameStates, GameState*> states;
 
     GameState* currentState;
-
 };

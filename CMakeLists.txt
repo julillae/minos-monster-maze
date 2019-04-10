@@ -75,6 +75,7 @@ set(SOURCE_FILES
     src/flashMessage.cpp
     src/gameSave.cpp
     src/quadTree.cpp
+    src/soundManager.cpp
     src/timer.cpp
 
     include/project_path.hpp
@@ -121,6 +122,7 @@ set(SOURCE_FILES
     include/flashMessage.hpp
     include/gameSave.hpp
     include/quadTree.hpp
+    include/soundManager.hpp
     include/timer.hpp
 
 	)
