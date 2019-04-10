@@ -42,7 +42,7 @@ Level::Level(Game* game) :
 // Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
 	this->game = game;
-	soundManager = game->soundManager;
+	soundManager = &game->soundManager;
 }
 
 Level::~Level()
@@ -101,7 +101,7 @@ void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
 		if (!m_player.is_alive()) {
-			soundManager.play_dead_sound();
+			soundManager->play_dead_sound();
 			m_water.set_player_dead();
 		}
 
@@ -195,7 +195,7 @@ bool Level::update(float elapsed_ms)
 //	 Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit) && !is_player_at_goal)
 	{
-		soundManager.play_level_complete_sound();
+		soundManager->play_level_complete_sound();
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
 		m_player.freeze();
@@ -231,7 +231,7 @@ bool Level::update(float elapsed_ms)
 		unfreeze_all_enemies();
 	}
 	if (m_player.characterState->currentState == jumping)
-		soundManager.play_jump_sound();
+		soundManager->play_jump_sound();
 	m_player.update(elapsed_ms);
 
 	update_all_enemies(elapsed_ms);
@@ -690,7 +690,7 @@ float Level::get_tile_height() {
 void Level::set_player_death()
 {
 	if (!m_player.is_invincible() && m_player.is_alive()) {
-		soundManager.play_dead_sound();
+		soundManager->play_dead_sound();
 		m_player.kill();
 		m_water.set_player_dead();
 	}

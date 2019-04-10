@@ -43,5 +43,5 @@ protected:
     vec2 cameraCenter;
 
     vec2 m_screen;
-	SoundManager soundManager;
+	SoundManager* soundManager;
 };

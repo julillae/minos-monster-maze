@@ -17,6 +17,7 @@ MainMenuState::MainMenuState(Game *game)
 {
     this->game = game;
 	this->name = MAIN;
+	soundManager = &game->soundManager;
 }
 
 void MainMenuState::init(vec2 screen)
@@ -105,6 +106,7 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
         {
             if (key == GLFW_KEY_ENTER)
             {
+				soundManager->play_button_enter_sound();
                 switch (currentButton->buttonName)
                 {
                     case NEWGAME:
@@ -152,6 +154,7 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
 
             if (key == GLFW_KEY_DOWN)
             {
+				soundManager->play_button_select_sound();
                 buttonIndex = (buttonIndex + 1) % numButtons;
                 set_currentButton(mainButtons[buttonIndex]);
             }
@@ -159,6 +162,7 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
 
             if (key == GLFW_KEY_UP)
             {
+				soundManager->play_button_select_sound();
                 int nextButton = buttonIndex - 1;
                 if (nextButton < 0)
                     nextButton = numButtons - 1;
@@ -191,11 +195,6 @@ bool MainMenuState::is_over()
 void MainMenuState::destroy()
 {
     glDeleteFramebuffers(1, &m_frame_buffer);
-
-    //if (m_background_music != nullptr)
-    //    Mix_FreeMusic(m_background_music);
-
-    //Mix_CloseAudio();
 
     mainMenu.destroy();
     loadButton.destroy();
