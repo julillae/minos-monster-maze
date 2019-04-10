@@ -99,6 +99,7 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
                 level->load_select_level(currentButton->level);
                 game->set_current_state(level);
                 world = level;
+                level->reset_pause_start();
             } else
             {
                 Physics *physicsHandler = new Physics();

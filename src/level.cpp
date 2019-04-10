@@ -86,6 +86,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	m_help_menu.init(initialPosition);
 	initialize_camera_position(w, h);
 	initialize_message_prompt();
+	level_timer.init();
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -273,7 +274,7 @@ void Level::draw()
 
 	// Updating window title with points
 	std::stringstream title_ss;
-	title_ss << "Minos' Monster Maze";
+	title_ss << "Minos' Monster Maze" << " || Game timer: " << level_timer.getTime();
 	if (canRotate) {
 		// Round energy to two decimal places for printing
 		float roundedEnergy = roundf(rotationEnergy * 100.f) / 100.f;
@@ -406,6 +407,7 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		if (key == GLFW_KEY_ESCAPE) {
             isRotating = false;
 			m_player.set_direction(Direction::none);
+			timer_pause_start = level_timer.getTime();
 
             PauseMenuState* pauseMenuState = (PauseMenuState*) game->get_state(PAUSE);
             pauseMenuState->reset_buttons();
@@ -581,17 +583,27 @@ void Level::load_new_level()
 	m_maze.clear();
 
 	current_level++;
-	if (current_level >= num_levels)
+	if (current_level >= num_levels) {
 		current_level = 0;
-
+		level_timer.resetCumulativeTime();
+	}
+	level_timer.addCumulativeTime(level_timer.getTime());
 	call_level_loader();
 	initialize_message_prompt();
+	// if moved on to new level, reset saved time to zero.
+	level_timer.recordSavedTime(0.f);
+	level_timer.reset();
 }
 
 void Level::reset_game()
 {
 	int w, h;
 	glfwGetWindowSize(m_window, &w, &h);
+	// if the player died, don't want to reset timer stuff
+	if (m_player.is_alive()) {
+		reset_pause_start();
+		level_timer.cleanSlate();
+	}
 	m_player.destroy();
 	
 	if (is_player_at_goal) {
@@ -713,6 +725,8 @@ void Level::load_select_level(int level)
 	reset_player_camera();
 
 	initialize_message_prompt();
+	reset_pause_start();
+	level_timer.cleanSlate();
 }
 
 int Level::get_current_level() { return current_level; }
@@ -722,6 +736,8 @@ float Level::get_rotation() { return rotation; }
 float Level::get_rotationDeg() { return rotationDeg; }
 
 float Level::get_rotationEnergy() { return rotationEnergy; }
+
+float Level::get_level_time() { return level_timer.getTime(); }
 
 std::vector<Spider> Level::get_spiders() { return m_spiders.get_spider_vector(); }
 
@@ -792,6 +808,7 @@ void Level::load_player()
     rotation = GameSave::document["rotation"].GetFloat();
     rotationDeg = GameSave::document["rotationDeg"].GetFloat();
     rotationEnergy = GameSave::document["rotationEnergy"].GetFloat();
+	level_timer.recordSavedTime(GameSave::document["levelTime"].GetFloat());
 
     if (rotationEnergy < maxRotationEnergy)
     	m_water.set_rotation_end_time();
@@ -909,3 +926,17 @@ void Level::boss_rotation_set(bool enable, bool cw)
 	isRotating = enable;
 	rotateCW = cw;
 }
+
+float Level::get_pause_start() {
+	return timer_pause_start;
+}
+
+void Level::return_from_pause() {
+	level_timer.recordPausedTime(timer_pause_start, level_timer.getTime());
+	reset_pause_start();
+}
+
+void Level::reset_pause_start() {
+	timer_pause_start = -1.0f;
+}
+
