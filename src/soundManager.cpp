@@ -1,4 +1,4 @@
-﻿#include "..\include\soundManager.hpp"
+﻿#include "../include/soundManager.hpp"
 
 bool SoundManager::init()
 {
@@ -41,7 +41,7 @@ bool SoundManager::init()
 
 	if (m_background_music == nullptr)
 	{
-		fprintf(stderr, "Failed to load sound\n %s,%s\n make sure the data directory is present",
+		fprintf(stderr, "Failed to load sound\n %s\n make sure the data directory is present",
 			audio_path("secret_catacombs.wav"));
 		return false;
 	}

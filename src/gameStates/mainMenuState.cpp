@@ -16,7 +16,6 @@
 MainMenuState::MainMenuState(Game *game)
 {
     this->game = game;
-	this->name = MAIN;
 	soundManager = &game->soundManager;
 }
 
