@@ -157,6 +157,8 @@ bool Level::update(float elapsed_ms)
 		if (!previouslyFrozen) {
 			applyFreeze = true;
 			previouslyFrozen = true;
+			soundManager->stop_rotation_loop();	// hack to prevent minotaur from causing multiple rotation loop sounds
+			soundManager->play_rotation_loop();
 		}
 
 		// Don't decrease the rotation energy if minotaur is rotating maze
@@ -165,9 +167,9 @@ bool Level::update(float elapsed_ms)
 		}
 	}
 	else if (previouslyFrozen) {
+		soundManager->stop_rotation_loop();
 		applyThaw = true;
 		previouslyFrozen = false;
-
 		m_water.set_rotation_end_time();
 	}
 
@@ -406,6 +408,7 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 		if (key == GLFW_KEY_ESCAPE) {
             isRotating = false;
+			soundManager->stop_rotation_loop();
 			m_player.set_direction(Direction::none);
 			timer_pause_start = level_timer.getTime();
 

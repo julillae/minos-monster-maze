@@ -18,10 +18,12 @@ bool SoundManager::init()
 
 	//Note: the following music credits needs to be added to a credit scene at the end of the game
 	
-	//UI Confirmation Alert, B4.wav by InspectorJ
+	//Charging Loop 1 by Javier Zumer
 
-	//Click_Soft_01.wav
-	//Menu_Navigate_03.wav
+	//UI Confirmation Alert, B4 by InspectorJ
+
+	//Click_Soft_01
+	//Menu_Navigate_03
 	//by LittleRobotSoundFactory
 	
 	//Strange Game Menu
@@ -37,6 +39,7 @@ bool SoundManager::init()
 	button_select_sound = Mix_LoadWAV(audio_path("button_select.wav"));
 	button_enter_sound = Mix_LoadWAV(audio_path("button_enter.wav"));
 	level_select_sound = Mix_LoadWAV(audio_path("level_select.wav"));
+	rotation_loop = Mix_LoadWAV(audio_path("rotation_loop.wav"));
 
 
 	if (m_background_music == nullptr)
@@ -47,6 +50,7 @@ bool SoundManager::init()
 	}
 
 	Mix_VolumeMusic(20);
+	Mix_VolumeChunk(rotation_loop, 40);
 	fprintf(stderr, "Loaded music\n");
 	return true;
 }
@@ -91,6 +95,16 @@ void SoundManager::play_level_select_sound()
 	Mix_PlayChannel(-1, level_select_sound, 0);
 }
 
+void SoundManager::play_rotation_loop()
+{
+	rotation_loop_channel = Mix_FadeInChannelTimed(-1, rotation_loop, -1, 500, -1);
+}
+
+void SoundManager::stop_rotation_loop()
+{
+	Mix_FadeOutChannel(rotation_loop_channel, 200);
+}
+
 void SoundManager::destroy()
 {
 	if (m_background_music != nullptr)
@@ -109,6 +123,8 @@ void SoundManager::destroy()
 		Mix_FreeChunk(button_enter_sound);
 	if (level_select_sound != nullptr)
 		Mix_FreeChunk(level_select_sound);
+	if (rotation_loop != nullptr)
+		Mix_FreeChunk(rotation_loop);
 
 	Mix_CloseAudio();
 }
