@@ -189,6 +189,13 @@ bool Level::update(float elapsed_ms)
 	}
 
 	if (minotaurPresent) {
+		if (minotaur_prev_state != preparing && m_minotaur.characterState->currentState == preparing) {
+			soundManager->play_pre_rotate_sound();
+		}
+		if (minotaur_prev_state != idle && m_minotaur.characterState->currentState == idle) {
+			//placeholder for now, will need new sound for idling
+		}
+		minotaur_prev_state = m_minotaur.characterState->currentState;
 		if (physicsHandler->collideWithEnemy(&m_player, &m_minotaur) &&
 			 m_minotaur.characterState->currentState == swinging) {
 			set_player_death();
