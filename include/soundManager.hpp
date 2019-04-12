@@ -28,6 +28,8 @@ public:
 
 	void play_level_select_sound();
 
+	void play_pre_rotate_sound();
+
 	void play_rotation_loop();
 
 	void stop_rotation_loop();
@@ -43,6 +45,7 @@ private:
 	Mix_Chunk* button_select_sound;
 	Mix_Chunk* button_enter_sound;
 	Mix_Chunk* level_select_sound;
+	Mix_Chunk* pre_rotate_sound;
 	Mix_Chunk* rotation_loop;
 	int rotation_loop_channel = 0;
 };
