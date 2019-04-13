@@ -19,6 +19,7 @@
 #include "physics.hpp"
 #include "menus/helpMenu.hpp"
 #include "gameStates/gameState.hpp"
+#include "gameStates/creditsState.hpp"
 #include "gameStates/pauseMenuState.hpp"
 #include "levelLoader.hpp"
 #include "flashMessage.hpp"

@@ -586,8 +586,13 @@ void Level::load_new_level()
 	if (current_level >= num_levels) {
 		current_level = 0;
 		level_timer.resetCumulativeTime();
+	
+		CreditsState* creditsState = (CreditsState*) game->get_state(CREDITS);
+		game->set_current_state(creditsState);
 	}
+	
 	level_timer.addCumulativeTime(level_timer.getTime());
+
 	call_level_loader();
 	initialize_message_prompt();
 	// if moved on to new level, reset saved time to zero.
