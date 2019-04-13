@@ -188,3 +188,41 @@ void RenderManager::draw_texture_color(const mat3& projection, vec2 position, fl
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 }
 
+void RenderManager::draw_hide_texture(const mat3& projection, vec2 position, float rotation, vec2 scale, Texture* texture,
+                              bool is_hidden, Renderable* renderable)
+{
+    init_drawing_data(position, rotation, scale, renderable);
+
+    // Getting uniform locations for glUniform* calls
+    GLint transform_uloc = glGetUniformLocation(renderable->effect.program, "transform");
+    GLint color_uloc = glGetUniformLocation(renderable->effect.program, "fcolor");
+    GLint projection_uloc = glGetUniformLocation(renderable->effect.program, "projection");
+
+    // Input data location as in the vertex buffer
+    GLint in_position_loc = glGetAttribLocation(renderable->effect.program, "in_position");
+    GLint in_texcoord_loc = glGetAttribLocation(renderable->effect.program, "in_texcoord");
+    glEnableVertexAttribArray(in_position_loc);
+    glEnableVertexAttribArray(in_texcoord_loc);
+    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
+    glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3));
+
+    // Enabling and binding texture to slot 0
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture->id);
+
+    // Set opacity
+    GLint is_hidden_uloc = glGetUniformLocation(renderable->effect.program, "is_hidden");
+    glUniform1f(is_hidden_uloc, is_hidden);
+
+    // Setting uniform values to the currently bound program
+    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&renderable->transform);
+    float color[] = { 1.f, 1.f, 1.f };
+    glUniform3fv(color_uloc, 1, color);
+    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+
+    // magnifies texture to avoid it being blurry when scaled
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    // Drawing!
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+}
