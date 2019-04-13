@@ -702,6 +702,9 @@ float Level::get_tile_height() {
 void Level::set_player_death()
 {
 	if (!m_player.is_invincible() && m_player.is_alive()) {
+		if (hasPrompt)
+			m_message.destroy();
+			
 		soundManager->play_dead_sound();
 		m_player.kill();
 		m_water.set_player_dead();
