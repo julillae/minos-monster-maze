@@ -102,6 +102,9 @@ void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
 		if (!m_player.is_alive()) {
+			if (hasPrompt)
+				m_message.destroy();
+				
 			soundManager->play_dead_sound();
 			m_water.set_player_dead();
 		}
@@ -704,7 +707,7 @@ void Level::set_player_death()
 	if (!m_player.is_invincible() && m_player.is_alive()) {
 		if (hasPrompt)
 			m_message.destroy();
-			
+
 		soundManager->play_dead_sound();
 		m_player.kill();
 		m_water.set_player_dead();
