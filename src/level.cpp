@@ -83,10 +83,16 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	current_level = startLevel;
 	call_level_loader();
 
-	m_help_menu.init(initialPosition);
 	initialize_camera_position(w, h);
 	initialize_message_prompt();
 	level_timer.init();
+
+	initial_energyBar_position = vec2({(static_cast<float>(w) / 7), static_cast<float>(h - 80)});  // no camera tracking
+	//initial_energyBar_position = vec2({cameraCenter.x / 3,  cameraCenter.y - 80});  // no camera tracking
+	//initial_energyBar_position = vec2({(-(cameraCenter.x + static_cast<float>(w/2)) / 7), static_cast<float>(cameraCenter.y + h/2 - 80)});
+	//initial_energyBar_position = vec2({-300.f, static_cast<float>(cameraCenter.y + h/2 - 80)});
+	m_rotationUI.init(initial_energyBar_position);
+	m_rotationUIEnergy.init(vec2({initial_energyBar_position.x, initial_energyBar_position.y + 7}));
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -118,7 +124,6 @@ void Level::destroy()
 	m_player.destroy();
 	destroy_enemies();
 	destroy_platforms();
-	m_help_menu.destroy();
 	m_quad.clear();
 
 	glfwDestroyWindow(m_window);
@@ -238,8 +243,6 @@ bool Level::update(float elapsed_ms)
 	update_all_enemies(elapsed_ms);
 	update_all_platforms(elapsed_ms);
 
-	m_help_menu.set_visibility(show_help_menu);
-
 	// If player is dead or beat the game, restart the game after the fading animation
 	if (!m_player.is_alive() && m_water.get_time_since_death() > 1.5)
 		reset_game();
@@ -256,7 +259,10 @@ bool Level::update(float elapsed_ms)
 			m_water.reset_rotation_end_time();
 			rotationEnergy = maxRotationEnergy;
 		}
+
 	}
+
+	update_rotationUI();
 
 	return true;
 }
@@ -326,8 +332,15 @@ void Level::draw()
 	tx = -cameraCenter.x;
 	ty = -cameraCenter.y;
 
+
+	//initial_energyBar_position = vec2({(tx - static_cast<float>(w/2)) / 7, static_cast<float>(-ty + h/2 - 80)});
+	//m_rotationUI.set_position(cameraCenter);
+	//m_rotationUIEnergy.set_position(vec2({cameraCenter.x, cameraCenter.y + 7}));
+
 	float c = cosf(-rotation);
 	float s = sinf(-rotation);
+
+	mat3 projection_noRotation;
 
 	mat3 scaling_matrix = { {sx, 0.f, 0.f },
 							{ 0.f, sy, 0.f },
@@ -346,12 +359,13 @@ void Level::draw()
 						{ 0.f, 0.f, 1.f } };
 
     projection_2D = mul(projection_2D, scaling_matrix);
-    if (!show_help_menu)
-	{
-		projection_2D = mul(projection_2D, rotation_matrix);
-	}
 
+	projection_noRotation = projection_2D;
+
+	projection_2D = mul(projection_2D, rotation_matrix);
 	projection_2D = mul(projection_2D, translation_matrix);
+
+    projection_noRotation = mul(projection_noRotation, translation_matrix);
 
 	draw_platforms(projection_2D);
 	draw_enemies(projection_2D);
@@ -362,8 +376,6 @@ void Level::draw()
 
 	m_water.draw(projection_2D);
 
-	m_help_menu.draw(projection_2D);
-
 	if (hasPrompt) {
 		float screen_height = static_cast<float>(h);
 		float message_y_shift = (screen_height / 2.f) - (m_tile_height * 3.f);
@@ -371,6 +383,9 @@ void Level::draw()
 		m_message.set_position({cameraCenter.x, message_y_pos});
 		m_message.draw(projection_2D);
 	}
+
+	m_rotationUI.draw(projection_noRotation);
+	m_rotationUIEnergy.draw(projection_noRotation);
 
 	// Presenting
 	glfwSwapBuffers(m_window);
@@ -664,6 +679,12 @@ void Level::update_all_platforms(float elapsed_ms)
 	m_blades.update();
 }
 
+void Level::update_rotationUI()
+{
+	float energyPercent = rotationEnergy / maxRotationEnergy;
+	m_rotationUIEnergy.update(energyPercent);
+}
+
 Level::Platform Level::maze_is_platform(std::pair<int,int> coords){
 	Platform platform = Platform{};
 	int val_at_coords = m_maze[coords.first][coords.second];
@@ -683,21 +704,13 @@ std::vector<std::vector <int>> Level::get_original_maze() {
 	return m_maze;
 }
 
-float Level::get_maze_width() {
-	return m_maze_width;
-}
+float Level::get_maze_width() { return m_maze_width; }
 
-float Level::get_maze_height() {
-	return m_maze_height;
-}
+float Level::get_maze_height() { return m_maze_height; }
 
-float Level::get_tile_width() {
-	return m_tile_width;
-}
+float Level::get_tile_width() { return m_tile_width; }
 
-float Level::get_tile_height() {
-	return m_tile_height;
-}
+float Level::get_tile_height() { return m_tile_height; }
 
 void Level::set_player_death()
 {

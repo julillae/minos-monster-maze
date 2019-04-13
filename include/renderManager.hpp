@@ -22,5 +22,7 @@ public:
     void static draw_texture_color(const mat3& projection, vec2 position, float rotation, vec2 scale, float* color,
                                    Texture* texture, Renderable* renderable);
 
+    void static draw_hide_texture(const mat3& projection, vec2 position, float rotation, vec2 scale, Texture* texture,
+								  bool is_hidden, Renderable* renderable);
 
 };

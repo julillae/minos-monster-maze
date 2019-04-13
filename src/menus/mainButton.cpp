@@ -11,7 +11,7 @@ bool MainButton::init(vec2 position, const char* textureFile, button name)
     if (!RenderManager::set_render_data(&m_texture, this)) return false;
 
     // Loading shaders
-    if (!effect.load_from_file(shader_path("menu.vs.glsl"), shader_path("menu.fs.glsl")))
+    if (!effect.load_from_file(shader_path("visibility.vs.glsl"), shader_path("visibility.fs.glsl")))
         return false;
 
     set_position(position);
