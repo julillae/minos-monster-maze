@@ -189,8 +189,17 @@ bool Level::update(float elapsed_ms)
 	}
 
 	if (minotaurPresent) {
+		if (minotaur_prev_state != idle && m_minotaur.characterState->currentState == idle) {
+			soundManager->play_pig_sound();
+		}
+		if (minotaur_prev_state == idle && m_minotaur.characterState->currentState != idle) {
+			soundManager->stop_pig_sound();
+		}
 		if (minotaur_prev_state != preparing && m_minotaur.characterState->currentState == preparing) {
 			soundManager->play_pre_rotate_sound();
+		}
+		if (minotaur_prev_state != swinging && m_minotaur.characterState->currentState == swinging) {
+			soundManager->play_swing_sound();
 		}
 		if (minotaur_prev_state != idle && m_minotaur.characterState->currentState == idle) {
 			//placeholder for now, will need new sound for idling
@@ -506,6 +515,7 @@ void Level::reset_enemies() {
 		m_minotaur.freeze();
 		m_minotaur.reset_position();
 		m_minotaur.unfreeze();
+		m_minotaur.characterState->changeState(idle);
 	}
 }
 
@@ -622,7 +632,7 @@ void Level::reset_game()
 	} else {
 		reset_enemies();
 	}
-	
+	soundManager->stop_rotation_loop();
 	reset_player_camera();
 	initialize_message_prompt();
 }
