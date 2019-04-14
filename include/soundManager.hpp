@@ -28,6 +28,12 @@ public:
 
 	void play_level_select_sound();
 
+	void play_pig_sound();
+
+	void stop_pig_sound();
+
+	void play_swing_sound();
+
 	void play_pre_rotate_sound();
 
 	void play_rotation_loop();
@@ -45,6 +51,9 @@ private:
 	Mix_Chunk* button_select_sound;
 	Mix_Chunk* button_enter_sound;
 	Mix_Chunk* level_select_sound;
+	Mix_Chunk* pig_sound;
+	int pig_loop_channel = 0;
+	Mix_Chunk* swing_sound;
 	Mix_Chunk* pre_rotate_sound;
 	Mix_Chunk* rotation_loop;
 	int rotation_loop_channel = 0;

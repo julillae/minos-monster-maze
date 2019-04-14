@@ -39,6 +39,8 @@ bool SoundManager::init()
 	button_select_sound = Mix_LoadWAV(audio_path("button_select.wav"));
 	button_enter_sound = Mix_LoadWAV(audio_path("button_enter.wav"));
 	level_select_sound = Mix_LoadWAV(audio_path("level_select.wav"));
+	pig_sound = Mix_LoadWAV(audio_path("pig_grunt.wav"));
+	swing_sound = Mix_LoadWAV(audio_path("swing_sound.wav"));
 	pre_rotate_sound = Mix_LoadWAV(audio_path("pre_rotate_growl.wav"));
 	rotation_loop = Mix_LoadWAV(audio_path("rotation_loop.wav"));
 
@@ -52,6 +54,8 @@ bool SoundManager::init()
 
 	Mix_VolumeMusic(20);
 	Mix_VolumeChunk(rotation_loop, 40);
+	Mix_VolumeChunk(pig_sound, 20);
+	Mix_VolumeChunk(swing_sound, 30);
 	Mix_VolumeChunk(pre_rotate_sound, 60);
 	fprintf(stderr, "Loaded music\n");
 	return true;
@@ -97,6 +101,21 @@ void SoundManager::play_level_select_sound()
 	Mix_PlayChannel(-1, level_select_sound, 0);
 }
 
+void SoundManager::play_pig_sound()
+{
+	pig_loop_channel = Mix_PlayChannel(-1, pig_sound, -1);
+}
+
+void SoundManager::stop_pig_sound()
+{
+	Mix_FadeOutChannel(pig_loop_channel, 10);
+}
+
+void SoundManager::play_swing_sound()
+{
+	Mix_PlayChannel(-1, swing_sound, 1);
+}
+
 void SoundManager::play_pre_rotate_sound()
 {
 	Mix_PlayChannel(-1, pre_rotate_sound, 0);
@@ -130,6 +149,10 @@ void SoundManager::destroy()
 		Mix_FreeChunk(button_enter_sound);
 	if (level_select_sound != nullptr)
 		Mix_FreeChunk(level_select_sound);
+	if (pig_sound != nullptr)
+		Mix_FreeChunk(pig_sound);
+	if (swing_sound != nullptr)
+		Mix_FreeChunk(swing_sound);
 	if (pre_rotate_sound != nullptr)
 		Mix_FreeChunk(pre_rotate_sound);
 	if (rotation_loop != nullptr)
