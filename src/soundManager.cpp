@@ -31,18 +31,19 @@ bool SoundManager::init()
 	//by Eric Matyas
 	//www.soundimage.org
 
+	soundList[playerDead] = Mix_LoadWAV(audio_path("death.wav"));
+	soundList[playerJump] = Mix_LoadWAV(audio_path("jump.wav"));
+	soundList[levelComplete] = Mix_LoadWAV(audio_path("nextLevel.wav"));
+	soundList[buttonSelect] = Mix_LoadWAV(audio_path("button_select.wav"));
+	soundList[buttonEnter] = Mix_LoadWAV(audio_path("button_enter.wav"));
+	soundList[levelSelect] = Mix_LoadWAV(audio_path("level_select.wav"));
+	soundList[minotaurIdle] = Mix_LoadWAV(audio_path("pig_grunt.wav"));
+	soundList[minotaurAttack] = Mix_LoadWAV(audio_path("swing_sound.wav"));
+	soundList[minotaurPrepare] = Mix_LoadWAV(audio_path("pre_rotate_growl.wav"));
+	soundList[rotationLoop] = Mix_LoadWAV(audio_path("rotation_loop.wav"));
+
 	m_background_music = Mix_LoadMUS(audio_path("secret_catacombs.wav"));
 	menu_background_music = Mix_LoadMUS(audio_path("menu_music.wav"));
-	m_player_dead_sound = Mix_LoadWAV(audio_path("death.wav"));
-	m_player_jump_sound = Mix_LoadWAV(audio_path("jump.wav"));
-	level_complete_sound = Mix_LoadWAV(audio_path("nextLevel.wav"));
-	button_select_sound = Mix_LoadWAV(audio_path("button_select.wav"));
-	button_enter_sound = Mix_LoadWAV(audio_path("button_enter.wav"));
-	level_select_sound = Mix_LoadWAV(audio_path("level_select.wav"));
-	pig_sound = Mix_LoadWAV(audio_path("pig_grunt.wav"));
-	swing_sound = Mix_LoadWAV(audio_path("swing_sound.wav"));
-	pre_rotate_sound = Mix_LoadWAV(audio_path("pre_rotate_growl.wav"));
-	rotation_loop = Mix_LoadWAV(audio_path("rotation_loop.wav"));
 
 
 	if (m_background_music == nullptr)
@@ -53,10 +54,10 @@ bool SoundManager::init()
 	}
 
 	Mix_VolumeMusic(20);
-	Mix_VolumeChunk(rotation_loop, 40);
-	Mix_VolumeChunk(pig_sound, 20);
-	Mix_VolumeChunk(swing_sound, 30);
-	Mix_VolumeChunk(pre_rotate_sound, 60);
+	Mix_VolumeChunk(soundList[rotationLoop], 40);
+	Mix_VolumeChunk(soundList[minotaurIdle], 20);
+	Mix_VolumeChunk(soundList[minotaurAttack], 30);
+	Mix_VolumeChunk(soundList[minotaurPrepare], 60);
 	fprintf(stderr, "Loaded music\n");
 	return true;
 }
@@ -71,92 +72,37 @@ void SoundManager::play_menu_bg_music()
 	 Mix_FadeInMusic(menu_background_music, -1, 1000);
 }
 
-void SoundManager::play_dead_sound()
+void SoundManager::play_sound(Sound sound)
 {
-	Mix_PlayChannel(-1, m_player_dead_sound, 0);
+	Mix_PlayChannel(-1, soundList[sound], 0);
 }
 
-void SoundManager::play_jump_sound()
+void SoundManager::play_sound_looped(Sound sound, int loop)
 {
-	Mix_PlayChannel(-1, m_player_jump_sound, 0);
+	soundChannels[sound] = Mix_PlayChannel(-1, soundList[sound], loop);
 }
 
-void SoundManager::play_level_complete_sound()
+void SoundManager::fade_in_sound_looped(Sound sound, int fadeInTime)
 {
-	Mix_PlayChannel(-1, level_complete_sound, 0);
+	soundChannels[sound] = Mix_FadeInChannelTimed(-1, soundList[sound], -1, fadeInTime, -1);
 }
 
-void SoundManager::play_button_select_sound()
+void SoundManager::fade_out_sound(Sound sound, int fadeOutTime)
 {
-	Mix_PlayChannel(-1, button_select_sound, 0);
-}
-
-void SoundManager::play_button_enter_sound()
-{
-	Mix_PlayChannel(-1, button_enter_sound, 0);
-}
-
-void SoundManager::play_level_select_sound()
-{
-	Mix_PlayChannel(-1, level_select_sound, 0);
-}
-
-void SoundManager::play_pig_sound()
-{
-	pig_loop_channel = Mix_PlayChannel(-1, pig_sound, -1);
-}
-
-void SoundManager::stop_pig_sound()
-{
-	Mix_FadeOutChannel(pig_loop_channel, 10);
-}
-
-void SoundManager::play_swing_sound()
-{
-	Mix_PlayChannel(-1, swing_sound, 1);
-}
-
-void SoundManager::play_pre_rotate_sound()
-{
-	Mix_PlayChannel(-1, pre_rotate_sound, 0);
-}
-
-void SoundManager::play_rotation_loop()
-{
-	rotation_loop_channel = Mix_FadeInChannelTimed(-1, rotation_loop, -1, 500, -1);
-}
-
-void SoundManager::stop_rotation_loop()
-{
-	Mix_FadeOutChannel(rotation_loop_channel, 200);
+	Mix_FadeOutChannel(soundChannels[sound], fadeOutTime);
 }
 
 void SoundManager::destroy()
 {
+	for (auto& sound : soundList) {
+		if (sound != nullptr)
+			Mix_FreeChunk(sound);
+	}
+
 	if (m_background_music != nullptr)
 		Mix_FreeMusic(m_background_music);
 	if (menu_background_music != nullptr)
 		Mix_FreeMusic(menu_background_music);
-	if (m_player_dead_sound != nullptr)
-		Mix_FreeChunk(m_player_dead_sound);
-	if (m_player_jump_sound != nullptr)
-		Mix_FreeChunk(m_player_jump_sound);
-	if (level_complete_sound != nullptr)
-		Mix_FreeChunk(level_complete_sound);
-	if (button_select_sound != nullptr)
-		Mix_FreeChunk(button_select_sound);
-	if (button_enter_sound != nullptr)
-		Mix_FreeChunk(button_enter_sound);
-	if (level_select_sound != nullptr)
-		Mix_FreeChunk(level_select_sound);
-	if (pig_sound != nullptr)
-		Mix_FreeChunk(pig_sound);
-	if (swing_sound != nullptr)
-		Mix_FreeChunk(swing_sound);
-	if (pre_rotate_sound != nullptr)
-		Mix_FreeChunk(pre_rotate_sound);
-	if (rotation_loop != nullptr)
-		Mix_FreeChunk(rotation_loop);
 
 	Mix_CloseAudio();
 }
