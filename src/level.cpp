@@ -422,6 +422,7 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 		if (key == GLFW_KEY_ESCAPE) {
             isRotating = false;
 			soundManager->fade_out_sound(rotationLoop, 200);
+			soundManager->fade_out_sound(minotaurIdle, 0);
 			m_player.set_direction(Direction::none);
 			timer_pause_start = level_timer.getTime();
 
@@ -859,7 +860,7 @@ void Level::load_minotaur()
 
 	m_minotaur.set_position(vec2({minotaur_x, minotaur_y}));
 	m_minotaur.set_scale(vec2({minotaur_scaleX, minotaur_scaleY}));
-
+	minotaur_prev_state = initialized;
 }
 
 void Level::load_spiders()
@@ -950,6 +951,9 @@ float Level::get_pause_start() {
 
 void Level::return_from_pause() {
 	level_timer.recordPausedTime(timer_pause_start, level_timer.getTime());
+	if (minotaurPresent && m_minotaur.characterState->currentState == idle) {
+		soundManager->play_sound_looped(minotaurIdle, -1);
+	}
 	reset_pause_start();
 }
 
