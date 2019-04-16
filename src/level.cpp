@@ -102,8 +102,7 @@ void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
 		if (!m_player.is_alive()) {
-			soundManager->play_sound(playerDead);
-			m_water.set_player_dead();
+			set_death_effects();
 		}
 
 		physicsHandler->isOnAtLeastOnePlatform = false;
@@ -720,10 +719,18 @@ float Level::get_tile_height() {
 void Level::set_player_death()
 {
 	if (!m_player.is_invincible() && m_player.is_alive()) {
-		soundManager->play_sound(playerDead);
 		m_player.kill();
-		m_water.set_player_dead();
+		set_death_effects();
 	}
+}
+
+void Level::set_death_effects()
+{
+	if (hasPrompt)
+		m_message.destroy();
+
+	soundManager->play_sound(playerDead);
+	m_water.set_player_dead();
 }
 
 void Level::load_select_level(int level)

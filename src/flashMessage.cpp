@@ -13,7 +13,6 @@ bool FlashMessage::init(int levelNumber)
     std::string image_number = std::to_string(levelNumber);
     fileName += image_number;
     fileName += "-prompt.png";
-    fprintf(stderr, "%s\n", fileName.c_str());
 
     std::string texturePath(textures_path());
     std::string fullPath = texturePath + fileName;
