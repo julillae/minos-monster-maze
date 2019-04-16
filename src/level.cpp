@@ -92,6 +92,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	m_rotationUI.init();
 	m_rotationUIEnergy.init();
 	set_rotationUI_position();
+	set_rotationUI_visibility(canRotate);
 
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -132,7 +133,6 @@ bool Level::update(float elapsed_ms)
 {
 	int w, h;
         glfwGetFramebufferSize(m_window, &w, &h);
-	vec2 screen = { (float)w, (float)h };
 	bool applyFreeze = false;
 	bool applyThaw = false;
 	m_player.set_rotation(rotation);
@@ -219,6 +219,7 @@ bool Level::update(float elapsed_ms)
 		is_player_at_goal = true;
 		m_player.freeze();
 		m_player.set_invincibility(true);
+		set_rotationUI_visibility(false);
 
 		if (hasPrompt)
 			m_message.destroy();
@@ -616,6 +617,7 @@ void Level::load_new_level()
 	level_timer.addCumulativeTime(level_timer.getTime());
 	call_level_loader();
 	initialize_message_prompt();
+	set_rotationUI_visibility(canRotate);
 	// if moved on to new level, reset saved time to zero.
 	level_timer.recordSavedTime(0.f);
 	level_timer.reset();
@@ -631,7 +633,8 @@ void Level::reset_game()
 		level_timer.cleanSlate();
 	}
 	m_player.destroy();
-	
+	set_rotationUI_visibility(canRotate);
+
 	if (is_player_at_goal) {
 		load_new_level();
 		initialize_camera_position(w, h);
@@ -708,9 +711,19 @@ void Level::set_rotationUI_position()
 {
 	int w, h;
 	glfwGetFramebufferSize(m_window, &w, &h);
+	w /= osScaleFactor;
+	h /= osScaleFactor;
+
 	vec2 newPosition = vec2({cameraCenter.x - w/2 + m_rotationUI.get_width() / 2 + 34 , cameraCenter.y + h/2 - 80 });
 	m_rotationUI.set_position(newPosition);
 	m_rotationUIEnergy.set_position(vec2({newPosition.x, newPosition.y + 7 }));
+}
+
+void Level::set_rotationUI_visibility(bool visible)
+{
+	m_rotationUI.set_visibility(visible);
+	m_rotationUIEnergy.set_visibility(visible);
+
 }
 
 Level::Platform Level::maze_is_platform(std::pair<int,int> coords){
@@ -753,6 +766,8 @@ void Level::set_death_effects()
 	if (hasPrompt)
 		m_message.destroy();
 
+	set_rotationUI_visibility(false);
+
 	soundManager->play_sound(playerDead);
 	m_water.set_player_dead();
 }
@@ -774,6 +789,7 @@ void Level::load_select_level(int level)
 	reset_player_camera();
 
 	initialize_message_prompt();
+	set_rotationUI_visibility(canRotate);
 	reset_pause_start();
 	level_timer.cleanSlate();
 }
@@ -811,6 +827,7 @@ void Level::load_saved_game()
         reset_game();
     } else {
         load_player();
+        load_rotation_energy();
         load_spiders();
         load_harpies();
 		if (minotaurPresent) {
@@ -854,13 +871,7 @@ void Level::load_player()
     glfwGetWindowSize(m_window, &w, &h);
     initialize_camera_position(w, h);
 
-    rotation = GameSave::document["rotation"].GetFloat();
-    rotationDeg = GameSave::document["rotationDeg"].GetFloat();
-    rotationEnergy = GameSave::document["rotationEnergy"].GetFloat();
 	level_timer.recordSavedTime(GameSave::document["levelTime"].GetFloat());
-
-    if (rotationEnergy < maxRotationEnergy)
-    	m_water.set_rotation_end_time();
 
     // reset initialPosition for restarting game
     initialPosition = originalPosition;
@@ -968,6 +979,16 @@ void Level::load_blades()
 
 		m_blades.setBladeProperties(i, rotation);
 	}
+}
+
+void Level::load_rotation_energy()
+{
+	rotation = GameSave::document["rotation"].GetFloat();
+	rotationDeg = GameSave::document["rotationDeg"].GetFloat();
+    rotationEnergy = GameSave::document["rotationEnergy"].GetFloat();
+    if (rotationEnergy < maxRotationEnergy)
+        m_water.set_rotation_end_time();
+
 }
 
 void Level::boss_rotation_set(bool enable, bool cw)
