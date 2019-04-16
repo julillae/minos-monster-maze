@@ -118,6 +118,7 @@ public:
 	void update_all_platforms(float elapsed_ms);
 	void update_rotationUI();
 	void set_rotationUI_position();
+	void set_rotationUI_visibility(bool visible);
 
 	void set_player_death();
 	void set_death_effects();
@@ -127,6 +128,7 @@ public:
 	void load_harpies();
 	void load_minotaur();
 	void load_blades();
+	void load_rotation_energy();
 
 	float get_level_time();
 	float get_cumulative_time();
