@@ -87,12 +87,9 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	initialize_message_prompt();
 	level_timer.init();
 
-	initial_energyBar_position = vec2({(static_cast<float>(w) / 7), static_cast<float>(h - 80)});  // no camera tracking
-	//initial_energyBar_position = vec2({cameraCenter.x / 3,  cameraCenter.y - 80});  // no camera tracking
-	//initial_energyBar_position = vec2({(-(cameraCenter.x + static_cast<float>(w/2)) / 7), static_cast<float>(cameraCenter.y + h/2 - 80)});
-	//initial_energyBar_position = vec2({-300.f, static_cast<float>(cameraCenter.y + h/2 - 80)});
-	m_rotationUI.init(initial_energyBar_position);
-	m_rotationUIEnergy.init(vec2({initial_energyBar_position.x, initial_energyBar_position.y + 7}));
+	m_rotationUI.init();
+	m_rotationUIEnergy.init();
+	set_rotationUI_position();
 	
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -331,11 +328,6 @@ void Level::draw()
 	}
 	tx = -cameraCenter.x;
 	ty = -cameraCenter.y;
-
-
-	//initial_energyBar_position = vec2({(tx - static_cast<float>(w/2)) / 7, static_cast<float>(-ty + h/2 - 80)});
-	//m_rotationUI.set_position(cameraCenter);
-	//m_rotationUIEnergy.set_position(vec2({cameraCenter.x, cameraCenter.y + 7}));
 
 	float c = cosf(-rotation);
 	float s = sinf(-rotation);
@@ -681,8 +673,25 @@ void Level::update_all_platforms(float elapsed_ms)
 
 void Level::update_rotationUI()
 {
+
+	float prev_energyPercent = m_rotationUIEnergy.get_energy_level();
 	float energyPercent = rotationEnergy / maxRotationEnergy;
-	m_rotationUIEnergy.update(energyPercent);
+	m_rotationUIEnergy.set_energy_level(energyPercent);
+	set_rotationUI_position();
+
+	if (energyPercent != prev_energyPercent) {
+		m_rotationUIEnergy.update(energyPercent);
+	}
+
+}
+
+void Level::set_rotationUI_position()
+{
+	int w, h;
+	glfwGetFramebufferSize(m_window, &w, &h);
+	vec2 newPosition = vec2({cameraCenter.x - w/2 + m_rotationUI.get_width() / 2 + 34 , cameraCenter.y + h/2 - 80 });
+	m_rotationUI.set_position(newPosition);
+	m_rotationUIEnergy.set_position(vec2({newPosition.x, newPosition.y + 7 }));
 }
 
 Level::Platform Level::maze_is_platform(std::pair<int,int> coords){

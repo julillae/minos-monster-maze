@@ -1,6 +1,6 @@
 #include "../include/rotationUIEnergy.hpp"
 
-bool RotationUIEnergy::init(vec2 position)
+bool RotationUIEnergy::init()
 {
     m_texture.id = 0;
 
@@ -16,9 +16,6 @@ bool RotationUIEnergy::init(vec2 position)
     m_rotation = 0.f;
     m_scale = {1.25f, 1.25f};
     set_visibility(true);
-    set_position(position);
-    original_position = m_position;
-    original_leftEdge = m_position.x - m_texture.width * 0.5f * m_scale.x;
 
     return true;
 }
@@ -30,16 +27,10 @@ void RotationUIEnergy::draw(const mat3& projection)
 
 void RotationUIEnergy::update(float energyLevel)
 {
-    set_energy_level(energyLevel);
 
     // The position corresponds to the center of the texture
     float wr = m_texture.width * 0.5f * energyLevel;
     float hr = m_texture.height * 0.5f;
-
-    // adjust position due to smaller texture
-    float leftEdge = original_position.x - wr * m_scale.x;
-    float posDiff = leftEdge - original_leftEdge;
-    m_position = vec2({original_position.x - posDiff, original_position.y});
 
     TexturedVertex vertices[4];
 
@@ -66,10 +57,23 @@ void RotationUIEnergy::set_visibility(bool is_visible)
 }
 
 void RotationUIEnergy::set_position(vec2 pos) {
-    m_position = pos;
+
+    float original_leftEdge = pos.x - m_texture.width * 0.5f * m_scale.x;
+
+    float wr = m_texture.width * 0.5f * energyLevel;
+
+    // adjust position due to smaller texture
+    float leftEdge = pos.x - wr * m_scale.x;
+    float posDiff = leftEdge - original_leftEdge;
+    m_position = vec2({pos.x - posDiff, pos.y});
 }
 
 void RotationUIEnergy::set_energy_level(float energyLevel)
 {
     this->energyLevel = energyLevel;
+}
+
+float RotationUIEnergy::get_energy_level()
+{
+    return energyLevel;
 }

@@ -117,6 +117,7 @@ public:
 	void update_all_enemies(float elapsed_ms);
 	void update_all_platforms(float elapsed_ms);
 	void update_rotationUI();
+	void set_rotationUI_position();
 
 	void set_player_death();
 
@@ -208,6 +209,5 @@ private:
 
 	RotationUI m_rotationUI;
 	RotationUIEnergy m_rotationUIEnergy;
-	vec2 initial_energyBar_position;
 
 };
