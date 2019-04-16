@@ -84,6 +84,8 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	call_level_loader();
 
 	m_help_menu.init(initialPosition);
+	w /= osScaleFactor;
+	h /= osScaleFactor;
 	initialize_camera_position(w, h);
 	initialize_message_prompt();
 	level_timer.init();
