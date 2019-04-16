@@ -6,7 +6,7 @@
 class RotationUIEnergy : public Renderable
 {
 public:
-    bool init(vec2 position);
+    bool init();
 
     void draw(const mat3& projection)override;
 
@@ -18,11 +18,11 @@ public:
 
     void set_energy_level(float energyLevel);
 
+    float get_energy_level();
+
 private:
     Texture m_texture;
     bool is_hidden;
-    vec2 original_position;
-    float original_leftEdge;
     float energyLevel;
 
 };

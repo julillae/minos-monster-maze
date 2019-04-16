@@ -1,6 +1,6 @@
 #include "../include/rotationUI.hpp"
 
-bool RotationUI::init(vec2 position)
+bool RotationUI::init()
 {
     m_texture.id = 0;
 
@@ -15,9 +15,8 @@ bool RotationUI::init(vec2 position)
 
     m_rotation = 0.f;
     m_scale = {1.25f, 1.25f};
+    set_width();
     set_visibility(true);
-    set_position(position);
-
     return true;
 }
 
@@ -33,4 +32,14 @@ void RotationUI::set_visibility(bool is_visible)
 
 void RotationUI::set_position(vec2 pos) {
     m_position = pos;
+}
+
+void RotationUI::set_width()
+{
+    m_width = m_texture.width * m_scale.x;
+}
+
+float RotationUI::get_width()
+{
+    return m_width;
 }

@@ -6,7 +6,7 @@
 class RotationUI : public Renderable
 {
 public:
-    bool init(vec2 position);
+    bool init();
 
     void draw(const mat3& projection)override;
 
@@ -16,8 +16,13 @@ public:
 
     void set_position(vec2 pos);
 
+    void set_width();
+
+    float get_width();
+
 private:
     Texture m_texture;
     bool is_hidden;
+    float m_width;
 
 };
