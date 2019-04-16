@@ -92,7 +92,7 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
     if (action == GLFW_PRESS) {
         if (key == GLFW_KEY_ENTER)
         {
-			soundManager->play_level_select_sound();
+			soundManager->play_sound(levelSelect);
             Level* level = (Level*) game->get_state(LEVEL);
             if (level != NULL)
             {
@@ -115,7 +115,7 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 		if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_LEFT ||
 			key == GLFW_KEY_UP || key == GLFW_KEY_DOWN)
-			soundManager->play_button_select_sound();
+			soundManager->play_sound(buttonSelect);
 
         if (key == GLFW_KEY_RIGHT)
         {

@@ -136,6 +136,7 @@ private:
 	RenderEffects m_water;
 
 	Minotaur m_minotaur;
+	State minotaur_prev_state = initialized;
 	Spiders m_spiders;
 	Harpies m_harpies;
 

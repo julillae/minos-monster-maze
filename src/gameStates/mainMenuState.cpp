@@ -105,7 +105,7 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
         {
             if (key == GLFW_KEY_ENTER)
             {
-				soundManager->play_button_enter_sound();
+				soundManager->play_sound(buttonEnter);
                 switch (currentButton->buttonName)
                 {
                     case NEWGAME:
@@ -153,7 +153,7 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
 
             if (key == GLFW_KEY_DOWN)
             {
-				soundManager->play_button_select_sound();
+				soundManager->play_sound(buttonSelect);
                 buttonIndex = (buttonIndex + 1) % numButtons;
                 set_currentButton(mainButtons[buttonIndex]);
             }
@@ -161,7 +161,7 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
 
             if (key == GLFW_KEY_UP)
             {
-				soundManager->play_button_select_sound();
+				soundManager->play_sound(buttonSelect);
                 int nextButton = buttonIndex - 1;
                 if (nextButton < 0)
                     nextButton = numButtons - 1;
