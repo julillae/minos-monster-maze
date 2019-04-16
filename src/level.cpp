@@ -83,6 +83,8 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	current_level = startLevel;
 	call_level_loader();
 
+	w /= osScaleFactor;
+	h /= osScaleFactor;
 	initialize_camera_position(w, h);
 	initialize_message_prompt();
 	level_timer.init();
@@ -90,7 +92,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	m_rotationUI.init();
 	m_rotationUIEnergy.init();
 	set_rotationUI_position();
-	
+
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
