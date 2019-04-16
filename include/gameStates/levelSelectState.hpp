@@ -23,7 +23,7 @@ public:
     bool is_over()override;
     void destroy()override;
 
-    void init_buttons();
+    void init_buttons(float osScaleFactor);
     void set_currentButton(LevelButton* button);
     void reset_buttons();
 private:
