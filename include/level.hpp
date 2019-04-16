@@ -116,6 +116,7 @@ public:
 	void update_all_platforms(float elapsed_ms);
 
 	void set_player_death();
+	void set_death_effects();
 
 	void load_player();
 	void load_spiders();
