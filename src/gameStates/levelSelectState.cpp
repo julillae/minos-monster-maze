@@ -48,7 +48,7 @@ void LevelSelectState::init(vec2 screen)
     initialPosition = vec2({static_cast<float>(w / 2), static_cast<float>(h / 2)});
 
     levelSelectMenu.init(initialPosition);
-    init_buttons();
+    init_buttons(osScaleFactor);
     initialize_camera_position(w, h);
     levelSelectMenu.set_position(cameraCenter);
 
@@ -165,8 +165,9 @@ void LevelSelectState::destroy()
 
 }
 
-void LevelSelectState::init_buttons()
+void LevelSelectState::init_buttons(float osScaleFactor)
 {
+    initialPosition.x *= osScaleFactor;
     float buttonX = initialPosition.x / 3 + 50;
     float buttonY = initialPosition.y - 85;
     float buttonOffset_x = 150.f;
