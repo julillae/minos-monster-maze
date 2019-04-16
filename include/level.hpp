@@ -120,6 +120,7 @@ public:
 	void set_rotationUI_position();
 
 	void set_player_death();
+	void set_death_effects();
 
 	void load_player();
 	void load_spiders();
@@ -139,6 +140,7 @@ private:
 	RenderEffects m_water;
 
 	Minotaur m_minotaur;
+	State minotaur_prev_state = initialized;
 	Spiders m_spiders;
 	Harpies m_harpies;
 

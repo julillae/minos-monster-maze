@@ -105,8 +105,7 @@ void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
 		if (!m_player.is_alive()) {
-			soundManager->play_dead_sound();
-			m_water.set_player_dead();
+			set_death_effects();
 		}
 
 		physicsHandler->isOnAtLeastOnePlatform = false;
@@ -159,6 +158,8 @@ bool Level::update(float elapsed_ms)
 		if (!previouslyFrozen) {
 			applyFreeze = true;
 			previouslyFrozen = true;
+			soundManager->fade_out_sound(rotationLoop, 200);	// hack to prevent minotaur from causing multiple rotation loop sounds
+			soundManager->fade_in_sound_looped(rotationLoop, 500);
 		}
 
 		// Don't decrease the rotation energy if minotaur is rotating maze
@@ -167,9 +168,9 @@ bool Level::update(float elapsed_ms)
 		}
 	}
 	else if (previouslyFrozen) {
+		soundManager->fade_out_sound(rotationLoop, 200);
 		applyThaw = true;
 		previouslyFrozen = false;
-
 		m_water.set_rotation_end_time();
 	}
 
@@ -189,6 +190,19 @@ bool Level::update(float elapsed_ms)
 	}
 
 	if (minotaurPresent) {
+		if (minotaur_prev_state != idle && m_minotaur.characterState->currentState == idle) {
+			soundManager->play_sound_looped(minotaurIdle, -1);
+		}
+		if (minotaur_prev_state == idle && m_minotaur.characterState->currentState != idle) {
+			soundManager->fade_out_sound(minotaurIdle, 0);
+		}
+		if (minotaur_prev_state != preparing && m_minotaur.characterState->currentState == preparing) {
+			soundManager->play_sound(minotaurPrepare);
+		}
+		if (minotaur_prev_state != swinging && m_minotaur.characterState->currentState == swinging) {
+			soundManager->play_sound_looped(minotaurAttack, 1);
+		}
+		minotaur_prev_state = m_minotaur.characterState->currentState;
 		if (physicsHandler->collideWithEnemy(&m_player, &m_minotaur) &&
 			 m_minotaur.characterState->currentState == swinging) {
 			set_player_death();
@@ -198,7 +212,7 @@ bool Level::update(float elapsed_ms)
 //	 Checking Player - Exit Collision
 	if (physicsHandler->collideWithExit(&m_player, &m_exit) && !is_player_at_goal)
 	{
-		soundManager->play_level_complete_sound();
+		soundManager->play_sound(levelComplete);
 		m_water.set_level_complete_time();
 		is_player_at_goal = true;
 		m_player.freeze();
@@ -234,7 +248,7 @@ bool Level::update(float elapsed_ms)
 		unfreeze_all_enemies();
 	}
 	if (m_player.characterState->currentState == jumping)
-		soundManager->play_jump_sound();
+		soundManager->play_sound(playerJump);
 	m_player.update(elapsed_ms);
 
 	update_all_enemies(elapsed_ms);
@@ -413,6 +427,8 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 		if (key == GLFW_KEY_ESCAPE) {
             isRotating = false;
+			soundManager->fade_out_sound(rotationLoop, 200);
+			soundManager->fade_out_sound(minotaurIdle, 0);
 			m_player.set_direction(Direction::none);
 			timer_pause_start = level_timer.getTime();
 
@@ -503,6 +519,7 @@ void Level::reset_enemies() {
 		m_minotaur.freeze();
 		m_minotaur.reset_position();
 		m_minotaur.unfreeze();
+		m_minotaur.characterState->changeState(idle);
 	}
 }
 
@@ -619,7 +636,7 @@ void Level::reset_game()
 	} else {
 		reset_enemies();
 	}
-	
+	soundManager->fade_out_sound(rotationLoop, 200);
 	reset_player_camera();
 	initialize_message_prompt();
 }
@@ -724,10 +741,18 @@ float Level::get_tile_height() { return m_tile_height; }
 void Level::set_player_death()
 {
 	if (!m_player.is_invincible() && m_player.is_alive()) {
-		soundManager->play_dead_sound();
 		m_player.kill();
-		m_water.set_player_dead();
+		set_death_effects();
 	}
+}
+
+void Level::set_death_effects()
+{
+	if (hasPrompt)
+		m_message.destroy();
+
+	soundManager->play_sound(playerDead);
+	m_water.set_player_dead();
 }
 
 void Level::load_select_level(int level)
@@ -864,7 +889,7 @@ void Level::load_minotaur()
 
 	m_minotaur.set_position(vec2({minotaur_x, minotaur_y}));
 	m_minotaur.set_scale(vec2({minotaur_scaleX, minotaur_scaleY}));
-
+	minotaur_prev_state = initialized;
 }
 
 void Level::load_spiders()
@@ -955,6 +980,9 @@ float Level::get_pause_start() {
 
 void Level::return_from_pause() {
 	level_timer.recordPausedTime(timer_pause_start, level_timer.getTime());
+	if (minotaurPresent && m_minotaur.characterState->currentState == idle) {
+		soundManager->play_sound_looped(minotaurIdle, -1);
+	}
 	reset_pause_start();
 }
 
