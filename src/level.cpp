@@ -276,8 +276,6 @@ bool Level::update(float elapsed_ms)
 
 	}
 
-	update_rotationUI();
-
 	return true;
 }
 
@@ -390,9 +388,10 @@ void Level::draw()
 		float message_y_shift = (screen_height / 2.f) - (m_tile_height * 3.f);
 		float message_y_pos = cameraCenter.y - message_y_shift;
 		m_message.set_position({cameraCenter.x, message_y_pos});
-		m_message.draw(projection_2D);
+		m_message.draw(projection_noRotation);
 	}
 
+    update_rotationUI();
 	m_rotationUI.draw(projection_noRotation);
 	m_rotationUIEnergy.draw(projection_noRotation);
 
@@ -450,15 +449,10 @@ void Level::on_key(GLFWwindow*, int key, int, int action, int mod)
 			isRotating = true;
 			rotateCW = false;
 
-			if (hasPrompt)
-				m_message.set_visibility(false);
 		}
 		if (key == rotateCWKey) {
 			isRotating = true;
 			rotateCW = true;
-
-			if (hasPrompt)
-				m_message.set_visibility(false);
 		}
 	}
 

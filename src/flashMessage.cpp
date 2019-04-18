@@ -38,7 +38,7 @@ void FlashMessage::draw(const mat3& projection)
         set_visibility(false);
     }
 
-    RenderManager::draw_hide_texture(projection, m_position, m_rotation, m_scale, &m_texture, is_hidden, this);
+    RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &m_texture, color, is_hidden, this);
 }
 
 void FlashMessage::destroy() {

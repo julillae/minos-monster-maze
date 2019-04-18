@@ -27,7 +27,7 @@ bool HelpMenu::init(vec2 position)
 
 void HelpMenu::draw(const mat3 &projection)
 {
-    RenderManager::draw_hide_texture(projection, m_position, m_rotation, m_scale, &texture, is_hidden, this);
+    RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, color, is_hidden, this);
 }
 
 void HelpMenu::set_visibility(bool is_visible)

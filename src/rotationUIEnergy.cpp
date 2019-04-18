@@ -22,7 +22,7 @@ bool RotationUIEnergy::init()
 
 void RotationUIEnergy::draw(const mat3& projection)
 {
-    RenderManager::draw_hide_texture(projection, m_position, m_rotation, m_scale, &m_texture, is_hidden, this);
+    RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &m_texture, color, is_hidden, this);
 }
 
 void RotationUIEnergy::update(float energyLevel)
