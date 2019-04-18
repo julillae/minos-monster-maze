@@ -17,4 +17,5 @@ public:
 protected:
     bool isSelected = false;
     Texture m_texture;
+    bool is_hidden = false;
 };

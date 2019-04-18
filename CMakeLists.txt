@@ -77,6 +77,8 @@ set(SOURCE_FILES
     src/quadTree.cpp
     src/soundManager.cpp
     src/timer.cpp
+    src/rotationUI.cpp
+    src/rotationUIEnergy.cpp
 
     include/project_path.hpp
   	include/common.hpp
@@ -124,6 +126,8 @@ set(SOURCE_FILES
     include/quadTree.hpp
     include/soundManager.hpp
     include/timer.hpp
+    include/rotationUI.hpp
+    include/rotationUIEnergy.hpp
 
         src/particleSystem/particle.cpp include/particleSystem/particle.hpp src/particleSystem/emitter.cpp include/particleSystem/emitter.hpp)
 
