@@ -31,10 +31,10 @@ void LevelButton::draw(const mat3 &projection)
 {
     if (isSelected) {
         float color[] = { 0.5f, 0.5f, 0.5f };
-        RenderManager::draw_texture_color(projection, m_position, m_rotation, m_scale, color, &m_texture, this);
+        RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &m_texture, color, is_hidden, this);
     } else {
         float color[] = { 1.f, 1.f, 1.f };
-        RenderManager::draw_texture_color(projection, m_position, m_rotation, m_scale, color, &m_texture, this);
+        RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &m_texture, color, is_hidden, this);
     }
 }
 

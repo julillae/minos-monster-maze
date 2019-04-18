@@ -215,7 +215,7 @@ void Minotaur::resetCycleStart() {
 void Minotaur::draw(const mat3& projection)
 {
     set_animation();
-	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &minotaur_texture, this);
+	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &minotaur_texture, color, is_hidden, this);
 
 }
 

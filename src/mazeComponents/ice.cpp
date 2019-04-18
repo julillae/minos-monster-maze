@@ -69,7 +69,7 @@ void Ices::draw(const mat3 & projection)
 	{
 		vec2 position = ice.get_position();
 		float rotation = ice.m_rotation;
-		RenderManager::draw_texture(projection, position, rotation, m_scale, &texture, this);
+		RenderManager::draw_texture(projection, position, rotation, m_scale, &texture, color, is_hidden, this);
 	}
 }
 
