@@ -104,6 +104,11 @@ void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
 		if (!m_player.is_alive()) {
+		    auto emitter = new Emitter(
+		            m_player.get_position(),
+		            70);
+		    emitter->init();
+		    m_emitters.emplace_back(emitter);
 			set_death_effects();
 		}
 
@@ -233,6 +238,23 @@ bool Level::update(float elapsed_ms)
 
     // checking player - platform collision
 	check_platform_collisions(nearbyFloorComponents);
+
+	// update particle emitters
+
+	for (auto& emitter : m_emitters) {
+	    emitter->update(elapsed_ms);
+	}
+
+	// delete dead particles
+    for (auto it = m_emitters.begin(); it != m_emitters.end();) {
+        if ((*it)->get_alive_particles() == 0) {
+            delete *it;
+            it = m_emitters.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
 
 	if (applyFreeze) {
 		m_player.freeze();
@@ -373,6 +395,9 @@ void Level::draw()
 	draw_enemies(projection_2D);
 	m_exit.draw(projection_2D);
 	m_player.draw(projection_2D);
+	for (auto& emitter: m_emitters) {
+	    emitter->draw(projection_2D);
+	}
 
 	render_to_screen(w, h);
 
@@ -722,6 +747,12 @@ void Level::set_player_death()
 {
 	if (!m_player.is_invincible() && m_player.is_alive()) {
 		m_player.kill();
+		// emitter for blood
+        auto emitter = new Emitter(
+                m_player.get_position(),
+                70);
+        emitter->init();
+        m_emitters.emplace_back(emitter);
 		set_death_effects();
 	}
 }

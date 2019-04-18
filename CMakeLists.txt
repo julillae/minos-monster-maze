@@ -125,7 +125,7 @@ set(SOURCE_FILES
     include/soundManager.hpp
     include/timer.hpp
 
-        src/particleSystem/particle.cpp include/particleSystem/particle.hpp)
+        src/particleSystem/particle.cpp include/particleSystem/particle.hpp src/particleSystem/emitter.cpp include/particleSystem/emitter.hpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC src/)
