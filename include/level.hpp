@@ -24,6 +24,8 @@
 #include "flashMessage.hpp"
 #include "quadTree.hpp"
 #include "timer.hpp"
+#include "rotationUI.hpp"
+#include "rotationUIEnergy.hpp"
 
 // stlib
 #include <vector>
@@ -114,6 +116,9 @@ public:
 	void unfreeze_all_enemies();
 	void update_all_enemies(float elapsed_ms);
 	void update_all_platforms(float elapsed_ms);
+	void update_rotationUI();
+	void set_rotationUI_position();
+	void set_rotationUI_visibility(bool visible);
 
 	void set_player_death();
 	void set_death_effects();
@@ -123,6 +128,7 @@ public:
 	void load_harpies();
 	void load_minotaur();
 	void load_blades();
+	void load_rotation_energy();
 
 	float get_level_time();
 	float get_cumulative_time();
@@ -146,16 +152,9 @@ private:
 	Ices m_ice;
 	Blades m_blades;
 
-    HelpMenu m_help_menu;
-
 	FlashMessage m_message;
 
     float m_seed_rng;
-
-    Mix_Music* m_background_music;
-	Mix_Chunk* m_player_dead_sound;
-	Mix_Chunk* m_player_jump_sound;
-	Mix_Chunk* level_complete_sound;
 
     // C++ rng
 	std::default_random_engine m_rng;
@@ -211,5 +210,8 @@ private:
 	Timer level_timer;
 	float timer_pause_start = -1.0f;
 	float timer_pause_end = -1.0f;
+
+	RotationUI m_rotationUI;
+	RotationUIEnergy m_rotationUIEnergy;
 
 };

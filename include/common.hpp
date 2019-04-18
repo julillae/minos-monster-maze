@@ -116,6 +116,7 @@ struct Renderable
 	float m_rotation;	// in radians
 	std::vector<vec2> vertex_coords;
 	std::vector<vec3> local_vertex_coords;
+	float color[3] = { 1.f, 1.f, 1.f };
 
 	// projection contains the orthographic projection matrix. As every Renderable::draw()
 	// renders itself it needs it to correctly bind it to its shader.
