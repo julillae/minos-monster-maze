@@ -26,6 +26,8 @@
 #include "timer.hpp"
 #include "rotationUI.hpp"
 #include "rotationUIEnergy.hpp"
+#include "textRender.hpp"
+
 
 // stlib
 #include <vector>
@@ -213,5 +215,8 @@ private:
 
 	RotationUI m_rotationUI;
 	RotationUIEnergy m_rotationUIEnergy;
+
+    TextRender* m_text_render;
+
 
 };

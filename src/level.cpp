@@ -94,7 +94,10 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	set_rotationUI_position();
 	set_rotationUI_visibility(canRotate);
 
-	return m_water.init() && m_player.init(initialPosition, physicsHandler);
+    m_text_render = new TextRender("comic.tff", 48);
+
+
+    return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
 void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) {
@@ -394,8 +397,11 @@ void Level::draw()
     update_rotationUI();
 	m_rotationUI.draw(projection_noRotation);
 	m_rotationUIEnergy.draw(projection_noRotation);
+    m_text_render->setPosition({ 0 + 10, static_cast<float>(h) - 10 });
+    m_text_render->setColour({ 0.85f, 0.85f, 0.85f });
+    m_text_render->render(projection_2D, std::to_string(level_timer.getTime()) + "x");
 
-	// Presenting
+    // Presenting
 	glfwSwapBuffers(m_window);
 }
 

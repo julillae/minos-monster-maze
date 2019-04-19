@@ -79,6 +79,7 @@ set(SOURCE_FILES
     src/timer.cpp
     src/rotationUI.cpp
     src/rotationUIEnergy.cpp
+    src/textRender.cpp
 
     include/project_path.hpp
   	include/common.hpp
@@ -128,8 +129,7 @@ set(SOURCE_FILES
     include/timer.hpp
     include/rotationUI.hpp
     include/rotationUIEnergy.hpp
-
-	)
+    include/textRender.hpp    )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC src/)
@@ -146,6 +146,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS 0)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_image/)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/gl3w)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/rapidjson)
+target_include_directories(${PROJECT_NAME} PUBLIC ext/freetype/include)
+
 
 # Find OpenGL
 find_package(OpenGL REQUIRED)
@@ -166,12 +168,13 @@ if (IS_OS_LINUX OR IS_OS_MAC)
 
     pkg_search_module(SDL2 REQURIED sdl2)
     pkg_search_module(SDL2MIXER REQURIED SDL2_mixer)
-    
+    pkg_search_module(FREETYPE REQUIRED freetype2)
+
     # Link Frameworks on OSX
     if (IS_OS_MAC)
        find_library(COCOA_LIBRARY Cocoa)
        find_library(CF_LIBRARY CoreFoundation)
-       target_link_libraries(${PROJECT_NAME} PUBLIC ${COCOA_LIBRARY} ${CF_LIBRARY})
+       target_link_libraries(${PROJECT_NAME} PUBLIC ${COCOA_LIBRARY} ${CF_LIBRARY} ${FREETYPE_LIBRARIES})
     endif()
 elseif (IS_OS_WINDOWS)
 # https://stackoverflow.com/questions/17126860/cmake-link-precompiled-library-depending-on-os-and-architecture

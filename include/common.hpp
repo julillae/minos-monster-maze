@@ -42,6 +42,9 @@ vec2 rotateVec(vec2 v, float rotation);
 vec2 scalarMultiply(vec2 v, float s);
 std::pair<float, float> vec2ToPair(vec2 v);
 
+std::string path(std::string name);
+
+
 //implemented according to Unit interval(0,1) https://en.wikipedia.org/wiki/Cubic_Hermite_spline
 float hermiteSplineVal(float startPos, float endPos, float startSlope, float endSlope, float intervalPos);
 
