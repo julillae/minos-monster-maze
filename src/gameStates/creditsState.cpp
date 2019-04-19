@@ -81,12 +81,14 @@ void CreditsState::draw()
 bool CreditsState::update(float elapsed_ms)
 {
     vec2 currPos = credits.get_position();
+    float texture_height = -350.f;
 
-    if (currPos.y <= 1000) {
+    if (currPos.y >= texture_height) {
         float increment = 0.5;
         credits.set_position({currPos.x, currPos.y - increment});
     } else {
         // close game
+        close = true;
     }
 
     return true;
@@ -99,7 +101,7 @@ void CreditsState::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 bool CreditsState::is_over()
 {
-    return glfwWindowShouldClose(m_window);
+    return glfwWindowShouldClose(m_window) || close;
 }
 
 void CreditsState::destroy()
