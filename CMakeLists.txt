@@ -167,6 +167,7 @@ if (IS_OS_LINUX OR IS_OS_MAC)
 
     pkg_search_module(SDL2 REQURIED sdl2)
     pkg_search_module(SDL2MIXER REQURIED SDL2_mixer)
+    pkg_search_module(FREETYPE REQUIRED freetype2)
 
     # Link Frameworks on OSX
     if (IS_OS_MAC)
