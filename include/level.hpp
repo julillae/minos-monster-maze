@@ -26,6 +26,8 @@
 #include "timer.hpp"
 #include "rotationUI.hpp"
 #include "rotationUIEnergy.hpp"
+#include "textManager.hpp"
+
 
 // stlib
 #include <vector>
@@ -119,6 +121,7 @@ public:
 	void update_rotationUI();
 	void set_rotationUI_position();
 	void set_rotationUI_visibility(bool visible);
+	void set_textUI_position();
 
 	void set_player_death();
 	void set_death_effects();
@@ -213,5 +216,8 @@ private:
 
 	RotationUI m_rotationUI;
 	RotationUIEnergy m_rotationUIEnergy;
+
+    TextManager* m_text_manager;
+
 
 };
