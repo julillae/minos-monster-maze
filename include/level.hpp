@@ -151,6 +151,7 @@ private:
 
 	Exit m_exit;
 	Floors m_floors;
+	vector<Floor> vector_of_floors;
 	Spikes m_spikes;
 	Ices m_ice;
 	Blades m_blades;
@@ -209,6 +210,8 @@ private:
 	float rotationEnergy = maxRotationEnergy;
 
 	QuadTreeNode m_quad;
+	std::vector<Floor> nearbyFloorComponents;
+	bool useQuadTree;
 
 	Timer level_timer;
 	float timer_pause_start = -1.0f;

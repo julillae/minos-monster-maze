@@ -81,6 +81,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	glViewport(0, 0, w, h);
 
 	current_level = startLevel;
+	useQuadTree = (current_level != 11);
 	call_level_loader();
 
 	w /= osScaleFactor;
@@ -227,13 +228,10 @@ bool Level::update(float elapsed_ms)
 			m_message.destroy();
 	}
 
-	// retrieve the closest floor components to player
-    std::vector<Floor> nearbyFloorComponents =
+	if (useQuadTree) {
+		// retrieve the closest floor components to player
+		nearbyFloorComponents =
 			m_quad.getNearbyFloorComponents(m_player.get_position(), m_player.get_bounding_box());
-
-	if (current_level == 11) {
-		// deallocate quad tree memory for boss
-		nearbyFloorComponents = m_floors.get_floor_vector();
 	}
 
     // checking player - platform collision
@@ -583,25 +581,31 @@ void Level::call_level_loader()
 
     int w, h;
     glfwGetWindowSize(m_window, &w, &h);
-    // if camera tracking is off, initialize the quad tree with the screen size
-    if (!cameraTracking) {
-    	if (current_level == 5) {
-			m_quad = QuadTreeNode(0, {0.f, 0.f}, (float) w + 3 * m_maze_width, (float) h + 3 * m_maze_height);
-		} else {
-			m_quad = QuadTreeNode(0, {0.f, 0.f}, (float) w, (float) h);
+
+	vector_of_floors = m_floors.get_floor_vector();
+
+	if (useQuadTree) {
+		// if camera tracking is off, initialize the quad tree with the screen size
+		if (!cameraTracking) {
+			if (current_level == 5) {
+				m_quad = QuadTreeNode(0, { 0.f, 0.f }, (float)w + 3 * m_maze_width, (float)h + 3 * m_maze_height);
+			}
+			else {
+				m_quad = QuadTreeNode(0, { 0.f, 0.f }, (float)w, (float)h);
+			}
 		}
-    } else {
-        // if camera tracking is on, initialize the tree based on the maze
-        m_quad = QuadTreeNode(0, {0.f, 0.f}, ((m_maze_width+7)*m_tile_width),
-                              ((m_maze_height+7)*m_tile_height));
-    }
+		else {
+			// if camera tracking is on, initialize the tree based on the maze
+			m_quad = QuadTreeNode(0, { 0.f, 0.f }, ((m_maze_width + 7)*m_tile_width),
+				((m_maze_height + 7)*m_tile_height));
+		}
 
-	for (auto& floor: m_floors.get_floor_vector()) {
-		m_quad.insert(floor);
+		for (auto& floor : vector_of_floors) {
+			m_quad.insert(floor);
+		}
 	}
-
-	if (current_level == 11) {
-	    m_quad.clear();
+	else {
+		nearbyFloorComponents = vector_of_floors;
 	}
 
     m_text_manager = new TextManager(fonts_path("ancient.ttf"), 40);
