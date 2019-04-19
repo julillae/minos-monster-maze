@@ -30,4 +30,6 @@ private:
 
     Mix_Music* m_background_music;
     vec2 initialPosition;
+
+    vec2 currPosition;
 };

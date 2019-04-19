@@ -63,6 +63,7 @@ set(SOURCE_FILES
     src/gameStates/mainMenuState.cpp
     src/gameStates/levelSelectState.cpp
     src/gameStates/pauseMenuState.cpp
+    src/gameStates/creditsState.cpp
     src/menus/mainMenu.cpp
     src/menus/menu.cpp
     src/menus/button.cpp
@@ -71,6 +72,7 @@ set(SOURCE_FILES
     src/menus/mainButton.cpp
     src/menus/pauseMenu.cpp
     src/menus/savePopup.cpp
+    src/menus/credits.cpp
     src/levelLoader.cpp
     src/flashMessage.cpp
     src/gameSave.cpp
@@ -110,6 +112,7 @@ set(SOURCE_FILES
     include/gameStates/mainMenuState.hpp
     include/gameStates/levelSelectState.hpp
     include/gameStates/pauseMenuState.hpp
+    include/gameStates/creditsState.hpp
     include/menus/mainMenu.hpp
     include/menus/menu.hpp
     include/menus/button.hpp
@@ -118,6 +121,7 @@ set(SOURCE_FILES
     include/menus/mainButton.hpp
     include/menus/pauseMenu.hpp
     include/menus/savePopup.hpp
+    include/menus/credits.hpp
     include/levelLoader.hpp
     include/flashMessage.hpp
     include/gameSave.hpp

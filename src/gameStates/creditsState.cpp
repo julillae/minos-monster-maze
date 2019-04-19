@@ -20,7 +20,7 @@ void CreditsState::init(vec2 screen)
 {
     fprintf(stderr, "pause menu init\n");
     this->m_window = game->m_window;
-    name = PAUSE;
+    name = CREDITS;
 
     // hack used to make sure the display for macOS with retina display issue is consistent with display on other systems
     int testWidth;
@@ -80,6 +80,14 @@ void CreditsState::draw()
 
 bool CreditsState::update(float elapsed_ms)
 {
+    vec2 currPos = credits.get_position();
+
+    if (currPos.y <= 1000) {
+        float increment = 0.5;
+        credits.set_position({currPos.x, currPos.y - increment});
+    } else {
+        // close game
+    }
 
     return true;
 }

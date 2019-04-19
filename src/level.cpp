@@ -522,6 +522,19 @@ void Level::destroy_platforms() {
 	m_blades.destroy();
 }
 
+void Level::load_credits()
+{
+	int w, h;
+    glfwGetFramebufferSize(m_window, &w, &h);
+	vec2 screen = { (float)w, (float)h };
+
+	CreditsState* creditsState = new CreditsState(game);
+	creditsState->init(screen);
+
+	game->push_state(creditsState);
+	game->set_current_state(creditsState);
+}
+
 void Level::call_level_loader()
 {
 	LevelLoader levelLoader;
@@ -587,8 +600,7 @@ void Level::load_new_level()
 		current_level = 0;
 		level_timer.resetCumulativeTime();
 	
-		CreditsState* creditsState = (CreditsState*) game->get_state(CREDITS);
-		game->set_current_state(creditsState);
+		load_credits();
 	}
 	
 	level_timer.addCumulativeTime(level_timer.getTime());

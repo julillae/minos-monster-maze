@@ -108,6 +108,7 @@ public:
 
 	void initialize_message_prompt();
 	void initialize_camera_position(int w, int h);
+	void load_credits();
 	void call_level_loader();
 	void load_new_level();
 	void reset_player_camera();

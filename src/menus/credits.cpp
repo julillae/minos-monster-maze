@@ -30,6 +30,11 @@ void Credits::draw(const mat3 &projection)
     RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
 }
 
+vec2 Credits::get_position()
+{
+    return m_position;
+}
+
 
 
 
