@@ -49,15 +49,6 @@ bool gl_has_errors()
 	return true;
 }
 
-std::string path(std::string name) {
-    std::stringstream ss;
-
-    //put arbitrary formatted data into the stream
-    ss << data_path << "/fonts/" << name;
-
-    return ss.str();
-}
-
 float dot(vec2 l, vec2 r)
 {
 	return l.x * r.x + l.y * r.y;

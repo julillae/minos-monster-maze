@@ -11,6 +11,7 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 
 namespace
 {
@@ -47,7 +48,6 @@ Level::Level(Game* game) :
 
 Level::~Level()
 {
-
 }
 
 // Level initialization
@@ -94,8 +94,9 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	set_rotationUI_position();
 	set_rotationUI_visibility(canRotate);
 
-    m_text_render = new TextRender("comic.tff", 48);
+    const char *path2 = "/Users/henrydeng/436d/data/fonts/ancient.ttf";
 
+    m_text_render = new TextRender(path2, 50);
 
     return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -223,6 +224,7 @@ bool Level::update(float elapsed_ms)
 		m_player.freeze();
 		m_player.set_invincibility(true);
 		set_rotationUI_visibility(false);
+		m_text_render->set_visibility(false);
 
 		if (hasPrompt)
 			m_message.destroy();
@@ -382,12 +384,12 @@ void Level::draw()
 	m_exit.draw(projection_2D);
 	m_player.draw(projection_2D);
 
-	render_to_screen(w, h);
+    render_to_screen(w, h);
 
 	m_water.draw(projection_2D);
 
 	if (hasPrompt) {
-		float screen_height = static_cast<float>(h);
+		float screen_height = static_cast<float>(h)/osScaleFactor;
 		float message_y_shift = (screen_height / 2.f) - (m_tile_height * 3.f);
 		float message_y_pos = cameraCenter.y - message_y_shift;
 		m_message.set_position({cameraCenter.x, message_y_pos});
@@ -397,9 +399,19 @@ void Level::draw()
     update_rotationUI();
 	m_rotationUI.draw(projection_noRotation);
 	m_rotationUIEnergy.draw(projection_noRotation);
-    m_text_render->setPosition({ 0 + 10, static_cast<float>(h) - 10 });
-    m_text_render->setColour({ 0.85f, 0.85f, 0.85f });
-    m_text_render->render(projection_2D, std::to_string(level_timer.getTime()) + "x");
+
+    m_text_render->setColour({0.7f, 0.7f, 0.7f});
+    float screen_height = static_cast<float>(h)/osScaleFactor;
+    float screen_width = static_cast<float>(w)/osScaleFactor;
+    float message_x_shift = (screen_width / 2.f) - (m_tile_width * 3.f);
+    float message_y_shift = (screen_height / 2.f) - (m_tile_height * 3.f);
+    float message_x_pos = cameraCenter.x - message_x_shift;
+    float message_y_pos = cameraCenter.y - message_y_shift;
+    m_text_render->setPosition({message_x_pos, message_y_pos + 100});
+    stringstream stream;
+    stream << fixed << setprecision(2) << level_timer.getTime();
+    m_text_render->render(projection_noRotation, "Time: " + stream.str());
+
 
     // Presenting
 	glfwSwapBuffers(m_window);
@@ -606,7 +618,6 @@ void Level::load_new_level()
 	destroy_platforms();
 	destroy_enemies();
 	m_quad.clear();
-
 	m_maze.clear();
 
 	current_level++;

@@ -7,7 +7,7 @@
 #include "../include/textRender.hpp"
 
 
-TextRender::TextRender(std::string font_name, int size) {
+TextRender::TextRender(const char *path, int size) {
     FT_Library ftLibrary;
     if (FT_Init_FreeType(&ftLibrary)) {
         printf("ERROR::FREETYPE: init failed\n");
@@ -15,7 +15,7 @@ TextRender::TextRender(std::string font_name, int size) {
     }
 
     FT_Face face;
-    if (FT_New_Face(ftLibrary, path(font_name).c_str(), 0, &face)) {
+    if (FT_New_Face(ftLibrary, path, 0, &face)) {
         printf("ERROR::FREETYPE: could not load font\n");
         exit(1);
     }
@@ -33,9 +33,9 @@ TextRender::TextRender(std::string font_name, int size) {
             continue;
         }
         // Generate texture
-        GLuint texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
+        GLuint textureID;
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_2D, textureID);
         glTexImage2D(
                 GL_TEXTURE_2D,
                 0,
@@ -54,7 +54,7 @@ TextRender::TextRender(std::string font_name, int size) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         // Now store character for later use
         Word word = {
-                texture,
+                textureID,
                 { static_cast<float>(face->glyph->bitmap.width),  static_cast<float>(face->glyph->bitmap.rows) },
                 { static_cast<float>(face->glyph->bitmap_left),  static_cast<float>(face->glyph->bitmap_top) },
                 static_cast<GLuint>(face->glyph->advance.x)
@@ -101,7 +101,7 @@ float TextRender::get_width(std::string text) {
     for (c = text.begin(); c != text.end(); c++)
     {
         ch = words[*c];
-        return_value += (ch.nextWord >> 6);
+        return_value += (ch.advance >> 6);
     }
     return return_value+ch.size.x;
 }
@@ -124,6 +124,8 @@ void TextRender::render(const mat3& projection, std::string text) {
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
 
+    GLint is_hidden_uloc = glGetUniformLocation(effect.program, "is_hidden");
+    glUniform1f(is_hidden_uloc, is_hidden);
 
     // Activate corresponding render state
     glUniform3f(glGetUniformLocation(effect.program, "textColor"), m_colour.x, m_colour.y, m_colour.z);
@@ -139,8 +141,8 @@ void TextRender::render(const mat3& projection, std::string text) {
     {
         Word ch = words[*c];
 
-        GLfloat xpos = x + ch.offset.x;
-        GLfloat ypos = y - (ch.size.y - ch.offset.y);
+        GLfloat xpos = x + ch.bearing.x;
+        GLfloat ypos = y - (ch.size.y - ch.bearing.y);
 
         GLfloat w = ch.size.x;
         GLfloat h = ch.size.y;
@@ -155,14 +157,14 @@ void TextRender::render(const mat3& projection, std::string text) {
                 { xpos + w, ypos + h,   1.0, 0.0 }
         };
         // Render glyph texture over quad
-        glBindTexture(GL_TEXTURE_2D, ch.texture);
+        glBindTexture(GL_TEXTURE_2D, ch.textureID);
         // Update content of VBO memory
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         // Render quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        x += (ch.nextWord >> 6); // Bitshift by 6 to get value in pixels (2^6 = 64)
+        x += (ch.advance >> 6); // Bitshift by 6 to get value in pixels (2^6 = 64)
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -171,3 +173,18 @@ void TextRender::render(const mat3& projection, std::string text) {
 void TextRender::draw(const mat3& projection) {
     return;
 }
+
+void TextRender::destroy()
+{
+    glDeleteBuffers(1, &mesh.vbo);
+    glDeleteBuffers(1, &mesh.ibo);
+    glDeleteVertexArrays(1, &mesh.vao);
+
+    effect.release();
+}
+
+void TextRender::set_visibility(bool is_visible)
+{
+    is_hidden = !is_visible;
+}
+

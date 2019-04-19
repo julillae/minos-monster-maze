@@ -17,9 +17,11 @@
 #define shader_path(name) PROJECT_SOURCE_DIR "./shaders/" name
 
 #define data_path PROJECT_SOURCE_DIR "./data"
+#define fonts_path(name)  data_path "/fonts/" name
 #define textures_path(name)  data_path "/textures/" name
 #define audio_path(name) data_path  "/audio/" name
 #define mesh_path(name) data_path  "/meshes/" name
+
 
 static float g_tolerance = 0.000001f;
 

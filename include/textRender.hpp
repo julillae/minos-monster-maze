@@ -11,22 +11,25 @@
 
 
 struct Word {
-    GLuint texture;
+    GLuint textureID;
     vec2 size;
-    vec2 offset;
-    GLuint nextWord;
+    vec2 bearing;
+    GLuint advance;
 };
 
 class TextRender : public Renderable {
 public:
 
-    TextRender(std::string font_name, int size);
+    TextRender(const char* path, int size);
     void setColour(vec3 colour);
     void setPosition(vec2 position);
     void setScale(vec2 scale);
     void render(const mat3& projection, std::string text);
     void draw(const mat3& projection);
     float get_width(std::string text);
+    void destroy();
+    void set_visibility(bool is_visible);
+
 
 private:
     std::map<GLchar, Word> words;
@@ -37,6 +40,9 @@ private:
 
     vec2 m_position{};
     vec2 m_scale{};
+
+    bool is_hidden = false;
+
 };
 
 
