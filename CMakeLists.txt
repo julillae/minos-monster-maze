@@ -79,6 +79,8 @@ set(SOURCE_FILES
     src/timer.cpp
     src/rotationUI.cpp
     src/rotationUIEnergy.cpp
+    src/particleSystem/particle.cpp
+    src/particleSystem/emitter.cpp
 
     include/project_path.hpp
   	include/common.hpp
@@ -128,7 +130,9 @@ set(SOURCE_FILES
     include/timer.hpp
     include/rotationUI.hpp
     include/rotationUIEnergy.hpp
-
+    include/particleSystem/particle.hpp
+    include/particleSystem/emitter.hpp
+        
 	)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
