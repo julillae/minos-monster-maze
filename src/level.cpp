@@ -94,10 +94,6 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	set_rotationUI_position();
 	set_rotationUI_visibility(canRotate);
 
-    const char *path2 = "/Users/henrydeng/436d/data/fonts/ancient.ttf";
-
-    m_text_render = new TextRender(path2, 50);
-
     return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
@@ -128,6 +124,7 @@ void Level::destroy()
 	destroy_enemies();
 	destroy_platforms();
 	m_quad.clear();
+	m_text_manager->destroy();
 
 	glfwDestroyWindow(m_window);
 }
@@ -224,7 +221,7 @@ bool Level::update(float elapsed_ms)
 		m_player.freeze();
 		m_player.set_invincibility(true);
 		set_rotationUI_visibility(false);
-		m_text_render->set_visibility(false);
+		m_text_manager->destroy();
 
 		if (hasPrompt)
 			m_message.destroy();
@@ -400,17 +397,12 @@ void Level::draw()
 	m_rotationUI.draw(projection_noRotation);
 	m_rotationUIEnergy.draw(projection_noRotation);
 
-    m_text_render->setColour({0.7f, 0.7f, 0.7f});
-    float screen_height = static_cast<float>(h)/osScaleFactor;
-    float screen_width = static_cast<float>(w)/osScaleFactor;
-    float message_x_shift = (screen_width / 2.f) - (m_tile_width * 3.f);
-    float message_y_shift = (screen_height / 2.f) - (m_tile_height * 3.f);
-    float message_x_pos = cameraCenter.x - message_x_shift;
-    float message_y_pos = cameraCenter.y - message_y_shift;
-    m_text_render->setPosition({message_x_pos, message_y_pos + 100});
+	// set opacity
+    m_text_manager->setColour({0.7f, 0.7f, 0.7f});
+    set_textUI_position();
     stringstream stream;
-    stream << fixed << setprecision(2) << level_timer.getTime();
-    m_text_render->render(projection_noRotation, "Time: " + stream.str());
+    stream << fixed << setprecision(0) << level_timer.getTime();
+    m_text_manager->render(projection_noRotation, "Time: " + stream.str());
 
 
     // Presenting
@@ -611,6 +603,8 @@ void Level::call_level_loader()
 	if (current_level == 11) {
 	    m_quad.clear();
 	}
+
+    m_text_manager = new TextManager(fonts_path("ancient.ttf"), 40);
 }
 
 void Level::load_new_level()
@@ -619,6 +613,7 @@ void Level::load_new_level()
 	destroy_enemies();
 	m_quad.clear();
 	m_maze.clear();
+	m_text_manager->destroy();
 
 	current_level++;
 	if (current_level >= num_levels) {
@@ -737,6 +732,17 @@ void Level::set_rotationUI_visibility(bool visible)
 
 }
 
+void Level::set_textUI_position()
+{
+    int w, h;
+    glfwGetFramebufferSize(m_window, &w, &h);
+    w /= osScaleFactor;
+    h /= osScaleFactor;
+
+    vec2 newPosition = vec2({cameraCenter.x + 470, cameraCenter.y/2 - 80});
+    m_text_manager->setPosition(newPosition);
+}
+
 Level::Platform Level::maze_is_platform(std::pair<int,int> coords){
 	Platform platform = Platform{};
 	int val_at_coords = m_maze[coords.first][coords.second];
@@ -789,6 +795,7 @@ void Level::load_select_level(int level)
 	destroy_enemies();
 	m_maze.clear();
 	m_quad.clear();
+	m_text_manager->destroy();
 
 	current_level = level;
 	call_level_loader();
