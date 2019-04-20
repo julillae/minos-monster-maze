@@ -21,6 +21,8 @@ public:
 
     ~Physics();
 
+	bool outerCircleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2);
+
 	float rotation = 0.f;	// world rotation in radians
 	vec2 gravityAcc = {0.f,  9.81f * 0.06f };
 

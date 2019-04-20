@@ -101,7 +101,7 @@ public:
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-	void check_platform_collisions(std::vector<Floor> nearbyFloorComponents);
+	void check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce, std::vector<Spike>);
 
 	void draw_enemies(mat3 projection_2D);
 	void reset_enemies();
@@ -139,6 +139,8 @@ public:
 	void reset_pause_start();
 	void return_from_pause();
 	void record_pause_time();
+
+	void clear_resources();
 private:
 
 	// Water effect
@@ -152,6 +154,8 @@ private:
 	Exit m_exit;
 	Floors m_floors;
 	vector<Floor> vector_of_floors;
+	vector<Ice> vector_of_ices;
+	vector<Spike> vector_of_spikes;
 	Spikes m_spikes;
 	Ices m_ice;
 	Blades m_blades;
@@ -209,10 +213,6 @@ private:
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;
 
-	QuadTreeNode m_quad;
-	std::vector<Floor> nearbyFloorComponents;
-	bool useQuadTree;
-
 	Timer level_timer;
 	float timer_pause_start = -1.0f;
 	float timer_pause_end = -1.0f;
@@ -226,5 +226,7 @@ private:
 
     TextManager* m_text_manager;
 
-
+    std::vector<Floor> nearbyFloors;
+    std::vector<Ice> nearbyIce;
+	std::vector<Spike> nearbySpikes;
 };

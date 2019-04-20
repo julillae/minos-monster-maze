@@ -37,8 +37,7 @@ namespace
 
 
 Level::Level(Game* game) :
-	m_seed_rng(0.f),
-	m_quad(0, {}, 0.f, 0.f)
+	m_seed_rng(0.f)
 {
 // Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -81,7 +80,6 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	glViewport(0, 0, w, h);
 
 	current_level = startLevel;
-	useQuadTree = (current_level != 11);
 	call_level_loader();
 
 	w /= osScaleFactor;
@@ -98,12 +96,12 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
     return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
-void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) {
+void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce, std::vector<Spike> nearbySpikes) {
 	if (m_player.is_alive()) {
 		m_player.set_world_vertex_coord();
-		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes.get_spike_vector());
+		physicsHandler->characterCollisionsWithSpikes(&m_player, nearbySpikes);
         physicsHandler->characterCollisionsWithFloors(&m_player, nearbyFloorComponents);
-		physicsHandler->characterCollisionsWithIce(&m_player, m_ice.get_ice_vector());
+		physicsHandler->characterCollisionsWithIce(&m_player, nearbyIce);
 		physicsHandler->characterCollisionsWithBlades(&m_player, m_blades.get_blade_vector());
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
@@ -129,7 +127,6 @@ void Level::destroy()
 	m_player.destroy();
 	destroy_enemies();
 	destroy_platforms();
-	m_quad.clear();
 	m_text_manager->destroy();
 
 	glfwDestroyWindow(m_window);
@@ -233,14 +230,31 @@ bool Level::update(float elapsed_ms)
 			m_message.destroy();
 	}
 
-	if (useQuadTree) {
-		// retrieve the closest floor components to player
-		nearbyFloorComponents =
-			m_quad.getNearbyFloorComponents(m_player.get_position(), m_player.get_bounding_box());
+	vec2 play_pos = m_player.get_position();
+	float play_radius = m_player.boundingCircleRadius;
+	// create a copy of the floor vectors
+	// get rid of all floors that are not in a certain radius
+	std::copy_if(vector_of_floors.begin(), vector_of_floors.end(), back_inserter(nearbyFloors),
+		[&](Floor const& v)
+	{ return physicsHandler->outerCircleToCircleIntersection(play_pos, v.get_position(), play_radius, v.boundingCircleRadius); });
+
+    if (!vector_of_ices.empty()) {
+		std::copy_if(vector_of_ices.begin(), vector_of_ices.end(), back_inserter(nearbyIce),
+			[&](Ice const& v)
+		{ return physicsHandler->outerCircleToCircleIntersection(play_pos, v.get_position(), play_radius, v.boundingCircleRadius); });
+    }
+
+	if (!vector_of_spikes.empty()) {
+		std::copy_if(vector_of_spikes.begin(), vector_of_spikes.end(), back_inserter(nearbySpikes),
+			[&](Spike const& v)
+		{ return physicsHandler->outerCircleToCircleIntersection(play_pos, v.get_position(), play_radius, v.boundingCircleRadius); });
 	}
 
-    // checking player - platform collision
-	check_platform_collisions(nearbyFloorComponents);
+    // checking player - platform collision with nearby floors
+	check_platform_collisions(nearbyFloors, nearbyIce, nearbySpikes);
+	nearbyFloors.clear();
+	nearbyIce.clear();
+	nearbySpikes.clear();
 
 	// update particle emitters
 
@@ -604,45 +618,16 @@ void Level::call_level_loader()
 	m_spikes = levelLoader.get_spikes();
 	m_blades = levelLoader.get_blades();
 
-    int w, h;
-    glfwGetWindowSize(m_window, &w, &h);
-
-	vector_of_floors = m_floors.get_floor_vector();
-
-	if (useQuadTree) {
-		// if camera tracking is off, initialize the quad tree with the screen size
-		if (!cameraTracking) {
-			if (current_level == 5) {
-				m_quad = QuadTreeNode(0, { 0.f, 0.f }, (float)w + 3 * m_maze_width, (float)h + 3 * m_maze_height);
-			}
-			else {
-				m_quad = QuadTreeNode(0, { 0.f, 0.f }, (float)w, (float)h);
-			}
-		}
-		else {
-			// if camera tracking is on, initialize the tree based on the maze
-			m_quad = QuadTreeNode(0, { 0.f, 0.f }, ((m_maze_width + 7)*m_tile_width),
-				((m_maze_height + 7)*m_tile_height));
-		}
-
-		for (auto& floor : vector_of_floors) {
-			m_quad.insert(floor);
-		}
-	}
-	else {
-		nearbyFloorComponents = vector_of_floors;
-	}
+    vector_of_floors = m_floors.get_floor_vector();
+    vector_of_ices = m_ice.get_ice_vector();
+	vector_of_spikes = m_spikes.get_spike_vector();
 
     m_text_manager = new TextManager(fonts_path("ancient.ttf"), 40);
 }
 
 void Level::load_new_level()
 {
-	destroy_platforms();
-	destroy_enemies();
-	m_quad.clear();
-	m_maze.clear();
-	m_text_manager->destroy();
+	clear_resources();
 
 	current_level++;
 	if (current_level >= num_levels) {
@@ -826,11 +811,7 @@ void Level::set_death_effects()
 
 void Level::load_select_level(int level)
 {
-	destroy_platforms();
-	destroy_enemies();
-	m_maze.clear();
-	m_quad.clear();
-	m_text_manager->destroy();
+	clear_resources();
 
 	current_level = level;
 	call_level_loader();
@@ -1064,5 +1045,18 @@ void Level::return_from_pause() {
 
 void Level::reset_pause_start() {
 	timer_pause_start = -1.0f;
+}
+
+void Level::clear_resources() {
+    destroy_platforms();
+    destroy_enemies();
+    vector_of_floors.clear();
+    vector_of_ices.clear();
+	vector_of_spikes.clear();
+    m_maze.clear();
+    nearbyFloors.clear();
+    nearbyIce.clear();
+	nearbySpikes.clear();
+    m_text_manager->destroy();
 }
 
