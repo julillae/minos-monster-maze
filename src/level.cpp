@@ -80,7 +80,6 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	glViewport(0, 0, w, h);
 
 	current_level = startLevel;
-	useQuadTree = (current_level != 11);
 	call_level_loader();
 
 	w /= osScaleFactor;
