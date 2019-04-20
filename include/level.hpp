@@ -209,9 +209,6 @@ private:
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;
 
-	std::vector<Floor> nearbyFloorComponents;
-	bool useQuadTree;
-
 	Timer level_timer;
 	float timer_pause_start = -1.0f;
 	float timer_pause_end = -1.0f;

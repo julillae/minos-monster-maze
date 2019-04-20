@@ -235,7 +235,7 @@ bool Level::update(float elapsed_ms)
             { return !isWithinRange(v.get_position(), play_pos); }
     ), nearbyFloors.end());
 
-    // checking player - platform collision with nearby floors 
+    // checking player - platform collision with nearby floors
 	check_platform_collisions(nearbyFloors);
 
 	if (applyFreeze) {
