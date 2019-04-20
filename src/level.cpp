@@ -232,9 +232,9 @@ bool Level::update(float elapsed_ms)
             [&](Floor const& v)
             { return isWithinRange(v.get_position(), play_pos);});
 
-    if (vector_of_ices.size() > 0) {
+    if (!vector_of_ices.empty()) {
         std::copy_if(vector_of_ices.begin(), vector_of_ices.end(), back_inserter(nearbyIce),
-                     [&](Floor const& v)
+                     [&](Ice const& v)
                      { return isWithinRange(v.get_position(), play_pos);});
     }
 
