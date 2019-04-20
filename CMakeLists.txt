@@ -79,6 +79,8 @@ set(SOURCE_FILES
     src/timer.cpp
     src/rotationUI.cpp
     src/rotationUIEnergy.cpp
+    src/particleSystem/particle.cpp
+    src/particleSystem/emitter.cpp
         src/textManager.cpp
 
     include/project_path.hpp
@@ -129,7 +131,10 @@ set(SOURCE_FILES
     include/timer.hpp
     include/rotationUI.hpp
     include/rotationUIEnergy.hpp
-        include/textManager.hpp)
+    include/particleSystem/particle.hpp
+    include/particleSystem/emitter.hpp
+    include/textManager.hpp
+	)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC src/)
@@ -180,7 +185,7 @@ elseif (IS_OS_WINDOWS)
     set(GLFW_FOUND TRUE)
     set(SDL2_FOUND TRUE)
     set(FREETYPE_FOUND TRUE)
-    
+
     set(GLFW_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/include")
     set(SDL2_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/include/SDL")
     set(FREETYPE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ext/freetype/include/freetype")

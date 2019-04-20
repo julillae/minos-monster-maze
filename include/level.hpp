@@ -27,7 +27,7 @@
 #include "rotationUI.hpp"
 #include "rotationUIEnergy.hpp"
 #include "textManager.hpp"
-
+#include "particleSystem/emitter.hpp"
 
 // stlib
 #include <vector>
@@ -216,6 +216,10 @@ private:
 	Timer level_timer;
 	float timer_pause_start = -1.0f;
 	float timer_pause_end = -1.0f;
+
+	// the particle emitter
+	std::vector<Emitter*> m_emitters;
+
 
 	RotationUI m_rotationUI;
 	RotationUIEnergy m_rotationUIEnergy;
