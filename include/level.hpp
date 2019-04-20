@@ -139,6 +139,8 @@ public:
 	void reset_pause_start();
 	void return_from_pause();
 	void record_pause_time();
+
+	void clear_resources();
 private:
 
 	// Water effect

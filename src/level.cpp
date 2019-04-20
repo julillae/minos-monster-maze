@@ -593,12 +593,7 @@ void Level::call_level_loader()
 
 void Level::load_new_level()
 {
-	destroy_platforms();
-	destroy_enemies();
-	m_maze.clear();
-	nearbyFloors.clear();
-	nearbyIce.clear();
-	m_text_manager->destroy();
+	clear_resources();
 
 	current_level++;
 	if (current_level >= num_levels) {
@@ -776,12 +771,7 @@ void Level::set_death_effects()
 
 void Level::load_select_level(int level)
 {
-	destroy_platforms();
-	destroy_enemies();
-	m_maze.clear();
-	nearbyFloors.clear();
-	nearbyIce.clear();
-	m_text_manager->destroy();
+	clear_resources();
 
 	current_level = level;
 	call_level_loader();
@@ -1015,5 +1005,16 @@ void Level::return_from_pause() {
 
 void Level::reset_pause_start() {
 	timer_pause_start = -1.0f;
+}
+
+void Level::clear_resources() {
+    destroy_platforms();
+    destroy_enemies();
+    vector_of_floors.clear();
+    vector_of_ices.clear();
+    m_maze.clear();
+    nearbyFloors.clear();
+    nearbyIce.clear();
+    m_text_manager->destroy();
 }
 
