@@ -96,12 +96,12 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
     return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
-void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce) {
+void Level::check_platform_collisions() {
 	if (m_player.is_alive()) {
 		m_player.set_world_vertex_coord();
 		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes.get_spike_vector());
-        physicsHandler->characterCollisionsWithFloors(&m_player, nearbyFloorComponents);
-		physicsHandler->characterCollisionsWithIce(&m_player, nearbyIce);
+        physicsHandler->characterCollisionsWithFloors(&m_player, vector_of_floors);
+		physicsHandler->characterCollisionsWithIce(&m_player, vector_of_ices);
 		physicsHandler->characterCollisionsWithBlades(&m_player, m_blades.get_blade_vector());
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
@@ -226,22 +226,7 @@ bool Level::update(float elapsed_ms)
 	}
 
 	vec2 play_pos = m_player.get_position();
-	// create a copy of the floor vectors
-	// get rid of all floors that are not in a certain radius
-    std::copy_if(vector_of_floors.begin(), vector_of_floors.end(), back_inserter(nearbyFloors),
-            [&](Floor const& v)
-            { return isWithinRange(v.get_position(), play_pos);});
-
-    if (!vector_of_ices.empty()) {
-        std::copy_if(vector_of_ices.begin(), vector_of_ices.end(), back_inserter(nearbyIce),
-                     [&](Ice const& v)
-                     { return isWithinRange(v.get_position(), play_pos);});
-    }
-
-    // checking player - platform collision with nearby floors
-	check_platform_collisions(nearbyFloors, nearbyIce);
-	nearbyFloors.clear();
-	nearbyIce.clear();
+	check_platform_collisions();
 
 	if (applyFreeze) {
 		m_player.freeze();
@@ -584,9 +569,8 @@ void Level::call_level_loader()
 	m_ice = levelLoader.get_ice();
 	m_spikes = levelLoader.get_spikes();
 	m_blades = levelLoader.get_blades();
-
-    vector_of_floors = m_floors.get_floor_vector();
-    vector_of_ices = m_ice.get_ice_vector();
+	vector_of_floors = m_floors.get_floor_vector();
+	vector_of_ices = m_ice.get_ice_vector();
 
     m_text_manager = new TextManager(fonts_path("ancient.ttf"), 40);
 }
@@ -1010,11 +994,9 @@ void Level::reset_pause_start() {
 void Level::clear_resources() {
     destroy_platforms();
     destroy_enemies();
-    vector_of_floors.clear();
-    vector_of_ices.clear();
+	vector_of_floors.clear();
+	vector_of_ices.clear();
     m_maze.clear();
-    nearbyFloors.clear();
-    nearbyIce.clear();
     m_text_manager->destroy();
 }
 
