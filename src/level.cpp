@@ -402,7 +402,7 @@ void Level::draw()
     set_textUI_position();
     stringstream stream;
     stream << fixed << setprecision(0) << level_timer.getTime();
-    m_text_manager->render(projection_noRotation, "Time: " + stream.str());
+    m_text_manager->render(projection_noRotation, "TIME " + stream.str());
 
 
     // Presenting
@@ -604,7 +604,7 @@ void Level::call_level_loader()
 	    m_quad.clear();
 	}
 
-    m_text_manager = new TextManager(fonts_path("egyptian.ttf"), 40);
+    m_text_manager = new TextManager(fonts_path("8bitwonder.ttf"), 40);
 }
 
 void Level::load_new_level()
@@ -739,7 +739,7 @@ void Level::set_textUI_position()
     w /= osScaleFactor;
     h /= osScaleFactor;
 
-	vec2 newPosition = vec2({cameraCenter.x - w/2 + 34 , cameraCenter.y + h/2 - 30 });
+	vec2 newPosition = vec2({cameraCenter.x - w/2 + 34 , cameraCenter.y + h/2 - 110 });
     m_text_manager->setPosition(newPosition);
 }
 
