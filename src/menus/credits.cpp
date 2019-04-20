@@ -4,7 +4,7 @@ Texture Credits::texture;
 
 bool Credits::init(vec2 position)
 {
-    const char* textureFile = textures_path("pause-menu.png");
+    const char* textureFile = textures_path("credits.png");
 
     if (!RenderManager::load_texture(textureFile, &texture, this)) return false;
 

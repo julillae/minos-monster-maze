@@ -49,8 +49,9 @@ void CreditsState::init(vec2 screen)
     m_help_menu.init(initialPosition);
     m_help_menu.set_visibility(false);
     initialize_camera_position(w, h);
-    credits.set_position(cameraCenter);
 
+    // Shift texture up to fit screen
+    credits.set_position(vec2{cameraCenter.x, cameraCenter.y + 1000.f});
 }
 
 void CreditsState::draw()
@@ -81,13 +82,12 @@ void CreditsState::draw()
 bool CreditsState::update(float elapsed_ms)
 {
     vec2 currPos = credits.get_position();
-    float texture_height = -350.f;
+    float texture_height = -520.f;
 
     if (currPos.y >= texture_height) {
-        float increment = 0.5;
+        float increment = 1.f;
         credits.set_position({currPos.x, currPos.y - increment});
     } else {
-        // close game
         close = true;
     }
 
