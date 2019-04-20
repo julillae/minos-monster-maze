@@ -218,4 +218,6 @@ private:
 
     TextManager* m_text_manager;
 
+    std::vector<Floor> nearbyFloors;
+
 };

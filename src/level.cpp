@@ -227,15 +227,14 @@ bool Level::update(float elapsed_ms)
 
 	vec2 play_pos = m_player.get_position();
 	// create a copy of the floor vectors
-	std::vector<Floor> nearbyFloors = vector_of_floors;
 	// get rid of all floors that are not in a certain radius
-    nearbyFloors.erase(std::remove_if(nearbyFloors.begin(), nearbyFloors.end(),
+    std::copy_if(vector_of_floors.begin(), vector_of_floors.end(), back_inserter(nearbyFloors),
             [&](Floor const& v)
-            { return !isWithinRange(v.get_position(), play_pos); }
-    ), nearbyFloors.end());
+            { return isWithinRange(v.get_position(), play_pos);});
 
     // checking player - platform collision with nearby floors
 	check_platform_collisions(nearbyFloors);
+	nearbyFloors.clear();
 
 	if (applyFreeze) {
 		m_player.freeze();
