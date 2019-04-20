@@ -58,6 +58,7 @@ uniform vec2 origin_pos;
 out vec2 uv;
 out vec3 light_position;
 out vec3 origin_position;
+out int count;
 
 void main()
 {
@@ -69,8 +70,9 @@ void main()
     //light_position = projection*vec3(light_pos.xy, 1.0);
     //float light_inwindow_x = light_pos.x-origin_pos.x;
     //float light_inwindow_y = light_pos.y-origin_pos.y;
+    count = 1;
     light_position = vec3(light_pos, 1.0);
-    origin_position = vec3(light_pos, 1.0);
+    origin_position = vec3(origin_pos, 1.0);
 
     
     //origin_pos = vec2(move_frame.xy);

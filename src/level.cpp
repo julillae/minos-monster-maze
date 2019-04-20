@@ -433,7 +433,13 @@ void Level::draw()
 	}
 
 	// Presenting
-	m_fire.originUpdate(w, h, p_position.x, p_position.y);
+	//m_fire.originUpdate(0.f, 0.f, p_position.x, p_position.y);
+	// vec2 rotated_p_pos = rotateVec(p_position, rotation);
+	// vec2 deviationVector2 = add(rotated_p_pos, negateVec(cameraCenter));
+
+	vec2 deviationVector2 = add(p_position, negateVec(cameraCenter));
+	deviationVector2 = rotateVec(deviationVector2, rotation);
+	m_fire.originUpdate(w, h, deviationVector2.x, -deviationVector2.y);
 	glfwSwapBuffers(m_window);
 }
 
@@ -530,7 +536,7 @@ void Level::initialize_message_prompt() {
 
 void Level::initialize_camera_position(int w, int h)
 {
-	if (cameraTracking) {
+	if (true) {
 		cameraCenter = (initialPosition);
 		prevCameraCenter = cameraCenter;
 	}
