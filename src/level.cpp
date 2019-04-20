@@ -88,12 +88,17 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	initialize_message_prompt();
 	level_timer.init();
 
+	m_timer_text.init(fonts_path("8bitwonder.ttf"), 40);
+	m_energy_text.init(fonts_path("egyptian.ttf"), 40);
+
+	m_timer_text.set_visibility(true);
+
 	m_rotationUI.init();
 	m_rotationUIEnergy.init();
 	set_rotationUI_position();
 	set_rotationUI_visibility(canRotate);
 
-    return m_water.init() && m_player.init(initialPosition, physicsHandler);
+	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
 void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce, std::vector<Spike> nearbySpikes) {
@@ -127,7 +132,8 @@ void Level::destroy()
 	m_player.destroy();
 	destroy_enemies();
 	destroy_platforms();
-	m_text_manager->destroy();
+	m_timer_text.destroy();
+	m_energy_text.destroy();
 
 	glfwDestroyWindow(m_window);
 }
@@ -224,7 +230,7 @@ bool Level::update(float elapsed_ms)
 		m_player.freeze();
 		m_player.set_invincibility(true);
 		set_rotationUI_visibility(false);
-		m_text_manager->destroy();
+		m_timer_text.set_visibility(false);
 
 		if (hasPrompt)
 			m_message.destroy();
@@ -329,11 +335,7 @@ void Level::draw()
 	// Updating window title with points
 	std::stringstream title_ss;
 	title_ss << "Minos' Monster Maze";
-	if (canRotate) {
-		// Round energy to two decimal places for printing
-		float roundedEnergy = roundf(rotationEnergy * 100.f) / 100.f;
-		title_ss << " || Energy left to rotate: " << roundedEnergy << " / " << maxRotationEnergy;
-	}
+
 	glfwSetWindowTitle(m_window, title_ss.str().c_str());
 
 	if (is_player_at_goal)
@@ -435,14 +437,15 @@ void Level::draw()
 	m_rotationUIEnergy.draw(projection_noRotation);
 
 	// set opacity
-    m_text_manager->setColour({0.7f, 0.7f, 0.7f});
-    set_textUI_position();
+    m_timer_text.setColour({0.7f, 0.7f, 0.7f});
+	set_timer_text_position();
     stringstream stream;
     stream << fixed << setprecision(0) << level_timer.getTime();
-    m_text_manager->render(projection_noRotation, "TIME " + stream.str());
+    m_timer_text.render(projection_noRotation, "TIME " + stream.str());
 
+    draw_energyText(projection_noRotation);
 
-    // Presenting
+	// Presenting
 	glfwSwapBuffers(m_window);
 }
 
@@ -621,8 +624,6 @@ void Level::call_level_loader()
     vector_of_floors = m_floors.get_floor_vector();
     vector_of_ices = m_ice.get_ice_vector();
 	vector_of_spikes = m_spikes.get_spike_vector();
-
-    m_text_manager = new TextManager(fonts_path("8bitwonder.ttf"), 40);
 }
 
 void Level::load_new_level()
@@ -641,6 +642,8 @@ void Level::load_new_level()
 	// if moved on to new level, reset saved time to zero.
 	level_timer.recordSavedTime(0.f);
 	level_timer.reset();
+	m_timer_text.set_visibility(true);
+
 }
 
 void Level::reset_game()
@@ -664,6 +667,7 @@ void Level::reset_game()
 	soundManager->fade_out_sound(rotationLoop, 200);
 	reset_player_camera();
 	initialize_message_prompt();
+	m_timer_text.set_visibility(true);
 }
 
 void Level::reset_player_camera()
@@ -743,18 +747,52 @@ void Level::set_rotationUI_visibility(bool visible)
 {
 	m_rotationUI.set_visibility(visible);
 	m_rotationUIEnergy.set_visibility(visible);
+	m_energy_text.set_visibility(visible);
 
 }
 
-void Level::set_textUI_position()
+void Level::set_timer_text_position()
 {
     int w, h;
     glfwGetFramebufferSize(m_window, &w, &h);
     w /= osScaleFactor;
     h /= osScaleFactor;
 
-	vec2 newPosition = vec2({cameraCenter.x - w/2 + 34 , cameraCenter.y + h/2 - 110 });
-    m_text_manager->setPosition(newPosition);
+	vec2 newPosition = vec2({cameraCenter.x + w/2 - 150 , cameraCenter.y - h/2 + 30 });
+    m_timer_text.setPosition(newPosition);
+}
+
+void Level::draw_energyText(mat3 projection_2D)
+{
+	int w, h;
+	glfwGetFramebufferSize(m_window, &w, &h);
+	w /= osScaleFactor;
+	h /= osScaleFactor;
+
+	vec2 newPosition = vec2({cameraCenter.x - w/2 + 145 , cameraCenter.y + h/2 - 30 });
+	m_energy_text.setPosition(newPosition);
+
+	stringstream energyStream, maxEnergyStream;
+
+	// Round energy to two decimal places for printing
+	float roundedEnergy = roundf(rotationEnergy * 100.f) / 100.f;
+
+	energyStream << fixed << setprecision(0) << roundedEnergy;
+
+	// adjust spacing when numbers get lower than 3 digits
+	if (roundedEnergy < 10) {
+		m_energy_text.render(projection_2D, "     " + energyStream.str());
+	} else if (roundedEnergy < 100){
+		m_energy_text.render(projection_2D, "  " + energyStream.str());
+
+	} else {
+		m_energy_text.render(projection_2D, energyStream.str());
+	}
+
+	newPosition = vec2({cameraCenter.x - w/2 + 185, cameraCenter.y + h/2 - 30});
+	m_energy_text.setPosition(newPosition);
+	maxEnergyStream << fixed << setprecision(0) << maxRotationEnergy;
+	m_energy_text.render(projection_2D, "  / " + maxEnergyStream.str());
 }
 
 Level::Platform Level::maze_is_platform(std::pair<int,int> coords){
@@ -804,6 +842,7 @@ void Level::set_death_effects()
 		m_message.destroy();
 
 	set_rotationUI_visibility(false);
+	m_timer_text.set_visibility(false);
 
 	soundManager->play_sound(playerDead);
 	m_water.set_player_dead();
@@ -823,6 +862,7 @@ void Level::load_select_level(int level)
 	reset_player_camera();
 
 	initialize_message_prompt();
+	m_timer_text.set_visibility(true);
 	set_rotationUI_visibility(canRotate);
 	reset_pause_start();
 	level_timer.cleanSlate();
@@ -1057,6 +1097,5 @@ void Level::clear_resources() {
     nearbyFloors.clear();
     nearbyIce.clear();
 	nearbySpikes.clear();
-    m_text_manager->destroy();
 }
 
