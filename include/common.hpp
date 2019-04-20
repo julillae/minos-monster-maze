@@ -43,6 +43,7 @@ float vecLength(vec2 v);
 vec2 rotateVec(vec2 v, float rotation);
 vec2 scalarMultiply(vec2 v, float s);
 std::pair<float, float> vec2ToPair(vec2 v);
+bool isWithinRange(vec2 pos1, vec2 pos2);
 
 std::string path(std::string name);
 

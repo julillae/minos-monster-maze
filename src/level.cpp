@@ -37,8 +37,7 @@ namespace
 
 
 Level::Level(Game* game) :
-	m_seed_rng(0.f),
-	m_quad(0, {}, 0.f, 0.f)
+	m_seed_rng(0.f)
 {
 // Seeding rng with random device
 	m_rng = std::default_random_engine(std::random_device()());
@@ -124,7 +123,6 @@ void Level::destroy()
 	m_player.destroy();
 	destroy_enemies();
 	destroy_platforms();
-	m_quad.clear();
 	m_text_manager->destroy();
 
 	glfwDestroyWindow(m_window);
@@ -228,14 +226,17 @@ bool Level::update(float elapsed_ms)
 			m_message.destroy();
 	}
 
-	if (useQuadTree) {
-		// retrieve the closest floor components to player
-		nearbyFloorComponents =
-			m_quad.getNearbyFloorComponents(m_player.get_position(), m_player.get_bounding_box());
-	}
+	vec2 play_pos = m_player.get_position();
+	// create a copy of the floor vectors
+	std::vector<Floor> nearbyFloors = vector_of_floors;
+	// get rid of all floors that are not in a certain radius
+    nearbyFloors.erase(std::remove_if(nearbyFloors.begin(), nearbyFloors.end(),
+            [&](Floor const& v)
+            { return !isWithinRange(v.get_position(), play_pos); }
+    ), nearbyFloors.end());
 
-    // checking player - platform collision
-	check_platform_collisions(nearbyFloorComponents);
+    // checking player - platform collision with nearby floors 
+	check_platform_collisions(nearbyFloors);
 
 	if (applyFreeze) {
 		m_player.freeze();
@@ -579,34 +580,7 @@ void Level::call_level_loader()
 	m_spikes = levelLoader.get_spikes();
 	m_blades = levelLoader.get_blades();
 
-    int w, h;
-    glfwGetWindowSize(m_window, &w, &h);
-
-	vector_of_floors = m_floors.get_floor_vector();
-
-	if (useQuadTree) {
-		// if camera tracking is off, initialize the quad tree with the screen size
-		if (!cameraTracking) {
-			if (current_level == 5) {
-				m_quad = QuadTreeNode(0, { 0.f, 0.f }, (float)w + 3 * m_maze_width, (float)h + 3 * m_maze_height);
-			}
-			else {
-				m_quad = QuadTreeNode(0, { 0.f, 0.f }, (float)w, (float)h);
-			}
-		}
-		else {
-			// if camera tracking is on, initialize the tree based on the maze
-			m_quad = QuadTreeNode(0, { 0.f, 0.f }, ((m_maze_width + 7)*m_tile_width),
-				((m_maze_height + 7)*m_tile_height));
-		}
-
-		for (auto& floor : vector_of_floors) {
-			m_quad.insert(floor);
-		}
-	}
-	else {
-		nearbyFloorComponents = vector_of_floors;
-	}
+    vector_of_floors = m_floors.get_floor_vector();
 
     m_text_manager = new TextManager(fonts_path("ancient.ttf"), 40);
 }
@@ -615,7 +589,6 @@ void Level::load_new_level()
 {
 	destroy_platforms();
 	destroy_enemies();
-	m_quad.clear();
 	m_maze.clear();
 	m_text_manager->destroy();
 
@@ -798,7 +771,6 @@ void Level::load_select_level(int level)
 	destroy_platforms();
 	destroy_enemies();
 	m_maze.clear();
-	m_quad.clear();
 	m_text_manager->destroy();
 
 	current_level = level;

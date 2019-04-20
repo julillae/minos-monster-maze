@@ -209,7 +209,6 @@ private:
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;
 
-	QuadTreeNode m_quad;
 	std::vector<Floor> nearbyFloorComponents;
 	bool useQuadTree;
 
@@ -221,6 +220,5 @@ private:
 	RotationUIEnergy m_rotationUIEnergy;
 
     TextManager* m_text_manager;
-
 
 };
