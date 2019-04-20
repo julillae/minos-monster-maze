@@ -46,7 +46,7 @@ bool Emitter::init()
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 4, vertex_buffer_data, GL_STATIC_DRAW);
 
     // Loading shaders
-    effect.load_from_file(shader_path("colored.vs.glsl"), shader_path("colored.fs.glsl"));
+    effect.load_from_file(shader_path("blood.vs.glsl"), shader_path("blood.fs.glsl"));
 
     int i = 0;
     while (i < m_max_particles) {
