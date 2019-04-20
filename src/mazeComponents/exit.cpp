@@ -30,7 +30,7 @@ bool Exit::init(vec2 position)
 
 void Exit::draw(const mat3& projection)
 {
-	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
+	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, color, is_hidden, this);
 }
 
 void Exit::set_size()

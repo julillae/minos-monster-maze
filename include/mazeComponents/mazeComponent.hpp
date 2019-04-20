@@ -44,10 +44,12 @@ protected:
 	float m_width;
 	float m_height;
     float drag;
+    bool is_hidden = false;
 };
 
 class MazeComponents : public Renderable
 {
 protected:
 	vec2 m_size;
+	bool is_hidden = false;
 };
