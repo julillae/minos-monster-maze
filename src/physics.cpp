@@ -288,8 +288,8 @@ vec2 Physics::adjustVelocity(vec2 velocity, Player* p) {
 	// this should be consistent with Player.set_world_vertex_coord()
 	if (p->cornerCollisions[0]) { velocityY = max(0.f, velocityY); }
 	if (p->cornerCollisions[1] && rotationCloseTo90Multiple) { velocityX = min(0.f, velocityX); }
-	if (p->cornerCollisions[2] && (isZero(p->get_acceleration().x))) { velocityY = min(0.f, velocityY); }
 	if (p->cornerCollisions[3] && rotationCloseTo90Multiple) { velocityX = max(0.f, velocityX); }
+	if (p->cornerCollisions[2] && isZero(p->get_acceleration().x)) { velocityY = min(0.f, velocityY); }
 
 	return vec2({ velocityX, velocityY });
 }
@@ -366,13 +366,14 @@ void Physics::characterVelocityUpdate(Player* c)
 		}
 
 		if (c->isOnPlatform) {
-			if (isZero(cAcc.x)) {
+			if (fabs(cVelocity.x) < 1.f) {
 				c->characterState->changeState(idle);
-				cVelocity.x *= platformDrag;
-				cVelocity.y = std::min(0.f, cVelocity.y);
 			}
 			else {
 				c->characterState->changeState(running);
+			}
+			if (isZero(cAcc.x)) {
+				cVelocity.x *= platformDrag;
 			}
 		}
 		else {
