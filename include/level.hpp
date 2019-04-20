@@ -101,7 +101,7 @@ public:
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-	void check_platform_collisions(std::vector<Floor> nearbyFloorComponents);
+	void check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce);
 
 	void draw_enemies(mat3 projection_2D);
 	void reset_enemies();
@@ -152,6 +152,7 @@ private:
 	Exit m_exit;
 	Floors m_floors;
 	vector<Floor> vector_of_floors;
+	vector<Ice> vector_of_ices;
 	Spikes m_spikes;
 	Ices m_ice;
 	Blades m_blades;
@@ -219,5 +220,6 @@ private:
     TextManager* m_text_manager;
 
     std::vector<Floor> nearbyFloors;
+    std::vector<Ice> nearbyIce;
 
 };

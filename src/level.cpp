@@ -96,12 +96,12 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
     return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
-void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents) {
+void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce) {
 	if (m_player.is_alive()) {
 		m_player.set_world_vertex_coord();
 		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes.get_spike_vector());
         physicsHandler->characterCollisionsWithFloors(&m_player, nearbyFloorComponents);
-		physicsHandler->characterCollisionsWithIce(&m_player, m_ice.get_ice_vector());
+		physicsHandler->characterCollisionsWithIce(&m_player, nearbyIce);
 		physicsHandler->characterCollisionsWithBlades(&m_player, m_blades.get_blade_vector());
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
@@ -232,10 +232,16 @@ bool Level::update(float elapsed_ms)
             [&](Floor const& v)
             { return isWithinRange(v.get_position(), play_pos);});
 
-    printf("%lu\n", nearbyFloors.size());
+    if (vector_of_ices.size() > 0) {
+        std::copy_if(vector_of_ices.begin(), vector_of_ices.end(), back_inserter(nearbyIce),
+                     [&](Floor const& v)
+                     { return isWithinRange(v.get_position(), play_pos);});
+    }
+
     // checking player - platform collision with nearby floors
-	check_platform_collisions(nearbyFloors);
+	check_platform_collisions(nearbyFloors, nearbyIce);
 	nearbyFloors.clear();
+	nearbyIce.clear();
 
 	if (applyFreeze) {
 		m_player.freeze();
@@ -580,6 +586,7 @@ void Level::call_level_loader()
 	m_blades = levelLoader.get_blades();
 
     vector_of_floors = m_floors.get_floor_vector();
+    vector_of_ices = m_ice.get_ice_vector();
 
     m_text_manager = new TextManager(fonts_path("ancient.ttf"), 40);
 }
@@ -590,6 +597,7 @@ void Level::load_new_level()
 	destroy_enemies();
 	m_maze.clear();
 	nearbyFloors.clear();
+	nearbyIce.clear();
 	m_text_manager->destroy();
 
 	current_level++;
@@ -772,6 +780,7 @@ void Level::load_select_level(int level)
 	destroy_enemies();
 	m_maze.clear();
 	nearbyFloors.clear();
+	nearbyIce.clear();
 	m_text_manager->destroy();
 
 	current_level = level;
