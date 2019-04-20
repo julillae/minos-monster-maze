@@ -328,7 +328,7 @@ void Level::draw()
 
 	// Updating window title with points
 	std::stringstream title_ss;
-	title_ss << "Minos' Monster Maze" << " || Game timer: " << level_timer.getTime();
+	title_ss << "Minos' Monster Maze";
 	if (canRotate) {
 		// Round energy to two decimal places for printing
 		float roundedEnergy = roundf(rotationEnergy * 100.f) / 100.f;
@@ -439,7 +439,7 @@ void Level::draw()
     set_textUI_position();
     stringstream stream;
     stream << fixed << setprecision(0) << level_timer.getTime();
-    m_text_manager->render(projection_noRotation, "Time: " + stream.str());
+    m_text_manager->render(projection_noRotation, "TIME " + stream.str());
 
 
     // Presenting
@@ -622,7 +622,7 @@ void Level::call_level_loader()
     vector_of_ices = m_ice.get_ice_vector();
 	vector_of_spikes = m_spikes.get_spike_vector();
 
-    m_text_manager = new TextManager(fonts_path("ancient.ttf"), 40);
+    m_text_manager = new TextManager(fonts_path("8bitwonder.ttf"), 40);
 }
 
 void Level::load_new_level()
@@ -753,7 +753,7 @@ void Level::set_textUI_position()
     w /= osScaleFactor;
     h /= osScaleFactor;
 
-    vec2 newPosition = vec2({cameraCenter.x + 470, cameraCenter.y/2 - 80});
+	vec2 newPosition = vec2({cameraCenter.x - w/2 + 34 , cameraCenter.y + h/2 - 110 });
     m_text_manager->setPosition(newPosition);
 }
 

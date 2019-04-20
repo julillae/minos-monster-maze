@@ -73,7 +73,7 @@ TextManager::TextManager(std::string path, int size) {
     glBindVertexArray(0);
 
     m_colour = { 1.f, 1.f, 1.f };
-    m_scale = { 1.f, -1.f };
+    m_scale = { 0.4f, -0.4f };
     m_position = { 0.f, 0.f };
 
     effect.load_from_file(shader_path("text.vs.glsl"), shader_path("text.fs.glsl"));
