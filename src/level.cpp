@@ -439,7 +439,7 @@ void Level::draw()
 
 	vec2 deviationVector2 = add(p_position, negateVec(cameraCenter));
 	deviationVector2 = rotateVec(deviationVector2, rotation);
-	m_fire.originUpdate(w, h, deviationVector2.x, -deviationVector2.y);
+	m_fire.originUpdate(w, h, deviationVector2.x*2.f, -deviationVector2.y*2.f);
 	glfwSwapBuffers(m_window);
 }
 

@@ -26,7 +26,8 @@ vec3 calculatePointLight(vec2 lightPosition, vec3 Color, float is_at_door)
     float quadratic = 0.00025/(30.0-0.6*sin(time*3.0));
     
     if(is_at_door!=0){
-        quadratic = -0.00000025*(30.0*5.0) + 1.0/(time*10.0);
+        //quadratic = -0.00000025*(30.0*5.0) + 1.0/(time*10.0);
+        quadratic = -0.00000025*(30.0*5.0);
         //quadratic = 0.00025/30.0 +(-time)/100.000000;
     }
     //float constant = 0.6f;
