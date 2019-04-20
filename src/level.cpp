@@ -232,6 +232,7 @@ bool Level::update(float elapsed_ms)
             [&](Floor const& v)
             { return isWithinRange(v.get_position(), play_pos);});
 
+    printf("%lu\n", nearbyFloors.size());
     // checking player - platform collision with nearby floors
 	check_platform_collisions(nearbyFloors);
 	nearbyFloors.clear();
@@ -588,6 +589,7 @@ void Level::load_new_level()
 	destroy_platforms();
 	destroy_enemies();
 	m_maze.clear();
+	nearbyFloors.clear();
 	m_text_manager->destroy();
 
 	current_level++;
@@ -769,6 +771,7 @@ void Level::load_select_level(int level)
 	destroy_platforms();
 	destroy_enemies();
 	m_maze.clear();
+	nearbyFloors.clear();
 	m_text_manager->destroy();
 
 	current_level = level;

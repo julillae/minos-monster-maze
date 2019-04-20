@@ -127,7 +127,7 @@ std::pair<float, float> vec2ToPair(vec2 v)
 
 bool isWithinRange(vec2 pos1, vec2 pos2)
 {
-    return (abs(pos1.x - pos2.x) < 50) && (abs(pos1.y - pos2.y) < 50);
+    return (abs(pos1.x - pos2.x) < 40) && (abs(pos1.y - pos2.y) < 40);
 }
 
 // Given, a starting and ending position, and a starting and ending slope,
