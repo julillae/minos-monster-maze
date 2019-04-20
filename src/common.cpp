@@ -125,11 +125,6 @@ std::pair<float, float> vec2ToPair(vec2 v)
 	return make_pair(v.x, v.y);
 }
 
-bool isWithinRange(vec2 pos1, vec2 pos2)
-{
-    return (abs(pos1.x - pos2.x) < 40) && (abs(pos1.y - pos2.y) < 40);
-}
-
 // Given, a starting and ending position, and a starting and ending slope,
 // and a point (a float between 0 and 1) on a [0,1] interval
 // gives the interpolated position at that point on the interval
