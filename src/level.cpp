@@ -96,10 +96,10 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
     return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
-void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce) {
+void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce, std::vector<Spike> nearbySpikes) {
 	if (m_player.is_alive()) {
 		m_player.set_world_vertex_coord();
-		physicsHandler->characterCollisionsWithSpikes(&m_player, m_spikes.get_spike_vector());
+		physicsHandler->characterCollisionsWithSpikes(&m_player, nearbySpikes);
         physicsHandler->characterCollisionsWithFloors(&m_player, nearbyFloorComponents);
 		physicsHandler->characterCollisionsWithIce(&m_player, nearbyIce);
 		physicsHandler->characterCollisionsWithBlades(&m_player, m_blades.get_blade_vector());
@@ -226,22 +226,30 @@ bool Level::update(float elapsed_ms)
 	}
 
 	vec2 play_pos = m_player.get_position();
+	float play_radius = m_player.boundingCircleRadius;
 	// create a copy of the floor vectors
 	// get rid of all floors that are not in a certain radius
-    std::copy_if(vector_of_floors.begin(), vector_of_floors.end(), back_inserter(nearbyFloors),
-            [&](Floor const& v)
-            { return isWithinRange(v.get_position(), play_pos);});
+	std::copy_if(vector_of_floors.begin(), vector_of_floors.end(), back_inserter(nearbyFloors),
+		[&](Floor const& v)
+	{ return physicsHandler->outerCircleToCircleIntersection(play_pos, v.get_position(), play_radius, v.boundingCircleRadius); });
 
     if (!vector_of_ices.empty()) {
-        std::copy_if(vector_of_ices.begin(), vector_of_ices.end(), back_inserter(nearbyIce),
-                     [&](Ice const& v)
-                     { return isWithinRange(v.get_position(), play_pos);});
+		std::copy_if(vector_of_ices.begin(), vector_of_ices.end(), back_inserter(nearbyIce),
+			[&](Ice const& v)
+		{ return physicsHandler->outerCircleToCircleIntersection(play_pos, v.get_position(), play_radius, v.boundingCircleRadius); });
     }
 
+	if (!vector_of_spikes.empty()) {
+		std::copy_if(vector_of_spikes.begin(), vector_of_spikes.end(), back_inserter(nearbySpikes),
+			[&](Spike const& v)
+		{ return physicsHandler->outerCircleToCircleIntersection(play_pos, v.get_position(), play_radius, v.boundingCircleRadius); });
+	}
+
     // checking player - platform collision with nearby floors
-	check_platform_collisions(nearbyFloors, nearbyIce);
+	check_platform_collisions(nearbyFloors, nearbyIce, nearbySpikes);
 	nearbyFloors.clear();
 	nearbyIce.clear();
+	nearbySpikes.clear();
 
 	if (applyFreeze) {
 		m_player.freeze();
@@ -587,6 +595,7 @@ void Level::call_level_loader()
 
     vector_of_floors = m_floors.get_floor_vector();
     vector_of_ices = m_ice.get_ice_vector();
+	vector_of_spikes = m_spikes.get_spike_vector();
 
     m_text_manager = new TextManager(fonts_path("ancient.ttf"), 40);
 }
@@ -1012,9 +1021,11 @@ void Level::clear_resources() {
     destroy_enemies();
     vector_of_floors.clear();
     vector_of_ices.clear();
+	vector_of_spikes.clear();
     m_maze.clear();
     nearbyFloors.clear();
     nearbyIce.clear();
+	nearbySpikes.clear();
     m_text_manager->destroy();
 }
 
