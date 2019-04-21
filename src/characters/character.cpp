@@ -35,7 +35,9 @@ void Character::destroy()
 
 	effect.release();
 
-	free(characterState);
+	characterState->destroy();
+
+	//free(characterState);
 }
 
 void Character::set_acceleration(vec2 acc) {

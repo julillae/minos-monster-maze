@@ -52,3 +52,8 @@ void StateTree::resetStateTree()
 	currentState = root;
 }
 
+void StateTree::destroy()
+{
+	adjList.clear();
+}
+
