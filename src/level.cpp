@@ -426,7 +426,7 @@ void Level::draw()
 
 	if (hasPrompt) {
 		float screen_height = static_cast<float>(h)/osScaleFactor;
-		float message_y_shift = (screen_height / 2.f) - (m_tile_height * 3.f);
+		float message_y_shift = (screen_height / 2.f) - (m_tile_height * 4.f);
 		float message_y_pos = cameraCenter.y - message_y_shift;
 		m_message.set_position({cameraCenter.x, message_y_pos});
 		m_message.draw(projection_noRotation);
