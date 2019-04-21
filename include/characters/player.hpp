@@ -39,4 +39,11 @@ public:
 
 	bool keyMappingSetA=true;
 	int jumpKey = GLFW_KEY_UP;
+
+	void resetCornerCollisions();
+
+	// booleans represent in order: top, right, bottom, left
+	// this should be consistent with Player.set_world_vertex_coord()
+	bool cornerCollisions[4] = { false, false, false, false };
+	vec2 extendedPlayerArray[4];
 };
