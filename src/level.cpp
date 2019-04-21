@@ -101,13 +101,13 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
-void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce, std::vector<Spike> nearbySpikes) {
+void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce, std::vector<Spike> nearbySpikes, std::vector<Blade> nearbyBlades) {
 	if (m_player.is_alive()) {
 		m_player.set_world_vertex_coord();
 		physicsHandler->characterCollisionsWithSpikes(&m_player, nearbySpikes);
         physicsHandler->characterCollisionsWithFloors(&m_player, nearbyFloorComponents);
 		physicsHandler->characterCollisionsWithIce(&m_player, nearbyIce);
-		physicsHandler->characterCollisionsWithBlades(&m_player, m_blades.get_blade_vector());
+		physicsHandler->characterCollisionsWithBlades(&m_player, nearbyBlades);
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
@@ -256,11 +256,18 @@ bool Level::update(float elapsed_ms)
 		{ return physicsHandler->outerCircleToCircleIntersection(play_pos, v.get_position(), play_radius, v.boundingCircleRadius); });
 	}
 
+	if (!vector_of_blades.empty()) {
+		std::copy_if(vector_of_blades.begin(), vector_of_blades.end(), back_inserter(nearbyBlades),
+			[&](Blade const& v)
+		{ return physicsHandler->outerCircleToCircleIntersection(play_pos, v.get_position(), play_radius, v.boundingCircleRadius); });
+	}
+
     // checking player - platform collision with nearby floors
-	check_platform_collisions(nearbyFloors, nearbyIce, nearbySpikes);
+	check_platform_collisions(nearbyFloors, nearbyIce, nearbySpikes, nearbyBlades);
 	nearbyFloors.clear();
 	nearbyIce.clear();
 	nearbySpikes.clear();
+	nearbyBlades.clear();
 
 	// update particle emitters
 
@@ -624,6 +631,7 @@ void Level::call_level_loader()
     vector_of_floors = m_floors.get_floor_vector();
     vector_of_ices = m_ice.get_ice_vector();
 	vector_of_spikes = m_spikes.get_spike_vector();
+	vector_of_blades = m_blades.get_blade_vector();
 }
 
 void Level::load_new_level()
@@ -1093,9 +1101,11 @@ void Level::clear_resources() {
     vector_of_floors.clear();
     vector_of_ices.clear();
 	vector_of_spikes.clear();
+	vector_of_blades.clear();
     m_maze.clear();
     nearbyFloors.clear();
     nearbyIce.clear();
 	nearbySpikes.clear();
+	nearbyBlades.clear();
 }
 
