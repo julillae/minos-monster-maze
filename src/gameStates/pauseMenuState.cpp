@@ -13,7 +13,7 @@
 PauseMenuState::PauseMenuState(Game *game)
 {
     this->game = game;
-
+	soundManager = &game->soundManager;
 }
 
 void PauseMenuState::init(vec2 screen)
@@ -102,6 +102,10 @@ void PauseMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
     if (action == GLFW_PRESS) {
         if (!show_help_menu)
         {
+			if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_LEFT ||
+				key == GLFW_KEY_UP || key == GLFW_KEY_DOWN)
+				soundManager->play_sound(buttonSelect);
+
             if (key == GLFW_KEY_DOWN)
             {
                 buttonIndex = (buttonIndex + 1) % numButtons;
@@ -120,11 +124,14 @@ void PauseMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
             if (key == GLFW_KEY_ENTER)
             {
                 Level* level = (Level*) game->get_state(LEVEL);
-
+				soundManager->play_sound(buttonEnter);
                 switch (currentButton->buttonName)
                 {
                     case CONTINUE:
                         game->set_current_state(level);
+                        if (level->get_pause_start() > 0) {
+                            level->return_from_pause();
+                        }
                         break;
                     case RESTART:
                         level->reset_game();

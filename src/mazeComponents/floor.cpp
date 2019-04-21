@@ -69,7 +69,7 @@ void Floors::draw(const mat3 & projection)
 	{
 		vec2 position = floor.get_position();
 		float rotation = floor.m_rotation;
-		RenderManager::draw_texture(projection, position, rotation, m_scale, &texture, this);
+		RenderManager::draw_texture(projection, position, rotation, m_scale, &texture, color, is_hidden, this);
 	}
 }
 

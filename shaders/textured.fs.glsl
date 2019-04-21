@@ -1,6 +1,7 @@
 #version 330
 // From vertex shader
 in vec2 texcoord;
+uniform bool is_hidden;
 
 // Application data
 uniform sampler2D sampler0;

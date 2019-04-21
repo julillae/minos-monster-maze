@@ -12,7 +12,7 @@ Physics::Physics() = default;
 
 Physics::~Physics() = default;
 
-bool outerCircleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
+bool Physics::outerCircleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
 {
 	float roundingTolerance = 1.1f;	// some float > 1
 	float xDistance = c1.x - c2.x;
@@ -212,6 +212,14 @@ void Physics::characterCollisionsWithIce(Player* c, std::vector<Ice> ice) {
     }
 }
 
+void Physics::characterCollisionsWithBlades(Player* c, std::vector<Blade> blades) {
+	for (Blade b : blades) {
+		characterCollisionsWithFixedComponent(c, &b);
+
+		if (!c->is_alive()) return;
+	}
+}
+
 void mtvAdjustment(Character* c, MTV mtv) {
 	vec2 normal = mtv.normal;
 	float magnitude = mtv.magnitude;
@@ -257,48 +265,43 @@ vec2 adjustVelocity(vec2 velocity, vector<MTV> mtvs) {
 void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* fc) {
     vec2 cPos = c->get_position();
     vec2 fPos = fc->get_position();
-	float cRadius = c->boundingCircleRadius;
-	float fRadius = fc->boundingCircleRadius;
+	std::vector<vec2> playArray = c->get_vertex_coord();
+	std::vector<vec2> fixedComponentArray = fc->get_vertex_coord();
 
-    if (outerCircleToCircleIntersection(cPos, fPos, cRadius, fRadius)) {
-		std::vector<vec2> playArray = c->get_vertex_coord();
-		std::vector<vec2> fixedComponentArray = fc->get_vertex_coord();
+	MTV mtv = collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos);
 
-		MTV mtv = collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos);
-
-		if (mtv.isCollided) {
-			if (fc->can_kill) {
-				c->kill();
-				return;
-			}
-			c->collisionMTVs.push_back(mtv);
-
-			float dy = -mtv.normal.y;
-			float dx = mtv.normal.x;
-			vec2 collisionVector = vec2({ dx, dy });
-			vec2 rotatedCollisionVector = rotateVec(collisionVector, rotation);
-			float collisionAngle = atan2(rotatedCollisionVector.y, rotatedCollisionVector.x);
-
-			// logic needed to get new angle (collisionAngle + rotation) within
-			// the needed -pi to pi range
-			float anglePastPi = 0.f;
-			if (collisionAngle > M_PI) {
-				anglePastPi = static_cast<float>(collisionAngle - M_PI);
-				collisionAngle = static_cast<float>(-M_PI + anglePastPi);
-			}
-			else if (collisionAngle < -M_PI) {
-				anglePastPi = static_cast<float>(collisionAngle + M_PI);
-				collisionAngle = static_cast<float>(M_PI + anglePastPi);
-			}
-
-			// place player on platform
-			if (collisionAngle > -7 * M_PI / 8 && collisionAngle < -M_PI / 8) {
-				c->set_on_platform();
-				isOnAtLeastOnePlatform = true;
-				c->m_platform_drag = fc->get_drag();
-			}
+	if (mtv.isCollided) {
+		if (fc->can_kill) {
+			c->kill();
+			return;
 		}
-    }
+		c->collisionMTVs.push_back(mtv);
+
+		float dy = -mtv.normal.y;
+		float dx = mtv.normal.x;
+		vec2 collisionVector = vec2({ dx, dy });
+		vec2 rotatedCollisionVector = rotateVec(collisionVector, rotation);
+		float collisionAngle = atan2(rotatedCollisionVector.y, rotatedCollisionVector.x);
+
+		// logic needed to get new angle (collisionAngle + rotation) within
+		// the needed -pi to pi range
+		float anglePastPi = 0.f;
+		if (collisionAngle > M_PI) {
+			anglePastPi = static_cast<float>(collisionAngle - M_PI);
+			collisionAngle = static_cast<float>(-M_PI + anglePastPi);
+		}
+		else if (collisionAngle < -M_PI) {
+			anglePastPi = static_cast<float>(collisionAngle + M_PI);
+			collisionAngle = static_cast<float>(M_PI + anglePastPi);
+		}
+
+		// place player on platform
+		if (collisionAngle > -7 * M_PI / 8 && collisionAngle < -M_PI / 8) {
+			c->set_on_platform();
+			isOnAtLeastOnePlatform = true;
+			c->m_platform_drag = fc->get_drag();
+		}
+	}
 }
 
 void Physics::characterVelocityUpdate(Character* c)

@@ -17,9 +17,11 @@
 #define shader_path(name) PROJECT_SOURCE_DIR "./shaders/" name
 
 #define data_path PROJECT_SOURCE_DIR "./data"
+#define fonts_path(name)  data_path "/fonts/" name
 #define textures_path(name)  data_path "/textures/" name
 #define audio_path(name) data_path  "/audio/" name
 #define mesh_path(name) data_path  "/meshes/" name
+
 
 static float g_tolerance = 0.000001f;
 
@@ -41,6 +43,9 @@ float vecLength(vec2 v);
 vec2 rotateVec(vec2 v, float rotation);
 vec2 scalarMultiply(vec2 v, float s);
 std::pair<float, float> vec2ToPair(vec2 v);
+
+std::string path(std::string name);
+
 
 //implemented according to Unit interval(0,1) https://en.wikipedia.org/wiki/Cubic_Hermite_spline
 float hermiteSplineVal(float startPos, float endPos, float startSlope, float endSlope, float intervalPos);
@@ -116,6 +121,7 @@ struct Renderable
 	float m_rotation;	// in radians
 	std::vector<vec2> vertex_coords;
 	std::vector<vec3> local_vertex_coords;
+	float color[3] = { 1.f, 1.f, 1.f };
 
 	// projection contains the orthographic projection matrix. As every Renderable::draw()
 	// renders itself it needs it to correctly bind it to its shader.

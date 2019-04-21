@@ -122,4 +122,6 @@ protected:
 	bool use_sprite;
 	Texture box_texture;
 
+	bool is_hidden = false;
+
 };

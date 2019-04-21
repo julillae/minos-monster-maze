@@ -15,7 +15,7 @@ Level* world;
 LevelSelectState::LevelSelectState(Game *game)
 {
     this->game = game;
-
+	soundManager = &game->soundManager;
 }
 
 void LevelSelectState::init(vec2 screen)
@@ -48,7 +48,7 @@ void LevelSelectState::init(vec2 screen)
     initialPosition = vec2({static_cast<float>(w / 2), static_cast<float>(h / 2)});
 
     levelSelectMenu.init(initialPosition);
-    init_buttons();
+    init_buttons(osScaleFactor);
     initialize_camera_position(w, h);
     levelSelectMenu.set_position(cameraCenter);
 
@@ -92,12 +92,14 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
     if (action == GLFW_PRESS) {
         if (key == GLFW_KEY_ENTER)
         {
+			soundManager->play_sound(levelSelect);
             Level* level = (Level*) game->get_state(LEVEL);
             if (level != NULL)
             {
                 level->load_select_level(currentButton->level);
                 game->set_current_state(level);
                 world = level;
+                level->reset_pause_start();
             } else
             {
                 Physics *physicsHandler = new Physics();
@@ -110,6 +112,10 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
         }
 
         int numButtons = sizeof(levelButtons)/sizeof(*levelButtons);
+
+		if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_LEFT ||
+			key == GLFW_KEY_UP || key == GLFW_KEY_DOWN)
+			soundManager->play_sound(buttonSelect);
 
         if (key == GLFW_KEY_RIGHT)
         {
@@ -165,8 +171,9 @@ void LevelSelectState::destroy()
 
 }
 
-void LevelSelectState::init_buttons()
+void LevelSelectState::init_buttons(float osScaleFactor)
 {
+    initialPosition.x *= osScaleFactor;
     float buttonX = initialPosition.x / 3 + 50;
     float buttonY = initialPosition.y - 85;
     float buttonOffset_x = 150.f;

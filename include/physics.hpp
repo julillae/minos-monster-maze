@@ -7,6 +7,7 @@
 #include "../include/mazeComponents/ice.hpp"
 #include "../include/mazeComponents/exit.hpp"
 #include "../include/mazeComponents/fire.hpp"
+#include "../include/mazeComponents/blade.hpp"
 
 #include <vector>
 #include <map>
@@ -20,6 +21,8 @@ public:
     Physics();
 
     ~Physics();
+
+	bool outerCircleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2);
 
 	float rotation = 0.f;	// world rotation in radians
 	vec2 gravityAcc = {0.f,  9.81f * 0.06f };
@@ -51,6 +54,7 @@ public:
     void characterCollisionsWithFloors(Player *c, std::vector<Floor> floors);
     void characterCollisionsWithSpikes(Player *c, std::vector<Spike> spikes);
     void characterCollisionsWithIce(Player *c, std::vector<Ice> ice);
+    void characterCollisionsWithBlades(Player *c, std::vector<Blade> blades);
     void characterCollisionsWithFixedComponent(Player *c, FixedComponent* fc);
 
 	void characterVelocityUpdate(Character *c);

@@ -52,10 +52,6 @@ bool Spider::init(vec2 initialPosition, Physics * physicsHandler)
 	m_frozen = false;
 	characterState->changeState(running);
 
-    // kept in for debugging
-    //    fprintf(stderr, "spider height: %f\n", height); // 39.00f
-    //    fprintf(stderr, "spider width: %f\n", width); // 48.00f
-
 	return true;
 }
 
@@ -64,11 +60,11 @@ void Spider::draw(const mat3& projection)
     if (use_sprite)
     {
         set_animation();
-        RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &spider_texture, this);
+        RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &spider_texture, color, is_hidden, this);
 
     } else
     {
-        RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &b_texture, this);
+        RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &b_texture, color, is_hidden, this);
 
     }
 

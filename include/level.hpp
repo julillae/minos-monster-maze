@@ -15,6 +15,7 @@
 #include "mazeComponents/fire.hpp"
 #include "mazeComponents/ice.hpp"
 #include "mazeComponents/spike.hpp"
+#include "mazeComponents/blade.hpp"
 #include "renderEffects.hpp"
 #include "physics.hpp"
 #include "menus/helpMenu.hpp"
@@ -23,6 +24,11 @@
 #include "levelLoader.hpp"
 #include "flashMessage.hpp"
 #include "quadTree.hpp"
+#include "timer.hpp"
+#include "rotationUI.hpp"
+#include "rotationUIEnergy.hpp"
+#include "textManager.hpp"
+#include "particleSystem/emitter.hpp"
 
 // stlib
 #include <vector>
@@ -83,6 +89,7 @@ public:
     std::vector<Harpy> get_harpies();
 	Minotaur get_minotaur();
 	std::vector<Floor> get_floors();
+	std::vector<Blade> get_blades();
 
     void load_saved_game();
 	// Boss controls
@@ -95,7 +102,7 @@ public:
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-	void check_platform_collisions(std::vector<Floor> nearbyFloorComponents);
+	void check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce, std::vector<Spike>);
 
 	void draw_enemies(mat3 projection_2D);
 	void reset_enemies();
@@ -111,38 +118,53 @@ public:
 	void freeze_all_enemies();
 	void unfreeze_all_enemies();
 	void update_all_enemies(float elapsed_ms);
+	void update_all_platforms(float elapsed_ms);
+	void update_rotationUI();
+	void set_rotationUI_position();
+	void set_rotationUI_visibility(bool visible);
+	void set_textUI_position();
 
 	void set_player_death();
+	void set_death_effects();
 
 	void load_player();
 	void load_spiders();
 	void load_harpies();
 	void load_minotaur();
+	void load_blades();
+	void load_rotation_energy();
+
+	float get_level_time();
+	float get_cumulative_time();
+	float get_pause_start();
+	void reset_pause_start();
+	void return_from_pause();
+	void record_pause_time();
+
+	void clear_resources();
 private:
 
 	// Water effect
 	RenderEffects m_water;
 
 	Minotaur m_minotaur;
+	State minotaur_prev_state = initialized;
 	Spiders m_spiders;
 	Harpies m_harpies;
 
 	Exit m_exit;
 	Fire m_fire;
 	Floors m_floors;
+	vector<Floor> vector_of_floors;
+	vector<Ice> vector_of_ices;
+	vector<Spike> vector_of_spikes;
 	Spikes m_spikes;
 	Ices m_ice;
-
-    HelpMenu m_help_menu;
+	Blades m_blades;
 
 	FlashMessage m_message;
 
     float m_seed_rng;
-
-    Mix_Music* m_background_music;
-	Mix_Chunk* m_player_dead_sound;
-	Mix_Chunk* m_player_jump_sound;
-	Mix_Chunk* level_complete_sound;
 
     // C++ rng
 	std::default_random_engine m_rng;
@@ -165,7 +187,8 @@ private:
         {65, "SPIKE LEFT"},  //A
         {66, "SPIKE UP"},    //B
         {67, "SPIKE DOWN"},  //C
-        {68, "SPIKE RIGHT"}  //D
+        {68, "SPIKE RIGHT"}, //D
+		{98, "BLADE" }	     //b
 	};
 
     // Variables determined by level data
@@ -192,6 +215,20 @@ private:
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;
 
-	QuadTreeNode m_quad;
+	Timer level_timer;
+	float timer_pause_start = -1.0f;
+	float timer_pause_end = -1.0f;
 
+	// the particle emitter
+	std::vector<Emitter*> m_emitters;
+
+
+	RotationUI m_rotationUI;
+	RotationUIEnergy m_rotationUIEnergy;
+
+    TextManager* m_text_manager;
+
+    std::vector<Floor> nearbyFloors;
+    std::vector<Ice> nearbyIce;
+	std::vector<Spike> nearbySpikes;
 };

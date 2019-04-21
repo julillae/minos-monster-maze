@@ -13,4 +13,6 @@ public:
 
     void set_position(vec2 position);
 
+protected:
+    bool is_hidden = false;
 };
