@@ -1,6 +1,3 @@
-//
-// Created by Henry Deng on 2019-04-18.
-//
 #pragma once
 
 #include "../include/common.hpp"
@@ -19,13 +16,13 @@ struct Word {
 
 class TextManager : public Renderable {
 public:
-
-    TextManager(std::string path, int size);
+    void init(std::string path, int size);
     void setColour(vec3 colour);
     void setPosition(vec2 position);
     void render(const mat3& projection, std::string text);
     void draw(const mat3& projection);
     void destroy();
+    void set_visibility(bool is_visible);
 
 private:
     std::map<GLchar, Word> words;
@@ -34,8 +31,7 @@ private:
     GLuint vao{};
     GLuint vbo{};
 
-    vec2 m_position{};
-    vec2 m_scale{};
+    bool is_hidden;
 };
 
 

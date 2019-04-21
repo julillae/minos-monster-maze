@@ -1,13 +1,9 @@
 #include <utility>
 
-//
-// Created by Henry Deng on 2019-04-18.
-//
-
 #include "../include/textManager.hpp"
 
 
-TextManager::TextManager(std::string path, int size) {
+void TextManager::init(std::string path, int size) {
     // initialize the free type library
     FT_Library ftLibrary;
     if (FT_Init_FreeType(&ftLibrary)) {
@@ -106,7 +102,7 @@ void TextManager::render(const mat3& projection, std::string text) {
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
 
     GLint is_hidden_uloc = glGetUniformLocation(effect.program, "is_hidden");
-    glUniform1f(is_hidden_uloc, false);
+    glUniform1f(is_hidden_uloc, is_hidden);
 
     glUniform3f(glGetUniformLocation(effect.program, "textColor"), m_colour.x, m_colour.y, m_colour.z);
     glActiveTexture(GL_TEXTURE0);
@@ -152,6 +148,11 @@ void TextManager::render(const mat3& projection, std::string text) {
 
 void TextManager::draw(const mat3& projection) {
     return;
+}
+
+void TextManager::set_visibility(bool is_visible)
+{
+    is_hidden = !is_visible;
 }
 
 void TextManager::destroy()
