@@ -29,7 +29,7 @@ bool Player::init(vec2 initialPosition, Physics* physicsHandler)
 
 	float spriteSheetWidth = 8.0f;
 	float spriteSheetHeight = 5.0f;
-	int horizontalTrim = 8;
+	int horizontalTrim = 12;
 	int verticalTrim = 7;
 	set_properties(initialPosition, 2.0f, 0.f);
 	set_dimensions(&texture, spriteSheetWidth, spriteSheetHeight, horizontalTrim, verticalTrim);
@@ -66,6 +66,7 @@ void Player::update(float ms)
 	physicsHandler->characterAccelerationUpdate(this);
 	physicsHandler->characterVelocityUpdate(this);
 	if (is_alive()) move();
+	resetCornerCollisions();
 }
 
 void Player::draw(const mat3& projection)
@@ -145,6 +146,8 @@ void Player::set_animation()
 			numTiles = 5;
 			tileIndex = 0;
 			break;
+		case falling:	// sometimes the player alternates back and forth between falling and running
+						// very quickly. By keeping the animation the same, it won't look as glitchy.
 		case running:
 			numTiles = 8;
 			tileIndex = 8;
@@ -154,9 +157,6 @@ void Player::set_animation()
 			numTiles = 1;
 			tileIndex = 9;
 			break;
-		case falling:
-			numTiles = 1;
-			tileIndex = 14;
 		default:
 			numTiles = 1;
 			tileIndex = 0;
@@ -212,10 +212,21 @@ void Player::set_world_vertex_coord()
 		playArray.push_back(bottom);
 		playArray.push_back(left);
 
+		// rotate velocity vector back to normal orientation to reuse existing logic
+		vec2 unrotatedVelocity = rotateVec(m_velocity, m_rotation);
+		float horzSpeed = unrotatedVelocity.x;
+		float collisionBuffer = fabs(horzSpeed) + fabs(m_acceleration.x) + 1.f;
+		extendedPlayerArray[0] = top;
+		extendedPlayerArray[1] = add(right, { collisionBuffer, 0.f});
+		extendedPlayerArray[2] = bottom;
+		extendedPlayerArray[3] = subtract(left, { collisionBuffer, 0.f });
+
 		for (int i = 0; i < 4; i++) {
 			playArray[i] = { ((playArray[i].x - x_pos) * cosf(m_rotation)) - ((playArray[i].y - y_pos) * sinf(m_rotation)) + x_pos,
 							((playArray[i].y - y_pos) * cosf(m_rotation)) + ((playArray[i].x - x_pos) * sinf(m_rotation)) + y_pos };
 			vertex_coords.push_back(playArray[i]);
+			extendedPlayerArray[i] = { ((extendedPlayerArray[i].x - x_pos) * cosf(m_rotation)) - ((extendedPlayerArray[i].y - y_pos) * sinf(m_rotation)) + x_pos,
+										((extendedPlayerArray[i].y - y_pos) * cosf(m_rotation)) + ((extendedPlayerArray[i].x - x_pos) * sinf(m_rotation)) + y_pos };
 		}
 	}
 	else {
@@ -232,5 +243,12 @@ void Player::set_world_vertex_coord()
 		vertex_coords.push_back(vert2);
 		vertex_coords.push_back(vert3);
 		vertex_coords.push_back(vert4);
+	}
+}
+
+void Player::resetCornerCollisions()
+{
+	for (int i = 0; i < 4; i++) {
+		cornerCollisions[i] = false;
 	}
 }

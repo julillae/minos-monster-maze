@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common.hpp"
 #include "../include/characters/enemy.hpp"
 #include "../include/characters/player.hpp"
 #include "../include/mazeComponents/floor.hpp"
@@ -54,9 +55,11 @@ public:
     void characterCollisionsWithSpikes(Player *c, std::vector<Spike> spikes);
     void characterCollisionsWithIce(Player *c, std::vector<Ice> ice);
     void characterCollisionsWithBlades(Player *c, std::vector<Blade> blades);
-    void characterCollisionsWithFixedComponent(Player *c, FixedComponent* fc);
+	vec2 adjustVelocity(vec2 velocity, vector<MTV> mtvs);
+	vec2 adjustVelocity(vec2 velocity, Player * p);
+	void characterCollisionsWithFixedComponent(Player *c, FixedComponent* fc);
 
-	void characterVelocityUpdate(Character *c);
+	void characterVelocityUpdate(Player *c);
 
 	void characterAccelerationUpdate(Character *c);
 
@@ -76,5 +79,5 @@ public:
 
     float getOverlap(Projection p1, Projection p2);
 
-
+	void checkCornerCollisions(Player * p, vec2 playArray[4], FixedComponent* fC);
 };
