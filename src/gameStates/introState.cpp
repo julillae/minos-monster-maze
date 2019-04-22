@@ -1,4 +1,4 @@
-#include "../../include/gameStates/creditsState.hpp"
+#include "../../include/gameStates/introState.hpp"
 #include "../../include/renderManager.hpp"
 
 // stlib
@@ -10,17 +10,17 @@
 #include <iostream>
 #include <fstream>
 
-CreditsState::CreditsState(Game *game)
+IntroState::IntroState(Game *game)
 {
     this->game = game;
 
 }
 
-void CreditsState::init(vec2 screen)
+void IntroState::init(vec2 screen)
 {
-    fprintf(stderr, "credits init\n");
+    fprintf(stderr, "intro init\n");
     this->m_window = game->m_window;
-    name = CREDITS;
+    name = INTRO;
 
     // hack used to make sure the display for macOS with retina display issue is consistent with display on other systems
     int testWidth;
@@ -45,16 +45,18 @@ void CreditsState::init(vec2 screen)
 
     initialPosition = vec2({static_cast<float>(w / 2), static_cast<float>(h / 2)});
 
-    credits.init(initialPosition);
+    intro.init(initialPosition);
     m_help_menu.init(initialPosition);
     m_help_menu.set_visibility(false);
     initialize_camera_position(w, h);
 
     // Shift texture up to fit screen
-    credits.set_position(vec2{cameraCenter.x, cameraCenter.y + 1000.f});
+    intro.set_position(cameraCenter);
+
+    m_start_time = glfwGetTime();
 }
 
-void CreditsState::draw()
+void IntroState::draw()
 {
     // Clearing error buffer
     gl_flush_errors();
@@ -72,42 +74,55 @@ void CreditsState::draw()
 
     mat3 projection_2D = calculate_projection();
 
-    credits.draw(projection_2D);
+    intro.draw(projection_2D);
 
     m_help_menu.draw(projection_2D);
     // Presenting
     glfwSwapBuffers(m_window);
 }
 
-bool CreditsState::update(float elapsed_ms)
+bool IntroState::update(float elapsed_ms)
 {
-    vec2 currPos = credits.get_position();
-    float texture_height = -520.f;
-
-    if (currPos.y >= texture_height) {
-        float increment = 1.f;
-        credits.set_position({currPos.x, currPos.y - increment});
-    } else {
-        close = true;
+    if (!should_show()) {
+        load_intro_level();
     }
 
     return true;
 }
 
-void CreditsState::on_key(GLFWwindow*, int key, int, int action, int mod)
+void IntroState::on_key(GLFWwindow*, int key, int, int action, int mod)
 {
-    
+    if (key == GLFW_KEY_ESCAPE)
+    {
+        load_intro_level();
+    }
 }
 
-bool CreditsState::is_over()
+bool IntroState::is_over()
 {
-    return glfwWindowShouldClose(m_window) || close;
+    return glfwWindowShouldClose(m_window);
 }
 
-void CreditsState::destroy()
+void IntroState::destroy()
 {
     glDeleteFramebuffers(1, &m_frame_buffer);
 
-    credits.destroy();
+    intro.destroy();
+}
+
+bool IntroState::should_show()
+{
+    fprintf(stderr, "%f\n", glfwGetTime() - m_start_time);
+    return glfwGetTime() - m_start_time < intro_length;
+}
+
+void IntroState::load_intro_level()
+{
+    Level* level = (Level*) game->get_state(LEVEL);
+
+    level->load_select_level(0);
+    game->set_current_state(level);
+    world = level;
+    level->reset_pause_start();
 }
 

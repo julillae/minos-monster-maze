@@ -522,6 +522,19 @@ void Level::destroy_platforms() {
 	m_blades.destroy();
 }
 
+void Level::load_intro()
+{
+	int w, h;
+    glfwGetFramebufferSize(m_window, &w, &h);
+	vec2 screen = { (float)w, (float)h };
+
+	IntroState* introState = new IntroState(game);
+	introState->init(screen);
+
+	game->push_state(introState);
+	game->set_current_state(introState);
+}
+
 void Level::load_credits()
 {
 	int w, h;
@@ -597,7 +610,6 @@ void Level::load_new_level()
 
 	current_level++;
 	if (current_level >= num_levels) {
-		current_level = 0;
 		level_timer.resetCumulativeTime();
 	
 		load_credits();
