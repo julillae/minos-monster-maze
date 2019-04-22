@@ -18,7 +18,7 @@ MinotaurIntroState::MinotaurIntroState(Game *game)
 
 void MinotaurIntroState::init(vec2 screen)
 {
-    fprintf(stderr, "minotaur minotaur_intro init\n");
+    fprintf(stderr, "minotaur intro init\n");
     this->m_window = game->m_window;
     name = MINOTAURINTRO;
 

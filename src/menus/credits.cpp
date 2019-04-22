@@ -27,7 +27,7 @@ bool Credits::init(vec2 position)
 
 void Credits::draw(const mat3 &projection)
 {
-    RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, this);
+    RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &texture, color, is_hidden, this);
 }
 
 vec2 Credits::get_position()

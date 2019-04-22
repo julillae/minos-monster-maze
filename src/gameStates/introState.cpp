@@ -112,7 +112,6 @@ void IntroState::destroy()
 
 bool IntroState::should_show()
 {
-    fprintf(stderr, "%f\n", glfwGetTime() - m_start_time);
     return glfwGetTime() - m_start_time < intro_length;
 }
 
