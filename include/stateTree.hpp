@@ -40,7 +40,7 @@ public:
 	ChangeCost getStateChangeCost(State newState);
 
 	void resetStateTree();
-
+	void destroy();
 	State currentState;
 
 private:
