@@ -457,10 +457,13 @@ void Level::draw()
 
 	vec2 deviationVector2 = add(p_position, negateVec(cameraCenter));
 	deviationVector2 = rotateVec(deviationVector2, rotation);
-	if (abs(rotation)<2.f && abs(rotation)>0.6f){
-		m_fire.originUpdate(w, h, -deviationVector2.x*2.f, deviationVector2.y*2.f);
+	if(m_player.isOnPlatform == false){
+		deviationVector2.y = -deviationVector2.y;
+	}
+	if (abs(rotation)<2.f && abs(rotation)>0.78f){
+		m_fire.originUpdate(w, h, -deviationVector2.x*osScaleFactor, -deviationVector2.y*osScaleFactor);
 	}else{
-		m_fire.originUpdate(w, h, deviationVector2.x*2.f, -deviationVector2.y*2.f);
+		m_fire.originUpdate(w, h, deviationVector2.x*osScaleFactor, deviationVector2.y*osScaleFactor);
 	}
 	
 	//m_fire.originUpdate(w, h, deviationVector2.x*2.f, -deviationVector2.y*2.f);
@@ -572,7 +575,7 @@ void Level::initialize_message_prompt() {
 
 void Level::initialize_camera_position(int w, int h)
 {
-	if (true) {
+	if (cameraTracking) {
 		cameraCenter = (initialPosition);
 		prevCameraCenter = cameraCenter;
 	}
