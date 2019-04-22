@@ -12,7 +12,7 @@ Physics::Physics() = default;
 
 Physics::~Physics() = default;
 
-bool outerCircleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
+bool Physics::outerCircleToCircleIntersection(vec2 c1, vec2 c2, float r1, float r2)
 {
 	float roundingTolerance = 1.1f;	// some float > 1
 	float xDistance = c1.x - c2.x;
@@ -80,6 +80,21 @@ float Physics::getOverlap(Projection p1, Projection p2)
         return std::min(p1.max, p2.max) - std::max(p1.min, p2.min);
     }
     return 0;
+}
+
+void Physics::checkCornerCollisions(Player * p, vec2 playArray[4], FixedComponent * fC)
+{
+	vec2 fCTopLeft = subtract(fC->get_position(), scalarMultiply(fC->get_bounding_box(), 0.5f));
+	vec2 fCBottomRight = add(fC->get_position(), scalarMultiply(fC->get_bounding_box(), 0.5f));
+	for (int i = 0; i < 4; i++) {
+		float x = playArray[i].x;
+		float y = playArray[i].y;
+		bool xInRange = (fCTopLeft.x <= x && x <= fCBottomRight.x);
+		bool yInRange = (fCTopLeft.y <= y && y <= fCBottomRight.y);
+		if (xInRange && yInRange) {
+			p->cornerCollisions[i] = true;
+		}
+	}
 }
 
 // Separating Axis Theorem
@@ -247,7 +262,7 @@ vector<MTV> mtvAggregation(vector<MTV> mtvs, Character* c) {
 	return normals;
 }
 
-vec2 adjustVelocity(vec2 velocity, vector<MTV> mtvs) {
+vec2 Physics::adjustVelocity(vec2 velocity, vector<MTV> mtvs) {
 	float velocityX = velocity.x;
 	float velocityY = velocity.y;
 
@@ -262,54 +277,68 @@ vec2 adjustVelocity(vec2 velocity, vector<MTV> mtvs) {
 	return vec2({ velocityX, velocityY });
 }
 
+vec2 Physics::adjustVelocity(vec2 velocity, Player* p) {
+	float velocityX = velocity.x;
+	float velocityY = velocity.y;
+	float angleTolerance = M_PI / 8;
+	float rotationFrom90 = fmod(rotation, (M_PI / 4));
+	bool rotationCloseTo90Multiple = fabs(rotationFrom90) < angleTolerance;
+
+	// booleans represent in order: top, right, bottom, left
+	// this should be consistent with Player.set_world_vertex_coord()
+	if (p->cornerCollisions[0]) { velocityY = max(0.f, velocityY); }
+	if (p->cornerCollisions[1] && rotationCloseTo90Multiple) { velocityX = min(0.f, velocityX); }
+	if (p->cornerCollisions[3] && rotationCloseTo90Multiple) { velocityX = max(0.f, velocityX); }
+	if (p->cornerCollisions[2] && isZero(p->get_acceleration().x)) { velocityY = min(0.f, velocityY); }
+
+	return vec2({ velocityX, velocityY });
+}
+
 void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* fc) {
     vec2 cPos = c->get_position();
     vec2 fPos = fc->get_position();
-	float cRadius = c->boundingCircleRadius;
-	float fRadius = fc->boundingCircleRadius;
+	std::vector<vec2> playArray = c->get_vertex_coord();
+	std::vector<vec2> fixedComponentArray = fc->get_vertex_coord();
 
-    if (outerCircleToCircleIntersection(cPos, fPos, cRadius, fRadius)) {
-		std::vector<vec2> playArray = c->get_vertex_coord();
-		std::vector<vec2> fixedComponentArray = fc->get_vertex_coord();
+	checkCornerCollisions(c, c->extendedPlayerArray, fc);
 
-		MTV mtv = collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos);
+	MTV mtv = collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos);
 
-		if (mtv.isCollided) {
-			if (fc->can_kill) {
-				c->kill();
-				return;
-			}
-			c->collisionMTVs.push_back(mtv);
-
-			float dy = -mtv.normal.y;
-			float dx = mtv.normal.x;
-			vec2 collisionVector = vec2({ dx, dy });
-			vec2 rotatedCollisionVector = rotateVec(collisionVector, rotation);
-			float collisionAngle = atan2(rotatedCollisionVector.y, rotatedCollisionVector.x);
-
-			// logic needed to get new angle (collisionAngle + rotation) within
-			// the needed -pi to pi range
-			float anglePastPi = 0.f;
-			if (collisionAngle > M_PI) {
-				anglePastPi = static_cast<float>(collisionAngle - M_PI);
-				collisionAngle = static_cast<float>(-M_PI + anglePastPi);
-			}
-			else if (collisionAngle < -M_PI) {
-				anglePastPi = static_cast<float>(collisionAngle + M_PI);
-				collisionAngle = static_cast<float>(M_PI + anglePastPi);
-			}
-
-			// place player on platform
-			if (collisionAngle > -7 * M_PI / 8 && collisionAngle < -M_PI / 8) {
-				c->set_on_platform();
-				isOnAtLeastOnePlatform = true;
-				c->m_platform_drag = fc->get_drag();
-			}
+	if (mtv.isCollided) {
+		if (fc->can_kill) {
+			c->kill();
+			return;
 		}
-    }
+		c->collisionMTVs.push_back(mtv);
+
+		float dy = -mtv.normal.y;
+		float dx = mtv.normal.x;
+		vec2 collisionVector = vec2({ dx, dy });
+		vec2 rotatedCollisionVector = rotateVec(collisionVector, rotation);
+		float collisionAngle = atan2(rotatedCollisionVector.y, rotatedCollisionVector.x);
+
+		// logic needed to get new angle (collisionAngle + rotation) within
+		// the needed -pi to pi range
+		float anglePastPi = 0.f;
+		if (collisionAngle > M_PI) {
+			anglePastPi = static_cast<float>(collisionAngle - M_PI);
+			collisionAngle = static_cast<float>(-M_PI + anglePastPi);
+		}
+		else if (collisionAngle < -M_PI) {
+			anglePastPi = static_cast<float>(collisionAngle + M_PI);
+			collisionAngle = static_cast<float>(M_PI + anglePastPi);
+		}
+
+		// place player on platform
+		if (collisionAngle > -7 * M_PI / 8 && collisionAngle < -M_PI / 8) {
+			c->set_on_platform();
+			isOnAtLeastOnePlatform = true;
+			c->m_platform_drag = fc->get_drag();
+		}
+	}
 }
 
-void Physics::characterVelocityUpdate(Character* c)
+void Physics::characterVelocityUpdate(Player* c)
 {
 	vector<MTV> uniqueMTVs = mtvAggregation(c->collisionMTVs, c);
 	c->collisionMTVs.clear();
@@ -337,13 +366,14 @@ void Physics::characterVelocityUpdate(Character* c)
 		}
 
 		if (c->isOnPlatform) {
-			if (isZero(cAcc.x)) {
+			if (fabs(cVelocity.x) < 1.f) {
 				c->characterState->changeState(idle);
-				cVelocity.x *= platformDrag;
-				cVelocity.y = std::min(0.f, cVelocity.y);
 			}
 			else {
 				c->characterState->changeState(running);
+			}
+			if (isZero(cAcc.x)) {
+				cVelocity.x *= platformDrag;
 			}
 		}
 		else {
@@ -353,6 +383,7 @@ void Physics::characterVelocityUpdate(Character* c)
 				c->characterState->changeState(falling);
 		}
 
+		cVelocity = adjustVelocity(cVelocity, c);
 		// rotate back to current rotation
 		cVelocity = rotateVec(cVelocity, rotation);
 		cVelocity = adjustVelocity(cVelocity, uniqueMTVs);

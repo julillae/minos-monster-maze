@@ -25,7 +25,7 @@ bool Minotaur::init(vec2 initialPosition, Physics * physicsHandler)
 	float spriteSheetWidth = 9.0f;
 	float spriteSheetHeight = 10.0f;
     int horizontalTrim = 0;
-    int verticalTrim = 0;
+    int verticalTrim = 45;
 
     m_stopBound = 10.f;
     cycle_start = Clock::now();
