@@ -463,7 +463,7 @@ void Level::draw()
 	//m_fire.originUpdate(0.f, 0.f, p_position.x, p_position.y);
 	// vec2 rotated_p_pos = rotateVec(p_position, rotation);
 	// vec2 deviationVector2 = add(rotated_p_pos, negateVec(cameraCenter));
-
+	set_light_start_level(5);
 	vec2 deviationVector2 = add(p_position, negateVec(cameraCenter));
 
 	deviationVector2 = rotateVec(deviationVector2, -rotation);
@@ -1142,3 +1142,11 @@ void Level::clear_resources() {
 	nearbyBlades.clear();
 }
 
+void Level::set_light_start_level(int level){
+
+	if (current_level>=level){
+		m_fire.set_light_level(1);
+	}else{
+		m_fire.set_light_level(0);
+	}
+}

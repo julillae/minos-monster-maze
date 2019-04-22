@@ -143,6 +143,7 @@ public:
 	void record_pause_time();
 
 	void clear_resources();
+	void set_light_start_level(int level);
 private:
 
 	// Water effect
