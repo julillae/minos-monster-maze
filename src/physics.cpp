@@ -300,7 +300,7 @@ void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* f
 	std::vector<vec2> playArray = c->get_vertex_coord();
 	std::vector<vec2> fixedComponentArray = fc->get_vertex_coord();
 
-	checkCornerCollisions(c, c->extendedPlayerArray, fc);
+	if (!fc->can_kill) checkCornerCollisions(c, c->extendedPlayerArray, fc);
 
 	MTV mtv = collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos);
 
