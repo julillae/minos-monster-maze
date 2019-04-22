@@ -48,7 +48,7 @@ void LevelSelectState::init(vec2 screen)
     initialPosition = vec2({static_cast<float>(w / 2), static_cast<float>(h / 2)});
 
     levelSelectMenu.init(initialPosition);
-    init_buttons();
+    init_buttons(osScaleFactor);
     initialize_camera_position(w, h);
     levelSelectMenu.set_position(cameraCenter);
 
@@ -95,7 +95,7 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
             int introLevel = 0;
             int minotaurLevel = 12;
 
-			soundManager->play_level_select_sound();
+			soundManager->play_sound(levelSelect);
             Level* level = (Level*) game->get_state(LEVEL);
             if (level != NULL)
             {
@@ -131,7 +131,7 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 		if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_LEFT ||
 			key == GLFW_KEY_UP || key == GLFW_KEY_DOWN)
-			soundManager->play_button_select_sound();
+			soundManager->play_sound(buttonSelect);
 
         if (key == GLFW_KEY_RIGHT)
         {
@@ -149,7 +149,7 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
             set_currentButton(levelButtons[nextButton]);
         }
 
-        if (key == GLFW_KEY_DOWN && currentButton->level < 6)
+        if (key == GLFW_KEY_DOWN && currentButton->level < 7)
         {
             int nextButton = (currentButton->level + 6) % numButtons;
             set_currentButton(levelButtons[nextButton]);
@@ -187,12 +187,13 @@ void LevelSelectState::destroy()
 
 }
 
-void LevelSelectState::init_buttons()
+void LevelSelectState::init_buttons(float osScaleFactor)
 {
-    float buttonX = initialPosition.x / 3 + 50;
-    float buttonY = initialPosition.y - 85;
-    float buttonOffset_x = 150.f;
-    float buttonOffset_y = 200.f;
+    initialPosition.x *= osScaleFactor;
+    float buttonX = initialPosition.x / 3 + 30;
+    float buttonY = initialPosition.y - 108;
+    float buttonOffset_x = 160.f;
+    float buttonOffset_y = 155.f;
 
 
     const char* level1Text = textures_path("level1.png");
@@ -207,6 +208,7 @@ void LevelSelectState::init_buttons()
     const char* level10Text = textures_path("level10.png");
     const char* level11Text = textures_path("level11.png");
     const char* level12Text = textures_path("level12.png");
+    const char* level13Text = textures_path("level13.png");
 
 
     level1Button.init(vec2({buttonX, buttonY}), level1Text, 0 );
@@ -227,6 +229,10 @@ void LevelSelectState::init_buttons()
     level11Button.init(vec2({buttonX + buttonOffset_x * 4, buttonY }), level11Text, 10);
     level12Button.init(vec2({buttonX + buttonOffset_x * 5, buttonY }), level12Text, 11);
 
+    buttonY = buttonY + buttonOffset_y;
+
+    level13Button.init(vec2({buttonX + buttonOffset_x * 0, buttonY }), level13Text, 12);
+
     levelButtons[0] = &level1Button;
     levelButtons[1] = &level2Button;
     levelButtons[2] = &level3Button;
@@ -239,6 +245,7 @@ void LevelSelectState::init_buttons()
     levelButtons[9] = &level10Button;
     levelButtons[10] = &level11Button;
     levelButtons[11] = &level12Button;
+    levelButtons[12] = &level13Button;
 }
 
 void LevelSelectState::set_currentButton(LevelButton* button)

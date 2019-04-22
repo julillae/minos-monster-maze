@@ -27,6 +27,10 @@
 #include "flashMessage.hpp"
 #include "quadTree.hpp"
 #include "timer.hpp"
+#include "rotationUI.hpp"
+#include "rotationUIEnergy.hpp"
+#include "textManager.hpp"
+#include "particleSystem/emitter.hpp"
 
 // stlib
 #include <vector>
@@ -100,7 +104,7 @@ public:
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-	void check_platform_collisions(std::vector<Floor> nearbyFloorComponents);
+	void check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce, std::vector<Spike>, std::vector<Blade> nearbyBlades);
 
 	void draw_enemies(mat3 projection_2D);
 	void reset_enemies();
@@ -120,14 +124,21 @@ public:
 	void unfreeze_all_enemies();
 	void update_all_enemies(float elapsed_ms);
 	void update_all_platforms(float elapsed_ms);
+	void update_rotationUI();
+	void set_rotationUI_position();
+	void set_rotationUI_visibility(bool visible);
+	void set_timer_text_position();
+	void draw_energyText(mat3 projection_2D);
 
 	void set_player_death();
+	void set_death_effects();
 
 	void load_player();
 	void load_spiders();
 	void load_harpies();
 	void load_minotaur();
 	void load_blades();
+	void load_rotation_energy();
 
 	float get_level_time();
 	float get_cumulative_time();
@@ -135,31 +146,31 @@ public:
 	void reset_pause_start();
 	void return_from_pause();
 	void record_pause_time();
+
+	void clear_resources();
 private:
 
 	// Water effect
 	RenderEffects m_water;
 
 	Minotaur m_minotaur;
+	State minotaur_prev_state = initialized;
 	Spiders m_spiders;
 	Harpies m_harpies;
 
 	Exit m_exit;
 	Floors m_floors;
+	vector<Floor> vector_of_floors;
+	vector<Ice> vector_of_ices;
+	vector<Spike> vector_of_spikes;
+	vector<Blade> vector_of_blades;
 	Spikes m_spikes;
 	Ices m_ice;
 	Blades m_blades;
 
-    HelpMenu m_help_menu;
-
 	FlashMessage m_message;
 
     float m_seed_rng;
-
-    Mix_Music* m_background_music;
-	Mix_Chunk* m_player_dead_sound;
-	Mix_Chunk* m_player_jump_sound;
-	Mix_Chunk* level_complete_sound;
 
     // C++ rng
 	std::default_random_engine m_rng;
@@ -211,10 +222,22 @@ private:
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;
 
-	QuadTreeNode m_quad;
-
 	Timer level_timer;
 	float timer_pause_start = -1.0f;
 	float timer_pause_end = -1.0f;
 
+	// the particle emitter
+	std::vector<Emitter*> m_emitters;
+
+
+	RotationUI m_rotationUI;
+	RotationUIEnergy m_rotationUIEnergy;
+
+    TextManager m_timer_text;
+    TextManager m_energy_text;
+
+    std::vector<Floor> nearbyFloors;
+    std::vector<Ice> nearbyIce;
+	std::vector<Spike> nearbySpikes;
+	std::vector<Blade> nearbyBlades;
 };

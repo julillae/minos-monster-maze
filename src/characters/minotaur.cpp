@@ -25,7 +25,7 @@ bool Minotaur::init(vec2 initialPosition, Physics * physicsHandler)
 	float spriteSheetWidth = 9.0f;
 	float spriteSheetHeight = 10.0f;
     int horizontalTrim = 0;
-    int verticalTrim = 0;
+    int verticalTrim = 45;
 
     m_stopBound = 10.f;
     cycle_start = Clock::now();
@@ -215,7 +215,7 @@ void Minotaur::resetCycleStart() {
 void Minotaur::draw(const mat3& projection)
 {
     set_animation();
-	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &minotaur_texture, this);
+	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &minotaur_texture, color, is_hidden, this);
 
 }
 

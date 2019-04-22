@@ -83,6 +83,11 @@ set(SOURCE_FILES
     src/quadTree.cpp
     src/soundManager.cpp
     src/timer.cpp
+    src/rotationUI.cpp
+    src/rotationUIEnergy.cpp
+    src/particleSystem/particle.cpp
+    src/particleSystem/emitter.cpp
+        src/textManager.cpp
 
     include/project_path.hpp
   	include/common.hpp
@@ -136,7 +141,11 @@ set(SOURCE_FILES
     include/quadTree.hpp
     include/soundManager.hpp
     include/timer.hpp
-
+    include/rotationUI.hpp
+    include/rotationUIEnergy.hpp
+    include/particleSystem/particle.hpp
+    include/particleSystem/emitter.hpp
+    include/textManager.hpp
 	)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
@@ -148,12 +157,13 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/levels
 # Added this so policy CMP0065 doesn't scream
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS 0)
 
-
 # External header-only libraries in the ext/
 
 target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_image/)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/gl3w)
 target_include_directories(${PROJECT_NAME} PUBLIC ext/rapidjson)
+target_include_directories(${PROJECT_NAME} PUBLIC ext/freetype/include)
+
 
 # Find OpenGL
 find_package(OpenGL REQUIRED)
@@ -174,37 +184,45 @@ if (IS_OS_LINUX OR IS_OS_MAC)
 
     pkg_search_module(SDL2 REQURIED sdl2)
     pkg_search_module(SDL2MIXER REQURIED SDL2_mixer)
-    
+    pkg_search_module(FREETYPE REQUIRED freetype2)
+
     # Link Frameworks on OSX
     if (IS_OS_MAC)
        find_library(COCOA_LIBRARY Cocoa)
        find_library(CF_LIBRARY CoreFoundation)
-       target_link_libraries(${PROJECT_NAME} PUBLIC ${COCOA_LIBRARY} ${CF_LIBRARY})
+       target_link_libraries(${PROJECT_NAME} PUBLIC ${COCOA_LIBRARY} ${CF_LIBRARY} ${FREETYPE_LIBRARIES})
     endif()
 elseif (IS_OS_WINDOWS)
 # https://stackoverflow.com/questions/17126860/cmake-link-precompiled-library-depending-on-os-and-architecture
     set(GLFW_FOUND TRUE)
     set(SDL2_FOUND TRUE)
-    
+    set(FREETYPE_FOUND TRUE)
+
     set(GLFW_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/include")
     set(SDL2_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/include/SDL")
-    
-    if (${CMAKE_SIZEOF_VOID_P} MATCHES "8")
+    set(FREETYPE_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ext/freetype/include/freetype")
+
+
+            if (${CMAKE_SIZEOF_VOID_P} MATCHES "8")
         set(GLFW_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/lib/glfw3dll-x64.lib")
         set(SDL2_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/lib/SDL2-x64.lib")
 	set(SDL2MIXER_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/lib/SDL2_mixer-x64.lib")
+        set(FREETYPE_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/freetype/win64/freetype.lib")
 
 	set(GLFW_DLL "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/lib/glfw3-x64.dll")
 	set(SDL_DLL "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/lib/SDL2-x64.dll")
 	set(SDLMIXER_DLL "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/lib/SDL2_mixer-x64.dll")
-    else()
+    set(FREETYPE_DLL "${CMAKE_CURRENT_SOURCE_DIR}/ext/freetype/win64/freetype.dll")
+            else()
         set(GLFW_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/lib/glfw3dll-x86.lib")
         set(SDL2_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/lib/SDL2-x86.lib")
 	set(SDL2MIXER_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/lib/SDL2_mixer-x86.lib")
-	
+	set(FREETYPE_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/ext/freetype/win32/freetype.lib")
+
 	set(GLFW_DLL "${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw/lib/glfw3-x86.dll")
 	set(SDL_DLL "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/lib/SDL2-x86.dll")
 	set(SDLMIXER_DLL "${CMAKE_CURRENT_SOURCE_DIR}/ext/sdl/lib/SDL2_mixer-x86.dll")
+    set(FREETYPE_DLL "${CMAKE_CURRENT_SOURCE_DIR}/ext/freetype/win32/freetype.dll")
     endif()
 
     # Copy and rename dlls
@@ -220,6 +238,10 @@ elseif (IS_OS_WINDOWS)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${SDLMIXER_DLL}"
         "$<TARGET_FILE_DIR:${PROJECT_NAME}>/SDL2_mixer.dll")
+            add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${FREETYPE_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/freetype.dll")
 endif()
 
 # Can't find the include and lib. Quit.
@@ -233,8 +255,8 @@ endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${GLFW_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${SDL2_INCLUDE_DIRS})
-
-target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PUBLIC ${FREETYPE_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES} ${FREETYPE_LIBRARIES})
 
 # Needed to add this
 if(IS_OS_LINUX)

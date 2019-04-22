@@ -30,6 +30,7 @@ Game::~Game()
     {
         state.second->destroy();
     }
+    glfwTerminate();
 }
 
 bool Game::init(vec2 screen)

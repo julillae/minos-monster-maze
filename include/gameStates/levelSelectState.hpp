@@ -23,7 +23,7 @@ public:
     bool is_over()override;
     void destroy()override;
 
-    void init_buttons();
+    void init_buttons(float osScaleFactor);
     void set_currentButton(LevelButton* button);
     void reset_buttons();
 private:
@@ -31,7 +31,7 @@ private:
     LevelButton* currentButton;
 
     // menu buttons
-    LevelButton* levelButtons[12];
+    LevelButton* levelButtons[13];
 
     LevelButton level1Button;
     LevelButton level2Button;
@@ -45,6 +45,7 @@ private:
     LevelButton level10Button;
     LevelButton level11Button;
     LevelButton level12Button;
+    LevelButton level13Button;
 
     vec2 initialPosition;
 

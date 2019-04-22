@@ -55,11 +55,11 @@ void MainMenuState::init(vec2 screen)
     initialize_camera_position(w, h);
     mainMenu.set_position(cameraCenter);
 
-    LevelSelectState* levelSelect = new LevelSelectState(game);
+    levelSelect = new LevelSelectState(game);
     levelSelect->init(m_screen);
     game->push_state(levelSelect);
 
-    PauseMenuState* pauseMenu = new PauseMenuState(game);
+    pauseMenu = new PauseMenuState(game);
     pauseMenu->init(m_screen);
     game->push_state(pauseMenu);
 
@@ -105,7 +105,7 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
         {
             if (key == GLFW_KEY_ENTER)
             {
-				soundManager->play_button_enter_sound();
+				soundManager->play_sound(buttonEnter);
                 switch (currentButton->buttonName)
                 {
                     case NEWGAME:
@@ -153,7 +153,7 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
 
             if (key == GLFW_KEY_DOWN)
             {
-				soundManager->play_button_select_sound();
+				soundManager->play_sound(buttonSelect);
                 buttonIndex = (buttonIndex + 1) % numButtons;
                 set_currentButton(mainButtons[buttonIndex]);
             }
@@ -161,7 +161,7 @@ void MainMenuState::on_key(GLFWwindow*, int key, int, int action, int mod)
 
             if (key == GLFW_KEY_UP)
             {
-				soundManager->play_button_select_sound();
+				soundManager->play_sound(buttonSelect);
                 int nextButton = buttonIndex - 1;
                 if (nextButton < 0)
                     nextButton = numButtons - 1;
@@ -195,12 +195,12 @@ void MainMenuState::destroy()
 {
     glDeleteFramebuffers(1, &m_frame_buffer);
 
-    mainMenu.destroy();
     loadButton.destroy();
     newGameButton.destroy();
+    m_help_menu.destroy();
     controlsButton.destroy();
     quitButton.destroy();
-    m_help_menu.destroy();
+    mainMenu.destroy();
 
 }
 
