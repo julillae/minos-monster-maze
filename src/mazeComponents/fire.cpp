@@ -95,6 +95,7 @@ void Fire::draw(const mat3& projection)
     GLint alive = glGetUniformLocation(effect.program, "alive");
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
     GLuint win_timer_uloc = glGetUniformLocation(effect.program, "win_timer");
+    GLuint light_uloc = glGetUniformLocation(effect.program, "light_mode");
     //GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
     glEnableVertexAttribArray(in_position_loc);
     //glEnableVertexAttribArray(in_texcoord_loc);
@@ -118,6 +119,7 @@ void Fire::draw(const mat3& projection)
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
     glUniform1f(win_timer_uloc, (m_win_time > 0) ? (float)((glfwGetTime() - m_win_time) * 80.0f) : -1);
+    glUniform1i(light_uloc, isLightMode);
     
 
 	// Setting vertices and indices
@@ -175,6 +177,10 @@ void Fire::reset_fire(){
 
 void Fire::set_success(){
     is_At_Door = 1;
+}
+
+void Fire::set_light_level(int isLightOn){
+    isLightMode = isLightOn;
 }
 
 void Fire::set_level_complete_time() {
