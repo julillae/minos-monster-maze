@@ -102,7 +102,7 @@ public:
 	void on_key(GLFWwindow*, int key, int, int action, int mod)override;
 	void on_mouse_move(GLFWwindow* window, double xpos, double ypos);
 
-	void check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce, std::vector<Spike>);
+	void check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce, std::vector<Spike>, std::vector<Blade> nearbyBlades);
 
 	void draw_enemies(mat3 projection_2D);
 	void reset_enemies();
@@ -178,7 +178,7 @@ private:
 	int rotateCWKey = GLFW_KEY_X;
 	int rotateCCWKey = GLFW_KEY_Z;
 
-	int num_levels = 12;
+	int num_levels = 13;
 	int current_level = 0;
 
 	const map<int, std::string> platform_types = {
@@ -233,4 +233,5 @@ private:
     std::vector<Floor> nearbyFloors;
     std::vector<Ice> nearbyIce;
 	std::vector<Spike> nearbySpikes;
+	std::vector<Blade> nearbyBlades;
 };

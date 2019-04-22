@@ -93,6 +93,11 @@ void Physics::checkCornerCollisions(Player * p, vec2 playArray[4], FixedComponen
 		bool yInRange = (fCTopLeft.y <= y && y <= fCBottomRight.y);
 		if (xInRange && yInRange) {
 			p->cornerCollisions[i] = true;
+			if (i == 2) {
+				p->set_on_platform();
+				isOnAtLeastOnePlatform = true;
+				p->m_platform_drag = fC->get_drag();
+			}
 		}
 	}
 }
@@ -300,7 +305,7 @@ void Physics::characterCollisionsWithFixedComponent(Player* c, FixedComponent* f
 	std::vector<vec2> playArray = c->get_vertex_coord();
 	std::vector<vec2> fixedComponentArray = fc->get_vertex_coord();
 
-	checkCornerCollisions(c, c->extendedPlayerArray, fc);
+	if (!fc->can_kill) checkCornerCollisions(c, c->extendedPlayerArray, fc);
 
 	MTV mtv = collisionWithGeometry(playArray, fixedComponentArray, cPos, fPos);
 

@@ -113,13 +113,13 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
 
-void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce, std::vector<Spike> nearbySpikes) {
+void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce, std::vector<Spike> nearbySpikes, std::vector<Blade> nearbyBlades) {
 	if (m_player.is_alive()) {
 		m_player.set_world_vertex_coord();
 		physicsHandler->characterCollisionsWithSpikes(&m_player, nearbySpikes);
         physicsHandler->characterCollisionsWithFloors(&m_player, nearbyFloorComponents);
 		physicsHandler->characterCollisionsWithIce(&m_player, nearbyIce);
-		physicsHandler->characterCollisionsWithBlades(&m_player, m_blades.get_blade_vector());
+		physicsHandler->characterCollisionsWithBlades(&m_player, nearbyBlades);
 
 		if (!physicsHandler->isOnAtLeastOnePlatform) m_player.set_in_free_fall();
 
@@ -273,11 +273,19 @@ bool Level::update(float elapsed_ms)
 		{ return physicsHandler->outerCircleToCircleIntersection(play_pos, v.get_position(), play_radius, v.boundingCircleRadius); });
 	}
 
+	vector<Blade> vector_of_blades = m_blades.get_blade_vector();
+	if (!vector_of_blades.empty()) {
+		std::copy_if(vector_of_blades.begin(), vector_of_blades.end(), back_inserter(nearbyBlades),
+			[&](Blade const& v)
+		{ return physicsHandler->outerCircleToCircleIntersection(play_pos, v.get_position(), play_radius, v.boundingCircleRadius); });
+	}
+
     // checking player - platform collision with nearby floors
-	check_platform_collisions(nearbyFloors, nearbyIce, nearbySpikes);
+	check_platform_collisions(nearbyFloors, nearbyIce, nearbySpikes, nearbyBlades);
 	nearbyFloors.clear();
 	nearbyIce.clear();
 	nearbySpikes.clear();
+	nearbyBlades.clear();
 
 	// update particle emitters
 
@@ -553,7 +561,7 @@ void Level::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 void Level::initialize_message_prompt() {
 	if (hasPrompt) {
 		int messageNumber = current_level;
-		if (current_level == 4) {
+		if (current_level == 5) {
 			std::string newMessageNumber = std::to_string(current_level);
 			if (rotateCWKey == GLFW_KEY_X) {
 				newMessageNumber.append("1");
@@ -1131,5 +1139,6 @@ void Level::clear_resources() {
     nearbyFloors.clear();
     nearbyIce.clear();
 	nearbySpikes.clear();
+	nearbyBlades.clear();
 }
 

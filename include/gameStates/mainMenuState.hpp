@@ -7,9 +7,13 @@
 #include "../menus/mainButton.hpp"
 #include "../gameSave.hpp"
 
+#include "levelSelectState.hpp"
+#include "pauseMenuState.hpp"
+
 extern Level* world;
 
 class LevelSelectState;
+class PauseMenuState;
 
 class MainMenuState : public GameState
 {
@@ -45,6 +49,9 @@ private:
     MainButton quitButton;
     bool show_help_menu = false;
     bool show_continue = false;
+
+    LevelSelectState* levelSelect;
+    PauseMenuState* pauseMenu;
 
     HelpMenu m_help_menu;
 
