@@ -531,7 +531,7 @@ void Level::on_mouse_move(GLFWwindow* window, double xpos, double ypos)
 void Level::initialize_message_prompt() {
 	if (hasPrompt) {
 		int messageNumber = current_level;
-		if (current_level == 4) {
+		if (current_level == 5) {
 			std::string newMessageNumber = std::to_string(current_level);
 			if (rotateCWKey == GLFW_KEY_X) {
 				newMessageNumber.append("1");
