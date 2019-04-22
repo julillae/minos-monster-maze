@@ -21,6 +21,7 @@
 #include "gameStates/gameState.hpp"
 #include "gameStates/creditsState.hpp"
 #include "gameStates/introState.hpp"
+#include "gameStates/minotaurIntroState.hpp"
 #include "gameStates/pauseMenuState.hpp"
 #include "levelLoader.hpp"
 #include "flashMessage.hpp"
@@ -110,6 +111,7 @@ public:
 	void initialize_message_prompt();
 	void initialize_camera_position(int w, int h);
 	void load_intro();
+	void load_minotaur_intro();
 	void load_credits();
 	void call_level_loader();
 	void load_new_level();
@@ -170,7 +172,8 @@ private:
 	int rotateCWKey = GLFW_KEY_X;
 	int rotateCCWKey = GLFW_KEY_Z;
 
-	int num_levels = 12;
+	int num_levels = 13;
+	int minotaur_level = 12;
 	int current_level = 0;
 
 	const map<int, std::string> platform_types = {

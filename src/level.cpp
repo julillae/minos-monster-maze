@@ -535,6 +535,19 @@ void Level::load_intro()
 	game->set_current_state(introState);
 }
 
+void Level::load_minotaur_intro()
+{
+	int w, h;
+    glfwGetFramebufferSize(m_window, &w, &h);
+	vec2 screen = { (float)w, (float)h };
+
+	MinotaurIntroState* introState = new MinotaurIntroState(game);
+	introState->init(screen);
+
+	game->push_state(introState);
+	game->set_current_state(introState);
+}
+
 void Level::load_credits()
 {
 	int w, h;
@@ -613,15 +626,17 @@ void Level::load_new_level()
 		level_timer.resetCumulativeTime();
 	
 		load_credits();
-	}
-	
-	level_timer.addCumulativeTime(level_timer.getTime());
+	} else if (current_level == minotaur_level) {
+		load_minotaur_intro();
+	} else {
+		level_timer.addCumulativeTime(level_timer.getTime());
 
-	call_level_loader();
-	initialize_message_prompt();
-	// if moved on to new level, reset saved time to zero.
-	level_timer.recordSavedTime(0.f);
-	level_timer.reset();
+		call_level_loader();
+		initialize_message_prompt();
+		// if moved on to new level, reset saved time to zero.
+		level_timer.recordSavedTime(0.f);
+		level_timer.reset();
+	}
 }
 
 void Level::reset_game()
