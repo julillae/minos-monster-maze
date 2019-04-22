@@ -16,6 +16,7 @@ bool Fire::init()
 	//TexturedVertex vertices[1];
 	//vertices[0].position = { position.x, position.y, -0.02f };
     //vertices[0].texcoord = { 0.f, 0.f };
+    m_win_time = -1;
 
     static const GLfloat screen_vertex_buffer[] = {
 		-1.05f, -1.05f, 0.0f,
@@ -93,6 +94,7 @@ void Fire::draw(const mat3& projection)
     GLint origin_pos = glGetUniformLocation(effect.program, "origin_pos");
     GLint alive = glGetUniformLocation(effect.program, "alive");
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
+    GLuint win_timer_uloc = glGetUniformLocation(effect.program, "win_timer");
     //GLint in_texcoord_loc = glGetAttribLocation(effect.program, "in_texcoord");
     glEnableVertexAttribArray(in_position_loc);
     //glEnableVertexAttribArray(in_texcoord_loc);
@@ -115,6 +117,7 @@ void Fire::draw(const mat3& projection)
     //glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, (void*)sizeof(vec3));
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+    glUniform1f(win_timer_uloc, (m_win_time > 0) ? (float)((glfwGetTime() - m_win_time) * 80.0f) : -1);
     
 
 	// Setting vertices and indices
@@ -172,4 +175,12 @@ void Fire::reset_fire(){
 
 void Fire::set_success(){
     is_At_Door = 1;
+}
+
+void Fire::set_level_complete_time() {
+	m_win_time = glfwGetTime();
+}
+
+void Fire::reset_player_win_time() {
+	m_win_time = -1;
 }

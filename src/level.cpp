@@ -241,6 +241,7 @@ bool Level::update(float elapsed_ms)
 	{
 		soundManager->play_sound(levelComplete);
 		m_water.set_level_complete_time();
+		m_fire.set_level_complete_time();
 		is_player_at_goal = true;
 		m_fire.set_success();
 		m_player.freeze();
@@ -456,6 +457,7 @@ void Level::draw()
 	// vec2 deviationVector2 = add(rotated_p_pos, negateVec(cameraCenter));
 
 	vec2 deviationVector2 = add(p_position, negateVec(cameraCenter));
+
 	deviationVector2 = rotateVec(deviationVector2, -rotation);
 	m_fire.originUpdate(w, h, deviationVector2.x*osScaleFactor, -deviationVector2.y*osScaleFactor);
 	
@@ -706,6 +708,7 @@ void Level::reset_player_camera()
 	m_water.reset_rotation_end_time();
 	m_water.reset_player_win_time();
 	m_water.reset_player_dead_time();
+	m_fire.reset_player_win_time();
 	is_player_at_goal = false;
 	rotationDeg = 0;
 	rotation = 0.f;

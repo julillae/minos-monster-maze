@@ -28,6 +28,8 @@ public:
     void set_player_dead();
     void reset_fire();
     void set_success();
+    void set_level_complete_time() ;
+    void reset_player_win_time();
 
 private:
     float tx = 0.f;
@@ -36,5 +38,6 @@ private:
     float py = 0.f;
     float isAlive = 1.f;
     int is_At_Door = 0;
+    float m_win_time;
 
 };
