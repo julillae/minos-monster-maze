@@ -88,7 +88,9 @@ bool CreditsState::update(float elapsed_ms)
         float increment = 1.f;
         credits.set_position({currPos.x, currPos.y - increment});
     } else {
-        close = true;
+        MainMenuState* mainMenuState = (MainMenuState*) game->get_state(MAIN);
+        mainMenuState->reset_buttons();
+        game->set_current_state(mainMenuState);
     }
 
     return true;
@@ -101,7 +103,7 @@ void CreditsState::on_key(GLFWwindow*, int key, int, int action, int mod)
 
 bool CreditsState::is_over()
 {
-    return glfwWindowShouldClose(m_window) || close;
+    return glfwWindowShouldClose(m_window);
 }
 
 void CreditsState::destroy()
