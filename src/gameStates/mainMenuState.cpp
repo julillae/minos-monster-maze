@@ -55,11 +55,11 @@ void MainMenuState::init(vec2 screen)
     initialize_camera_position(w, h);
     mainMenu.set_position(cameraCenter);
 
-    LevelSelectState* levelSelect = new LevelSelectState(game);
+    levelSelect = new LevelSelectState(game);
     levelSelect->init(m_screen);
     game->push_state(levelSelect);
 
-    PauseMenuState* pauseMenu = new PauseMenuState(game);
+    pauseMenu = new PauseMenuState(game);
     pauseMenu->init(m_screen);
     game->push_state(pauseMenu);
 
@@ -195,12 +195,12 @@ void MainMenuState::destroy()
 {
     glDeleteFramebuffers(1, &m_frame_buffer);
 
-    mainMenu.destroy();
     loadButton.destroy();
     newGameButton.destroy();
+    m_help_menu.destroy();
     controlsButton.destroy();
     quitButton.destroy();
-    m_help_menu.destroy();
+    mainMenu.destroy();
 
 }
 

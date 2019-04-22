@@ -157,7 +157,6 @@ private:
 	vector<Floor> vector_of_floors;
 	vector<Ice> vector_of_ices;
 	vector<Spike> vector_of_spikes;
-	vector<Blade> vector_of_blades;
 	Spikes m_spikes;
 	Ices m_ice;
 	Blades m_blades;

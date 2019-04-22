@@ -256,6 +256,7 @@ bool Level::update(float elapsed_ms)
 		{ return physicsHandler->outerCircleToCircleIntersection(play_pos, v.get_position(), play_radius, v.boundingCircleRadius); });
 	}
 
+	vector<Blade> vector_of_blades = m_blades.get_blade_vector();
 	if (!vector_of_blades.empty()) {
 		std::copy_if(vector_of_blades.begin(), vector_of_blades.end(), back_inserter(nearbyBlades),
 			[&](Blade const& v)
@@ -631,7 +632,6 @@ void Level::call_level_loader()
     vector_of_floors = m_floors.get_floor_vector();
     vector_of_ices = m_ice.get_ice_vector();
 	vector_of_spikes = m_spikes.get_spike_vector();
-	vector_of_blades = m_blades.get_blade_vector();
 }
 
 void Level::load_new_level()
@@ -1101,7 +1101,6 @@ void Level::clear_resources() {
     vector_of_floors.clear();
     vector_of_ices.clear();
 	vector_of_spikes.clear();
-	vector_of_blades.clear();
     m_maze.clear();
     nearbyFloors.clear();
     nearbyIce.clear();
