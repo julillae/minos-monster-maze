@@ -93,6 +93,11 @@ void Physics::checkCornerCollisions(Player * p, vec2 playArray[4], FixedComponen
 		bool yInRange = (fCTopLeft.y <= y && y <= fCBottomRight.y);
 		if (xInRange && yInRange) {
 			p->cornerCollisions[i] = true;
+			if (i == 2) {
+				p->set_on_platform();
+				isOnAtLeastOnePlatform = true;
+				p->m_platform_drag = fC->get_drag();
+			}
 		}
 	}
 }
