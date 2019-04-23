@@ -92,14 +92,24 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
     if (action == GLFW_PRESS) {
         if (key == GLFW_KEY_ENTER)
         {
+            int introLevel = 0;
+            int minotaurLevel = 12;
+
 			soundManager->play_sound(levelSelect);
             Level* level = (Level*) game->get_state(LEVEL);
             if (level != NULL)
             {
-                level->load_select_level(currentButton->level);
-                game->set_current_state(level);
-                world = level;
-                level->reset_pause_start();
+                
+                if (currentButton->level == introLevel) {
+                    level->load_intro();
+                } else if (currentButton->level == minotaurLevel) {
+                    level->load_minotaur_intro();
+                } else {
+                    level->load_select_level(currentButton->level);
+                    game->set_current_state(level);
+                    world = level;
+                    level->reset_pause_start();
+                }
             } else
             {
                 Physics *physicsHandler = new Physics();
@@ -108,6 +118,12 @@ void LevelSelectState::on_key(GLFWwindow*, int key, int, int action, int mod)
                 game->push_state(newLevel);
                 game->set_current_state(newLevel);
                 world = newLevel;
+
+                if (currentButton->level == 0) {
+                    newLevel->load_intro();
+                } else if (currentButton->level == minotaurLevel) {
+                    newLevel->load_minotaur_intro();
+                }
             }
         }
 
