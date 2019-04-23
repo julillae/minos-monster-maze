@@ -32,6 +32,4 @@ private:
     vec2 initialPosition;
 
     vec2 currPosition;
-
-    bool close = false;
 };
