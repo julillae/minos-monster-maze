@@ -57,7 +57,7 @@ void Minotaur::update(float ms)
                     direction = Direction::right;
                 }
             }
-        } else
+        } else if (!(characterState->currentState == swinging && swingTimeOver()))
         {
             vec2 playerLoc = world->m_player.get_position();
             if (atBound())
@@ -66,6 +66,7 @@ void Minotaur::update(float ms)
             } else if (abs(playerLoc.x - m_position.x) <= 40.f)
             {
                 characterState->changeState(swinging);
+                swingStart = Clock::now();
             } else
             {
                 setFollowDirection();
@@ -218,6 +219,13 @@ void Minotaur::draw(const mat3& projection)
     set_animation();
 	RenderManager::draw_texture(projection, m_position, m_rotation, m_scale, &minotaur_texture, color, is_hidden, this);
 
+}
+
+bool Minotaur::swingTimeOver()
+{
+    auto now = Clock::now();
+	float elapsed_sec = (float)(std::chrono::duration_cast<std::chrono::microseconds>(now - swingStart)).count() / 1000;
+    return elapsed_sec > swingTime;
 }
 
 void Minotaur::set_animation()
