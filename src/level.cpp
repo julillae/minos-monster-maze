@@ -731,6 +731,7 @@ void Level::reset_game()
 		reset_enemies();
 	}
 	soundManager->fade_out_sound(rotationLoop, 200);
+	if (minotaurPresent) soundManager->fade_out_sound(minotaurIdle, 0);
 	reset_player_camera();
 	m_fire.reset_fire();
 	initialize_message_prompt();
