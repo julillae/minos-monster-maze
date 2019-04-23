@@ -48,6 +48,10 @@ void LevelLoader::read_level_data(int levelNumber) {
 	std::getline(filein, fourthLine);
 	hasPrompt = fourthLine.compare("1") == 0;
 
+	std::string fifthLine;
+    std::getline(filein, fifthLine);
+	isLighting = fifthLine.compare("1") == 0;
+
     for (std::string line; std::getline(filein, line);) {
         std::vector <int> row;
         for(char& c : line) {
@@ -239,6 +243,8 @@ bool LevelLoader::can_rotate() { return canRotate; }
 bool LevelLoader::can_camera_track() { return cameraTracking; }
 
 bool LevelLoader::has_prompt() { return hasPrompt; }
+
+bool LevelLoader::is_lighting() { return isLighting; }
 
 vec2 LevelLoader::get_player_position() { return m_initial_position; }
 

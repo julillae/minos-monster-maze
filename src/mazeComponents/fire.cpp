@@ -123,7 +123,7 @@ void Fire::set_success(){
     is_At_Door = 1;
 }
 
-void Fire::set_light_level(int isLightOn){
+void Fire::set_light_level(bool isLightOn){
     isLightMode = isLightOn;
 }
 
