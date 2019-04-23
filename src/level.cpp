@@ -109,6 +109,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	m_rotationUIEnergy.init();
 	set_rotationUI_position();
 	set_rotationUI_visibility(canRotate);
+	set_lights();
 
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
