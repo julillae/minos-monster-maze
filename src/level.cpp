@@ -606,10 +606,12 @@ void Level::load_intro()
     glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = { (float)w, (float)h };
 
-	IntroState* introState = new IntroState(game);
-	introState->init(screen);
-
-	game->push_state(introState);
+	if (introState == NULL) {
+		introState = new IntroState(game);
+		introState->init(screen);
+		game->push_state(introState);
+	}
+	
 	game->set_current_state(introState);
 }
 
@@ -1139,6 +1141,7 @@ void Level::reset_pause_start() {
 }
 
 void Level::clear_resources() {
+	m_player.destroy();
     destroy_platforms();
     destroy_enemies();
     vector_of_floors.clear();

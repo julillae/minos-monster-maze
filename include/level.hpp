@@ -44,6 +44,7 @@
 #include <time.h>
 
 // Level class
+class IntroState;
 
 class Level : public GameState
 {
@@ -169,6 +170,8 @@ private:
 	Blades m_blades;
 
 	FlashMessage m_message;
+
+	IntroState* introState;
 
     float m_seed_rng;
 
