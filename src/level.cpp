@@ -101,7 +101,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	set_rotationUI_visibility(canRotate);
 	set_lights();
 
-	return m_water.init() && m_player.init(initialPosition, physicsHandler);
+	return m_fire.init() && m_player.init(initialPosition, physicsHandler);
 }
 
 void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce, std::vector<Spike> nearbySpikes, std::vector<Blade> nearbyBlades) {
@@ -189,7 +189,7 @@ bool Level::update(float elapsed_ms)
 		soundManager->fade_out_sound(rotationLoop, 200);
 		applyThaw = true;
 		previouslyFrozen = false;
-		m_water.set_rotation_end_time();
+		m_fire.set_rotation_end_time();
 	}
 
 	// Checking Player - Spider Collision
@@ -231,7 +231,6 @@ bool Level::update(float elapsed_ms)
 	if (physicsHandler->collideWithExit(&m_player, &m_exit) && !is_player_at_goal)
 	{
 		soundManager->play_sound(levelComplete);
-		m_water.set_level_complete_time();
 		m_fire.set_level_complete_time();
 		is_player_at_goal = true;
 		m_fire.set_success();
@@ -316,19 +315,19 @@ bool Level::update(float elapsed_ms)
 	update_all_platforms(elapsed_ms);
 
 	// If player is dead or beat the game, restart the game after the fading animation
-	if (!m_player.is_alive() && m_water.get_time_since_death() > 1.5)
+	if (!m_player.is_alive() && m_fire.get_time_since_death() > 1.5)
 		reset_game();
 
-	if (m_player.is_alive() && is_player_at_goal && m_water.get_time_since_level_complete() > 1.5)
+	if (m_player.is_alive() && is_player_at_goal && m_fire.get_time_since_level_complete() > 1.5)
 		reset_game();
 
 	float timeToLoadRotationEnergy = 4.f;
-	if (m_water.get_time_since_rotation_end() > timeToLoadRotationEnergy) {
+	if (m_fire.get_time_since_rotation_end() > timeToLoadRotationEnergy) {
 		rotationEnergy += rotationEnergyIncrement;
-		m_water.set_rotation_end_time();
+		m_fire.set_rotation_end_time();
 
 		if (rotationEnergy >= maxRotationEnergy) {
-			m_water.reset_rotation_end_time();
+			m_fire.reset_rotation_end_time();
 			rotationEnergy = maxRotationEnergy;
 		}
 
@@ -438,9 +437,7 @@ void Level::draw()
 
     render_to_screen(w, h);
 
-	//m_fire.WindowTrans(tx, ty);
 	m_fire.draw(projection_2D);
-	//m_water.draw(projection_2D);
 
 	if (hasPrompt) {
 		float screen_height = static_cast<float>(h)/osScaleFactor;
@@ -450,16 +447,11 @@ void Level::draw()
 		m_message.draw(projection_noRotation);
 	}
 
-	// Presenting
-	//m_fire.originUpdate(0.f, 0.f, p_position.x, p_position.y);
-	// vec2 rotated_p_pos = rotateVec(p_position, rotation);
-	// vec2 deviationVector2 = add(rotated_p_pos, negateVec(cameraCenter));
 	vec2 deviationVector2 = add(p_position, negateVec(cameraCenter));
 
 	deviationVector2 = rotateVec(deviationVector2, -rotation);
 	m_fire.originUpdate(w, h, deviationVector2.x*osScaleFactor, -deviationVector2.y*osScaleFactor);
 
-	//m_fire.originUpdate(w, h, deviationVector2.x*2.f, -deviationVector2.y*2.f);
     update_rotationUI();
 	m_rotationUI.draw(projection_noRotation);
 	m_rotationUIEnergy.draw(projection_noRotation);
@@ -749,11 +741,10 @@ void Level::reset_player_camera()
 {
 	m_player.init(initialPosition, physicsHandler);
 
-	m_water.reset_rotation_end_time();
-	m_water.reset_player_win_time();
-	m_water.reset_player_dead_time();
+	m_fire.reset_rotation_end_time();
 	m_fire.reset_player_win_time();
-	is_player_at_goal = false;
+    m_fire.reset_player_dead_time();
+    is_player_at_goal = false;
 	rotationDeg = 0;
 	rotation = 0.f;
 	rotationEnergy = maxRotationEnergy;
@@ -902,7 +893,6 @@ void Level::set_player_death()
 {
 	if (!m_player.is_invincible() && m_player.is_alive()) {
 		m_player.kill();
-		//m_water.set_player_dead();
 		m_fire.set_player_dead();
 		// emitter for blood
         auto emitter = new Emitter(
@@ -923,7 +913,7 @@ void Level::set_death_effects()
 	m_timer_text.set_visibility(false);
 
 	soundManager->play_sound(playerDead);
-	m_water.set_player_dead();
+	m_fire.set_player_dead_time();
 }
 
 void Level::load_select_level(int level)
@@ -1140,7 +1130,7 @@ void Level::load_rotation_energy()
 	rotationDeg = GameSave::document["rotationDeg"].GetFloat();
     rotationEnergy = GameSave::document["rotationEnergy"].GetFloat();
     if (rotationEnergy < maxRotationEnergy)
-        m_water.set_rotation_end_time();
+        m_fire.set_rotation_end_time();
 
 }
 

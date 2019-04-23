@@ -6,7 +6,9 @@
 
 bool Fire::init()
 {
+    m_dead_time = -1;
     m_win_time = -1;
+    m_rotation_end_time = -1;
 
     static const GLfloat screen_vertex_buffer[] = {
 		-1.05f, -1.05f, 0.0f,
@@ -59,6 +61,7 @@ void Fire::draw(const mat3& projection)
     GLint alive = glGetUniformLocation(effect.program, "alive");
     GLint in_position_loc = glGetAttribLocation(effect.program, "in_position");
     GLuint win_timer_uloc = glGetUniformLocation(effect.program, "win_timer");
+    GLuint dead_timer_uloc = glGetUniformLocation(effect.program, "dead_timer");
     GLuint light_uloc = glGetUniformLocation(effect.program, "light_mode");
     glEnableVertexAttribArray(in_position_loc);
     glUniform1i(screen_text_uloc, 0);
@@ -77,6 +80,7 @@ void Fire::draw(const mat3& projection)
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
     glUniform1f(win_timer_uloc, (m_win_time > 0) ? (float)((glfwGetTime() - m_win_time) * 80.0f) : -1);
+    glUniform1f(dead_timer_uloc, (m_dead_time > 0) ? (float)((glfwGetTime() - m_dead_time) * 80.0f) : -1);
     glUniform1i(light_uloc, isLightMode);
     
     glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
@@ -121,4 +125,34 @@ void Fire::set_level_complete_time() {
 
 void Fire::reset_player_win_time() {
 	m_win_time = -1;
+}
+
+void Fire::set_player_dead_time() {
+    m_dead_time = glfwGetTime();
+}
+
+void Fire::reset_player_dead_time() {
+    m_dead_time = -1;
+}
+
+float Fire::get_time_since_death() const {
+    return glfwGetTime() - m_dead_time;
+}
+
+float Fire::get_time_since_level_complete() const {
+    return glfwGetTime() - m_win_time;
+}
+
+float Fire::get_time_since_rotation_end() const {
+    if (m_rotation_end_time > 0)
+        return glfwGetTime() - m_rotation_end_time;
+    else return m_rotation_end_time;
+}
+
+void Fire::set_rotation_end_time() {
+    m_rotation_end_time = glfwGetTime();
+}
+
+void Fire::reset_rotation_end_time() {
+    m_rotation_end_time = -1;
 }

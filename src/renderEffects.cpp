@@ -31,7 +31,7 @@ bool RenderEffects::init() {
 		return false;
 
 	// Loading shaders
-	if (!effect.load_from_file(shader_path("water.vs.glsl"), shader_path("water.fs.glsl")))
+	if (!effect.load_from_file(shader_path("fire.vs.glsl"), shader_path("fire.fs.glsl")))
 		return false;
 
 	return true;
