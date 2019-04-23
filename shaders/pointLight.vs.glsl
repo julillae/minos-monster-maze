@@ -3,7 +3,6 @@
 layout(location = 0) in vec4 in_position;
 
 uniform vec2 light_pos;
-//uniform mat3 transform;
 uniform mat3 projection;
 uniform vec2 origin_pos;
 

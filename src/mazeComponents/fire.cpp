@@ -6,16 +6,6 @@
 
 bool Fire::init()
 {
-	//const char* textureFile = textures_path("fire.png");
-
-	//if (!RenderManager::load_texture(textureFile, &m_texture, this)) return false;
-
-	//float wr = m_texture.width * 0.5f;
-    //float hr = m_texture.height * 0.5f;
-
-	//TexturedVertex vertices[1];
-	//vertices[0].position = { position.x, position.y, -0.02f };
-    //vertices[0].texcoord = { 0.f, 0.f };
     m_win_time = -1;
 
     static const GLfloat screen_vertex_buffer[] = {
@@ -28,9 +18,7 @@ bool Fire::init()
 	};
 
     gl_flush_errors();
-
-	//uint16_t indices[] = { 0, 3, 1, 1, 3, 2 };
-	// Vertex Buffer creation
+    
     glGenBuffers(1, &mesh.vbo);
     glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(screen_vertex_buffer), screen_vertex_buffer, GL_STATIC_DRAW);
