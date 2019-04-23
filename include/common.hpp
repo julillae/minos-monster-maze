@@ -21,6 +21,7 @@
 #define textures_path(name)  data_path "/textures/" name
 #define audio_path(name) data_path  "/audio/" name
 #define mesh_path(name) data_path  "/meshes/" name
+#define level_path(name) data_path "/levels/" name
 
 
 static float g_tolerance = 0.000001f;
