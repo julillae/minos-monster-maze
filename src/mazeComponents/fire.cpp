@@ -75,7 +75,7 @@ void Fire::draw(const mat3& projection)
     float l_position[] = {tx/2.f + px, ty/2.f + py};
     glUniform2fv(light_pos, 1, l_position);
     glUniform1f(time_uloc, (float)(glfwGetTime() * 10.0f));
-    glUniform1i(at_door, is_At_Door);
+    glUniform1i(at_door, isAtDoor);
     glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform);
     glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
@@ -108,11 +108,11 @@ void Fire::set_player_dead(){
 
 void Fire::reset_fire(){
     isAlive = 1.f;
-    is_At_Door = 0.f;
+    isAtDoor = false;
 }
 
 void Fire::set_success(){
-    is_At_Door = 1;
+    isAtDoor = true;
 }
 
 void Fire::set_light_mode(bool isLightOn){
