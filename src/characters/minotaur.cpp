@@ -50,12 +50,12 @@ void Minotaur::update(float ms)
         {
             characterState->changeState(running);
             if (atBound()) {
-                if (direction == Direction::left) {
-                    direction = Direction::right;
-                } else {
-                    direction = Direction::left;
-                }
                 m_scale.x *= -1;
+                if (m_scale.x < 0) {
+                    direction = Direction::left;
+                } else {
+                    direction = Direction::right;
+                }
             }
         } else
         {
@@ -87,14 +87,14 @@ void Minotaur::updateVelocity()
             m_velocity.x = 0.f;
             break;
         case running:
-            if (direction == Direction::right) {
+            if (m_scale.x > 0) {
                 m_velocity.x = maxHorzSpeed;
             } else {
                 m_velocity.x = maxHorzSpeed * -1;
             }
             break;
         case following:
-            if (direction == Direction::right) {
+            if (m_scale.x > 0) {
                 m_velocity.x = maxHorzSpeed + 1.f;
             } else {
                 m_velocity.x = (maxHorzSpeed + 1.f)* -1;
@@ -128,12 +128,13 @@ void Minotaur::setFollowDirection()
     if (((playerLoc.x < m_position.x) && (m_velocity.x > 0)) ||
          ((playerLoc.x > m_position.x) && (m_velocity.x < 0)) ) {
         // switch direction to follow player if necessary
-        if (direction == Direction::left) {
-            direction = Direction::right;
-        } else {
-            direction = Direction::left;
-        }
         m_scale.x *= -1;
+        if (m_scale.x < 0) {
+            direction = Direction::left;
+        } else {
+            direction = Direction::right;
+        }
+        
     } 
 }
 

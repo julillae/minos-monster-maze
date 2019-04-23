@@ -1021,7 +1021,7 @@ void Level::load_minotaur()
 	itr = minotaur.GetObject().FindMember("scale_x");
 	minotaur_scaleX = itr->value.GetFloat();
 
-	minotaur_scaleY = m_player.get_scale().y;
+	minotaur_scaleY = m_minotaur.get_scale().y;
 
 	itr = minotaur.GetObject().FindMember("velocity_x");
 	minotaur_velx = itr->value.GetFloat();
