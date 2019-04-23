@@ -85,6 +85,8 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	w /= osScaleFactor;
 	h /= osScaleFactor;
 	initialize_camera_position(w, h);
+
+ 	m_fire.init();
 	initialize_message_prompt();
 	level_timer.init();
 
@@ -97,8 +99,9 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	m_rotationUIEnergy.init();
 	set_rotationUI_position();
 	set_rotationUI_visibility(canRotate);
+	set_lights();
 
-	return m_water.init() && m_player.init(initialPosition, physicsHandler);
+	return m_fire.init() && m_player.init(initialPosition, physicsHandler);
 }
 
 void Level::check_platform_collisions(std::vector<Floor> nearbyFloorComponents, std::vector<Ice> nearbyIce, std::vector<Spike> nearbySpikes, std::vector<Blade> nearbyBlades) {
@@ -132,8 +135,11 @@ void Level::destroy()
 	m_player.destroy();
 	destroy_enemies();
 	destroy_platforms();
+
+	m_fire.destroy();
 	m_timer_text.destroy();
 	m_energy_text.destroy();
+
 
 	glfwDestroyWindow(m_window);
 }
@@ -183,7 +189,7 @@ bool Level::update(float elapsed_ms)
 		soundManager->fade_out_sound(rotationLoop, 200);
 		applyThaw = true;
 		previouslyFrozen = false;
-		m_water.set_rotation_end_time();
+		m_fire.set_rotation_end_time();
 	}
 
 	// Checking Player - Spider Collision
@@ -225,8 +231,9 @@ bool Level::update(float elapsed_ms)
 	if (physicsHandler->collideWithExit(&m_player, &m_exit) && !is_player_at_goal)
 	{
 		soundManager->play_sound(levelComplete);
-		m_water.set_level_complete_time();
+		m_fire.set_level_complete_time();
 		is_player_at_goal = true;
+		m_fire.set_success();
 		m_player.freeze();
 		m_player.set_invincibility(true);
 		set_rotationUI_visibility(false);
@@ -308,19 +315,19 @@ bool Level::update(float elapsed_ms)
 	update_all_platforms(elapsed_ms);
 
 	// If player is dead or beat the game, restart the game after the fading animation
-	if (!m_player.is_alive() && m_water.get_time_since_death() > 1.5)
+	if (!m_player.is_alive() && m_fire.get_time_since_death() > 1.5)
 		reset_game();
 
-	if (m_player.is_alive() && is_player_at_goal && m_water.get_time_since_level_complete() > 1.5)
+	if (m_player.is_alive() && is_player_at_goal && m_fire.get_time_since_level_complete() > 1.5)
 		reset_game();
 
 	float timeToLoadRotationEnergy = 4.f;
-	if (m_water.get_time_since_rotation_end() > timeToLoadRotationEnergy) {
+	if (m_fire.get_time_since_rotation_end() > timeToLoadRotationEnergy) {
 		rotationEnergy += rotationEnergyIncrement;
-		m_water.set_rotation_end_time();
+		m_fire.set_rotation_end_time();
 
 		if (rotationEnergy >= maxRotationEnergy) {
-			m_water.reset_rotation_end_time();
+			m_fire.reset_rotation_end_time();
 			rotationEnergy = maxRotationEnergy;
 		}
 
@@ -382,7 +389,7 @@ void Level::draw()
 		vec2 deviationVector = add(p_position, negateVec(prevCameraCenter));
 		vec2 shrinkingTetherVector = { 0.f,0.f };
 		if (vecLength(deviationVector) > g_tolerance) {
-			shrinkingTetherVector = scalarMultiply(deviationVector, 0.05f);
+			shrinkingTetherVector = scalarMultiply(deviationVector, 0.1f);
 		}
 		cameraCenter = add(prevCameraCenter, shrinkingTetherVector);
 		prevCameraCenter = cameraCenter;
@@ -430,7 +437,7 @@ void Level::draw()
 
     render_to_screen(w, h);
 
-	m_water.draw(projection_2D);
+	m_fire.draw(projection_2D);
 
 	if (hasPrompt) {
 		float screen_height = static_cast<float>(h)/osScaleFactor;
@@ -440,12 +447,15 @@ void Level::draw()
 		m_message.draw(projection_noRotation);
 	}
 
+	vec2 deviationVector2 = add(p_position, negateVec(cameraCenter));
+
+	deviationVector2 = rotateVec(deviationVector2, -rotation);
+	m_fire.originUpdate(w, h, deviationVector2.x*osScaleFactor, -deviationVector2.y*osScaleFactor);
+
     update_rotationUI();
 	m_rotationUI.draw(projection_noRotation);
 	m_rotationUIEnergy.draw(projection_noRotation);
 
-	// set opacity
-    m_timer_text.setColour({0.7f, 0.7f, 0.7f});
 	set_timer_text_position();
     stringstream stream;
     stream << fixed << setprecision(0) << level_timer.getTime();
@@ -613,7 +623,7 @@ void Level::load_intro()
 		game->push_state(introState);
 		introLoaded = true;
 	}
-	
+
 	game->set_current_state(introState);
 }
 
@@ -654,6 +664,7 @@ void Level::call_level_loader()
 	canRotate = levelLoader.can_rotate();
 	cameraTracking = levelLoader.can_camera_track();
 	hasPrompt = levelLoader.has_prompt();
+	hasLightingEffect = levelLoader.has_lighting_effect();
 
 	initialPosition = levelLoader.get_player_position();
 	m_exit = levelLoader.get_exit();
@@ -683,7 +694,7 @@ void Level::load_new_level()
 	current_level++;
 	if (current_level >= num_levels) {
 		level_timer.resetCumulativeTime();
-	
+
 		load_credits();
 	} else if (current_level == minotaur_level) {
 		load_minotaur_intro();
@@ -692,6 +703,7 @@ void Level::load_new_level()
 		call_level_loader();
 		initialize_message_prompt();
 		set_rotationUI_visibility(canRotate);
+        set_lights();
 		// if moved on to new level, reset saved time to zero.
 		level_timer.recordSavedTime(0.f);
 		level_timer.reset();
@@ -721,6 +733,7 @@ void Level::reset_game()
 	soundManager->fade_out_sound(rotationLoop, 200);
 	if (minotaurPresent) soundManager->fade_out_sound(minotaurIdle, 0);
 	reset_player_camera();
+	m_fire.reset_fire();
 	initialize_message_prompt();
 	m_timer_text.set_visibility(true);
 }
@@ -729,10 +742,10 @@ void Level::reset_player_camera()
 {
 	m_player.init(initialPosition, physicsHandler);
 
-	m_water.reset_rotation_end_time();
-	m_water.reset_player_win_time();
-	m_water.reset_player_dead_time();
-	is_player_at_goal = false;
+	m_fire.reset_rotation_end_time();
+	m_fire.reset_player_win_time();
+    m_fire.reset_player_dead_time();
+    is_player_at_goal = false;
 	rotationDeg = 0;
 	rotation = 0.f;
 	rotationEnergy = maxRotationEnergy;
@@ -881,6 +894,7 @@ void Level::set_player_death()
 {
 	if (!m_player.is_invincible() && m_player.is_alive()) {
 		m_player.kill();
+		m_fire.set_player_dead();
 		// emitter for blood
         auto emitter = new Emitter(
                 m_player.get_position(),
@@ -900,7 +914,7 @@ void Level::set_death_effects()
 	m_timer_text.set_visibility(false);
 
 	soundManager->play_sound(playerDead);
-	m_water.set_player_dead();
+	m_fire.set_player_dead_time();
 }
 
 void Level::load_select_level(int level)
@@ -919,6 +933,7 @@ void Level::load_select_level(int level)
 	initialize_message_prompt();
 	m_timer_text.set_visibility(true);
 	set_rotationUI_visibility(canRotate);
+	set_lights();
 	reset_pause_start();
 	level_timer.cleanSlate();
 }
@@ -1116,7 +1131,7 @@ void Level::load_rotation_energy()
 	rotationDeg = GameSave::document["rotationDeg"].GetFloat();
     rotationEnergy = GameSave::document["rotationEnergy"].GetFloat();
     if (rotationEnergy < maxRotationEnergy)
-        m_water.set_rotation_end_time();
+        m_fire.set_rotation_end_time();
 
 }
 
@@ -1156,3 +1171,24 @@ void Level::clear_resources() {
 	nearbyBlades.clear();
 }
 
+void Level::set_lights(){
+
+	m_fire.set_light_mode(hasLightingEffect);
+	set_UI_colour();
+}
+
+void Level::set_UI_colour()
+{
+	vec3 colour;
+    if (hasLightingEffect) {
+    	colour = {1.f, 1.f, 1.f};
+
+    } else {
+    	colour = {0.f, 0.f, 0.f};
+    }
+
+	m_timer_text.setColour(colour);
+	m_energy_text.setColour(colour);
+
+	m_rotationUI.set_colour_mode(hasLightingEffect);
+}

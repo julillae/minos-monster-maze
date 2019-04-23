@@ -12,10 +12,10 @@
 #include "mazeComponents/fixedComponent.hpp"
 #include "mazeComponents/floor.hpp"
 #include "mazeComponents/exit.hpp"
+#include "mazeComponents/fire.hpp"
 #include "mazeComponents/ice.hpp"
 #include "mazeComponents/spike.hpp"
 #include "mazeComponents/blade.hpp"
-#include "renderEffects.hpp"
 #include "physics.hpp"
 #include "menus/helpMenu.hpp"
 #include "gameStates/gameState.hpp"
@@ -130,8 +130,10 @@ public:
 	void set_rotationUI_visibility(bool visible);
 	void set_timer_text_position();
 	void draw_energyText(mat3 projection_2D);
+    void set_lights();
+    void set_UI_colour();
 
-	void set_player_death();
+    void set_player_death();
 	void set_death_effects();
 
 	void load_player();
@@ -149,15 +151,13 @@ public:
 	void clear_resources();
 private:
 
-	// Water effect
-	RenderEffects m_water;
-
 	Minotaur m_minotaur;
 	State minotaur_prev_state = initialized;
 	Spiders m_spiders;
 	Harpies m_harpies;
 
 	Exit m_exit;
+	Fire m_fire;
 	Floors m_floors;
 	vector<Floor> vector_of_floors;
 	vector<Ice> vector_of_ices;
@@ -219,6 +219,7 @@ private:
 	bool cameraTracking = true;
 	bool canRotate = true;
 	bool hasPrompt = false;
+	bool hasLightingEffect = false;
 
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;
