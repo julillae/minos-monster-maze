@@ -642,7 +642,7 @@ void Level::call_level_loader()
 	canRotate = levelLoader.can_rotate();
 	cameraTracking = levelLoader.can_camera_track();
 	hasPrompt = levelLoader.has_prompt();
-	isLighting = levelLoader.is_lighting();
+	hasLightingEffect = levelLoader.has_lighting_effect();
 
 	initialPosition = levelLoader.get_player_position();
 	m_exit = levelLoader.get_exit();
@@ -1147,5 +1147,5 @@ void Level::clear_resources() {
 
 void Level::set_lights(){
 
-	m_fire.set_light_level(isLighting);
+	m_fire.set_light_mode(hasLightingEffect);
 }
