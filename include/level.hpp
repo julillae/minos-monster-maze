@@ -125,6 +125,7 @@ public:
 	void set_timer_text_position();
 	void draw_energyText(mat3 projection_2D);
     void set_lights();
+    void set_UI_colour();
 
     void set_player_death();
 	void set_death_effects();

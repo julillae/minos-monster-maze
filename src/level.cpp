@@ -464,8 +464,6 @@ void Level::draw()
 	m_rotationUI.draw(projection_noRotation);
 	m_rotationUIEnergy.draw(projection_noRotation);
 
-	// set opacity
-    m_timer_text.setColour({0.7f, 0.7f, 0.7f});
 	set_timer_text_position();
     stringstream stream;
     stream << fixed << setprecision(0) << level_timer.getTime();
@@ -1138,4 +1136,21 @@ void Level::clear_resources() {
 void Level::set_lights(){
 
 	m_fire.set_light_mode(hasLightingEffect);
+	set_UI_colour();
+}
+
+void Level::set_UI_colour()
+{
+	vec3 colour;
+    if (hasLightingEffect) {
+    	colour = {1.f, 1.f, 1.f};
+
+    } else {
+    	colour = {0.f, 0.f, 0.f};
+    }
+
+	m_timer_text.setColour(colour);
+	m_energy_text.setColour(colour);
+
+	m_rotationUI.set_colour_mode(hasLightingEffect);
 }
