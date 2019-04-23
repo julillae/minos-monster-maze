@@ -35,7 +35,6 @@ set(SOURCE_FILES
 	src/common.cpp
     src/renderManager.cpp
     src/spriteSheet.cpp
-	src/renderEffects.cpp
     src/characters/character.cpp
     src/characters/player.cpp
     src/characters/enemy.cpp
@@ -49,6 +48,7 @@ set(SOURCE_FILES
     src/mazeComponents/freeComponent.cpp
     src/mazeComponents/geometricComponent.cpp
     src/mazeComponents/floor.cpp
+    src/mazeComponents/fire.cpp
     src/mazeComponents/ice.cpp
     src/mazeComponents/exit.cpp
     src/mazeComponents/spike.cpp
@@ -93,7 +93,6 @@ set(SOURCE_FILES
   	include/common.hpp
     include/renderManager.hpp
     include/spriteSheet.hpp
-  	include/renderEffects.hpp
     include/characters/character.hpp
     include/characters/player.hpp
     include/characters/enemy.hpp
@@ -108,6 +107,7 @@ set(SOURCE_FILES
     include/mazeComponents/geometricComponent.hpp
     include/mazeComponents/floor.hpp
     include/mazeComponents/ice.hpp
+    include/mazeComponents/fire.hpp
     include/mazeComponents/exit.hpp
     include/mazeComponents/spike.hpp
     include/mazeComponents/blade.hpp

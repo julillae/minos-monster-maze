@@ -7,6 +7,7 @@
 #include "../include/mazeComponents/spike.hpp"
 #include "../include/mazeComponents/ice.hpp"
 #include "../include/mazeComponents/exit.hpp"
+#include "../include/mazeComponents/fire.hpp"
 #include "../include/mazeComponents/blade.hpp"
 
 #include <vector>
