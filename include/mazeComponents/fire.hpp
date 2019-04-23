@@ -28,7 +28,7 @@ public:
     void set_player_dead();
     void reset_fire();
     void set_success();
-    void set_light_level(int isLightOn);
+    void set_light_mode(bool isLightOn);
     void set_level_complete_time() ;
     void reset_player_win_time();
 

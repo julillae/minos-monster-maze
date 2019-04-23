@@ -99,6 +99,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	m_rotationUIEnergy.init();
 	set_rotationUI_position();
 	set_rotationUI_visibility(canRotate);
+	set_lights();
 
 	return m_water.init() && m_player.init(initialPosition, physicsHandler);
 }
@@ -453,7 +454,6 @@ void Level::draw()
 	//m_fire.originUpdate(0.f, 0.f, p_position.x, p_position.y);
 	// vec2 rotated_p_pos = rotateVec(p_position, rotation);
 	// vec2 deviationVector2 = add(rotated_p_pos, negateVec(cameraCenter));
-	set_light_start_level(5);
 	vec2 deviationVector2 = add(p_position, negateVec(cameraCenter));
 
 	deviationVector2 = rotateVec(deviationVector2, -rotation);
@@ -632,6 +632,7 @@ void Level::call_level_loader()
 	canRotate = levelLoader.can_rotate();
 	cameraTracking = levelLoader.can_camera_track();
 	hasPrompt = levelLoader.has_prompt();
+	hasLightingEffect = levelLoader.has_lighting_effect();
 
 	initialPosition = levelLoader.get_player_position();
 	m_exit = levelLoader.get_exit();
@@ -667,6 +668,7 @@ void Level::load_new_level()
 	call_level_loader();
 	initialize_message_prompt();
 	set_rotationUI_visibility(canRotate);
+	set_lights();
 	// if moved on to new level, reset saved time to zero.
 	level_timer.recordSavedTime(0.f);
 	level_timer.reset();
@@ -896,6 +898,7 @@ void Level::load_select_level(int level)
 	initialize_message_prompt();
 	m_timer_text.set_visibility(true);
 	set_rotationUI_visibility(canRotate);
+	set_lights();
 	reset_pause_start();
 	level_timer.cleanSlate();
 }
@@ -1132,11 +1135,7 @@ void Level::clear_resources() {
 	nearbyBlades.clear();
 }
 
-void Level::set_light_start_level(int level){
+void Level::set_lights(){
 
-	if (current_level>=level){
-		m_fire.set_light_level(1);
-	}else{
-		m_fire.set_light_level(0);
-	}
+	m_fire.set_light_mode(hasLightingEffect);
 }

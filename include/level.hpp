@@ -124,8 +124,9 @@ public:
 	void set_rotationUI_visibility(bool visible);
 	void set_timer_text_position();
 	void draw_energyText(mat3 projection_2D);
+    void set_lights();
 
-	void set_player_death();
+    void set_player_death();
 	void set_death_effects();
 
 	void load_player();
@@ -143,7 +144,6 @@ public:
 	void record_pause_time();
 
 	void clear_resources();
-	void set_light_start_level(int level);
 private:
 
 	// Water effect
@@ -213,6 +213,7 @@ private:
 	bool cameraTracking = true;
 	bool canRotate = true;
 	bool hasPrompt = false;
+	bool hasLightingEffect = false;
 
 	float maxRotationEnergy = 180.f;
 	float rotationEnergy = maxRotationEnergy;

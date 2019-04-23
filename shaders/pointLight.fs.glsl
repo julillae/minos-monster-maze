@@ -6,7 +6,7 @@ uniform vec2 origin_pos;
 uniform float time;
 uniform int is_at_door;
 uniform float win_timer;
-uniform int light_mode;
+uniform bool light_mode;
 in vec2 uv;
 in vec4 gl_FragCoord;
 in vec3 light_position;
@@ -47,7 +47,7 @@ vec3 calculatePointLight(vec2 lightPosition, vec3 Color, float is_at_door)
 void main(void)
 {
     vec4 texturecolor = texture(screen_texture, uv);
-    if (light_mode==1){
+    if (light_mode){
         outputColor = vec4(calculatePointLight(light_position.xy, vec3(1,1,1), is_at_door), 1.0)*texturecolor;
     }else{
         outputColor = texturecolor;
