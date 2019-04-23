@@ -171,6 +171,7 @@ private:
 	FlashMessage m_message;
 
 	IntroState* introState;
+	bool introLoaded = false;
 
     float m_seed_rng;
 

@@ -607,10 +607,11 @@ void Level::load_intro()
     glfwGetFramebufferSize(m_window, &w, &h);
 	vec2 screen = { (float)w, (float)h };
 
-	if (introState == NULL) {
+	if (!introLoaded) {
 		introState = new IntroState(game);
 		introState->init(screen);
 		game->push_state(introState);
+		introLoaded = true;
 	}
 	
 	game->set_current_state(introState);
