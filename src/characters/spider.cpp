@@ -21,7 +21,7 @@ bool Spider::init(vec2 initialPosition, Physics * physicsHandler)
 
     textureFile = textures_path("spider-sprite-sheet.png");
     if (!RenderManager::load_texture(textureFile, &spider_texture, this)) return false;
-
+    
     float spriteSheetWidth = 9.0f;
     float spriteSheetHeight = 3.0f;
     int horizontalTrim = 30;

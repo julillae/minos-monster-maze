@@ -16,7 +16,7 @@ vec4 hide(vec4 in_color)
 
 void main()
 {
-    vec4 sampler = vec4(0.0, 0.0, 0.0, texture(text, texCoords).r);
+    vec4 sampler = vec4(1.0, 1.0, 1.0, texture(text, texCoords).r);
     color = vec4(textColor, 1.0) * sampler;
 
     if (is_hidden) color = hide(color);

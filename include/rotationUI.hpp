@@ -20,9 +20,13 @@ public:
 
     float get_width();
 
+    void set_colour_mode(bool isLightMode);
+
 private:
-    Texture m_texture;
+    Texture m_black_texture;
+    Texture m_white_texture;
     bool is_hidden;
     float m_width;
+    bool isLightMode;
 
 };
