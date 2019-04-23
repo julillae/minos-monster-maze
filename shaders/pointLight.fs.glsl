@@ -39,6 +39,9 @@ vec3 calculatePointLight(vec2 lightPosition, vec3 Color, float is_at_door)
 
     finalColor += diffuse;
 
+    if (dead_timer > 0)
+        		finalColor -= 0.1 * dead_timer * vec3(0.1, 0.1, 0.1);
+
     return finalColor;
 }
 
