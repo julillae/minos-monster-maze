@@ -39,7 +39,16 @@ vec3 calculatePointLight(vec2 lightPosition, vec3 Color, float is_at_door)
     finalColor += diffuse;
 
     return finalColor;
-} 
+}
+
+vec4 fade_color(vec4 in_color) {
+	vec4 color = in_color;
+
+	if (win_timer > 0)
+		color -= 0.1 * win_timer * vec4(0.1, 0.1, 0.1, 0);
+
+	return color;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //Fragment ShaderBufferStruct
@@ -50,6 +59,7 @@ void main(void)
     if (light_mode){
         outputColor = vec4(calculatePointLight(light_position.xy, vec3(1,1,1), is_at_door), 1.0)*texturecolor;
     }else{
-        outputColor = texturecolor;
+        outputColor = fade_color(texturecolor);
+
     }
 }
