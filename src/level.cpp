@@ -451,13 +451,11 @@ void Level::draw()
 
 	deviationVector2 = rotateVec(deviationVector2, -rotation);
 	m_fire.originUpdate(w, h, deviationVector2.x*osScaleFactor, -deviationVector2.y*osScaleFactor);
-	
+
     update_rotationUI();
 	m_rotationUI.draw(projection_noRotation);
 	m_rotationUIEnergy.draw(projection_noRotation);
 
-	// set opacity
-    m_timer_text.setColour({0.7f, 0.7f, 0.7f});
 	set_timer_text_position();
     stringstream stream;
     stream << fixed << setprecision(0) << level_timer.getTime();
@@ -613,6 +611,48 @@ void Level::destroy_platforms() {
 	m_blades.destroy();
 }
 
+void Level::load_intro()
+{
+	int w, h;
+    glfwGetFramebufferSize(m_window, &w, &h);
+	vec2 screen = { (float)w, (float)h };
+
+	if (!introLoaded) {
+		introState = new IntroState(game);
+		introState->init(screen);
+		game->push_state(introState);
+		introLoaded = true;
+	}
+
+	game->set_current_state(introState);
+}
+
+void Level::load_minotaur_intro()
+{
+	int w, h;
+    glfwGetFramebufferSize(m_window, &w, &h);
+	vec2 screen = { (float)w, (float)h };
+
+	MinotaurIntroState* introState = new MinotaurIntroState(game);
+	introState->init(screen);
+
+	game->push_state(introState);
+	game->set_current_state(introState);
+}
+
+void Level::load_credits()
+{
+	int w, h;
+    glfwGetFramebufferSize(m_window, &w, &h);
+	vec2 screen = { (float)w, (float)h };
+
+	CreditsState* creditsState = new CreditsState(game);
+	creditsState->init(screen);
+
+	game->push_state(creditsState);
+	game->set_current_state(creditsState);
+}
+
 void Level::call_level_loader()
 {
 	LevelLoader levelLoader;
@@ -653,18 +693,22 @@ void Level::load_new_level()
 
 	current_level++;
 	if (current_level >= num_levels) {
-		current_level = 0;
 		level_timer.resetCumulativeTime();
+
+		load_credits();
+	} else if (current_level == minotaur_level) {
+		load_minotaur_intro();
+	} else {
+		level_timer.addCumulativeTime(level_timer.getTime());
+		call_level_loader();
+		initialize_message_prompt();
+		set_rotationUI_visibility(canRotate);
+        set_lights();
+		// if moved on to new level, reset saved time to zero.
+		level_timer.recordSavedTime(0.f);
+		level_timer.reset();
+		m_timer_text.set_visibility(true);
 	}
-	level_timer.addCumulativeTime(level_timer.getTime());
-	call_level_loader();
-	initialize_message_prompt();
-	set_rotationUI_visibility(canRotate);
-	set_lights();
-	// if moved on to new level, reset saved time to zero.
-	level_timer.recordSavedTime(0.f);
-	level_timer.reset();
-	m_timer_text.set_visibility(true);
 
 }
 
@@ -1113,6 +1157,7 @@ void Level::reset_pause_start() {
 }
 
 void Level::clear_resources() {
+	m_player.destroy();
     destroy_platforms();
     destroy_enemies();
     vector_of_floors.clear();
@@ -1128,4 +1173,21 @@ void Level::clear_resources() {
 void Level::set_lights(){
 
 	m_fire.set_light_mode(hasLightingEffect);
+	set_UI_colour();
+}
+
+void Level::set_UI_colour()
+{
+	vec3 colour;
+    if (hasLightingEffect) {
+    	colour = {1.f, 1.f, 1.f};
+
+    } else {
+    	colour = {0.f, 0.f, 0.f};
+    }
+
+	m_timer_text.setColour(colour);
+	m_energy_text.setColour(colour);
+
+	m_rotationUI.set_colour_mode(hasLightingEffect);
 }
