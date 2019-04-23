@@ -35,7 +35,6 @@ set(SOURCE_FILES
 	src/common.cpp
     src/renderManager.cpp
     src/spriteSheet.cpp
-	src/renderEffects.cpp
     src/characters/character.cpp
     src/characters/player.cpp
     src/characters/enemy.cpp
@@ -94,7 +93,6 @@ set(SOURCE_FILES
   	include/common.hpp
     include/renderManager.hpp
     include/spriteSheet.hpp
-  	include/renderEffects.hpp
     include/characters/character.hpp
     include/characters/player.hpp
     include/characters/enemy.hpp

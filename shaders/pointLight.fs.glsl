@@ -4,7 +4,7 @@ uniform sampler2D screen_texture;
 uniform vec2 light_pos;
 uniform vec2 origin_pos;
 uniform float time;
-uniform int is_at_door;
+uniform bool isAtDoor;
 uniform float win_timer;
 uniform float dead_timer;
 uniform bool light_mode;
@@ -16,7 +16,7 @@ out vec4 outputColor;
 
 
 
-vec3 calculatePointLight(vec2 lightPosition, vec3 Color, float is_at_door)
+vec3 calculatePointLight(vec2 lightPosition, vec3 Color, bool isAtDoor)
 {
     vec3 finalColor = vec3(0.0);
 
@@ -26,7 +26,7 @@ vec3 calculatePointLight(vec2 lightPosition, vec3 Color, float is_at_door)
     float linear = 0;
     float quadratic = 0.00025/(30.0-0.6*sin(time*3.0));
     
-    if(is_at_door!=0){
+    if(!isAtDoor){
         quadratic = -0.0000000025*(30.0*5.0) - (1.0/200000.0)*win_timer;
     }
     float constant = 0.8f;
@@ -57,14 +57,11 @@ vec4 fade_color(vec4 in_color) {
 	return color;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//Fragment ShaderBufferStruct
-////////////////////////////////////////////////////////////////////////////////
 void main(void)
 {
     vec4 texturecolor = texture(screen_texture, uv);
     if (light_mode){
-        outputColor = vec4(calculatePointLight(light_position.xy, vec3(1,1,1), is_at_door), 1.0)*texturecolor;
+        outputColor = vec4(calculatePointLight(light_position.xy, vec3(1,1,1), isAtDoor), 1.0)*texturecolor;
     }else{
         outputColor = fade_color(texturecolor);
 

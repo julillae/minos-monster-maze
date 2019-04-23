@@ -16,7 +16,6 @@
 #include "mazeComponents/ice.hpp"
 #include "mazeComponents/spike.hpp"
 #include "mazeComponents/blade.hpp"
-#include "renderEffects.hpp"
 #include "physics.hpp"
 #include "menus/helpMenu.hpp"
 #include "gameStates/gameState.hpp"
@@ -153,9 +152,6 @@ public:
 
 	void clear_resources();
 private:
-
-	// Water effect
-	RenderEffects m_water;
 
 	Minotaur m_minotaur;
 	State minotaur_prev_state = initialized;
