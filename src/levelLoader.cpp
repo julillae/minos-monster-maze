@@ -25,8 +25,9 @@ std::vector<std::vector <int>> LevelLoader::load_level(int levelNumber, Physics*
 void LevelLoader::read_level_data(int levelNumber) {
 	std::string level = std::to_string(levelNumber);
 	fprintf(stderr, "Loading level %s\n", level.c_str());
-	std::string fileName = level_path("level" + level + ".txt");
-    std::ifstream filein(fileName);
+	std::string levelPath(level_path());
+	std::string fullPath = levelPath + "level" + level + ".txt";
+    std::ifstream filein(fullPath.c_str());
 
 	std::string firstLine;
 	std::getline(filein, firstLine);
