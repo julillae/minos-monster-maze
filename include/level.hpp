@@ -20,6 +20,9 @@
 #include "physics.hpp"
 #include "menus/helpMenu.hpp"
 #include "gameStates/gameState.hpp"
+#include "gameStates/creditsState.hpp"
+#include "gameStates/introState.hpp"
+#include "gameStates/minotaurIntroState.hpp"
 #include "gameStates/pauseMenuState.hpp"
 #include "levelLoader.hpp"
 #include "flashMessage.hpp"
@@ -42,6 +45,7 @@
 #include <time.h>
 
 // Level class
+class IntroState;
 
 class Level : public GameState
 {
@@ -112,6 +116,9 @@ public:
 
 	void initialize_message_prompt();
 	void initialize_camera_position(int w, int h);
+	void load_intro();
+	void load_minotaur_intro();
+	void load_credits();
 	void call_level_loader();
 	void load_new_level();
 	void reset_player_camera();
@@ -125,6 +132,7 @@ public:
 	void set_timer_text_position();
 	void draw_energyText(mat3 projection_2D);
     void set_lights();
+    void set_UI_colour();
 
     void set_player_death();
 	void set_death_effects();
@@ -166,6 +174,9 @@ private:
 
 	FlashMessage m_message;
 
+	IntroState* introState;
+	bool introLoaded = false;
+
     float m_seed_rng;
 
     // C++ rng
@@ -180,6 +191,7 @@ private:
 	int rotateCCWKey = GLFW_KEY_Z;
 
 	int num_levels = 13;
+	int minotaur_level = 12;
 	int current_level = 0;
 
 	const map<int, std::string> platform_types = {
