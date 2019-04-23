@@ -49,12 +49,6 @@ Level::~Level()
 {
 }
 
-// Fire new_fire;  //change it to cell==a
-// 				if (new_fire.init()){
-// 					//store_platform_coords({x_pos, y_pos}, cell);
-// 					m_fire = new_fire;
-// 				}
-
 // Level initialization
 bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 {
@@ -92,11 +86,7 @@ bool Level::init(vec2 screen, Physics* physicsHandler, int startLevel)
 	h /= osScaleFactor;
 	initialize_camera_position(w, h);
 
-	//Fire new_fire;  //change it to cell==a
  	m_fire.init();
- 		//store_platform_coords({x_pos, y_pos}, cell);
- 		//m_fire = new_fire;
- 	//}
 	initialize_message_prompt();
 	level_timer.init();
 
