@@ -6,6 +6,7 @@ uniform vec2 origin_pos;
 uniform float time;
 uniform int is_at_door;
 uniform float win_timer;
+uniform float dead_timer;
 uniform bool light_mode;
 in vec2 uv;
 in vec4 gl_FragCoord;
@@ -43,6 +44,9 @@ vec3 calculatePointLight(vec2 lightPosition, vec3 Color, float is_at_door)
 
 vec4 fade_color(vec4 in_color) {
 	vec4 color = in_color;
+
+	if (dead_timer > 0)
+    		color -= 0.1 * dead_timer * vec4(0.1, 0.1, 0.1, 0);
 
 	if (win_timer > 0)
 		color -= 0.1 * win_timer * vec4(0.1, 0.1, 0.1, 0);

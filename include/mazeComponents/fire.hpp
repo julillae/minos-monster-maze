@@ -13,13 +13,7 @@ public:
 
     // Renders the component
 	void draw(const mat3& projection)override;
-
-    //Sets the new position
-	//void set_position(vec2 position);
-
-	// Returns the bounding box for collision detection, called by collides_with()
-	vec2 get_bounding_box()const;
-
+	
     //void set_size();
     void destroy();
 
@@ -31,6 +25,14 @@ public:
     void set_light_mode(bool isLightOn);
     void set_level_complete_time() ;
     void reset_player_win_time();
+    void set_player_dead_time();
+    void reset_player_dead_time();
+    void set_rotation_end_time();
+    float get_time_since_rotation_end()const;
+    float get_time_since_level_complete() const;
+    float get_time_since_death() const;
+    void reset_rotation_end_time();
+
 
 private:
     float tx = 0.f;
@@ -41,5 +43,7 @@ private:
     int is_At_Door = 0;
     int isLightMode = 1;
     float m_win_time;
+    float m_dead_time;
+    float m_rotation_end_time;
 
 };
