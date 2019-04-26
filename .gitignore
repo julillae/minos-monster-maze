@@ -4,6 +4,7 @@ src/project_path.hpp
 ## Ignore data files
 build/
 *.mp4
+!Game_Demo_Video.mp4
 
 ## Ignore libraries
 *.dll

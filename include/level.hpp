@@ -144,11 +144,9 @@ public:
 	void load_rotation_energy();
 
 	float get_level_time();
-	float get_cumulative_time();
 	float get_pause_start();
 	void reset_pause_start();
 	void return_from_pause();
-	void record_pause_time();
 
 	void clear_resources();
 private:

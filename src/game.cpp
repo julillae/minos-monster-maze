@@ -135,12 +135,16 @@ void Game::set_current_state(GameState* currState)
 	if (currentState == NULL) {
 		soundManager.play_menu_bg_music();
 	} else if (currentState->name == LEVEL || currentState->name == PAUSE) {
-		if (currState->name == MAIN || currState->name == LEVELSELECT)
+		if (currState->name == MAIN || currState->name == LEVELSELECT || currState->name == CREDITS)
 			soundManager.play_menu_bg_music();
 	}
 	else {
-		if (currState->name == LEVEL || currState->name == PAUSE)
+		if ((currentState->name == INTRO || currentState->name == MINOTAURINTRO) && currState->name == LEVEL) {
+			// do nothing, should already be playing level_bg_music
+		}
+		else if (currState->name == LEVEL || currState->name == PAUSE || currState->name == INTRO || currState->name == MINOTAURINTRO) {
 			soundManager.play_level_bg_music();
+		}
 	}
     currentState = currState;
     currentState->set_onKey();

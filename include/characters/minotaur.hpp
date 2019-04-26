@@ -44,6 +44,8 @@ class Minotaur: public Smart
 
         void setPreviousState(State s);
 
+        bool swingTimeOver();
+
         State previous_state = idle;
 
     private:
@@ -58,5 +60,7 @@ class Minotaur: public Smart
         bool rotate_cw = false;
         bool rotating = false;
         float prep_time = 1000.0f;
+        float swingTime = 25.f;
+        std::chrono::high_resolution_clock::time_point swingStart;
 	
 };

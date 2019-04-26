@@ -731,6 +731,7 @@ void Level::reset_game()
 		reset_enemies();
 	}
 	soundManager->fade_out_sound(rotationLoop, 200);
+	if (minotaurPresent) soundManager->fade_out_sound(minotaurIdle, 0);
 	reset_player_camera();
 	m_fire.reset_fire();
 	initialize_message_prompt();
@@ -1036,7 +1037,7 @@ void Level::load_minotaur()
 	itr = minotaur.GetObject().FindMember("scale_x");
 	minotaur_scaleX = itr->value.GetFloat();
 
-	minotaur_scaleY = m_player.get_scale().y;
+	minotaur_scaleY = m_minotaur.get_scale().y;
 
 	itr = minotaur.GetObject().FindMember("velocity_x");
 	minotaur_velx = itr->value.GetFloat();
